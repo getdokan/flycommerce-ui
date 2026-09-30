@@ -5,6 +5,8 @@ The FlyCommerce design system for React: accessible components, design tokens an
 [![npm version](https://img.shields.io/npm/v/@flycommerce/ui.svg)](https://www.npmjs.com/package/@flycommerce/ui)
 [![license](https://img.shields.io/npm/l/@flycommerce/ui.svg)](./LICENSE)
 
+**[Browse the component gallery →](https://ui.flycommerce.com)**
+
 Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com) and [Tailwind CSS v4](https://tailwindcss.com), restyled to FlyCommerce's design.
 
 - **90+ components.** The complete shadcn set plus commerce patterns: data tables with filters, media library, category picker, rich-text editor, save bar, stat cards and more.
@@ -152,7 +154,7 @@ The base components can also be imported one by one, for example `import { Butto
 
 ## Components
 
-The live gallery shows every component, variant and state in light, dark, RTL and mobile layouts, with a **Code** tab to copy each example.
+The [live gallery](https://ui.flycommerce.com) shows every component, variant and state in light, dark, RTL and mobile layouts, with a **Code** tab to copy each example.
 
 | Category              | Components                                                                                                                                                                                                                                                                                                                                   |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -367,7 +369,7 @@ export function AddOrder() {
 }
 ```
 
-The gallery's Icons page lists all 150 names.
+The gallery's [Icons page](https://ui.flycommerce.com/#icons) lists all 150 names.
 
 ## Accessibility and localisation
 

@@ -14,7 +14,7 @@ Only the **component gallery**: a static website where developers browse every `
 
 |                   |                                                                                                             |
 | ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| Repository        | `github.com/getdokan/flycommerce-ui` (public)                                                              |
+| Repository        | `github.com/getdokan/flycommerce-ui` (public)                                                               |
 | Production branch | `main`                                                                                                      |
 | Node              | **22**                                                                                                      |
 | Package manager   | **pnpm 10.33.0**, pinned in `package.json` (`packageManager`). `corepack enable` picks it up automatically. |
@@ -40,7 +40,7 @@ Verified locally with `wrangler pages dev site-dist`: all four headers are prese
 
 ## Decide before you start
 
-1. **Domain.** For example `ui.flycommerce.com` (a suggestion, not reserved anywhere yet). It needs to be a zone on the same Cloudflare account.
+1. **Domain.** Live at `https://ui.flycommerce.com` since 2026-09-30.
 2. **Public or staff only.** The gallery contains no secrets, and the npm package will be public anyway, so public is fine. For staff only, put it behind Cloudflare Access (see "Optional: staff only").
 3. **Search engines.** If it shouldn't be indexed, add `X-Robots-Tag: noindex` under `/*` in `playground/public/_headers` (a developer change, one line).
 
