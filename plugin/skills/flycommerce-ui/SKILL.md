@@ -7,7 +7,7 @@ description: Build, restyle or migrate FlyCommerce product UI with the @flycomme
 
 `@flycommerce/ui` is the single source of FlyCommerce's look: shadcn/Radix components restyled to the PM prototype (jamil-mahmud/flycommerce-prototype), with the P3 Figma file filling gaps. Screens compose it; they never restyle it.
 
-Live gallery (every component, variant and state, light/dark/RTL/mobile): run `pnpm dev` in the flycommerce-ui repo, or open the hosted gallery linked from its README.
+Live gallery (every component, variant and state, light/dark/RTL/mobile): run `pnpm dev` in the flycommerce-ui repo, or open the hosted gallery linked from its README. Every section has a **Code** tab with a copy-paste example generated from the demo itself (imports already point at `@flycommerce/ui`); start from it instead of writing a screen from scratch.
 
 Generated references in this skill (always current, read them instead of guessing):
 - `references/exports.md`: every export and which module it comes from
@@ -78,6 +78,9 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | On/off setting with explanation | `SwitchField title description loading` (bare `Switch` only inside tables) |
 | Date / date+time / range with presets | `DatePicker` (`withTime`), `DateRangePicker` (`presets`) |
 | File upload area | `Dropzone accept maxSize onFiles onReject`; `browseLabel="Choose Image"` adds the primary browse button, `actions` adds more (e.g. "Choose Existing" for the media library) |
+| Pick or upload images/files (category image, product gallery, logo, attachments) — Figma "Add Media" | `MediaPickerDialog open onOpenChange value onConfirm` with `multiple`/`max`, `accept`/`maxSize`, and the app's data: `items`, `loading`, `hasMore`/`onLoadMore`, `onSearch`, `dateOptions`/`date`/`onDateChange`. Pass `upload={(file, { signal, onProgress }) => Promise<MediaItem>}` (the dashboard's `uploadMediaFile` has this shape): the picker shows progress, cancel and errors, and selects each finished upload. `onUpdate` (alt/title on blur), `onEdit` (open a cropper), `onDelete` (confirmed first) power Attachment Details; `videoUrls`/`onVideoUrlsChange` add the product "Video Url" rows; `initialFiles` uploads files dropped elsewhere. It never fetches — the app owns the API and cache. Map the API item to `MediaItem` (`id`, `url`, `thumbnailUrl`, `name`, `mimeType`, `size`, `width`, `height`, `alt`, `title`, `date`, `isPrivate`, `videoUrl`). |
+| Media library page (`/admin/media`) | Compose `MediaGrid` (`multiple`, `selected`/`onSelectedChange`, `activeId`, `hasMore`/`onLoadMore`, `loading`) + `MediaDetailsPanel item` in a card, a "N selected" bulk bar with `ConfirmDialog` delete, type `Tabs` (All / Images / Videos), `SearchInput` + date `Select`, and "Add media" opening `MediaPickerDialog`. The gallery's "Media library page" Code tab is the full recipe. |
+| One media thumbnail, or upload progress rows elsewhere | `MediaTile item selected onClick onPreview onRemove` (image, video play badge, private lock, file glyph for PDF/CSV); `UploadQueue items onCancel onRemove`; `VideoUrlList value onValueChange` |
 | KPI tile | `StatCard label value delta deltaNote icon hero` (at most one `hero` per view); inline growth → `Delta` |
 | In-page section switch | `Tabs` + `TabsList` (segmented default, `variant="line"` for underline) |
 | Tabs that change the route | `NavTabs` + `NavTabsLink asChild active` |
