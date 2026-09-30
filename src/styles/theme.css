@@ -16,6 +16,7 @@
     --primary-press: #0b3aad;
     --primary-subtle: #eaf1ff; /* accent-weak */
     --primary-subtle-2: #f4f8ff; /* accent-weak-2: row hover, selected radio card */
+    --primary-strong: #0b3aad; /* info text on a primary-subtle ground */
     --secondary: #f4f5f8;
     --secondary-foreground: #0f1729;
     --muted: #f8f9fb;
@@ -44,6 +45,7 @@
     --chart-4: #6d3be4;
     --chart-5: #727b92;
     --radius: 4px; /* radius-control */
+    --radius-panel: 12px; /* cards, toasts */
     --font: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
     --elevation-1: 0 1px 2px rgb(16 23 41 / 0.05), 0 1px 1px rgb(16 23 41 / 0.04);
     --elevation-2: 0 4px 14px rgb(16 23 41 / 0.08), 0 2px 4px rgb(16 23 41 / 0.04);
@@ -77,6 +79,7 @@
     --primary-press: #0e48d0;
     --primary-subtle: #101c33;
     --primary-subtle-2: #0d1526;
+    --primary-strong: #8fb3ff; /* not in the prototype: its accent-press fails contrast on the dark tint */
     --secondary: #1b1b26;
     --secondary-foreground: #e9eaf0;
     --muted: #1b1b26;

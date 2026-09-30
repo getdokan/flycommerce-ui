@@ -673,6 +673,7 @@
     --color-primary-press: var(--primary-press);
     --color-primary-subtle: var(--primary-subtle);
     --color-primary-subtle-2: var(--primary-subtle-2);
+    --color-primary-strong: var(--primary-strong);
     --color-placeholder: var(--placeholder);
     --color-destructive-subtle: var(--destructive-subtle);
     --color-destructive-strong: var(--destructive-strong);
@@ -689,7 +690,7 @@
     --color-sidebar-heading: var(--sidebar-heading);
     /* Stock Tailwind radius and shadow scales stay untouched: host apps rely on them. */
     --radius-control: var(--radius);
-    --radius-card: 12px;
+    --radius-card: var(--radius-panel);
     --shadow-1: var(--elevation-1);
     --shadow-2: var(--elevation-2);
     --shadow-pop: var(--elevation-pop);
