@@ -26,5 +26,5 @@
     }
   },
   "include": ["src", "playground"],
-  "exclude": ["playground/vite.config.ts"]
+  "exclude": ["playground/vite.config.ts", "playground/demo-source-plugin.ts"]
 }
