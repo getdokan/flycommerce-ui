@@ -3,6 +3,24 @@
 import * as React from "react"
 import { cn } from "cn"
 import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import {
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
@@ -23,6 +41,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsUpDownIcon,
+  GripVerticalIcon,
   InboxIcon,
   TriangleAlertIcon,
 } from "lucide-react"
@@ -92,6 +111,12 @@ type DataTableLabels = {
   clearSelection?: string
   expandRow?: string
   collapseRow?: string
+  reorder?: string
+  dragHandle?: (index: number) => string
+  pickedUp?: (label: string, position: number, total: number) => string
+  movedTo?: (label: string, position: number, total: number) => string
+  droppedAt?: (label: string, position: number, total: number) => string
+  reorderCancelled?: (label: string, position: number) => string
   selected?: (count: number) => React.ReactNode
   showing?: (from: number, to: number, total: number) => React.ReactNode
   emptyTitle?: React.ReactNode
@@ -108,6 +133,16 @@ const DEFAULT_LABELS: Required<DataTableLabels> = {
   clearSelection: "Clear",
   expandRow: "Expand row",
   collapseRow: "Collapse row",
+  reorder: "Reorder",
+  dragHandle: (index) => `Drag to reorder row ${index + 1}`,
+  pickedUp: (label, position, total) =>
+    `Picked up ${label}, position ${position} of ${total}.`,
+  movedTo: (label, position, total) =>
+    `${label} moved to position ${position} of ${total}.`,
+  droppedAt: (label, position, total) =>
+    `${label} dropped at position ${position} of ${total}.`,
+  reorderCancelled: (label, position) =>
+    `Reordering cancelled. ${label} returned to position ${position}.`,
   selected: (count) => `${count} selected`,
   showing: (from, to, total) => `Showing ${from} to ${to} of ${total}`,
   emptyTitle: "Nothing here yet",
@@ -119,6 +154,8 @@ type DataTableProps<TData> = {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   getRowId?: (row: TData, index: number) => string
+  /** Card title on the left of the toolbar, e.g. "Brand List". */
+  title?: React.ReactNode
   /** Header strip above the table: search, filter tabs, actions. */
   toolbar?: React.ReactNode
   /** Row under the toolbar, typically `<ActiveFilters />` chips; collapses when empty. */
@@ -146,6 +183,12 @@ type DataTableProps<TData> = {
   onRowClick?: (row: TData) => void
   getRowClassName?: (row: TData) => string | undefined
   pagination?: DataTablePaginationProps
+  /** Figma puts pagination under the card; "inside" keeps it in the card footer. */
+  paginationPlacement?: "outside" | "inside"
+  /** Adds a drag-handle column; called with the reordered `data` (mouse or keyboard: Space, arrows, Space). */
+  onReorder?: (rows: TData[], move: { from: number; to: number }) => void
+  /** Row name for screen-reader reorder announcements, e.g. the product name. */
+  getRowLabel?: (row: TData) => string
   labels?: DataTableLabels
   className?: string
 }
@@ -154,6 +197,7 @@ function DataTable<TData>({
   columns,
   data,
   getRowId,
+  title,
   toolbar,
   subToolbar,
   getSubRows,
@@ -173,6 +217,9 @@ function DataTable<TData>({
   onRowClick,
   getRowClassName,
   pagination,
+  paginationPlacement = "outside",
+  onReorder,
+  getRowLabel,
   labels: labelsProp,
   className,
 }: DataTableProps<TData>) {
@@ -185,8 +232,24 @@ function DataTable<TData>({
   const rowSelection = rowSelectionProp ?? rowSelectionState
   const sorting = sortingProp ?? sortingState
 
+  const reorderable = Boolean(onReorder) && !getSubRows
+  const reorderEnabled = reorderable && sorting.length === 0
+
   const allColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
-    if (!enableRowSelection) return columns
+    const dragColumn: ColumnDef<TData, unknown>[] = reorderable
+      ? [
+          {
+            id: "__drag",
+            enableSorting: false,
+            meta: { headerClassName: "w-8 px-0", cellClassName: "w-8 px-0" },
+            header: () => <span className="sr-only">{labels.reorder}</span>,
+            cell: ({ row }) => (
+              <DragHandle label={labels.dragHandle(row.index)} />
+            ),
+          },
+        ]
+      : []
+    if (!enableRowSelection) return [...dragColumn, ...columns]
     return [
       {
         id: "__select",
@@ -217,9 +280,19 @@ function DataTable<TData>({
           />
         ),
       },
+      ...dragColumn,
       ...columns,
     ]
-  }, [columns, enableRowSelection, labels.selectAll, labels.selectRow])
+    // Labels are read by value; including the object would rebuild columns every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    columns,
+    enableRowSelection,
+    reorderable,
+    labels.selectAll,
+    labels.selectRow,
+    labels.reorder,
+  ])
 
   // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns non-memoizable functions by design
   const table = useReactTable({
@@ -246,7 +319,57 @@ function DataTable<TData>({
     .rows.map((row) => row.original)
   const clearSelection = () => table.resetRowSelection()
 
-  return (
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+  const rowIds = rows.map((row) => row.id)
+  const rowLabel = (id: string | number) => {
+    const row = rows.find((r) => r.id === String(id))
+    return row
+      ? (getRowLabel?.(row.original) ?? `Row ${rowIds.indexOf(row.id) + 1}`)
+      : ""
+  }
+  const position = (id: string | number) => rowIds.indexOf(String(id)) + 1
+  const announcements = {
+    onDragStart: ({ active }: { active: { id: string | number } }) =>
+      labels.pickedUp(rowLabel(active.id), position(active.id), rowIds.length),
+    onDragOver: ({
+      active,
+      over,
+    }: {
+      active: { id: string | number }
+      over: { id: string | number } | null
+    }) =>
+      over
+        ? labels.movedTo(rowLabel(active.id), position(over.id), rowIds.length)
+        : undefined,
+    onDragEnd: ({
+      active,
+      over,
+    }: {
+      active: { id: string | number }
+      over: { id: string | number } | null
+    }) =>
+      over
+        ? labels.droppedAt(
+            rowLabel(active.id),
+            position(over.id),
+            rowIds.length
+          )
+        : undefined,
+    onDragCancel: ({ active }: { active: { id: string | number } }) =>
+      labels.reorderCancelled(rowLabel(active.id), position(active.id)),
+  }
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!onReorder || !over || active.id === over.id) return
+    const from = rowIds.indexOf(String(active.id))
+    const to = rowIds.indexOf(String(over.id))
+    if (from < 0 || to < 0) return
+    onReorder(arrayMove([...data], from, to), { from, to })
+  }
+
+  const card = (
     <div
       data-slot="data-table"
       className={cn(
@@ -270,12 +393,23 @@ function DataTable<TData>({
           </div>
         </div>
       ) : (
-        toolbar && (
+        (toolbar || title) && (
           <div
             data-slot="data-table-toolbar"
             className="flex flex-wrap items-center gap-3 border-b border-border-subtle px-5 py-4"
           >
-            {toolbar}
+            {title ? (
+              <>
+                <h2 className="me-auto type-card-title text-foreground">
+                  {title}
+                </h2>
+                <div className="flex flex-wrap items-center gap-3">
+                  {toolbar}
+                </div>
+              </>
+            ) : (
+              toolbar
+            )}
           </div>
         )
       )}
@@ -369,85 +503,208 @@ function DataTable<TData>({
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() ? "selected" : undefined}
-                className={cn(
-                  onRowClick && "cursor-pointer",
-                  getRowClassName?.(row.original)
-                )}
-                onClick={
-                  onRowClick ? () => onRowClick(row.original) : undefined
-                }
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis]}
+              accessibility={{ announcements }}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={rowIds}
+                strategy={verticalListSortingStrategy}
+                disabled={!reorderEnabled}
               >
-                {row.getVisibleCells().map((cell, cellIndex) => {
-                  const meta = cell.column.columnDef.meta
-                  const isTreeCell =
-                    Boolean(getSubRows) &&
-                    cellIndex === (enableRowSelection ? 1 : 0)
-                  return (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        alignClass(meta?.align),
-                        meta?.cellClassName
-                      )}
-                    >
-                      {isTreeCell ? (
-                        <div
-                          className="flex items-center gap-1.5"
-                          style={{ paddingInlineStart: row.depth * 24 }}
+                {rows.map((row) => (
+                  <DataTableRow
+                    key={row.id}
+                    id={row.id}
+                    sortable={reorderable}
+                    selected={row.getIsSelected()}
+                    className={cn(
+                      onRowClick && "cursor-pointer",
+                      getRowClassName?.(row.original)
+                    )}
+                    onClick={
+                      onRowClick ? () => onRowClick(row.original) : undefined
+                    }
+                  >
+                    {row.getVisibleCells().map((cell, cellIndex) => {
+                      const meta = cell.column.columnDef.meta
+                      const isTreeCell =
+                        Boolean(getSubRows) &&
+                        cellIndex === (enableRowSelection ? 1 : 0)
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={cn(
+                            alignClass(meta?.align),
+                            meta?.cellClassName
+                          )}
                         >
-                          {row.getCanExpand() ? (
-                            <button
-                              type="button"
-                              aria-expanded={row.getIsExpanded()}
-                              aria-label={
-                                row.getIsExpanded()
-                                  ? labels.collapseRow
-                                  : labels.expandRow
-                              }
-                              onClick={(event) => {
-                                event.stopPropagation()
-                                row.toggleExpanded()
-                              }}
-                              className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+                          {isTreeCell ? (
+                            <div
+                              className="flex items-center gap-1.5"
+                              style={{ paddingInlineStart: row.depth * 24 }}
                             >
-                              <ChevronDownIcon
-                                aria-hidden="true"
-                                className={cn(
-                                  "size-4 transition-transform",
-                                  !row.getIsExpanded() &&
-                                    "-rotate-90 rtl:rotate-90"
-                                )}
-                              />
-                            </button>
+                              {row.getCanExpand() ? (
+                                <button
+                                  type="button"
+                                  aria-expanded={row.getIsExpanded()}
+                                  aria-label={
+                                    row.getIsExpanded()
+                                      ? labels.collapseRow
+                                      : labels.expandRow
+                                  }
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    row.toggleExpanded()
+                                  }}
+                                  className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+                                >
+                                  <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className={cn(
+                                      "size-4 transition-transform",
+                                      !row.getIsExpanded() &&
+                                        "-rotate-90 rtl:rotate-90"
+                                    )}
+                                  />
+                                </button>
+                              ) : (
+                                <span
+                                  aria-hidden="true"
+                                  className="w-6 shrink-0"
+                                />
+                              )}
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </div>
                           ) : (
-                            <span aria-hidden="true" className="w-6 shrink-0" />
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )
                           )}
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </div>
-                      ) : (
-                        flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )
-                      )}
-                    </TableCell>
-                  )
-                })}
-              </TableRow>
-            ))
+                        </TableCell>
+                      )
+                    })}
+                  </DataTableRow>
+                ))}
+              </SortableContext>
+            </DndContext>
           )}
         </TableBody>
       </Table>
 
-      {pagination && <DataTablePagination {...pagination} labels={labels} />}
+      {pagination && paginationPlacement === "inside" && (
+        <DataTablePagination {...pagination} labels={labels} />
+      )}
     </div>
+  )
+
+  if (!pagination || paginationPlacement === "inside") return card
+
+  return (
+    <div
+      data-slot="data-table-root"
+      className="flex w-full min-w-0 flex-col gap-4"
+    >
+      {card}
+      <DataTablePagination
+        {...pagination}
+        labels={labels}
+        className="border-0 px-0 py-0"
+      />
+    </div>
+  )
+}
+
+const RowDragContext = React.createContext<{
+  attributes: Record<string, unknown>
+  listeners: Record<string, unknown> | undefined
+  bindHandle: (node: HTMLElement | null) => void
+  disabled: boolean
+} | null>(null)
+
+function DataTableRow({
+  id,
+  sortable,
+  selected,
+  className,
+  children,
+  onClick,
+}: {
+  id: string
+  sortable: boolean
+  selected: boolean
+  className?: string
+  children: React.ReactNode
+  onClick?: () => void
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: !sortable })
+
+  return (
+    <RowDragContext.Provider
+      value={
+        sortable
+          ? {
+              attributes: attributes as unknown as Record<string, unknown>,
+              listeners,
+              bindHandle: setActivatorNodeRef,
+              disabled: attributes["aria-disabled"] === true,
+            }
+          : null
+      }
+    >
+      <TableRow
+        ref={sortable ? setNodeRef : undefined}
+        data-state={selected ? "selected" : undefined}
+        data-dragging={isDragging || undefined}
+        style={
+          sortable
+            ? { transform: CSS.Translate.toString(transform), transition }
+            : undefined
+        }
+        className={cn(
+          "data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:shadow-2",
+          className
+        )}
+        onClick={onClick}
+      >
+        {children}
+      </TableRow>
+    </RowDragContext.Provider>
+  )
+}
+
+function DragHandle({ label }: { label: string }) {
+  const drag = React.useContext(RowDragContext)
+  if (!drag) return null
+  const { bindHandle, attributes, listeners, disabled } = drag
+  return (
+    <button
+      type="button"
+      ref={bindHandle}
+      aria-label={label}
+      disabled={disabled}
+      onClick={(event) => event.stopPropagation()}
+      className="inline-flex size-7 cursor-grab touch-none items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
+      {...attributes}
+      {...listeners}
+    >
+      <GripVerticalIcon aria-hidden="true" className="size-4" />
+    </button>
   )
 }
 
