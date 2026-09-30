@@ -1,6 +1,6 @@
 "use client"
 
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { Toaster as Sonner, toast, type ToasterProps } from "sonner"
 import {
   CircleCheckIcon,
   InfoIcon,
@@ -39,4 +39,4 @@ const Toaster = ({ theme = "light", ...props }: ToasterProps) => {
   )
 }
 
-export { Toaster }
+export { toast, Toaster }

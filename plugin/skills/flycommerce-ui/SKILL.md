@@ -86,7 +86,7 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Tabs that change the route | `NavTabs` + `NavTabsLink asChild active` |
 | Explain a term next to it | `InfoTooltip content="…"`; general hover hint → `Tooltip` |
 | Info / success / warning / error message on a page | `Alert variant="info\|success\|warning\|destructive"` |
-| Transient feedback | `toast.success("…")` from `sonner` (the app renders `<Toaster />` once) |
+| Transient feedback | `toast.success("…")` from `@flycommerce/ui` (the app renders `<Toaster />` once) |
 | Nothing to show yet | `Empty` + `EmptyMedia variant="icon"` + `EmptyTitle` + `EmptyDescription` + actions |
 | Loading | inside tables → `DataTable loading`; a region refreshing → `LoadingOverlay`; first load of a block → `Skeleton` |
 | Copy to clipboard | `CopyButton value` (`iconOnly` for compact) |

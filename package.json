@@ -2,8 +2,9 @@
   "name": "@flycommerce/ui",
   "version": "0.1.0",
   "private": true,
-  "description": "FlyCommerce design system: React components built on shadcn/ui and Radix.",
+  "description": "FlyCommerce design system for React: accessible components, design tokens and commerce patterns built on shadcn/ui, Radix and Tailwind CSS.",
   "license": "MIT",
+  "author": "FlyCommerce",
   "keywords": [
     "flycommerce",
     "design-system",
@@ -11,7 +12,11 @@
     "shadcn",
     "radix",
     "tailwindcss",
-    "components"
+    "components",
+    "ui",
+    "ecommerce",
+    "accessible",
+    "tailwind"
   ],
   "homepage": "https://github.com/getdokan/flycommerce-ui#readme",
   "repository": {
@@ -26,7 +31,8 @@
     "**/*.css"
   ],
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
