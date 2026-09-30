@@ -35,6 +35,20 @@ import {
   SearchInputDemo,
   StatusBadgeDemo,
 } from "./pattern-demos"
+import {
+  AsyncComboboxDemo,
+  CopyButtonDemo,
+  DatePickerDemo,
+  DropzoneDemo,
+  InfoTooltipDemo,
+  LoadingOverlayDemo,
+  NavTabsDemo,
+  PasswordInputDemo,
+  RadioCardDemo,
+  StatCardDemo,
+  SwitchFieldDemo,
+  TagInputDemo,
+} from "./p2-demos"
 
 import {
   Accordion,
@@ -226,7 +240,7 @@ import {
   type ChartConfig,
 } from "@/index"
 
-export type Source = "prototype" | "figma" | "default"
+export type Source = "prototype" | "figma" | "composite" | "default"
 
 export type Demo = {
   id: string
@@ -268,6 +282,18 @@ const SOURCES: Record<string, Source> = {
   "search-input": "prototype",
   "status-badge": "prototype",
   "data-table": "prototype",
+  "radio-card": "prototype",
+  "switch-field": "prototype",
+  "stat-card": "prototype",
+  "nav-tabs": "prototype",
+  "async-combobox": "composite",
+  "tag-input": "composite",
+  "password-input": "composite",
+  "date-picker": "composite",
+  dropzone: "composite",
+  "copy-button": "composite",
+  "info-tooltip": "composite",
+  "loading-overlay": "composite",
 }
 
 const orders = [
@@ -380,6 +406,78 @@ export const demos: Demo[] = [
     title: "Search input",
     group: "Patterns",
     render: () => <SearchInputDemo />,
+  },
+  {
+    id: "stat-card",
+    title: "Stat card (KPI)",
+    group: "Patterns",
+    render: () => <StatCardDemo />,
+  },
+  {
+    id: "radio-card",
+    title: "Radio cards",
+    group: "Patterns",
+    render: () => <RadioCardDemo />,
+  },
+  {
+    id: "switch-field",
+    title: "Switch field",
+    group: "Patterns",
+    render: () => <SwitchFieldDemo />,
+  },
+  {
+    id: "nav-tabs",
+    title: "Navigation tabs",
+    group: "Patterns",
+    render: () => <NavTabsDemo />,
+  },
+  {
+    id: "async-combobox",
+    title: "Async select",
+    group: "Patterns",
+    render: () => <AsyncComboboxDemo />,
+  },
+  {
+    id: "tag-input",
+    title: "Tag input",
+    group: "Patterns",
+    render: () => <TagInputDemo />,
+  },
+  {
+    id: "password-input",
+    title: "Password input",
+    group: "Patterns",
+    render: () => <PasswordInputDemo />,
+  },
+  {
+    id: "date-picker",
+    title: "Date & range pickers",
+    group: "Patterns",
+    render: () => <DatePickerDemo />,
+  },
+  {
+    id: "dropzone",
+    title: "File drop zone",
+    group: "Patterns",
+    render: () => <DropzoneDemo />,
+  },
+  {
+    id: "copy-button",
+    title: "Copy button",
+    group: "Patterns",
+    render: () => <CopyButtonDemo />,
+  },
+  {
+    id: "info-tooltip",
+    title: "Info tooltip",
+    group: "Patterns",
+    render: () => <InfoTooltipDemo />,
+  },
+  {
+    id: "loading-overlay",
+    title: "Loading overlay",
+    group: "Patterns",
+    render: () => <LoadingOverlayDemo />,
   },
   {
     id: "status-badge",
