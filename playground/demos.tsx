@@ -39,6 +39,11 @@ import {
 } from "./pattern-demos"
 import { ColorsDemo, TypographyDemo } from "./foundation-demos"
 import {
+  ModalUseCasesDemo,
+  NewCategoryModalDemo,
+  RichTextEditorDemo,
+} from "./modal-demos"
+import {
   AsyncComboboxDemo,
   CopyButtonDemo,
   DatePickerDemo,
@@ -312,6 +317,11 @@ const KEYWORDS: Record<string, string> = {
   "password-input": "password show hide eye",
   "date-picker": "date time range calendar presets",
   dropzone: "upload file drag drop",
+  "rich-text-editor":
+    "wysiwyg tiptap description textarea formatting bold html",
+  "modal-figma": "dialog popup new category form",
+  "modal-use-cases":
+    "dialog popup import export csv bulk edit invite details terms reject success wizard",
   "copy-button": "clipboard copy",
   "info-tooltip": "help hint info icon",
   "loading-overlay": "spinner busy loading",
@@ -364,6 +374,9 @@ const SOURCES: Record<string, Source> = {
   "password-input": "composite",
   "date-picker": "composite",
   dropzone: "composite",
+  "rich-text-editor": "figma",
+  "modal-figma": "figma",
+  "modal-use-cases": "composite",
   "copy-button": "composite",
   "info-tooltip": "composite",
   "loading-overlay": "composite",
@@ -553,6 +566,12 @@ export const demos: Demo[] = [
     title: "Date & range pickers",
     group: "Patterns",
     render: () => <DatePickerDemo />,
+  },
+  {
+    id: "rich-text-editor",
+    title: "Rich text editor",
+    group: "Forms",
+    render: () => <RichTextEditorDemo />,
   },
   {
     id: "dropzone",
@@ -1425,7 +1444,7 @@ export const demos: Demo[] = [
               <DialogHeader>
                 <DialogTitle>Dialog size “{size}”</DialogTitle>
                 <DialogDescription>
-                  sm 400px · default 480px · lg 640px · xl 800px.
+                  sm 400px · default 480px · lg 720px · xl 800px.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -1438,6 +1457,18 @@ export const demos: Demo[] = [
         ))}
       </Row>
     ),
+  },
+  {
+    id: "modal-figma",
+    title: "Modal: New Category (Figma)",
+    group: "Overlays",
+    render: () => <NewCategoryModalDemo />,
+  },
+  {
+    id: "modal-use-cases",
+    title: "Modal: use cases",
+    group: "Overlays",
+    render: () => <ModalUseCasesDemo />,
   },
   {
     id: "alert-dialog",

@@ -507,7 +507,12 @@ function DataTable<TData>({
               sensors={sensors}
               collisionDetection={closestCenter}
               modifiers={[restrictToVerticalAxis]}
-              accessibility={{ announcements }}
+              // Announcer divs are invalid inside <tbody>; dnd-kit only renders them after mount.
+              accessibility={{
+                announcements,
+                container:
+                  typeof document === "undefined" ? undefined : document.body,
+              }}
               onDragEnd={handleDragEnd}
             >
               <SortableContext

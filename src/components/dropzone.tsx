@@ -4,12 +4,14 @@ import * as React from "react"
 import { cn } from "cn"
 import { UploadCloudIcon } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+
 type FileRejection = {
   file: File
   reason: "type" | "size" | "count"
 }
 
-type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop"> & {
+type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop" | "title"> & {
   /** Accepted files, after validation. */
   onFiles: (files: File[]) => void
   /** Files that failed validation, with the reason. */
@@ -23,7 +25,11 @@ type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop"> & {
   disabled?: boolean
   title?: React.ReactNode
   description?: React.ReactNode
-  /** Replaces the default icon, title and description. */
+  /** Primary button that opens the file picker, e.g. "Choose Image". */
+  browseLabel?: React.ReactNode
+  /** Extra buttons beside it, e.g. "Choose Existing" for a media library. */
+  actions?: React.ReactNode
+  /** Replaces the default icon, title, description and buttons. */
   children?: React.ReactNode
   inputProps?: React.ComponentProps<"input">
 }
@@ -36,8 +42,15 @@ function Dropzone({
   multiple = true,
   maxFiles,
   disabled = false,
-  title = "Drop files here or click to upload",
+  title = (
+    <>
+      <span className="font-semibold text-primary">Drag &amp; Drop</span> your
+      files here
+    </>
+  ),
   description,
+  browseLabel,
+  actions,
   children,
   className,
   inputProps,
@@ -71,7 +84,7 @@ function Dropzone({
       data-dragging={dragging || undefined}
       aria-disabled={disabled || undefined}
       className={cn(
-        "relative flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-background px-6 py-8 text-center transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 data-dragging:border-primary data-dragging:bg-primary-subtle-2",
+        "relative flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border bg-card-header p-6 text-center transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 data-dragging:border-primary data-dragging:bg-primary-subtle-2",
         className
       )}
       onDragEnter={(event) => {
@@ -94,16 +107,32 @@ function Dropzone({
     >
       {children ?? (
         <>
-          <span className="flex size-[46px] items-center justify-center rounded-xl bg-primary-subtle text-primary [&_svg]:size-5">
-            <UploadCloudIcon aria-hidden="true" />
-          </span>
-          <span className="text-[13.5px] font-[560] text-foreground">
-            {title}
-          </span>
-          {description && (
-            <span className="text-[12.5px] text-muted-foreground">
-              {description}
-            </span>
+          <UploadCloudIcon
+            aria-hidden="true"
+            className="size-8 text-muted-foreground"
+            strokeWidth={1.5}
+          />
+          <div className="flex flex-col gap-2">
+            <span className="text-base text-foreground-secondary">{title}</span>
+            {description && (
+              <span className="text-sm text-muted-foreground">
+                {description}
+              </span>
+            )}
+          </div>
+          {(browseLabel || actions) && (
+            <div className="relative z-10 flex flex-wrap justify-center gap-4">
+              {actions}
+              {browseLabel && (
+                <Button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => inputRef.current?.click()}
+                >
+                  {browseLabel}
+                </Button>
+              )}
+            </div>
           )}
         </>
       )}
