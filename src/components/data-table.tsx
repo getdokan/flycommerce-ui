@@ -369,6 +369,41 @@ function DataTable<TData>({
     onReorder(arrayMove([...data], from, to), { from, to })
   }
 
+  const state = error ? (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia
+          variant="icon"
+          className="bg-destructive-subtle text-destructive"
+        >
+          <TriangleAlertIcon />
+        </EmptyMedia>
+        <EmptyTitle>{labels.errorTitle}</EmptyTitle>
+        <EmptyDescription>{error}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  ) : !loading && rows.length === 0 ? (
+    (empty ?? (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <InboxIcon />
+          </EmptyMedia>
+          <EmptyTitle>{labels.emptyTitle}</EmptyTitle>
+          <EmptyDescription>{labels.emptyDescription}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    ))
+  ) : null
+  // Cursor pages keep "Previous" so an emptied later page isn't a dead end.
+  const hidePagination =
+    Boolean(error) ||
+    (!loading &&
+      rows.length === 0 &&
+      (pagination?.mode === "cursor"
+        ? !pagination.hasPrevious
+        : pagination?.total === 0))
+
   const card = (
     <div
       data-slot="data-table"
@@ -457,24 +492,7 @@ function DataTable<TData>({
           ))}
         </TableHeader>
         <TableBody>
-          {error ? (
-            <TableRow className="hover:bg-transparent">
-              <TableCell colSpan={columnCount} className="whitespace-normal">
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyMedia
-                      variant="icon"
-                      className="bg-destructive-subtle text-destructive"
-                    >
-                      <TriangleAlertIcon />
-                    </EmptyMedia>
-                    <EmptyTitle>{labels.errorTitle}</EmptyTitle>
-                    <EmptyDescription>{error}</EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              </TableCell>
-            </TableRow>
-          ) : loading ? (
+          {loading && !error ? (
             Array.from({ length: skeletonRows }).map((_, rowIndex) => (
               <TableRow key={rowIndex} className="hover:bg-transparent">
                 {Array.from({ length: columnCount }).map((_, cellIndex) => (
@@ -484,25 +502,7 @@ function DataTable<TData>({
                 ))}
               </TableRow>
             ))
-          ) : rows.length === 0 ? (
-            <TableRow className="hover:bg-transparent">
-              <TableCell colSpan={columnCount} className="whitespace-normal">
-                {empty ?? (
-                  <Empty>
-                    <EmptyHeader>
-                      <EmptyMedia variant="icon">
-                        <InboxIcon />
-                      </EmptyMedia>
-                      <EmptyTitle>{labels.emptyTitle}</EmptyTitle>
-                      <EmptyDescription>
-                        {labels.emptyDescription}
-                      </EmptyDescription>
-                    </EmptyHeader>
-                  </Empty>
-                )}
-              </TableCell>
-            </TableRow>
-          ) : (
+          ) : state ? null : (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -603,14 +603,21 @@ function DataTable<TData>({
           )}
         </TableBody>
       </Table>
+      {/* Outside the table so it spans the card, not the scrollable column width. */}
+      {state && (
+        <div data-slot="data-table-state" role="status" className="px-5 py-3.5">
+          {state}
+        </div>
+      )}
 
-      {pagination && paginationPlacement === "inside" && (
+      {pagination && !hidePagination && paginationPlacement === "inside" && (
         <DataTablePagination {...pagination} labels={labels} />
       )}
     </div>
   )
 
-  if (!pagination || paginationPlacement === "inside") return card
+  if (!pagination || hidePagination || paginationPlacement === "inside")
+    return card
 
   return (
     <div

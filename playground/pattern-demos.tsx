@@ -232,7 +232,7 @@ export function DataTableDemo() {
           setPage(1)
         }}
       >
-        <TabsList className="max-w-full overflow-x-auto">
+        <TabsList>
           <TabsTrigger value="all">All products</TabsTrigger>
           <TabsTrigger value="published">Published</TabsTrigger>
           <TabsTrigger value="draft">Draft</TabsTrigger>
@@ -692,7 +692,7 @@ export function DataTableReorderDemo() {
         toolbar={
           <>
             <SearchInput
-              containerClassName="w-full sm:w-72"
+              containerClassName="min-w-0 flex-1 sm:w-72 sm:flex-none"
               placeholder="Search brands"
             />
             <TableFilters
