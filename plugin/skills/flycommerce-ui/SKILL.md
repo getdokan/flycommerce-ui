@@ -59,11 +59,13 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Primary / secondary / quiet / danger actions | `Button` (default = blue primary, `outline`, `secondary` = blue outline, `ghost`, `destructive` = red text, `destructive-solid`, `link`); `size="sm"` in toolbars; `loading` while saving |
 | Router link that looks like a button | `<Button asChild><Link to="…">…</Link></Button>` |
 | "Are you sure?" | `ConfirmDialog` (`destructive`, async `onConfirm` keeps it open until done, `confirmText` for typed confirmation) |
-| Any other modal | `Dialog` + `DialogContent size="sm\|default\|lg\|xl"`, `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter` |
+| Any other modal | `Dialog` + `DialogContent size="sm\|default\|lg\|xl"` (400/480/720/800), `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter` (grey, pinned while the body scrolls). Pick the size by content: `sm` one or two fields or a success message, `default` a short form or read-only details, `lg` create forms with an editor or upload (Figma "New Category"), import and export. The primary button names the action ("Save Category", "Import products"), never "OK". |
+| Import / export | `Dialog size="lg"`: import = `Dropzone accept=".csv" browseLabel` → file row → `Progress` (hide the close button with `showCloseButton={false}` and ignore `onOpenChange(false)` while running) → result `Alert`s with an error-report action; export = `RadioCardGroup` scope (all / filtered / selected) + format `Select` + column `Checkbox`es. See the gallery's "Modal: use cases". |
 | Side panel / detail drawer | `Sheet` (side) or `Drawer` (bottom, mobile) |
 | Unsaved changes on a form page | `SaveBar open={isDirty}` with `onSave`, `onDiscard`, `loading` |
 | Form field | `Field` > `FieldLabel htmlFor required\|optional` + control + `FieldDescription` / `FieldError` |
 | Long text | `Textarea`; with a limit → `maxLength` + `showCount` ("12/500 characters") |
+| Formatted text (product/category description) | `RichTextEditor value onChange` (HTML in, HTML out; `placeholder`, `invalid`, `disabled`, `minHeight`, `labels`). An AI "Generate" action is a `Button variant="link" size="xs"` beside the `FieldLabel` that sets `value`. Sanitize the HTML server-side before rendering it on the storefront. |
 | Text / number / email | `Input`; with prefix/suffix (`$`, `USD`, icon) → `InputGroup` + `InputGroupAddon` + `InputGroupInput` |
 | Password | `PasswordInput` |
 | Search box | `SearchInput onSearch` (debounced, clearable) |
@@ -72,7 +74,7 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Option cards (Physical vs Digital product) | `RadioCardGroup` + `RadioCard title description` |
 | On/off setting with explanation | `SwitchField title description loading` (bare `Switch` only inside tables) |
 | Date / date+time / range with presets | `DatePicker` (`withTime`), `DateRangePicker` (`presets`) |
-| File upload area | `Dropzone accept maxSize onFiles onReject` |
+| File upload area | `Dropzone accept maxSize onFiles onReject`; `browseLabel="Choose Image"` adds the primary browse button, `actions` adds more (e.g. "Choose Existing" for the media library) |
 | KPI tile | `StatCard label value delta deltaNote icon hero` (at most one `hero` per view); inline growth → `Delta` |
 | In-page section switch | `Tabs` + `TabsList` (segmented default, `variant="line"` for underline) |
 | Tabs that change the route | `NavTabs` + `NavTabsLink asChild active` |
