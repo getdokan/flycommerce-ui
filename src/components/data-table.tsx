@@ -5,10 +5,12 @@ import { cn } from "cn"
 import {
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getSortedRowModel,
   useReactTable,
   type Column,
   type ColumnDef,
+  type ExpandedState,
   type OnChangeFn,
   type Row,
   type RowSelectionState,
@@ -17,6 +19,7 @@ import {
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsUpDownIcon,
@@ -87,6 +90,8 @@ type DataTableLabels = {
   selectAll?: string
   selectRow?: string
   clearSelection?: string
+  expandRow?: string
+  collapseRow?: string
   selected?: (count: number) => React.ReactNode
   showing?: (from: number, to: number, total: number) => React.ReactNode
   emptyTitle?: React.ReactNode
@@ -101,6 +106,8 @@ const DEFAULT_LABELS: Required<DataTableLabels> = {
   selectAll: "Select all rows",
   selectRow: "Select row",
   clearSelection: "Clear",
+  expandRow: "Expand row",
+  collapseRow: "Collapse row",
   selected: (count) => `${count} selected`,
   showing: (from, to, total) => `Showing ${from} to ${to} of ${total}`,
   emptyTitle: "Nothing here yet",
@@ -114,6 +121,12 @@ type DataTableProps<TData> = {
   getRowId?: (row: TData, index: number) => string
   /** Header strip above the table: search, filter tabs, actions. */
   toolbar?: React.ReactNode
+  /** Row under the toolbar, typically `<ActiveFilters />` chips; collapses when empty. */
+  subToolbar?: React.ReactNode
+  /** Nested rows (e.g. a category tree): the first data column gets an expand toggle and indentation. */
+  getSubRows?: (row: TData, index: number) => TData[] | undefined
+  /** `true` expands every level on first render. */
+  defaultExpanded?: ExpandedState
   loading?: boolean
   skeletonRows?: number
   /** Shown instead of rows, e.g. an error message with a retry button. */
@@ -142,6 +155,9 @@ function DataTable<TData>({
   data,
   getRowId,
   toolbar,
+  subToolbar,
+  getSubRows,
+  defaultExpanded = {},
   loading = false,
   skeletonRows = 5,
   error,
@@ -164,6 +180,7 @@ function DataTable<TData>({
   const [rowSelectionState, setRowSelectionState] =
     React.useState<RowSelectionState>({})
   const [sortingState, setSortingState] = React.useState<SortingState>([])
+  const [expanded, setExpanded] = React.useState<ExpandedState>(defaultExpanded)
 
   const rowSelection = rowSelectionProp ?? rowSelectionState
   const sorting = sortingProp ?? sortingState
@@ -209,7 +226,10 @@ function DataTable<TData>({
     data,
     columns: allColumns,
     getRowId,
-    state: { rowSelection, sorting },
+    state: { rowSelection, sorting, expanded },
+    getSubRows,
+    onExpandedChange: setExpanded,
+    getExpandedRowModel: getSubRows ? getExpandedRowModel() : undefined,
     enableRowSelection,
     onRowSelectionChange: onRowSelectionChange ?? setRowSelectionState,
     enableSorting: sortable,
@@ -258,6 +278,14 @@ function DataTable<TData>({
             {toolbar}
           </div>
         )
+      )}
+      {subToolbar && (
+        <div
+          data-slot="data-table-sub-toolbar"
+          className="border-b border-border-subtle px-5 py-3 empty:hidden"
+        >
+          {subToolbar}
+        </div>
       )}
 
       <Table>
@@ -353,8 +381,11 @@ function DataTable<TData>({
                   onRowClick ? () => onRowClick(row.original) : undefined
                 }
               >
-                {row.getVisibleCells().map((cell) => {
+                {row.getVisibleCells().map((cell, cellIndex) => {
                   const meta = cell.column.columnDef.meta
+                  const isTreeCell =
+                    Boolean(getSubRows) &&
+                    cellIndex === (enableRowSelection ? 1 : 0)
                   return (
                     <TableCell
                       key={cell.id}
@@ -363,9 +394,48 @@ function DataTable<TData>({
                         meta?.cellClassName
                       )}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                      {isTreeCell ? (
+                        <div
+                          className="flex items-center gap-1.5"
+                          style={{ paddingInlineStart: row.depth * 24 }}
+                        >
+                          {row.getCanExpand() ? (
+                            <button
+                              type="button"
+                              aria-expanded={row.getIsExpanded()}
+                              aria-label={
+                                row.getIsExpanded()
+                                  ? labels.collapseRow
+                                  : labels.expandRow
+                              }
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                row.toggleExpanded()
+                              }}
+                              className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+                            >
+                              <ChevronDownIcon
+                                aria-hidden="true"
+                                className={cn(
+                                  "size-4 transition-transform",
+                                  !row.getIsExpanded() &&
+                                    "-rotate-90 rtl:rotate-90"
+                                )}
+                              />
+                            </button>
+                          ) : (
+                            <span aria-hidden="true" className="w-6 shrink-0" />
+                          )}
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      ) : (
+                        flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )
                       )}
                     </TableCell>
                   )
