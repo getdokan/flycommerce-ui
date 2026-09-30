@@ -84,7 +84,7 @@ function Dropzone({
       data-dragging={dragging || undefined}
       aria-disabled={disabled || undefined}
       className={cn(
-        "relative flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border bg-card-header p-6 text-center transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 data-dragging:border-primary data-dragging:bg-primary-subtle-2",
+        "relative isolate flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border bg-card-header p-6 text-center transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 data-dragging:border-primary data-dragging:bg-primary-subtle-2",
         className
       )}
       onDragEnter={(event) => {
