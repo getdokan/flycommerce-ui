@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [0.1.1] - 2026-09-30
+
+### Fixed
+
+- **README on npmjs.com.** The license badge showed "package not found" (it was cached before the first publish); it's now a fixed MIT badge. Added a CI status badge, and links to the license, changelog and guides now work on the npm page.
+
+### Changed
+
+- Releases are now published from GitHub Actions through npm Trusted Publishing, with provenance.
+
 ## [0.1.0] - 2026-09-30
 
 The first public release.
