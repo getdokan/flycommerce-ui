@@ -1,0 +1,12 @@
+{
+  "name": "flycommerce-ui",
+  "version": "0.1.0",
+  "description": "Teaches Claude to build, restyle and migrate FlyCommerce screens with @flycommerce/ui: which component to use, design tokens, icons, screen recipes and the dokan-ui migration map.",
+  "author": {
+    "name": "FlyCommerce",
+    "url": "https://github.com/getdokan"
+  },
+  "homepage": "https://github.com/getdokan/flycommerce-ui",
+  "repository": "https://github.com/getdokan/flycommerce-ui",
+  "keywords": ["flycommerce", "design-system", "shadcn", "ui"]
+}

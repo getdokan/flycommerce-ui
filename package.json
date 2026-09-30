@@ -52,7 +52,8 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx,css}\"",
-    "build:site": "vite build --config playground/vite.config.ts"
+    "build:site": "vite build --config playground/vite.config.ts",
+    "skill:refs": "node scripts/skill-refs.mjs && prettier --write plugin/skills/flycommerce-ui/references --log-level warn"
   },
   "publishConfig": {
     "access": "public",

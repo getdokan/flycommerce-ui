@@ -1,0 +1,15 @@
+{
+  "name": "flycommerce-ui",
+  "description": "FlyCommerce design-system plugins for Claude Code.",
+  "owner": {
+    "name": "FlyCommerce",
+    "url": "https://github.com/getdokan"
+  },
+  "plugins": [
+    {
+      "name": "flycommerce-ui",
+      "source": "./plugin",
+      "description": "Build and migrate FlyCommerce UI with the @flycommerce/ui design system."
+    }
+  ]
+}

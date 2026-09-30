@@ -60,6 +60,17 @@ The full list is on the gallery's Icons page. Swapping a glyph is a single edit 
 
 Beyond the shadcn primitives the package ships `PageHeader`, `DataTable` (TanStack Table: selection, sorting, loading, empty and error states, offset or cursor pagination, bulk actions), `ConfirmDialog`, `SaveBar`, `SearchInput` and `StatusBadge`.
 
+## Claude Code plugin
+
+This repo is also a Claude Code marketplace. The `flycommerce-ui` plugin teaches Claude the component choices, tokens, icons, screen recipes and the dokan-ui migration map, so UI work in the dashboard and apps comes out on-system:
+
+```
+/plugin marketplace add getdokan/flycommerce-ui
+/plugin install flycommerce-ui@flycommerce-ui
+```
+
+See `plugin/README.md` to enable it for a whole repo. Its reference files are generated from source with `pnpm skill:refs`; CI fails when they drift.
+
 ## Develop
 
 ```bash
