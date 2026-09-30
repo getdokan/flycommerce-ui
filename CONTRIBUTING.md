@@ -55,14 +55,33 @@ CI runs typecheck, lint, both builds and the plugin reference check on every pus
 
 ## Releasing
 
-Releases follow [semantic versioning](https://semver.org); while on `0.x`, breaking changes go in a minor release and are called out in the changelog.
+Releases are automatic: pushing a version tag publishes that version to npm and creates the GitHub release. Versions follow [semantic versioning](https://semver.org); while on `0.x`, breaking changes go in a minor release and are called out in the changelog.
 
-1. **Update the files:**
-   - move the **Unreleased** changelog entries under the new version with today's date;
-   - bump `version` in `package.json`.
-2. **Check it** with `pnpm typecheck && pnpm lint && pnpm build`, and merge to `main`.
-3. **Publish a GitHub release** tagged `v<version>` (e.g. `v0.2.0`). The **Release** workflow checks that the tag matches `package.json`, rebuilds and publishes to npm with provenance.
+1. **Changelog.** In `CHANGELOG.md`, rename **Unreleased** to the new version with today's date, e.g. `## [0.2.0] - 2026-10-15`. The release notes are taken from this section; the release stops if it's missing.
+2. **Version and tag.** On an up-to-date `main`:
 
-The workflow authenticates through npm **Trusted Publishing**: on npmjs.com, `@flycommerce/ui` → Settings → Trusted Publisher → GitHub Actions, repository `getdokan/flycommerce-ui`, workflow `release.yml`. No npm token is stored in GitHub.
+   ```bash
+   npm version 0.2.0 -m "Release %s"
+   ```
 
-A published version can't be reused, even after it's unpublished. If a release is wrong, fix it and publish the next patch version.
+   This updates `package.json`, commits, and creates the tag `v0.2.0`.
+
+3. **Push:**
+
+   ```bash
+   git push --follow-tags
+   ```
+
+The **Release** workflow then:
+
+- checks that the tag matches `package.json` and is on `main`;
+- runs typecheck, lint and build;
+- publishes to npm with provenance;
+- creates the GitHub release from the changelog section.
+
+Details:
+
+- **Pre-releases.** A version like `0.2.0-beta.1` is published under the npm tag `next`, so `npm install @flycommerce/ui` keeps giving users the last stable version, and it's marked as a pre-release on GitHub.
+- **Re-running.** A failed release can be re-run from the Actions tab. A version that's already on npm is skipped, and the GitHub release is still created.
+- **Authentication.** npm **Trusted Publishing** (on npmjs.com: `@flycommerce/ui` → Settings → Trusted Publisher → GitHub Actions, repository `getdokan/flycommerce-ui`, workflow `release.yml`). No npm token is stored in GitHub. The very first release, before the package exists, uses a short-lived `NPM_TOKEN` repository secret instead; delete it once Trusted Publishing is set up.
+- **Mistakes.** A published version can't be reused, even after it's unpublished. If a release is wrong, fix it and release the next patch version.
