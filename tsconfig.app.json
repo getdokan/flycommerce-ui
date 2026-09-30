@@ -25,6 +25,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "playground"],
+  "include": ["src", "playground", "tests"],
   "exclude": ["playground/vite.config.ts", "playground/demo-source-plugin.ts"]
 }

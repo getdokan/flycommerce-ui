@@ -18,7 +18,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm lint
+      - run: pnpm test
       - run: pnpm build
+      - name: Package is valid for every bundler and TypeScript resolution mode
+        run: pnpm check:package
       - run: pnpm build:site
       - name: Claude skill references are up to date
         run: pnpm skill:refs && git diff --exit-code plugin/

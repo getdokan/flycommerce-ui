@@ -248,6 +248,7 @@ import {
   TableHeader,
   TableRow,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
   Textarea,
@@ -879,7 +880,7 @@ export const demos: Demo[] = [
     render: () => (
       <Stack>
         <Row label="Progress">
-          <Progress value={62} className="w-64" />
+          <Progress value={62} className="w-64" aria-label="Setup progress" />
         </Row>
         <Row label="Spinner">
           <Spinner />
@@ -1010,7 +1011,7 @@ export const demos: Demo[] = [
     render: () => (
       <div className="grid w-full gap-4 sm:grid-cols-2">
         <Select defaultValue="usd">
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full" aria-label="Status">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -1019,7 +1020,7 @@ export const demos: Demo[] = [
             <SelectItem value="bdt">BDT — Bangladeshi Taka</SelectItem>
           </SelectContent>
         </Select>
-        <NativeSelect defaultValue="draft">
+        <NativeSelect defaultValue="draft" aria-label="Status">
           <NativeSelectOption value="published">Published</NativeSelectOption>
           <NativeSelectOption value="draft">Draft</NativeSelectOption>
           <NativeSelectOption value="pending">Pending</NativeSelectOption>
@@ -1103,7 +1104,13 @@ export const demos: Demo[] = [
     title: "Slider",
     group: "Forms",
     render: () => (
-      <Slider defaultValue={[40]} max={100} step={1} className="w-72" />
+      <Slider
+        defaultValue={[40]}
+        max={100}
+        step={1}
+        className="w-72"
+        aria-label="Discount (%)"
+      />
     ),
   },
   {
@@ -1111,7 +1118,7 @@ export const demos: Demo[] = [
     title: "One-time code",
     group: "Forms",
     render: () => (
-      <InputOTP maxLength={6}>
+      <InputOTP maxLength={6} aria-label="Verification code">
         <InputOTPGroup>
           <InputOTPSlot index={0} />
           <InputOTPSlot index={1} />
@@ -1377,6 +1384,15 @@ export const demos: Demo[] = [
               <TabsTrigger value="published">Published</TabsTrigger>
               <TabsTrigger value="draft">Draft</TabsTrigger>
             </TabsList>
+            {["all", "published", "draft"].map((value) => (
+              <TabsContent
+                key={value}
+                value={value}
+                className="text-sm text-muted-foreground"
+              >
+                Products filtered by “{value}”.
+              </TabsContent>
+            ))}
           </Tabs>
         </Row>
         <Row label="Underline">
@@ -1386,6 +1402,15 @@ export const demos: Demo[] = [
               <TabsTrigger value="social">Social share</TabsTrigger>
               <TabsTrigger value="advanced">Advanced</TabsTrigger>
             </TabsList>
+            {["general", "social", "advanced"].map((value) => (
+              <TabsContent
+                key={value}
+                value={value}
+                className="text-sm text-muted-foreground"
+              >
+                The “{value}” settings go here.
+              </TabsContent>
+            ))}
           </Tabs>
         </Row>
       </Stack>

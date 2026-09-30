@@ -78,8 +78,9 @@ export function TagInputDemo() {
   const [tags, setTags] = React.useState(["summer", "cotton"])
   return (
     <Field className="w-full sm:w-96">
-      <FieldLabel>Product tags</FieldLabel>
+      <FieldLabel htmlFor="product-tags">Product tags</FieldLabel>
       <TagInput
+        id="product-tags"
         value={tags}
         onValueChange={setTags}
         placeholder="Type and press Enter"
@@ -157,7 +158,11 @@ export function NavTabsDemo() {
   return (
     <div className="flex flex-col gap-4">
       {(["line", "segmented"] as const).map((variant) => (
-        <NavTabs key={variant} variant={variant} aria-label="Settings">
+        <NavTabs
+          key={variant}
+          variant={variant}
+          aria-label={`Settings (${variant})`}
+        >
           {tabs.map(([id, label]) => (
             <NavTabsLink
               key={id}
@@ -279,7 +284,11 @@ export function CopyButtonDemo() {
         trendy.flycommerce.com
       </code>
       <CopyButton value="https://trendy.flycommerce.com" label="Copy URL" />
-      <CopyButton value="fc_demo_0123456789abcdef" iconOnly label="Copy API key" />
+      <CopyButton
+        value="fc_demo_0123456789abcdef"
+        iconOnly
+        label="Copy API key"
+      />
     </div>
   )
 }

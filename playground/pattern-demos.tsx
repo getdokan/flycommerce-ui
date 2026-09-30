@@ -33,6 +33,7 @@ import {
   StatusBadge,
   Switch,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
   TableFilters,
@@ -231,6 +232,7 @@ export function DataTableDemo() {
           setStatus(value)
           setPage(1)
         }}
+        className="min-w-0 gap-4"
       >
         <TabsList>
           <TabsTrigger value="all">All products</TabsTrigger>
@@ -238,81 +240,84 @@ export function DataTableDemo() {
           <TabsTrigger value="draft">Draft</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
         </TabsList>
-      </Tabs>
-      <DataTable
-        columns={productColumns}
-        data={pageRows}
-        getRowId={(row) => row.id}
-        loading={loading}
-        error={
-          failed ? (
-            <span className="flex flex-col items-center gap-3">
-              The server didn&apos;t respond.
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setFailed(false)}
-              >
-                Try again
-              </Button>
-            </span>
-          ) : undefined
-        }
-        sortable
-        enableRowSelection
-        onRowClick={(row) => toast(`Open ${row.name}`)}
-        toolbar={
-          <>
-            <SearchInput
-              containerClassName="w-full sm:w-72"
-              placeholder="Search products"
-              onSearch={(value) => {
-                setQuery(value)
-                setPage(1)
-              }}
-            />
-            <div className="ms-auto flex gap-2">
-              <Button variant="outline" size="sm">
-                <DownloadIcon /> Import
-              </Button>
-              <Button variant="outline" size="sm">
-                <UploadIcon /> Export
-              </Button>
-              <TableFilters
+        {/* The table is the tab panel, so each tab controls something. */}
+        <TabsContent value={status} className="min-w-0">
+          <DataTable
+            columns={productColumns}
+            data={pageRows}
+            getRowId={(row) => row.id}
+            loading={loading}
+            error={
+              failed ? (
+                <span className="flex flex-col items-center gap-3">
+                  The server didn&apos;t respond.
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setFailed(false)}
+                  >
+                    Try again
+                  </Button>
+                </span>
+              ) : undefined
+            }
+            sortable
+            enableRowSelection
+            onRowClick={(row) => toast(`Open ${row.name}`)}
+            toolbar={
+              <>
+                <SearchInput
+                  containerClassName="w-full sm:w-72"
+                  placeholder="Search products"
+                  onSearch={(value) => {
+                    setQuery(value)
+                    setPage(1)
+                  }}
+                />
+                <div className="ms-auto flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <DownloadIcon /> Import
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <UploadIcon /> Export
+                  </Button>
+                  <TableFilters
+                    fields={productFilters}
+                    value={filters}
+                    onValueChange={applyFilters}
+                  />
+                </div>
+              </>
+            }
+            subToolbar={
+              <ActiveFilters
                 fields={productFilters}
                 value={filters}
                 onValueChange={applyFilters}
               />
-            </div>
-          </>
-        }
-        subToolbar={
-          <ActiveFilters
-            fields={productFilters}
-            value={filters}
-            onValueChange={applyFilters}
+            }
+            bulkActions={(selected) => (
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => setConfirmIds(selected.map((p) => p.id))}
+              >
+                <Trash2Icon /> Delete
+              </Button>
+            )}
+            pagination={{
+              page,
+              pageSize,
+              total: filtered.length,
+              onPageChange: setPage,
+              onPageSizeChange: (size) => {
+                setPageSize(size)
+                setPage(1)
+              },
+            }}
           />
-        }
-        bulkActions={(selected) => (
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={() => setConfirmIds(selected.map((p) => p.id))}
-          >
-            <Trash2Icon /> Delete
-          </Button>
-        )}
-        pagination={{
-          page,
-          pageSize,
-          total: filtered.length,
-          onPageChange: setPage,
-          onPageSizeChange: (size) => {
-            setPageSize(size)
-            setPage(1)
-          },
-        }}
-      />
+        </TabsContent>
+      </Tabs>
       <ConfirmDialog
         open={confirmIds !== null}
         onOpenChange={(open) => !open && setConfirmIds(null)}

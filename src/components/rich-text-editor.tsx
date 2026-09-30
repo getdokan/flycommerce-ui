@@ -86,6 +86,8 @@ type RichTextEditorProps = {
   className?: string
   /** Accessible name when there is no <FieldLabel htmlFor>, e.g. "Description". */
   "aria-label"?: string
+  /** Defaults to the `<label for={id}>` on the page, so a `FieldLabel htmlFor` names the editor. */
+  "aria-labelledby"?: string
   /** Adds "Generate with AI"; receives the current HTML and resolves to the new HTML. */
   onGenerate?: (current: string) => Promise<string>
 }
@@ -102,6 +104,7 @@ function RichTextEditor({
   labels: labelsProp,
   className,
   "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   onGenerate,
 }: RichTextEditorProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
@@ -150,6 +153,26 @@ function RichTextEditor({
     if (value !== current)
       editor.commands.setContent(value, { emitUpdate: false })
   }, [editor, value])
+
+  // A contenteditable isn't labelable, so `<label for>` needs linking by hand.
+  React.useEffect(() => {
+    if (!editor || ariaLabel) return
+    const dom = editor.view.dom
+    if (ariaLabelledBy) {
+      dom.setAttribute("aria-labelledby", ariaLabelledBy)
+      return
+    }
+    if (!id) return
+    const label = document.querySelector<HTMLLabelElement>(
+      `label[for="${CSS.escape(id)}"]`
+    )
+    if (!label) return
+    label.id ||= `${id}-label`
+    dom.setAttribute("aria-labelledby", label.id)
+    const focus = () => editor.commands.focus()
+    label.addEventListener("click", focus)
+    return () => label.removeEventListener("click", focus)
+  }, [editor, id, ariaLabel, ariaLabelledBy])
 
   React.useEffect(() => {
     editor?.setEditable(!disabled && !generating)

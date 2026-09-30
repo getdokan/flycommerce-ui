@@ -9,11 +9,13 @@ pnpm install
 pnpm dev          # component gallery at http://localhost:5173
 pnpm typecheck
 pnpm lint
+pnpm test         # renders every gallery demo and runs axe accessibility checks on it
 pnpm build        # library: dist/ (ESM per component, .d.ts, CSS entries)
 pnpm build:site   # gallery: site-dist/ (static site, see docs/HOSTING-CLOUDFLARE.md)
+pnpm check:package # after build: publint + "Are the types wrong?" on the packed package
 ```
 
-CI runs typecheck, lint, both builds and the plugin reference check on every push.
+CI runs all of these, plus the plugin reference check, on every push and pull request. A new component needs a gallery demo, and that demo is then covered by the tests automatically.
 
 ## Where things live
 
