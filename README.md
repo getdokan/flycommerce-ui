@@ -3,7 +3,8 @@
 The FlyCommerce design system for React: accessible components, design tokens and ready-made patterns that give every FlyCommerce surface (the merchant dashboard, the hub and third-party apps) the same look and behaviour.
 
 [![npm version](https://img.shields.io/npm/v/@flycommerce/ui.svg)](https://www.npmjs.com/package/@flycommerce/ui)
-[![license](https://img.shields.io/npm/l/@flycommerce/ui.svg)](./LICENSE)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/getdokan/flycommerce-ui/blob/main/LICENSE)
+[![CI](https://github.com/getdokan/flycommerce-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/getdokan/flycommerce-ui/actions/workflows/ci.yml)
 
 **[Browse the component gallery →](https://ui.flycommerce.com)**
 
@@ -388,20 +389,20 @@ This repository is also a Claude Code plugin marketplace. The `flycommerce-ui` p
 /plugin install flycommerce-ui@flycommerce-ui
 ```
 
-See [plugin/README.md](./plugin/README.md) to enable it for a whole repository.
+See [plugin/README.md](https://github.com/getdokan/flycommerce-ui/blob/main/plugin/README.md) to enable it for a whole repository.
 
 ## Versioning
 
-The package follows [semantic versioning](https://semver.org). While the version is `0.x`, a minor release may include breaking changes; each one is listed in the [changelog](./CHANGELOG.md).
+The package follows [semantic versioning](https://semver.org). While the version is `0.x`, a minor release may include breaking changes; each one is listed in the [changelog](https://github.com/getdokan/flycommerce-ui/blob/main/CHANGELOG.md).
 
 ## Security
 
-Please report vulnerabilities privately; see [SECURITY.md](./SECURITY.md).
+Please report vulnerabilities privately; see [SECURITY.md](https://github.com/getdokan/flycommerce-ui/blob/main/SECURITY.md).
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for local development, the component rules and the release process.
+See [CONTRIBUTING.md](https://github.com/getdokan/flycommerce-ui/blob/main/CONTRIBUTING.md) for local development, the component rules and the release process.
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](https://github.com/getdokan/flycommerce-ui/blob/main/LICENSE)
