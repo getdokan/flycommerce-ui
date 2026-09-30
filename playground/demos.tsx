@@ -29,6 +29,7 @@ import { toast } from "sonner"
 import {
   ConfirmDialogDemo,
   DataTableDemo,
+  DataTableReorderDemo,
   DataTableTreeDemo,
   IconsDemo,
   PageHeaderDemo,
@@ -297,6 +298,7 @@ const KEYWORDS: Record<string, string> = {
   "data-table":
     "table grid tanstack sort select bulk pagination filter sidebar thumbnail image",
   "data-table-tree": "tree nested category expand hierarchy",
+  "data-table-reorder": "drag drop reorder sort order position handle dnd",
   "confirm-dialog": "confirm delete modal are you sure",
   "save-bar": "unsaved changes discard sticky footer",
   "search-input": "search filter query",
@@ -352,6 +354,7 @@ const SOURCES: Record<string, Source> = {
   "status-badge": "prototype",
   "data-table": "prototype",
   "data-table-tree": "figma",
+  "data-table-reorder": "figma",
   "radio-card": "prototype",
   "switch-field": "prototype",
   "stat-card": "prototype",
@@ -472,6 +475,12 @@ export const demos: Demo[] = [
     title: "Data table",
     group: "Patterns",
     render: () => <DataTableDemo />,
+  },
+  {
+    id: "data-table-reorder",
+    title: "Data table: reorder rows",
+    group: "Patterns",
+    render: () => <DataTableReorderDemo />,
   },
   {
     id: "data-table-tree",

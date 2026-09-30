@@ -602,3 +602,113 @@ export function IconsDemo() {
     </div>
   )
 }
+
+type Brand = {
+  id: string
+  name: string
+  image?: string
+  description: string
+  status: "Published" | "Draft"
+}
+
+const BRANDS: Brand[] = [
+  ["Yoga Mat", "Entry-level plan with essential features for small stores"],
+  ["Wireless Charging Pad", "185 products"],
+  ["Abstract Art", "423 products"],
+  ["Personalized Leather", "No products"],
+  ["Eco-Friendly Bamboo Toothbrush", "154 products"],
+  ["Custom Dog Collar", "No products"],
+].map(([name, description], i) => ({
+  id: `b${i + 1}`,
+  name,
+  description,
+  image: `https://picsum.photos/seed/fc-brand-${i}/80/80`,
+  status: i === 3 ? "Draft" : "Published",
+}))
+
+const brandColumns: ColumnDef<Brand, unknown>[] = [
+  {
+    accessorKey: "name",
+    header: "Brand",
+    cell: ({ row }) => (
+      <MediaCell
+        src={row.original.image}
+        title={row.original.name}
+        className="max-w-60"
+      />
+    ),
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => (
+      <span className="block max-w-72 truncate text-foreground-secondary">
+        {row.original.description}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Availability",
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
+  },
+  {
+    id: "actions",
+    meta: { align: "end" },
+    header: () => <span className="sr-only">Actions</span>,
+    cell: ({ row }) => (
+      <Button
+        size="icon-sm"
+        variant="ghost"
+        aria-label={`Actions for ${row.original.name}`}
+      >
+        <EllipsisIcon />
+      </Button>
+    ),
+  },
+]
+
+export function DataTableReorderDemo() {
+  const [brands, setBrands] = React.useState(BRANDS)
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-3">
+      <p className="text-xs text-muted-foreground">
+        Drag a row by its handle, or focus a handle and use Space, the arrow
+        keys, then Space to drop.
+      </p>
+      <DataTable
+        title="Brand List"
+        columns={brandColumns}
+        data={brands}
+        getRowId={(row) => row.id}
+        getRowLabel={(row) => row.name}
+        enableRowSelection
+        onReorder={(next, { from, to }) => {
+          setBrands(next)
+          toast(
+            `Moved “${next[to].name}” from position ${from + 1} to ${to + 1}`
+          )
+        }}
+        toolbar={
+          <>
+            <SearchInput
+              containerClassName="w-full sm:w-72"
+              placeholder="Search brands"
+            />
+            <TableFilters
+              fields={productFilters.slice(0, 1)}
+              value={{}}
+              onValueChange={() => {}}
+            />
+          </>
+        }
+        pagination={{
+          page: 1,
+          pageSize: 10,
+          total: brands.length,
+          onPageChange: () => {},
+        }}
+      />
+    </div>
+  )
+}
