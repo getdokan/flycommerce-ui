@@ -1,6 +1,6 @@
 {
   "name": "flycommerce-ui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Teaches Claude to build, restyle and migrate FlyCommerce screens with @flycommerce/ui: which component to use, design tokens, icons, screen recipes and the dokan-ui migration map.",
   "author": {
     "name": "FlyCommerce",

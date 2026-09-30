@@ -7,7 +7,7 @@ description: Build, restyle or migrate FlyCommerce product UI with the @flycomme
 
 `@flycommerce/ui` is the single source of FlyCommerce's look: shadcn/Radix components restyled to the FlyCommerce design prototype, with the P3 Figma file filling gaps. Screens compose it; they never restyle it.
 
-Live gallery (every component, variant and state, light/dark/RTL/mobile): run `pnpm dev` in the flycommerce-ui repo, or open the hosted gallery linked from its README. Every section has a **Code** tab with a copy-paste example generated from the demo itself (imports already point at `@flycommerce/ui`); start from it instead of writing a screen from scratch.
+Live gallery (every component, variant and state, light/dark/RTL/mobile): https://ui.flycommerce.com (or `pnpm dev` in the flycommerce-ui repo). Every section has a **Code** tab with a copy-paste example generated from the demo itself (imports already point at `@flycommerce/ui`); start from it instead of writing a screen from scratch.
 
 Generated references in this skill (always current, read them instead of guessing):
 - `references/exports.md`: every export and which module it comes from
