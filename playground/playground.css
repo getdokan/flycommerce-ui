@@ -14,7 +14,7 @@
   --sh-entity: #6639ba;
   --sh-jsxliterals: #24292f;
   --sh-sign: #57606a;
-  --sh-comment: #6e7781;
+  --sh-comment: #636c76; /* 4.9:1 on the code background */
 }
 :root[data-theme="dark"],
 .dark {

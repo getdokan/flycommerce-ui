@@ -1,12 +1,10 @@
 import * as React from "react"
 import { MoonIcon, SearchIcon, SunIcon } from "lucide-react"
-import { highlight } from "sugar-high"
 import sources from "virtual:demo-sources"
 
 import {
   Badge,
   Button,
-  CopyButton,
   DirectionProvider,
   Label,
   Sidebar,
@@ -31,6 +29,8 @@ import {
   TooltipProvider,
 } from "@/index"
 import { demos, groups, type Demo, type Source } from "./demos"
+import { CodeBlock } from "./code-block"
+import { DemoIcon } from "./demo-icons"
 import { useTheme } from "./theme-provider"
 
 const SOURCE_BADGE: Record<
@@ -76,6 +76,10 @@ export default function App() {
   )
 
   React.useEffect(() => {
+    // Land on Welcome; replaceState so Back doesn't return to the bare URL.
+    if (!window.location.hash) {
+      window.history.replaceState(null, "", `#${demos[0].id}`)
+    }
     const onHash = () => setActive(window.location.hash.slice(1))
     window.addEventListener("hashchange", onHash)
     return () => window.removeEventListener("hashchange", onHash)
@@ -144,9 +148,7 @@ export default function App() {
                                   tooltip={d.title}
                                 >
                                   <a href={`#${d.id}`}>
-                                    <span className="flex size-4 shrink-0 items-center justify-center text-[10px] font-semibold">
-                                      {d.title.slice(0, 2)}
-                                    </span>
+                                    <DemoIcon id={d.id} />
                                     <span>{d.title}</span>
                                   </a>
                                 </SidebarMenuButton>
@@ -202,13 +204,12 @@ export default function App() {
               </header>
 
               <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
-                <p className="text-sm text-muted-foreground">
-                  Each section shows where its design comes from: the PM
-                  prototype, the P3 Figma file, or shadcn&apos;s default where
-                  neither has a design yet.
-                  {terms.length > 0 &&
-                    ` Showing ${visible.length} of ${demos.length} for “${query.trim()}”.`}
-                </p>
+                {terms.length > 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Showing {visible.length} of {demos.length} for “
+                    {query.trim()}”.
+                  </p>
+                )}
                 {visible.length === 0 && (
                   <div className="rounded-xl border bg-card p-10 text-center text-sm text-muted-foreground shadow-1">
                     No components match “{query.trim()}”.{" "}
@@ -232,57 +233,55 @@ export default function App() {
 
 function DemoSection({ demo }: { demo: Demo }) {
   const [view, setView] = React.useState<"preview" | "code">("preview")
-  const code = sources[demo.id]
-  const html = React.useMemo(
-    () => (view === "code" && code ? highlight(code) : ""),
-    [view, code]
-  )
+  const code = demo.doc ? undefined : sources[demo.id]
   const badge = SOURCE_BADGE[demo.source ?? "default"]
+  // Welcome carries its own h1, so a second heading would only repeat it.
+  const showHeader = demo.id !== "welcome"
 
   return (
     <section
       id={demo.id}
+      aria-label={showHeader ? undefined : demo.title}
       className="flex min-w-0 scroll-mt-20 flex-col gap-4 rounded-xl border bg-card p-4 shadow-1 sm:p-6"
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-[15px] font-semibold">{demo.title}</h2>
-        <Badge dot variant={badge.variant}>
-          {badge.label}
-        </Badge>
-        {code && (
-          <Tabs
-            value={view}
-            onValueChange={(next) => setView(next as "preview" | "code")}
-            className="ms-auto"
+      {showHeader && (
+        <div className="flex flex-wrap items-center gap-2">
+          <h2
+            className={
+              demo.doc ? "text-xl font-bold" : "text-[15px] font-semibold"
+            }
           >
-            <TabsList aria-label={`${demo.title} view`}>
-              <TabsTrigger value="preview" className="px-3 py-1 text-xs">
-                Preview
-              </TabsTrigger>
-              <TabsTrigger value="code" className="px-3 py-1 text-xs">
-                Code
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
-      </div>
+            {demo.title}
+          </h2>
+          {!demo.doc && (
+            <Badge dot variant={badge.variant}>
+              {badge.label}
+            </Badge>
+          )}
+          {code && (
+            <Tabs
+              value={view}
+              onValueChange={(next) => setView(next as "preview" | "code")}
+              className="ms-auto"
+            >
+              <TabsList aria-label={`${demo.title} view`}>
+                <TabsTrigger value="preview" className="px-3 py-1 text-xs">
+                  Preview
+                </TabsTrigger>
+                <TabsTrigger value="code" className="px-3 py-1 text-xs">
+                  Code
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
+        </div>
+      )}
       {view === "preview" || !code ? (
         <div className="flex min-w-0 flex-wrap items-start gap-3">
           {demo.render()}
         </div>
       ) : (
-        <div className="relative min-w-0 overflow-hidden rounded-lg border bg-page">
-          <CopyButton
-            value={code}
-            iconOnly
-            label="Copy code"
-            className="absolute end-2 top-2 z-10 bg-background"
-          />
-          <pre className="max-h-[520px] overflow-auto p-4 pe-12 font-mono text-[12.5px] leading-5">
-            {/* Our own build-time source, highlighted into spans. */}
-            <code dangerouslySetInnerHTML={{ __html: html }} />
-          </pre>
-        </div>
+        <CodeBlock code={code} />
       )}
     </section>
   )
