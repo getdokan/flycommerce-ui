@@ -24,6 +24,13 @@ import {
   UserIcon,
 } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
 import { toast } from "sonner"
 
 import {
@@ -109,9 +116,6 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   Checkbox,
   Collapsible,
   CollapsibleContent,
@@ -253,7 +257,6 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  type ChartConfig,
 } from "@/index"
 
 export type Source = "prototype" | "figma" | "composite" | "default"
