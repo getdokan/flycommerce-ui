@@ -1,9 +1,12 @@
 import * as React from "react"
 import { MoonIcon, SearchIcon, SunIcon } from "lucide-react"
+import { highlight } from "sugar-high"
+import sources from "virtual:demo-sources"
 
 import {
   Badge,
   Button,
+  CopyButton,
   DirectionProvider,
   Label,
   Sidebar,
@@ -21,10 +24,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
   Switch,
+  Tabs,
+  TabsList,
+  TabsTrigger,
   Toaster,
   TooltipProvider,
 } from "@/index"
-import { demos, groups, type Source } from "./demos"
+import { demos, groups, type Demo, type Source } from "./demos"
 import { useTheme } from "./theme-provider"
 
 const SOURCE_BADGE: Record<
@@ -217,24 +223,7 @@ export default function App() {
                   </div>
                 )}
                 {visible.map((d) => (
-                  <section
-                    key={d.id}
-                    id={d.id}
-                    className="flex min-w-0 scroll-mt-20 flex-col gap-4 rounded-xl border bg-card p-4 shadow-1 sm:p-6"
-                  >
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-[15px] font-semibold">{d.title}</h2>
-                      <Badge
-                        dot
-                        variant={SOURCE_BADGE[d.source ?? "default"].variant}
-                      >
-                        {SOURCE_BADGE[d.source ?? "default"].label}
-                      </Badge>
-                    </div>
-                    <div className="flex min-w-0 flex-wrap items-start gap-3">
-                      {d.render()}
-                    </div>
-                  </section>
+                  <DemoSection key={d.id} demo={d} />
                 ))}
               </div>
             </SidebarInset>
@@ -243,5 +232,63 @@ export default function App() {
         <Toaster theme={theme === "dark" ? "dark" : "light"} />
       </TooltipProvider>
     </DirectionProvider>
+  )
+}
+
+function DemoSection({ demo }: { demo: Demo }) {
+  const [view, setView] = React.useState<"preview" | "code">("preview")
+  const code = sources[demo.id]
+  const html = React.useMemo(
+    () => (view === "code" && code ? highlight(code) : ""),
+    [view, code]
+  )
+  const badge = SOURCE_BADGE[demo.source ?? "default"]
+
+  return (
+    <section
+      id={demo.id}
+      className="flex min-w-0 scroll-mt-20 flex-col gap-4 rounded-xl border bg-card p-4 shadow-1 sm:p-6"
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <h2 className="text-[15px] font-semibold">{demo.title}</h2>
+        <Badge dot variant={badge.variant}>
+          {badge.label}
+        </Badge>
+        {code && (
+          <Tabs
+            value={view}
+            onValueChange={(next) => setView(next as "preview" | "code")}
+            className="ms-auto"
+          >
+            <TabsList aria-label={`${demo.title} view`}>
+              <TabsTrigger value="preview" className="px-3 py-1 text-xs">
+                Preview
+              </TabsTrigger>
+              <TabsTrigger value="code" className="px-3 py-1 text-xs">
+                Code
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
+      </div>
+      {view === "preview" || !code ? (
+        <div className="flex min-w-0 flex-wrap items-start gap-3">
+          {demo.render()}
+        </div>
+      ) : (
+        <div className="relative min-w-0 overflow-hidden rounded-lg border bg-page">
+          <CopyButton
+            value={code}
+            iconOnly
+            label="Copy code"
+            className="absolute end-2 top-2 z-10 bg-background"
+          />
+          <pre className="max-h-[520px] overflow-auto p-4 pe-12 font-mono text-[12.5px] leading-5">
+            {/* Our own build-time source, highlighted into spans. */}
+            <code dangerouslySetInnerHTML={{ __html: html }} />
+          </pre>
+        </div>
+      )}
+    </section>
   )
 }

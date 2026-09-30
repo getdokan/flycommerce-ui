@@ -114,6 +114,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "sugar-high": "^2.5.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6",
     "typescript-eslint": "^8",
