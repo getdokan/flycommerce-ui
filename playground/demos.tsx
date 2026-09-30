@@ -249,7 +249,66 @@ export type Demo = {
   title: string
   group: string
   source?: Source
+  /** Extra search terms: other names people use for the component. */
+  keywords?: string
   render: () => React.ReactNode
+}
+
+const KEYWORDS: Record<string, string> = {
+  button: "cta action submit link loading",
+  toggle: "pressed bold formatting",
+  alert: "notice banner warning info error callout message",
+  toast: "snackbar notification sonner flash",
+  progress: "loader loading bar skeleton spinner placeholder",
+  empty: "no data blank zero state",
+  input: "text field form label error hint required optional",
+  "input-group": "prefix suffix addon currency",
+  select: "dropdown picker options",
+  combobox: "autocomplete searchable select typeahead",
+  checkbox: "radio switch toggle tick indeterminate",
+  "input-otp": "otp pin verification code",
+  calendar: "date",
+  badge: "pill tag chip label status",
+  avatar: "user profile photo",
+  card: "panel box container tile",
+  table: "grid rows columns list",
+  item: "list row",
+  kbd: "shortcut keyboard",
+  chart: "graph bar line analytics recharts",
+  carousel: "slider gallery slideshow",
+  tabs: "segmented control switcher",
+  accordion: "collapse expand disclosure faq",
+  dialog: "modal popup overlay",
+  "alert-dialog": "confirm delete modal",
+  sheet: "drawer side panel offcanvas bottom sheet",
+  popover: "hover card tooltip flyout",
+  "dropdown-menu": "menu context right click actions kebab",
+  command: "palette cmdk spotlight search",
+  breadcrumb: "path trail",
+  pagination: "pages next previous",
+  "navigation-menu": "menubar nav mega menu",
+  sidebar: "navigation nav rail",
+  icons: "icon glyph lucide svg",
+  "page-header": "title heading back link actions",
+  "data-table": "table grid tanstack sort select bulk pagination",
+  "confirm-dialog": "confirm delete modal are you sure",
+  "save-bar": "unsaved changes discard sticky footer",
+  "search-input": "search filter query",
+  "status-badge": "status pill order state",
+  "stat-card": "kpi metric statistic number dashboard",
+  "radio-card": "option card choice",
+  "switch-field": "toggle row setting",
+  "nav-tabs": "tabs links route navigation",
+  "async-combobox": "remote search autocomplete lookup api",
+  "tag-input": "chips tags multi value creatable",
+  "password-input": "password show hide eye",
+  "date-picker": "date time range calendar presets",
+  dropzone: "upload file drag drop",
+  "copy-button": "clipboard copy",
+  "info-tooltip": "help hint info icon",
+  "loading-overlay": "spinner busy loading",
+  rating: "stars review score",
+  image: "img photo thumbnail fallback placeholder",
 }
 
 const SOURCES: Record<string, Source> = {
@@ -1621,6 +1680,9 @@ export const demos: Demo[] = [
   },
 ]
 
-for (const demo of demos) demo.source = SOURCES[demo.id] ?? "default"
+for (const demo of demos) {
+  demo.source = SOURCES[demo.id] ?? "default"
+  demo.keywords = KEYWORDS[demo.id]
+}
 
 export const groups = Array.from(new Set(demos.map((d) => d.group)))
