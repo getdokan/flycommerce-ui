@@ -1,0 +1,8 @@
+/* Build entry for the precompiled styles.css used by apps without Tailwind. No preflight, so host pages keep their own reset. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "tw-animate-css";
+@import "./components.css";
+@import "./theme.css";
+
+@source "../components";
