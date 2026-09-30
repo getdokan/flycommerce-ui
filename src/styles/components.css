@@ -674,6 +674,7 @@
     --color-primary-subtle: var(--primary-subtle);
     --color-primary-subtle-2: var(--primary-subtle-2);
     --color-primary-strong: var(--primary-strong);
+    --color-primary-ink: var(--primary-ink);
     --color-placeholder: var(--placeholder);
     --color-destructive-subtle: var(--destructive-subtle);
     --color-destructive-strong: var(--destructive-strong);

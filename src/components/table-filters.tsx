@@ -390,7 +390,7 @@ function ActiveFilters({
               delete next[field.key]
               onValueChange(next)
             }}
-            className="inline-flex size-6 items-center justify-center rounded-md text-primary hover:bg-primary-subtle focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none [&_svg]:size-3.5"
+            className="inline-flex size-6 items-center justify-center rounded-md text-primary-ink hover:bg-primary-subtle focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none [&_svg]:size-3.5"
           >
             <XIcon aria-hidden="true" />
           </button>
