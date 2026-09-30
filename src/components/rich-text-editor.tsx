@@ -13,6 +13,7 @@ import {
   ItalicIcon,
   LinkIcon,
   ListIcon,
+  SparklesIcon,
   UnderlineIcon,
 } from "lucide-react"
 
@@ -48,6 +49,8 @@ type RichTextEditorLabels = {
   linkUrl?: string
   applyLink?: string
   removeLink?: string
+  generate?: string
+  generating?: string
 }
 
 const DEFAULT_LABELS: Required<RichTextEditorLabels> = {
@@ -65,6 +68,8 @@ const DEFAULT_LABELS: Required<RichTextEditorLabels> = {
   linkUrl: "URL",
   applyLink: "Apply",
   removeLink: "Remove",
+  generate: "Generate with AI",
+  generating: "Generating…",
 }
 
 type RichTextEditorProps = {
@@ -81,6 +86,8 @@ type RichTextEditorProps = {
   className?: string
   /** Accessible name when there is no <FieldLabel htmlFor>, e.g. "Description". */
   "aria-label"?: string
+  /** Adds "Generate with AI"; receives the current HTML and resolves to the new HTML. */
+  onGenerate?: (current: string) => Promise<string>
 }
 
 /** Figma "Description" field: formatting toolbar over a resizable writing area. Emits HTML. */
@@ -95,8 +102,10 @@ function RichTextEditor({
   labels: labelsProp,
   className,
   "aria-label": ariaLabel,
+  onGenerate,
 }: RichTextEditorProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
+  const [generating, setGenerating] = React.useState(false)
   const onChangeRef = React.useRef(onChange)
 
   React.useEffect(() => {
@@ -143,8 +152,20 @@ function RichTextEditor({
   }, [editor, value])
 
   React.useEffect(() => {
-    editor?.setEditable(!disabled)
-  }, [editor, disabled])
+    editor?.setEditable(!disabled && !generating)
+  }, [editor, disabled, generating])
+
+  const generate = async () => {
+    if (!editor || !onGenerate) return
+    setGenerating(true)
+    try {
+      const html = await onGenerate(editor.isEmpty ? "" : editor.getHTML())
+      // Through a transaction, so Cmd+Z restores what was there before.
+      editor.chain().focus().setContent(html).run()
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   const state = useEditorState({
     editor,
@@ -179,6 +200,7 @@ function RichTextEditor({
       data-slot="rich-text-editor"
       aria-invalid={invalid || undefined}
       aria-disabled={disabled || undefined}
+      aria-busy={generating || undefined}
       className={cn(
         "flex w-full flex-col overflow-hidden rounded-control border border-input bg-background transition-colors hover:border-placeholder has-[.ProseMirror-focused]:border-primary aria-disabled:pointer-events-none aria-disabled:opacity-60 aria-invalid:border-destructive",
         className
@@ -288,9 +310,28 @@ function RichTextEditor({
             editor?.chain().focus().extendMarkRange("link").unsetLink().run()
           }
         />
+
+        {onGenerate && (
+          <Button
+            type="button"
+            variant="secondary"
+            size="xs"
+            className="ms-auto h-7 px-2.5"
+            loading={generating}
+            disabled={disabled || !editor}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={generate}
+          >
+            {!generating && <SparklesIcon />}
+            {generating ? labels.generating : labels.generate}
+          </Button>
+        )}
       </div>
       <div
-        className="resize-y overflow-auto"
+        className={cn(
+          "resize-y overflow-auto transition-opacity",
+          generating && "animate-pulse opacity-60"
+        )}
         style={{ minHeight, height: minHeight }}
         onClick={() => editor?.commands.focus()}
       >

@@ -783,6 +783,23 @@ export function RichTextEditorDemo() {
         <FieldDescription>Emits HTML through onChange.</FieldDescription>
       </Field>
       <Field>
+        <FieldLabel htmlFor="rte-ai">With Generate with AI</FieldLabel>
+        <RichTextEditor
+          id="rte-ai"
+          placeholder="Let AI draft it, then edit"
+          onGenerate={async (current) => {
+            await new Promise((resolve) => setTimeout(resolve, 1200))
+            return current
+              ? `${current}<p>Pairs well with our linen shorts for easy summer days.</p>`
+              : "<p>Soft, breathable <strong>organic cotton</strong> tee with a relaxed fit.</p><ul><li>Pre-shrunk</li><li>Machine washable</li></ul>"
+          }}
+        />
+        <FieldDescription>
+          onGenerate gets the current HTML and resolves to the new HTML. The
+          editor locks while it runs; Cmd/Ctrl+Z undoes the result.
+        </FieldDescription>
+      </Field>
+      <Field>
         <FieldLabel htmlFor="rte-disabled">Disabled</FieldLabel>
         <RichTextEditor id="rte-disabled" value={html} disabled />
       </Field>

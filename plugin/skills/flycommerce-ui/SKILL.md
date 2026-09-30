@@ -65,7 +65,7 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Unsaved changes on a form page | `SaveBar open={isDirty}` with `onSave`, `onDiscard`, `loading` |
 | Form field | `Field` > `FieldLabel htmlFor required\|optional` + control + `FieldDescription` / `FieldError` |
 | Long text | `Textarea`; with a limit → `maxLength` + `showCount` ("12/500 characters") |
-| Formatted text (product/category description) | `RichTextEditor value onChange` (HTML in, HTML out; `placeholder`, `invalid`, `disabled`, `minHeight`, `labels`). An AI "Generate" action is a `Button variant="link" size="xs"` beside the `FieldLabel` that sets `value`. Sanitize the HTML server-side before rendering it on the storefront. |
+| Formatted text (product/category description) | `RichTextEditor value onChange` (HTML in, HTML out; `placeholder`, `invalid`, `disabled`, `minHeight`, `labels`). AI drafting: pass `onGenerate={async (currentHtml) => newHtml}` for a "Generate with AI" button in the toolbar (locks the editor while running; Cmd/Ctrl+Z undoes it). The Figma "New Category" modal instead puts a `Button variant="link" size="xs"` beside the `FieldLabel` that sets `value`; use that when the design shows it there. Sanitize the HTML server-side before rendering it on the storefront. |
 | Text / number / email | `Input`; with prefix/suffix (`$`, `USD`, icon) → `InputGroup` + `InputGroupAddon` + `InputGroupInput` |
 | Password | `PasswordInput` |
 | Search box | `SearchInput onSearch` (debounced, clearable) |
