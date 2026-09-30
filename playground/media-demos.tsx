@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
   UploadQueue,
@@ -263,21 +264,26 @@ export function MediaPageDemo() {
   const active = items.find((item) => item.id === activeId) ?? null
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <Tabs
+      value={type}
+      onValueChange={setType}
+      className="flex w-full min-w-0 flex-col gap-4"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Tabs value={type} onValueChange={setType}>
-          <TabsList variant="line">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="images">Images</TabsTrigger>
-            <TabsTrigger value="videos">Videos</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <TabsList variant="line">
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="images">Images</TabsTrigger>
+          <TabsTrigger value="videos">Videos</TabsTrigger>
+        </TabsList>
         <Button onClick={() => setAdding(true)}>
           <ImagePlusIcon /> Add media
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border bg-card shadow-1">
+      <TabsContent
+        value={type}
+        className="min-w-0 overflow-hidden rounded-xl border bg-card shadow-1"
+      >
         <div className="flex flex-wrap items-center gap-3 border-b border-border-subtle px-5 py-4">
           {selected.length > 0 ? (
             <>
@@ -362,7 +368,7 @@ export function MediaPageDemo() {
             className="self-start"
           />
         </div>
-      </div>
+      </TabsContent>
 
       <MediaPickerDialog
         open={adding}
@@ -376,7 +382,7 @@ export function MediaPageDemo() {
         onConfirm={(picked) => toast.success(`${picked.length} files ready`)}
         {...library}
       />
-    </div>
+    </Tabs>
   )
 }
 

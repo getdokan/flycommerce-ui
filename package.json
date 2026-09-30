@@ -38,7 +38,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./tailwind.css": "./dist/styles/tailwind.css",
     "./theme.css": "./dist/styles/theme.css",
@@ -47,15 +48,18 @@
     "./package.json": "./package.json",
     "./*": {
       "types": "./dist/components/ui/*.d.ts",
-      "import": "./dist/components/ui/*.js"
+      "import": "./dist/components/ui/*.js",
+      "default": "./dist/components/ui/*.js"
     }
   },
   "scripts": {
     "dev": "vite --config playground/vite.config.ts",
-    "build": "vite build && pnpm build:css",
+    "build": "vite build && node scripts/fix-dts-extensions.mjs && pnpm build:css",
     "build:css": "mkdir -p dist/styles && cp src/styles/components.css src/styles/theme.css src/styles/tailwind.css src/styles/fonts.css dist/styles/ && tailwindcss -i src/styles/standalone.css -o dist/styles.css --minify",
     "typecheck": "tsc -b",
     "lint": "eslint .",
+    "test": "vitest run",
+    "check:package": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints tailwind.css theme.css styles.css fonts.css",
     "format": "prettier --write \"**/*.{ts,tsx,css}\"",
     "build:site": "vite build --config playground/vite.config.ts",
     "skill:refs": "node scripts/skill-refs.mjs && prettier --write plugin/skills/flycommerce-ui/references --log-level warn"
@@ -106,19 +110,26 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10",
     "@tailwindcss/cli": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6",
+    "axe-core": "^4.13.0",
     "eslint": "^10",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17",
+    "jsdom": "^30.1.1",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "publint": "^0.3.24",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "recharts": "3.8.0",
@@ -127,7 +138,8 @@
     "typescript": "~6",
     "typescript-eslint": "^8",
     "vite": "^8",
-    "vite-plugin-dts": "^5.1.1"
+    "vite-plugin-dts": "^5.1.1",
+    "vitest": "^5.0.2"
   },
   "packageManager": "pnpm@10.33.0"
 }

@@ -27,6 +27,7 @@ Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com
 - [Accessibility and localisation](#accessibility-and-localisation)
 - [Building with Claude Code](#building-with-claude-code)
 - [Versioning](#versioning)
+- [Security](#security)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -147,7 +148,7 @@ export function StoreSettings() {
 }
 ```
 
-Every component can also be imported from its own entry point, for example `import { Button } from "@flycommerce/ui/button"`.
+The base components can also be imported one by one, for example `import { Button } from "@flycommerce/ui/button"`. Either way, bundlers only include what you use.
 
 ## Components
 
@@ -390,6 +391,10 @@ See [plugin/README.md](./plugin/README.md) to enable it for a whole repository.
 ## Versioning
 
 The package follows [semantic versioning](https://semver.org). While the version is `0.x`, a minor release may include breaking changes; each one is listed in the [changelog](./CHANGELOG.md).
+
+## Security
+
+Please report vulnerabilities privately; see [SECURITY.md](./SECURITY.md).
 
 ## Contributing
 

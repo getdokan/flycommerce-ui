@@ -24,6 +24,8 @@ type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop" | "title"> & {
   maxFiles?: number
   disabled?: boolean
   title?: React.ReactNode
+  /** Accessible name of the file input, e.g. "Upload category image". */
+  inputLabel?: string
   description?: React.ReactNode
   /** Primary button that opens the file picker, e.g. "Choose Image". */
   browseLabel?: React.ReactNode
@@ -42,6 +44,7 @@ function Dropzone({
   multiple = true,
   maxFiles,
   disabled = false,
+  inputLabel = "Upload files",
   title = (
     <>
       <span className="font-semibold text-primary">Drag &amp; Drop</span> your
@@ -139,6 +142,7 @@ function Dropzone({
       <input
         ref={inputRef}
         type="file"
+        aria-label={inputLabel}
         accept={accept}
         multiple={multiple}
         disabled={disabled}
