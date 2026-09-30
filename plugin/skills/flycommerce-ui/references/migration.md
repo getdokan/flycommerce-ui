@@ -1,0 +1,79 @@
+# Migrating to @flycommerce/ui
+
+Mapping from what the dashboard uses today (scan of dashboard main, 2026-09-29) to the library. Replace per screen, not per file: move a whole screen, check it at desktop and 375px, light and dark.
+
+## @getdokan/dokan-ui
+
+| dokan-ui                                            | @flycommerce/ui                                                                | Notes                                                                                                                                                      |
+| --------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button color="primary"`                            | `Button`                                                                       | default variant is the blue primary                                                                                                                        |
+| `Button color="white"`                              | `Button variant="outline"`                                                     |                                                                                                                                                            |
+| `Button color="secondary"`                          | `Button variant="secondary"`                                                   | blue outline                                                                                                                                               |
+| `Button color="danger"` / `"red"`                   | `Button variant="destructive"`, or `"destructive-solid"` inside a confirm      |                                                                                                                                                            |
+| `Button outlined color="primary"`                   | `Button variant="secondary"`                                                   |                                                                                                                                                            |
+| other hues (`lime`, `indigo`…)                      | `Button` default                                                               | flag it; the design has no such button                                                                                                                     |
+| `Button label="Save" icon={FiPlus}`                 | `<Button><Icon name="…" /> Save</Button>`                                      | text and icon become children                                                                                                                              |
+| `Button loading`                                    | `Button loading`                                                               | spinner shows even with children now                                                                                                                       |
+| `Button size="sm"`                                  | `Button size="sm"`                                                             | 32px; default is 38px                                                                                                                                      |
+| `LinkButton to` (dashboard)                         | `<Button asChild><Link to /></Button>`                                         |                                                                                                                                                            |
+| `FormLabel htmlFor`                                 | `FieldLabel htmlFor` (`required`, `optional`)                                  |                                                                                                                                                            |
+| `SimpleInput` / `FormInput` / `new-form/form-input` | `Field` + `Input` (+ `FieldDescription`, `FieldError`)                         | prepend/append → `InputGroup`                                                                                                                              |
+| `TrailingInput` (password eye)                      | `PasswordInput`                                                                |                                                                                                                                                            |
+| `ErrorMessage`                                      | `FieldError`                                                                   | accepts `errors` or children                                                                                                                               |
+| `TextArea` / `FormTextarea`                         | `Field` + `Textarea`                                                           |                                                                                                                                                            |
+| `FormSelect` / `SimpleSelect`                       | `Select`                                                                       |                                                                                                                                                            |
+| `SearchableSelect`                                  | `Combobox`; `isMulti` → `Combobox multiple` with chips                         |                                                                                                                                                            |
+| `AsyncSearchableSelect`                             | `AsyncCombobox` (`loadOptions`, `getOptionLabel`, `getOptionValue`)            |                                                                                                                                                            |
+| `TaggableSelect` / `MultipleTextInput`              | `TagInput`                                                                     |                                                                                                                                                            |
+| `SimpleCheckbox` (`indeterminate`)                  | `Checkbox checked="indeterminate"`                                             |                                                                                                                                                            |
+| `ToggleSwitch` with `label`/`helpText`              | `SwitchField title description`                                                | bare `Switch` in tables                                                                                                                                    |
+| `SimpleRadio` / `RadioGroup` options                | `RadioGroup` + `RadioGroupItem`; option cards → `RadioCardGroup` + `RadioCard` |                                                                                                                                                            |
+| `Badge color`                                       | `Badge variant` or `StatusBadge status`                                        | green/lime/emerald → `success`; yellow/amber/orange → `warning`; red/danger → `destructive`; purple → `soon`; gray → `secondary`; blue/primary → `default` |
+| `SimpleAlert type="info\|warning\|danger"`          | `Alert variant="info\|warning\|destructive"`                                   |                                                                                                                                                            |
+| `Modal isOpen onClose showXButton`                  | `Dialog open onOpenChange` + `DialogContent showCloseButton size`              | `max-w-*` overrides → `size`                                                                                                                               |
+| `ConfirmModal`                                      | `ConfirmDialog`                                                                |                                                                                                                                                            |
+| `Drawer direction`                                  | `Sheet side` or `Drawer`                                                       |                                                                                                                                                            |
+| `Popover`                                           | `Popover` + `PopoverTrigger` + `PopoverContent`                                |                                                                                                                                                            |
+| `Tooltip content direction`                         | `Tooltip` + `TooltipTrigger` + `TooltipContent side`, or `InfoTooltip content` |                                                                                                                                                            |
+| `Card`                                              | `Card` + `CardHeader` + `CardContent`                                          |                                                                                                                                                            |
+| `Loader`                                            | `Spinner`, `Skeleton` or `LoadingOverlay`                                      |                                                                                                                                                            |
+| `AppTab variant="default"`                          | `Tabs` + `TabsList`                                                            |                                                                                                                                                            |
+| `AppTab variant="underline"`                        | `TabsList variant="line"`                                                      |                                                                                                                                                            |
+| `AppTab` with `link`                                | `NavTabs` + `NavTabsLink`                                                      |                                                                                                                                                            |
+
+## Dashboard shared components
+
+| Dashboard                                                                                                | @flycommerce/ui                                            |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `shared/page-heading` + `page-previous-link`                                                             | `PageHeader` + `PageHeaderBack`                            |
+| `shared/bottom-action-bar`                                                                               | `SaveBar`                                                  |
+| `shared/form-section`                                                                                    | `Card` with `CardHeader className="border-b"`              |
+| `shared/server-side-table`, `datatable`, `simple-datatable`, `table-card`, `table-loader`                | `DataTable`                                                |
+| `shared/server-side-pagination`, `cursor-pagination`                                                     | `DataTable pagination` (offset or `mode: "cursor"`)        |
+| `shared/confirm-modal`, `delete-confirmation-modal`, `navigation-blocker-modal`, `unsaved-warning-modal` | `ConfirmDialog`                                            |
+| `shared/empty-items`                                                                                     | `Empty`                                                    |
+| `shared/multitab-filters`                                                                                | `Tabs` (`variant="line"` for underline)                    |
+| `form/SearchInput`                                                                                       | `SearchInput`                                              |
+| `shared/status-badge`, `shipment-status-badge`, `payment-status-button`                                  | `StatusBadge`                                              |
+| `shared/loader`                                                                                          | `LoadingOverlay` / `Skeleton`                              |
+| `shared/copy-to-clipboard`, `copy-url-button`                                                            | `CopyButton`                                               |
+| `shared/rating`                                                                                          | `Rating`                                                   |
+| `shared/image`                                                                                           | `ImageWithFallback`                                        |
+| `shared/filter-button`                                                                                   | `Button variant="outline"` with a dot `Badge` or an `Icon` |
+
+Stay in the dashboard (business-specific): media library and `dashboard-image-uploader` (built on `Dropzone`), category pickers, Google category picker, country/location inputs, SEO/OG/Twitter previews, language selector, login form, plan-limit alert, rich-text editor (tiptap).
+
+## Other libraries
+
+| Library                         | Replace with                              |
+| ------------------------------- | ----------------------------------------- |
+| `@headlessui/react` Disclosure  | `Collapsible` / `Accordion`               |
+| Headless UI Listbox             | `Select`                                  |
+| Headless UI Combobox            | `Combobox`                                |
+| Headless UI RadioGroup (cards)  | `RadioCardGroup`                          |
+| Headless UI Dialog / Transition | `Dialog` / `Sheet`                        |
+| `react-select`                  | `Combobox` / `AsyncCombobox` / `TagInput` |
+| `react-date-range`              | `DateRangePicker`                         |
+| `react-flatpickr`               | `DatePicker` (`withTime`)                 |
+| `react-dropzone`                | `Dropzone`                                |
+| `react-icons`                   | `Icon` (semantic names in `icons.md`)     |
