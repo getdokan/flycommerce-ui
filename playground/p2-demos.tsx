@@ -279,7 +279,7 @@ export function CopyButtonDemo() {
         trendy.flycommerce.com
       </code>
       <CopyButton value="https://trendy.flycommerce.com" label="Copy URL" />
-      <CopyButton value="sk_live_51ExampleKey" iconOnly label="Copy API key" />
+      <CopyButton value="fc_demo_0123456789abcdef" iconOnly label="Copy API key" />
     </div>
   )
 }
