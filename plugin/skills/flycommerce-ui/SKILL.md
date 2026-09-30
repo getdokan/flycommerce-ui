@@ -52,6 +52,8 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Filtering a table | `TableFilters` (filter icon in the toolbar → right-side sheet; field types `select`, `multi`, `range`, `date-range`, `boolean`; applies on "Apply") + `ActiveFilters` in `subToolbar` (removable chips, "Clear all"). Status tabs sit above the table, not inside the sheet. |
 | Product / category / vendor cell with a thumbnail | `MediaCell src title description` ("by {vendor}"); image falls back to a placeholder |
 | Nested rows (category tree) | `DataTable getSubRows={(row) => row.children} defaultExpanded` |
+| Manually ordered lists (brands, menu items, featured products) | `DataTable onReorder={(rows, { from, to }) => …} getRowLabel={(row) => row.name}` adds drag handles (mouse and keyboard, announced by name); persist the new order yourself. Disabled while a column sort is active. |
+| Table card with its own heading | `DataTable title="Brand List"`; pagination sits under the card by default (`paginationPlacement="inside"` to move it into the card footer) |
 | Status of an order/product/vendor | `StatusBadge status="Pending"` (maps the word to a tone; pass `tone` or `tones` to override) |
 | Other small labels | `Badge variant="success\|warning\|destructive\|default\|secondary\|soon\|outline"`, optional `dot` |
 | Primary / secondary / quiet / danger actions | `Button` (default = blue primary, `outline`, `secondary` = blue outline, `ghost`, `destructive` = red text, `destructive-solid`, `link`); `size="sm"` in toolbars; `loading` while saving |
