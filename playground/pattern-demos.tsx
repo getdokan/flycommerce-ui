@@ -19,7 +19,9 @@ import {
   DropdownMenuTrigger,
   Icon,
   ICON_GROUPS,
+  ActiveFilters,
   Label,
+  MediaCell,
   PageHeader,
   PageHeaderActions,
   PageHeaderBack,
@@ -33,7 +35,11 @@ import {
   Tabs,
   TabsList,
   TabsTrigger,
+  TableFilters,
   type ColumnDef,
+  type FilterField,
+  type FilterValues,
+  type NumberRange,
   type IconName,
 } from "@/index"
 
@@ -41,9 +47,11 @@ type Product = {
   id: string
   name: string
   vendor: string
+  image?: string
   price: number
   stock: number
   status: "Published" | "Draft" | "Pending"
+  featured: boolean
 }
 
 const VENDORS = [
@@ -74,9 +82,12 @@ const PRODUCTS: Product[] = Array.from({ length: 42 }, (_, i) => ({
   id: String(i + 1),
   name: `${NAMES[i % NAMES.length]}${i >= NAMES.length ? ` #${Math.floor(i / NAMES.length) + 1}` : ""}`,
   vendor: VENDORS[i % VENDORS.length],
+  // Every seventh product has no photo, to show the fallback.
+  image: i % 7 === 6 ? undefined : `https://picsum.photos/seed/fc-${i}/80/80`,
   price: Math.round((5 + ((i * 37) % 120) + (i % 7) * 0.33) * 100) / 100,
   stock: (i * 13) % 5 === 0 ? 0 : 5 + ((i * 17) % 60),
   status: STATUSES[i % STATUSES.length],
+  featured: i % 3 === 0,
 }))
 
 const money = new Intl.NumberFormat("en-US", {
@@ -88,9 +99,15 @@ const productColumns: ColumnDef<Product, unknown>[] = [
   {
     accessorKey: "name",
     header: "Product",
-    cell: ({ row }) => <span className="font-[560]">{row.original.name}</span>,
+    cell: ({ row }) => (
+      <MediaCell
+        src={row.original.image}
+        title={row.original.name}
+        description={`by ${row.original.vendor}`}
+        className="max-w-72"
+      />
+    ),
   },
-  { accessorKey: "vendor", header: "Vendor" },
   {
     accessorKey: "price",
     header: "Price",
@@ -142,24 +159,63 @@ const productColumns: ColumnDef<Product, unknown>[] = [
   },
 ]
 
+const productFilters: FilterField[] = [
+  {
+    key: "stock",
+    label: "Stock",
+    type: "select",
+    options: [
+      { value: "in", label: "In stock" },
+      { value: "out", label: "Out of stock" },
+    ],
+  },
+  {
+    key: "vendor",
+    label: "Vendor",
+    type: "multi",
+    options: VENDORS.map((v) => ({ value: v, label: v })),
+  },
+  { key: "price", label: "Price", type: "range", prefix: "$", min: 0 },
+  { key: "created", label: "Created", type: "date-range" },
+  {
+    key: "featured",
+    label: "Featured",
+    type: "boolean",
+    description: "Only featured products",
+  },
+]
+
 export function DataTableDemo() {
   const [query, setQuery] = React.useState("")
   const [status, setStatus] = React.useState("all")
+  const [filters, setFilters] = React.useState<FilterValues>({})
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(10)
   const [loading, setLoading] = React.useState(false)
   const [failed, setFailed] = React.useState(false)
   const [confirmIds, setConfirmIds] = React.useState<string[] | null>(null)
 
+  const price = filters.price as NumberRange | undefined
+  const vendors = filters.vendor as string[] | undefined
   const filtered = PRODUCTS.filter(
     (p) =>
       (status === "all" || p.status.toLowerCase() === status) &&
-      p.name.toLowerCase().includes(query.toLowerCase())
+      p.name.toLowerCase().includes(query.toLowerCase()) &&
+      (!filters.stock ||
+        (filters.stock === "in" ? p.stock > 0 : p.stock === 0)) &&
+      (!vendors?.length || vendors.includes(p.vendor)) &&
+      (price?.min === undefined || p.price >= price.min) &&
+      (price?.max === undefined || p.price <= price.max) &&
+      (!filters.featured || p.featured)
   )
   const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const applyFilters = (next: FilterValues) => {
+    setFilters(next)
+    setPage(1)
+  }
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-3">
+    <div className="flex w-full min-w-0 flex-col gap-4">
       <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
         <label className="flex items-center gap-2">
           <Switch checked={loading} onCheckedChange={setLoading} /> Loading
@@ -169,6 +225,20 @@ export function DataTableDemo() {
         </label>
         <span>Search for “zzz” to see the empty state.</span>
       </div>
+      <Tabs
+        value={status}
+        onValueChange={(value) => {
+          setStatus(value)
+          setPage(1)
+        }}
+      >
+        <TabsList className="max-w-full overflow-x-auto">
+          <TabsTrigger value="all">All products</TabsTrigger>
+          <TabsTrigger value="published">Published</TabsTrigger>
+          <TabsTrigger value="draft">Draft</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
+        </TabsList>
+      </Tabs>
       <DataTable
         columns={productColumns}
         data={pageRows}
@@ -194,27 +264,13 @@ export function DataTableDemo() {
         toolbar={
           <>
             <SearchInput
-              containerClassName="w-full sm:w-64"
+              containerClassName="w-full sm:w-72"
               placeholder="Search products"
               onSearch={(value) => {
                 setQuery(value)
                 setPage(1)
               }}
             />
-            <Tabs
-              value={status}
-              onValueChange={(value) => {
-                setStatus(value)
-                setPage(1)
-              }}
-            >
-              <TabsList>
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="published">Published</TabsTrigger>
-                <TabsTrigger value="draft">Draft</TabsTrigger>
-                <TabsTrigger value="pending">Pending</TabsTrigger>
-              </TabsList>
-            </Tabs>
             <div className="ms-auto flex gap-2">
               <Button variant="outline" size="sm">
                 <DownloadIcon /> Import
@@ -222,8 +278,20 @@ export function DataTableDemo() {
               <Button variant="outline" size="sm">
                 <UploadIcon /> Export
               </Button>
+              <TableFilters
+                fields={productFilters}
+                value={filters}
+                onValueChange={applyFilters}
+              />
             </div>
           </>
+        }
+        subToolbar={
+          <ActiveFilters
+            fields={productFilters}
+            value={filters}
+            onValueChange={applyFilters}
+          />
         }
         bulkActions={(selected) => (
           <Button
@@ -260,6 +328,96 @@ export function DataTableDemo() {
         }}
       />
     </div>
+  )
+}
+
+type Category = {
+  id: string
+  name: string
+  image?: string
+  products: number
+  status: "Published" | "Draft"
+  children?: Category[]
+}
+
+const CATEGORIES: Category[] = [
+  {
+    id: "c1",
+    name: "Toys Kid",
+    image: "https://picsum.photos/seed/fc-cat-1/80/80",
+    products: 24,
+    status: "Published",
+    children: [
+      {
+        id: "c1a",
+        name: "Wireless Charging Pad",
+        products: 180,
+        status: "Published",
+      },
+      {
+        id: "c1b",
+        name: "Abstract Art",
+        image: "https://picsum.photos/seed/fc-cat-2/80/80",
+        products: 423,
+        status: "Published",
+        children: [
+          {
+            id: "c1b1",
+            name: "Personalized Leather",
+            products: 734,
+            status: "Draft",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "c2",
+    name: "Eco-Friendly Toothbrush",
+    image: "https://picsum.photos/seed/fc-cat-3/80/80",
+    products: 0,
+    status: "Published",
+  },
+  { id: "c3", name: "Custom Dog Collar", products: 56, status: "Draft" },
+]
+
+const categoryColumns: ColumnDef<Category, unknown>[] = [
+  {
+    accessorKey: "name",
+    header: "Category",
+    cell: ({ row }) => (
+      <MediaCell src={row.original.image} title={row.original.name} size={32} />
+    ),
+  },
+  {
+    accessorKey: "products",
+    header: "Products",
+    meta: { align: "end" },
+    cell: ({ row }) =>
+      row.original.products === 0 ? "No products" : row.original.products,
+  },
+  {
+    accessorKey: "status",
+    header: "Visibility",
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
+  },
+]
+
+export function DataTableTreeDemo() {
+  return (
+    <DataTable
+      columns={categoryColumns}
+      data={CATEGORIES}
+      getRowId={(row) => row.id}
+      getSubRows={(row) => row.children}
+      defaultExpanded={true}
+      toolbar={
+        <SearchInput
+          containerClassName="w-full sm:w-72"
+          placeholder="Search categories"
+        />
+      }
+    />
   )
 }
 
