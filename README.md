@@ -12,7 +12,7 @@ Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com
 - **Accessible by default.** Keyboard support throughout, focus rings for keyboard users only, labelled controls, screen-reader announcements for drag and drop and uploads.
 - **Ready for every market.** RTL layouts, and every user-visible string can be translated through props.
 - **Mobile first.** Every component is checked at 375px.
-- **Tree-shakeable ESM** with TypeScript types. Import from the root or per component.
+- **Lightweight.** Tree-shakeable ESM with TypeScript types: an app pays only for what it imports (a `Button` adds about 14 KB gzipped). Heavy extras like charts are opt-in.
 
 ## Contents
 
@@ -37,6 +37,7 @@ Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com
 | React         | 19                                                                                    |
 | Styling       | Tailwind CSS 4 (recommended), or the precompiled stylesheet for apps without Tailwind |
 | Module format | ESM only                                                                              |
+| Charts        | Optional: install `recharts` 3 only if you use `@flycommerce/ui/chart`                |
 | Browsers      | Those Tailwind CSS 4 supports: Chrome 111+, Safari 16.4+, Firefox 128+                |
 
 ## Installation
@@ -156,12 +157,26 @@ The live gallery shows every component, variant and state in light, dark, RTL an
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Actions               | `Button`, `ButtonGroup`, `Toggle`, `ToggleGroup`, `CopyButton`                                                                                                                                                                                                                                                                               |
 | Forms                 | `Field`, `Input`, `InputGroup`, `Textarea`, `PasswordInput`, `SearchInput`, `Select`, `Combobox`, `AsyncCombobox`, `RichSelect`, `TreeSelect`, `TagInput`, `OptionListEditor`, `Checkbox`, `RadioGroup`, `RadioCard`, `Switch`, `SwitchField`, `Slider`, `InputOTP`, `DatePicker`, `DateRangePicker`, `RichTextEditor`, `Dropzone`, `Rating` |
-| Data display          | `DataTable`, `Table`, `TableFilters`, `ActiveFilters`, `MediaCell`, `StatCard`, `Badge`, `StatusBadge`, `Avatar`, `ImageWithFallback`, `ChartContainer`, `Item`, `Kbd`                                                                                                                                                                       |
+| Data display          | `DataTable`, `Table`, `TableFilters`, `ActiveFilters`, `MediaCell`, `StatCard`, `Badge`, `StatusBadge`, `Avatar`, `ImageWithFallback`, `Item`, `Kbd`                                                                                                                                                                                         |
 | Media                 | `MediaPickerDialog`, `MediaGrid`, `MediaTile`, `MediaDetailsPanel`, `UploadQueue`, `VideoUrlList`                                                                                                                                                                                                                                            |
 | Feedback              | `Alert`, `toast`, `Progress`, `Skeleton`, `Spinner`, `Empty`, `LoadingOverlay`                                                                                                                                                                                                                                                               |
 | Overlays              | `Dialog`, `ConfirmDialog`, `AlertDialog`, `Sheet`, `Drawer`, `Popover`, `Tooltip`, `InfoTooltip`, `HoverCard`, `DropdownMenu`, `ContextMenu`                                                                                                                                                                                                 |
 | Navigation and layout | `Sidebar`, `PageHeader`, `NavTabs`, `Tabs`, `Breadcrumb`, `Pagination`, `Card`, `Accordion`, `Collapsible`, `Separator`, `ScrollArea`, `ResizablePanelGroup`, `SaveBar`                                                                                                                                                                      |
 | Foundations           | `Icon`, design tokens, `type-*` typography utilities                                                                                                                                                                                                                                                                                         |
+
+**Charts** live in their own entry point so apps that don't chart never install or bundle a chart library:
+
+```bash
+pnpm add recharts
+```
+
+```tsx
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@flycommerce/ui/chart"
+```
 
 ## Recipes
 

@@ -207,7 +207,10 @@ function extract(
         }
         const imp = file.imports.get(name)
         if (imp && !imp.module.startsWith("./")) {
-          const module = imp.module === "@/index" ? LIBRARY : imp.module
+          const module =
+            imp.module === "@/index"
+              ? LIBRARY
+              : imp.module.replace(/^@\/components\/ui\//, `${LIBRARY}/`)
           if (!imports.has(module)) imports.set(module, new Set())
           const spec =
             imp.imported === name ? name : `${imp.imported} as ${name}`
