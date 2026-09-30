@@ -2,7 +2,7 @@
 
 FlyCommerce's design system: React components built on [shadcn/ui](https://ui.shadcn.com) and Radix, restyled to the FlyCommerce design guideline. The dashboard, the hub and third-party apps all install this package.
 
-> Status: **pre-release (0.0.0, private)**. The components are shadcn's originals. The theme tokens are shadcn's defaults until the Figma variables are applied.
+> Status: **pre-release (0.0.0, private)**. Theme tokens come from the PM prototype (`jamil-mahmud/flycommerce-prototype`), with the P3 Figma file where the prototype is silent. Component shapes are still shadcn's originals and are being restyled next.
 
 ## Install
 
