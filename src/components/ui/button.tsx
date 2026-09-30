@@ -20,6 +20,8 @@ const buttonVariants = cva(
           "bg-transparent text-foreground hover:bg-page aria-expanded:bg-page",
         destructive:
           "bg-transparent text-destructive hover:bg-destructive-subtle focus-visible:ring-destructive/30",
+        "destructive-solid":
+          "border-destructive bg-destructive text-white hover:border-destructive-strong hover:bg-destructive-strong focus-visible:ring-destructive/30",
         link: "h-auto border-0 bg-transparent p-0 font-semibold text-primary hover:underline",
       },
       size: {

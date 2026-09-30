@@ -100,8 +100,18 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
 
 function FieldLabel({
   className,
+  required = false,
+  optional = false,
+  optionalLabel = "(Optional)",
+  children,
   ...props
-}: React.ComponentProps<typeof Label>) {
+}: React.ComponentProps<typeof Label> & {
+  /** Appends a red asterisk; pair it with `required` on the control itself. */
+  required?: boolean
+  /** Appends a quiet "(Optional)" hint. */
+  optional?: boolean
+  optionalLabel?: React.ReactNode
+}) {
   return (
     <Label
       data-slot="field-label"
@@ -111,7 +121,19 @@ function FieldLabel({
         className
       )}
       {...props}
-    />
+    >
+      {children}
+      {required && (
+        <span aria-hidden="true" className="-ms-1.5 text-destructive">
+          *
+        </span>
+      )}
+      {optional && !required && (
+        <span className="-ms-1 font-normal text-muted-foreground">
+          {optionalLabel}
+        </span>
+      )}
+    </Label>
   )
 }
 
