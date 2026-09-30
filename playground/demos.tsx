@@ -27,6 +27,16 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import { toast } from "sonner"
 
 import {
+  ConfirmDialogDemo,
+  DataTableDemo,
+  IconsDemo,
+  PageHeaderDemo,
+  SaveBarDemo,
+  SearchInputDemo,
+  StatusBadgeDemo,
+} from "./pattern-demos"
+
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -251,6 +261,13 @@ const SOURCES: Record<string, Source> = {
   "dropdown-menu": "prototype",
   pagination: "prototype",
   sidebar: "prototype",
+  icons: "prototype",
+  "page-header": "prototype",
+  "save-bar": "prototype",
+  "confirm-dialog": "prototype",
+  "search-input": "prototype",
+  "status-badge": "prototype",
+  "data-table": "prototype",
 }
 
 const orders = [
@@ -325,6 +342,52 @@ function CalendarDemo() {
 }
 
 export const demos: Demo[] = [
+  // Foundations
+  {
+    id: "icons",
+    title: "Icons",
+    group: "Foundations",
+    render: () => <IconsDemo />,
+  },
+
+  // Patterns
+  {
+    id: "page-header",
+    title: "Page header",
+    group: "Patterns",
+    render: () => <PageHeaderDemo />,
+  },
+  {
+    id: "data-table",
+    title: "Data table",
+    group: "Patterns",
+    render: () => <DataTableDemo />,
+  },
+  {
+    id: "confirm-dialog",
+    title: "Confirm dialog",
+    group: "Patterns",
+    render: () => <ConfirmDialogDemo />,
+  },
+  {
+    id: "save-bar",
+    title: "Save bar",
+    group: "Patterns",
+    render: () => <SaveBarDemo />,
+  },
+  {
+    id: "search-input",
+    title: "Search input",
+    group: "Patterns",
+    render: () => <SearchInputDemo />,
+  },
+  {
+    id: "status-badge",
+    title: "Status badge",
+    group: "Patterns",
+    render: () => <StatusBadgeDemo />,
+  },
+
   // Actions
   {
     id: "button",
@@ -581,7 +644,9 @@ export const demos: Demo[] = [
     render: () => (
       <div className="grid w-full gap-6 sm:grid-cols-2">
         <Field>
-          <FieldLabel htmlFor="store">Store name</FieldLabel>
+          <FieldLabel htmlFor="store" required>
+            Store name
+          </FieldLabel>
           <Input id="store" placeholder="My store" />
           <FieldDescription>Shown on invoices and emails.</FieldDescription>
         </Field>
@@ -591,7 +656,9 @@ export const demos: Demo[] = [
           <FieldError>Enter a valid email address.</FieldError>
         </Field>
         <Field>
-          <FieldLabel htmlFor="disabled-input">Store URL</FieldLabel>
+          <FieldLabel htmlFor="disabled-input" optional>
+            Store URL
+          </FieldLabel>
           <Input
             id="disabled-input"
             disabled
@@ -697,6 +764,10 @@ export const demos: Demo[] = [
           <div className="flex items-center gap-2">
             <Checkbox id="backorder" />
             <Label htmlFor="backorder">Allow backorders</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox id="some" checked="indeterminate" />
+            <Label htmlFor="some">Some selected</Label>
           </div>
           <div className="flex items-center gap-2">
             <Checkbox id="locked" disabled />
@@ -1125,6 +1196,26 @@ export const demos: Demo[] = [
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        {(["sm", "lg", "xl"] as const).map((size) => (
+          <Dialog key={size}>
+            <DialogTrigger asChild>
+              <Button variant="ghost">Size {size}</Button>
+            </DialogTrigger>
+            <DialogContent size={size}>
+              <DialogHeader>
+                <DialogTitle>Dialog size “{size}”</DialogTitle>
+                <DialogDescription>
+                  sm 400px · default 480px · lg 640px · xl 800px.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button>Done</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        ))}
       </Row>
     ),
   },

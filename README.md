@@ -44,6 +44,22 @@ Every component can also be imported on its own: `import { Button } from "@flyco
 **Dark mode:** set `data-theme="dark"` (or the `dark` class) on any ancestor.
 **RTL:** set `dir="rtl"` and wrap the app in `<DirectionProvider dir="rtl">`.
 
+### Icons
+
+Draw icons through the semantic registry, never a lucide component directly:
+
+```tsx
+import { Icon } from "@flycommerce/ui"
+
+<Icon name="orders" />
+```
+
+The full list is on the gallery's Icons page. Swapping a glyph is a single edit in `src/components/icon.tsx`.
+
+### Patterns
+
+Beyond the shadcn primitives the package ships `PageHeader`, `DataTable` (TanStack Table: selection, sorting, loading, empty and error states, offset or cursor pagination, bulk actions), `ConfirmDialog`, `SaveBar`, `SearchInput` and `StatusBadge`.
+
 ## Develop
 
 ```bash

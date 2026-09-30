@@ -148,7 +148,7 @@ export default function App() {
                 </Button>
               </header>
 
-              <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+              <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
                 <p className="text-sm text-muted-foreground">
                   Each section shows where its design comes from: the PM
                   prototype, the P3 Figma file, or shadcn&apos;s default where
@@ -158,7 +158,7 @@ export default function App() {
                   <section
                     key={d.id}
                     id={d.id}
-                    className="flex scroll-mt-20 flex-col gap-4 rounded-xl border bg-card p-4 shadow-1 sm:p-6"
+                    className="flex min-w-0 scroll-mt-20 flex-col gap-4 rounded-xl border bg-card p-4 shadow-1 sm:p-6"
                   >
                     <div className="flex items-center gap-2">
                       <h2 className="text-[15px] font-semibold">{d.title}</h2>
@@ -169,12 +169,12 @@ export default function App() {
                         {SOURCE_BADGE[d.source ?? "default"].label}
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap items-start gap-3">
+                    <div className="flex min-w-0 flex-wrap items-start gap-3">
                       {d.render()}
                     </div>
                   </section>
                 ))}
-              </main>
+              </div>
             </SidebarInset>
           </SidebarProvider>
         </div>
