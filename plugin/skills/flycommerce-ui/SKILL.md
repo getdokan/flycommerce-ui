@@ -71,6 +71,9 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Search box | `SearchInput onSearch` (debounced, clearable) |
 | Pick one of a few fixed options | `Select`; many options with typing → `Combobox`; options from an API → `AsyncCombobox` (`loadOptions`) |
 | Free-text multi values (tags, emails) | `TagInput` |
+| Pick from a hierarchy (category, parent category) | `TreeSelect options value onValueChange` (nodes: `value`, `label`, `count`, `children`). Drills level by level with a back header, searches every level, shows the value as "Parent › Child"; Cancel / Confirm by default, `confirm={false}` to apply on click (filters). Pass `empty` for the no-data call to action. A "+ Add Category" link sits beside the `FieldLabel`, not inside the picker. |
+| Options that need an icon or a second line (attribute type, attribute picker) | `RichSelect options value onValueChange` (options: `icon`, `description`); `multiple` for checkboxes, `searchable`, `onCreate` for "Add New" (gets the typed text), `footer` for settings shown inside the menu. Plain text options → `Select`. |
+| Ordered list of values the user types (attribute values, choice options) | `OptionListEditor value onValueChange` — Enter adds, duplicates are refused, rows drag (or Space + arrows) to reorder, edit inline, remove; `validate` returns an error message. Unordered short values → `TagInput`. |
 | Option cards (Physical vs Digital product) | `RadioCardGroup` + `RadioCard title description` |
 | On/off setting with explanation | `SwitchField title description loading` (bare `Switch` only inside tables) |
 | Date / date+time / range with presets | `DatePicker` (`withTime`), `DateRangePicker` (`presets`) |

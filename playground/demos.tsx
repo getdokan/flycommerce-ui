@@ -44,6 +44,11 @@ import {
   RichTextEditorDemo,
 } from "./modal-demos"
 import {
+  OptionListEditorDemo,
+  RichSelectDemo,
+  TreeSelectDemo,
+} from "./product-demos"
+import {
   AsyncComboboxDemo,
   CopyButtonDemo,
   DatePickerDemo,
@@ -317,6 +322,11 @@ const KEYWORDS: Record<string, string> = {
   "password-input": "password show hide eye",
   "date-picker": "date time range calendar presets",
   dropzone: "upload file drag drop",
+  "tree-select": "category picker hierarchy nested drill cascader parent",
+  "rich-select":
+    "attribute type picker icon description create add new multi select settings",
+  "option-list-editor":
+    "attribute values choices sortable list reorder drag enter to add",
   "rich-text-editor":
     "wysiwyg tiptap description textarea formatting bold html",
   "modal-figma": "dialog popup new category form",
@@ -375,6 +385,9 @@ const SOURCES: Record<string, Source> = {
   "date-picker": "composite",
   dropzone: "composite",
   "rich-text-editor": "figma",
+  "tree-select": "figma",
+  "rich-select": "figma",
+  "option-list-editor": "figma",
   "modal-figma": "figma",
   "modal-use-cases": "composite",
   "copy-button": "composite",
@@ -566,6 +579,24 @@ export const demos: Demo[] = [
     title: "Date & range pickers",
     group: "Patterns",
     render: () => <DatePickerDemo />,
+  },
+  {
+    id: "tree-select",
+    title: "Tree select (category picker)",
+    group: "Forms",
+    render: () => <TreeSelectDemo />,
+  },
+  {
+    id: "rich-select",
+    title: "Rich select",
+    group: "Forms",
+    render: () => <RichSelectDemo />,
+  },
+  {
+    id: "option-list-editor",
+    title: "Option list editor",
+    group: "Forms",
+    render: () => <OptionListEditorDemo />,
   },
   {
     id: "rich-text-editor",
