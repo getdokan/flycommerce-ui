@@ -48,7 +48,10 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Need | Use |
 |---|---|
 | Page title, description, back link, primary actions | `PageHeader`, `PageHeaderBack` (`asChild` with the router `Link`), `PageHeaderContent`, `PageHeaderTitle`, `PageHeaderDescription`, `PageHeaderActions` |
-| List of records with search, filters, selection, bulk actions, pagination | `DataTable` (TanStack `ColumnDef[]`; `toolbar`, `enableRowSelection`, `bulkActions`, `sortable`, `pagination` offset or cursor, `loading`, `error`, `empty`) |
+| List of records with search, filters, selection, bulk actions, pagination | `DataTable` (TanStack `ColumnDef[]`; `toolbar`, `subToolbar`, `enableRowSelection`, `bulkActions`, `sortable`, `pagination` offset or cursor, `loading`, `error`, `empty`) |
+| Filtering a table | `TableFilters` (filter icon in the toolbar → right-side sheet; field types `select`, `multi`, `range`, `date-range`, `boolean`; applies on "Apply") + `ActiveFilters` in `subToolbar` (removable chips, "Clear all"). Status tabs sit above the table, not inside the sheet. |
+| Product / category / vendor cell with a thumbnail | `MediaCell src title description` ("by {vendor}"); image falls back to a placeholder |
+| Nested rows (category tree) | `DataTable getSubRows={(row) => row.children} defaultExpanded` |
 | Status of an order/product/vendor | `StatusBadge status="Pending"` (maps the word to a tone; pass `tone` or `tones` to override) |
 | Other small labels | `Badge variant="success\|warning\|destructive\|default\|secondary\|soon\|outline"`, optional `dot` |
 | Primary / secondary / quiet / danger actions | `Button` (default = blue primary, `outline`, `secondary` = blue outline, `ghost`, `destructive` = red text, `destructive-solid`, `link`); `size="sm"` in toolbars; `loading` while saving |
@@ -58,6 +61,7 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Side panel / detail drawer | `Sheet` (side) or `Drawer` (bottom, mobile) |
 | Unsaved changes on a form page | `SaveBar open={isDirty}` with `onSave`, `onDiscard`, `loading` |
 | Form field | `Field` > `FieldLabel htmlFor required\|optional` + control + `FieldDescription` / `FieldError` |
+| Long text | `Textarea`; with a limit → `maxLength` + `showCount` ("12/500 characters") |
 | Text / number / email | `Input`; with prefix/suffix (`$`, `USD`, icon) → `InputGroup` + `InputGroupAddon` + `InputGroupInput` |
 | Password | `PasswordInput` |
 | Search box | `SearchInput onSearch` (debounced, clearable) |
@@ -79,6 +83,14 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 | Stars | `Rating value` (display) / `Rating value onValueChange` (input) |
 | Product/store image | `ImageWithFallback src alt aspectRatio` |
 
+## Typography
+
+Inter throughout. Use the `type-*` utilities for size, weight and spacing and pair them with a colour utility; don't hand-pick `text-[13px] font-semibold`:
+
+`type-page-title` (24/700) · `type-overview-value` (24/600) · `type-kpi-value` (18/700) · `type-card-title` (15/640) · `type-section-label` (14/600) · `type-body` (14/400) · `type-row-title` (13.5/560) · `type-field-label` (12.5/560) · `type-kpi-label` (12/400) · `type-hint` (11.5/400) · `type-badge` (11.5/600) · `type-table-header` (11/700 uppercase) · `type-group-heading` (10.5/650 uppercase).
+
+Components already apply these internally (`PageHeaderTitle`, `CardTitle`, `FieldLabel`, table headers…); reach for the utilities only in custom layout.
+
 ## Screen recipes
 
 **List page**
@@ -93,6 +105,7 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
     <Button asChild><Link to="/products/new"><Icon name="add" /> {t("Add product")}</Link></Button>
   </PageHeaderActions>
 </PageHeader>
+<Tabs value={status} onValueChange={setStatus}><TabsList>…status tabs…</TabsList></Tabs>
 <DataTable
   columns={columns}
   data={data?.items ?? []}
@@ -101,9 +114,13 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
   enableRowSelection
   bulkActions={(rows) => <Button size="sm" variant="destructive" onClick={() => askDelete(rows)}>{t("Delete")}</Button>}
   toolbar={<>
-    <SearchInput containerClassName="w-full sm:w-64" placeholder={t("Search products")} onSearch={setSearch} />
-    <Tabs value={status} onValueChange={setStatus}><TabsList>…</TabsList></Tabs>
+    <SearchInput containerClassName="w-full sm:w-72" placeholder={t("Search products")} onSearch={setSearch} />
+    <div className="ms-auto flex gap-2">
+      <Button variant="outline" size="sm"><Icon name="import" /> {t("Import")}</Button>
+      <TableFilters fields={filterFields} value={filters} onValueChange={setFilters} />
+    </div>
   </>}
+  subToolbar={<ActiveFilters fields={filterFields} value={filters} onValueChange={setFilters} />}
   pagination={{ page, pageSize, total: data?.total ?? 0, onPageChange: setPage, onPageSizeChange: setPageSize }}
   labels={{ previous: t("Previous"), next: t("Next"), showing: (a, b, n) => t("Showing {{a}} to {{b}} of {{n}}", { a, b, n }) }}
 />

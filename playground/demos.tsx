@@ -29,12 +29,14 @@ import { toast } from "sonner"
 import {
   ConfirmDialogDemo,
   DataTableDemo,
+  DataTableTreeDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
   SearchInputDemo,
   StatusBadgeDemo,
 } from "./pattern-demos"
+import { ColorsDemo, TypographyDemo } from "./foundation-demos"
 import {
   AsyncComboboxDemo,
   CopyButtonDemo,
@@ -289,8 +291,12 @@ const KEYWORDS: Record<string, string> = {
   "navigation-menu": "menubar nav mega menu",
   sidebar: "navigation nav rail",
   icons: "icon glyph lucide svg",
+  typography: "type font text heading size scale inter",
+  colors: "color colour palette token swatch theme",
   "page-header": "title heading back link actions",
-  "data-table": "table grid tanstack sort select bulk pagination",
+  "data-table":
+    "table grid tanstack sort select bulk pagination filter sidebar thumbnail image",
+  "data-table-tree": "tree nested category expand hierarchy",
   "confirm-dialog": "confirm delete modal are you sure",
   "save-bar": "unsaved changes discard sticky footer",
   "search-input": "search filter query",
@@ -337,12 +343,15 @@ const SOURCES: Record<string, Source> = {
   pagination: "prototype",
   sidebar: "prototype",
   icons: "prototype",
+  typography: "prototype",
+  colors: "prototype",
   "page-header": "prototype",
   "save-bar": "prototype",
   "confirm-dialog": "prototype",
   "search-input": "prototype",
   "status-badge": "prototype",
   "data-table": "prototype",
+  "data-table-tree": "figma",
   "radio-card": "prototype",
   "switch-field": "prototype",
   "stat-card": "prototype",
@@ -433,6 +442,18 @@ function CalendarDemo() {
 export const demos: Demo[] = [
   // Foundations
   {
+    id: "typography",
+    title: "Typography",
+    group: "Foundations",
+    render: () => <TypographyDemo />,
+  },
+  {
+    id: "colors",
+    title: "Colors",
+    group: "Foundations",
+    render: () => <ColorsDemo />,
+  },
+  {
     id: "icons",
     title: "Icons",
     group: "Foundations",
@@ -451,6 +472,12 @@ export const demos: Demo[] = [
     title: "Data table",
     group: "Patterns",
     render: () => <DataTableDemo />,
+  },
+  {
+    id: "data-table-tree",
+    title: "Data table: tree rows",
+    group: "Patterns",
+    render: () => <DataTableTreeDemo />,
   },
   {
     id: "confirm-dialog",
@@ -874,7 +901,18 @@ export const demos: Demo[] = [
     title: "Textarea",
     group: "Forms",
     render: () => (
-      <Textarea placeholder="Describe your product" className="w-full" />
+      <div className="grid w-full gap-6 sm:grid-cols-2">
+        <Textarea placeholder="Describe your product" />
+        <Field>
+          <FieldLabel htmlFor="reply">Reply to review</FieldLabel>
+          <Textarea
+            id="reply"
+            placeholder="Write your reply here…"
+            maxLength={500}
+            showCount
+          />
+        </Field>
+      </div>
     ),
   },
   {
