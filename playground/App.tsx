@@ -32,6 +32,7 @@ const SOURCE_BADGE: Record<
 > = {
   prototype: { label: "Prototype", variant: "success" },
   figma: { label: "Figma", variant: "default" },
+  composite: { label: "Composite", variant: "default" },
   default: { label: "shadcn default", variant: "secondary" },
 }
 
