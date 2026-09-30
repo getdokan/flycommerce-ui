@@ -48,6 +48,7 @@ import {
   RichSelectDemo,
   TreeSelectDemo,
 } from "./product-demos"
+import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import {
   AsyncComboboxDemo,
   CopyButtonDemo,
@@ -322,6 +323,10 @@ const KEYWORDS: Record<string, string> = {
   "password-input": "password show hide eye",
   "date-picker": "date time range calendar presets",
   dropzone: "upload file drag drop",
+  "media-picker":
+    "gallery image upload library choose existing video url attachment details",
+  "media-page": "admin media library gallery bulk delete files",
+  "media-parts": "tile thumbnail upload progress queue file",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
@@ -385,6 +390,9 @@ const SOURCES: Record<string, Source> = {
   "date-picker": "composite",
   dropzone: "composite",
   "rich-text-editor": "figma",
+  "media-picker": "figma",
+  "media-page": "composite",
+  "media-parts": "figma",
   "tree-select": "figma",
   "rich-select": "figma",
   "option-list-editor": "figma",
@@ -603,6 +611,24 @@ export const demos: Demo[] = [
     title: "Rich text editor",
     group: "Forms",
     render: () => <RichTextEditorDemo />,
+  },
+  {
+    id: "media-picker",
+    title: "Media picker (Add Media)",
+    group: "Patterns",
+    render: () => <MediaPickerDemo />,
+  },
+  {
+    id: "media-page",
+    title: "Media library page",
+    group: "Patterns",
+    render: () => <MediaPageDemo />,
+  },
+  {
+    id: "media-parts",
+    title: "Media tile & upload rows",
+    group: "Patterns",
+    render: () => <MediaPartsDemo />,
   },
   {
     id: "dropzone",
