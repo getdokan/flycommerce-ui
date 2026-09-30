@@ -14,7 +14,7 @@ Only the **component gallery**: a static website where developers browse every `
 
 |                   |                                                                                                             |
 | ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| Repository        | `github.com/getdokan/flycommerce-ui` (private)                                                              |
+| Repository        | `github.com/getdokan/flycommerce-ui` (public)                                                              |
 | Production branch | `main`                                                                                                      |
 | Node              | **22**                                                                                                      |
 | Package manager   | **pnpm 10.33.0**, pinned in `package.json` (`packageManager`). `corepack enable` picks it up automatically. |
