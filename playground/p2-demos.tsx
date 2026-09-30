@@ -12,6 +12,7 @@ import {
   FieldDescription,
   FieldLabel,
   Icon,
+  ImageWithFallback,
   InfoTooltip,
   LoadingOverlay,
   NavTabs,
@@ -19,6 +20,7 @@ import {
   PasswordInput,
   RadioCard,
   RadioCardGroup,
+  Rating,
   StatCard,
   SwitchField,
   TagInput,
@@ -311,6 +313,58 @@ export function LoadingOverlayDemo() {
           be clicked, and a spinner shows without shifting the layout.
         </p>
       </LoadingOverlay>
+    </div>
+  )
+}
+
+export function RatingDemo() {
+  const [value, setValue] = React.useState(4)
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2 text-sm">
+        <Rating value={4.5} label="Average rating" />
+        <span className="text-muted-foreground">4.5 · 128 reviews</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm">
+        <Rating
+          value={value}
+          onValueChange={setValue}
+          size="lg"
+          label="Your rating"
+        />
+        <span className="text-muted-foreground">Your rating: {value}</span>
+      </div>
+    </div>
+  )
+}
+
+export function ImageDemo() {
+  return (
+    <div className="flex flex-wrap items-end gap-4 text-xs text-muted-foreground">
+      <figure className="flex flex-col gap-1.5">
+        <ImageWithFallback
+          src="https://github.com/shadcn.png"
+          alt="Store logo"
+          containerClassName="size-16"
+        />
+        Loaded
+      </figure>
+      <figure className="flex flex-col gap-1.5">
+        <ImageWithFallback
+          src="https://example.invalid/missing.png"
+          alt="Missing product photo"
+          containerClassName="size-16"
+        />
+        Broken URL
+      </figure>
+      <figure className="flex flex-col gap-1.5">
+        <ImageWithFallback
+          alt="No image"
+          aspectRatio="16 / 9"
+          containerClassName="w-40"
+        />
+        No src, 16:9
+      </figure>
     </div>
   )
 }

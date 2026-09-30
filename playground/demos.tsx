@@ -40,11 +40,13 @@ import {
   CopyButtonDemo,
   DatePickerDemo,
   DropzoneDemo,
+  ImageDemo,
   InfoTooltipDemo,
   LoadingOverlayDemo,
   NavTabsDemo,
   PasswordInputDemo,
   RadioCardDemo,
+  RatingDemo,
   StatCardDemo,
   SwitchFieldDemo,
   TagInputDemo,
@@ -294,6 +296,8 @@ const SOURCES: Record<string, Source> = {
   "copy-button": "composite",
   "info-tooltip": "composite",
   "loading-overlay": "composite",
+  rating: "composite",
+  image: "composite",
 }
 
 const orders = [
@@ -478,6 +482,18 @@ export const demos: Demo[] = [
     title: "Loading overlay",
     group: "Patterns",
     render: () => <LoadingOverlayDemo />,
+  },
+  {
+    id: "rating",
+    title: "Rating",
+    group: "Patterns",
+    render: () => <RatingDemo />,
+  },
+  {
+    id: "image",
+    title: "Image with fallback",
+    group: "Patterns",
+    render: () => <ImageDemo />,
   },
   {
     id: "status-badge",
