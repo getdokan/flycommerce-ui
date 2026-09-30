@@ -85,6 +85,9 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash)
   }, [])
 
+  useHoldLandingScroll()
+  useScrollSpy(visible, setActive)
+
   return (
     <DirectionProvider dir={dir}>
       <TooltipProvider>
@@ -285,4 +288,96 @@ function DemoSection({ demo }: { demo: Demo }) {
       )}
     </section>
   )
+}
+
+/** Highlights the section being read and keeps its sidebar link in view. */
+function useScrollSpy(visible: Demo[], setActive: (id: string) => void) {
+  const ids = visible.map((d) => d.id).join(",")
+
+  React.useEffect(() => {
+    let pending = 0
+    let current = ""
+    const update = () => {
+      pending = 0
+      const sections = ids
+        .split(",")
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => el !== null)
+      // The section whose top has passed just below the sticky header.
+      let id = sections[0]?.id ?? ""
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top > 120) break
+        id = section.id
+      }
+      if (!id || id === current) return
+      current = id
+      setActive(id)
+      if (window.location.hash !== `#${id}`) {
+        window.history.replaceState(null, "", `#${id}`)
+      }
+      const link = document.querySelector<HTMLElement>(
+        `[data-sidebar="content"] a[href="#${CSS.escape(id)}"]`
+      )
+      const list = link?.closest<HTMLElement>('[data-sidebar="content"]')
+      if (link && list) {
+        const linkBox = link.getBoundingClientRect()
+        const listBox = list.getBoundingClientRect()
+        // Scroll only the sidebar, never the page.
+        if (linkBox.top < listBox.top || linkBox.bottom > listBox.bottom) {
+          list.scrollTop +=
+            linkBox.top - listBox.top - listBox.height / 2 + linkBox.height / 2
+        }
+      }
+    }
+    const onScroll = () => {
+      if (!pending) pending = window.setTimeout(update, 50)
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.clearTimeout(pending)
+    }
+  }, [ids, setActive])
+}
+
+/**
+ * Keeps the page on the linked section while it loads. Demos (cmdk scrolls its
+ * first item into view), late layout and scroll restoration all move it otherwise.
+ */
+function useHoldLandingScroll() {
+  React.useEffect(() => {
+    const targetId = window.location.hash.slice(1)
+    let holding = true
+    let timer = 0
+    const pin = () => {
+      if (!holding) return
+      const target = document.getElementById(targetId)
+      if (!target || target.id === demos[0].id) window.scrollTo({ top: 0 })
+      else target.scrollIntoView()
+    }
+    const release = () => {
+      holding = false
+    }
+    // A tab opened in the background starts its window when it's first shown.
+    const startWindow = () => {
+      if (document.hidden || timer) return
+      pin()
+      timer = window.setTimeout(release, 2000)
+    }
+    const userEvents = ["wheel", "touchstart", "keydown", "pointerdown"]
+    userEvents.forEach((type) =>
+      window.addEventListener(type, release, { passive: true, once: true })
+    )
+    window.addEventListener("scroll", pin, { passive: true })
+    document.addEventListener("visibilitychange", startWindow)
+    const first = window.setTimeout(startWindow, 0)
+    return () => {
+      release()
+      window.clearTimeout(first)
+      window.clearTimeout(timer)
+      window.removeEventListener("scroll", pin)
+      document.removeEventListener("visibilitychange", startWindow)
+      userEvents.forEach((type) => window.removeEventListener(type, release))
+    }
+  }, [])
 }
