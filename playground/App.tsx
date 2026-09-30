@@ -43,8 +43,6 @@ const SOURCE_BADGE: Record<
   default: { label: "shadcn default", variant: "secondary" },
 }
 
-const designedCount = demos.filter((d) => d.source !== "default").length
-
 export default function App() {
   const { theme, setTheme } = useTheme()
   const [dir, setDir] = React.useState<"ltr" | "rtl">("ltr")
@@ -172,9 +170,6 @@ export default function App() {
                 <span className="hidden text-sm font-semibold sm:inline">
                   Component gallery
                 </span>
-                <Badge variant="success" className="hidden sm:inline-flex">
-                  {designedCount}/{demos.length} designed
-                </Badge>
                 <div className="flex-1" />
                 <div className="flex items-center gap-2">
                   <Switch
