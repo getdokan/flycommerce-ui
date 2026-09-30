@@ -1,5 +1,5 @@
 import * as React from "react"
-import { MoonIcon, SunIcon } from "lucide-react"
+import { MoonIcon, SearchIcon, SunIcon } from "lucide-react"
 
 import {
   Badge,
@@ -12,6 +12,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarInput,
   SidebarInset,
   SidebarMenu,
   SidebarMenuBadge,
@@ -42,9 +43,30 @@ export default function App() {
   const { theme, setTheme } = useTheme()
   const [dir, setDir] = React.useState<"ltr" | "rtl">("ltr")
   const [pendingOnly, setPendingOnly] = React.useState(false)
-  const visible = pendingOnly
-    ? demos.filter((d) => d.source === "default")
-    : demos
+  const [query, setQuery] = React.useState("")
+  const searchRef = React.useRef<HTMLInputElement>(null)
+  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  const visible = demos.filter((d) => {
+    if (pendingOnly && d.source !== "default") return false
+    const haystack =
+      `${d.title} ${d.id} ${d.group} ${d.keywords ?? ""}`.toLowerCase()
+    return terms.every((term) => haystack.includes(term))
+  })
+
+  React.useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement
+      const typing =
+        target.isContentEditable ||
+        /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)
+      if (event.key === "/" && !typing) {
+        event.preventDefault()
+        searchRef.current?.focus()
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [])
   const [active, setActive] = React.useState(
     () => window.location.hash.slice(1) || demos[0].id
   )
@@ -70,8 +92,37 @@ export default function App() {
                     FlyCommerce UI
                   </span>
                 </div>
+                <div className="relative group-data-[collapsible=icon]:hidden">
+                  <SearchIcon
+                    aria-hidden="true"
+                    className="pointer-events-none absolute start-2.5 top-1/2 size-4 -translate-y-1/2 text-sidebar-muted"
+                  />
+                  <SidebarInput
+                    ref={searchRef}
+                    type="search"
+                    aria-label="Search components"
+                    placeholder="Search components"
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Escape") setQuery("")
+                      if (event.key === "Enter" && visible[0]) {
+                        window.location.hash = visible[0].id
+                      }
+                    }}
+                    className="h-9 border-sidebar-border bg-sidebar-accent ps-8 pe-8 text-sidebar-foreground placeholder:text-sidebar-muted [&::-webkit-search-cancel-button]:hidden"
+                  />
+                  <kbd className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 rounded border border-sidebar-border px-1.5 text-[10px] text-sidebar-muted">
+                    /
+                  </kbd>
+                </div>
               </SidebarHeader>
               <SidebarContent>
+                {visible.length === 0 && (
+                  <p className="px-4 py-3 text-xs text-sidebar-muted group-data-[collapsible=icon]:hidden">
+                    No components match “{query}”.
+                  </p>
+                )}
                 {groups
                   .filter((group) => visible.some((d) => d.group === group))
                   .map((group) => (
@@ -154,7 +205,17 @@ export default function App() {
                   Each section shows where its design comes from: the PM
                   prototype, the P3 Figma file, or shadcn&apos;s default where
                   neither has a design yet.
+                  {terms.length > 0 &&
+                    ` Showing ${visible.length} of ${demos.length} for “${query.trim()}”.`}
                 </p>
+                {visible.length === 0 && (
+                  <div className="rounded-xl border bg-card p-10 text-center text-sm text-muted-foreground shadow-1">
+                    No components match “{query.trim()}”.{" "}
+                    <Button variant="link" onClick={() => setQuery("")}>
+                      Clear search
+                    </Button>
+                  </div>
+                )}
                 {visible.map((d) => (
                   <section
                     key={d.id}
