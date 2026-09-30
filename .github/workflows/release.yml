@@ -1,6 +1,7 @@
 name: Release
 
 # Publishing a GitHub release (tag vX.Y.Z) publishes that version to npm with provenance.
+# Auth is npm Trusted Publishing (OIDC): configure it once on npmjs.com for this repo and workflow.
 on:
   release:
     types: [published]
@@ -20,6 +21,8 @@ jobs:
           node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
+      # Trusted Publishing needs npm 11.5 or later; Node 22 ships npm 10.
+      - run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
       - name: Check the tag matches package.json
         run: |
@@ -28,5 +31,3 @@ jobs:
       - run: pnpm lint
       - run: pnpm build
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

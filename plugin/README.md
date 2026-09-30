@@ -4,7 +4,7 @@ Makes Claude Code build FlyCommerce UI the right way: `@flycommerce/ui` componen
 
 ## Install
 
-In Claude Code (needs read access to this private repo through your git credentials):
+In Claude Code:
 
 ```
 /plugin marketplace add getdokan/flycommerce-ui
