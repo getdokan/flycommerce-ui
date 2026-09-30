@@ -47,7 +47,7 @@ function Dropzone({
   inputLabel = "Upload files",
   title = (
     <>
-      <span className="font-semibold text-primary">Drag &amp; Drop</span> your
+      <span className="font-semibold text-primary-ink">Drag &amp; Drop</span> your
       files here
     </>
   ),

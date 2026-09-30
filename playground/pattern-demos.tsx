@@ -592,7 +592,7 @@ export function IconsDemo() {
                     )
                     toast(`Copied <Icon name="${name}" />`)
                   }}
-                  className="flex flex-col items-center gap-2 rounded-lg border border-border-subtle px-2 py-3 text-foreground-secondary transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 hover:text-primary focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+                  className="flex flex-col items-center gap-2 rounded-lg border border-border-subtle px-2 py-3 text-foreground-secondary transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 hover:text-primary-ink focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <Icon name={name} size={20} />
                   <span className="w-full truncate text-center text-[11.5px]">
