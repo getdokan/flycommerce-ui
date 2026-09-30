@@ -2,6 +2,7 @@ import * as React from "react"
 import {
   CircleIcon,
   AlignLeftIcon,
+  BotIcon,
   AppWindowIcon,
   AppWindowMacIcon,
   AsteriskIcon,
@@ -83,6 +84,7 @@ import {
 const ICONS: Record<string, LucideIcon> = {
   welcome: HouseIcon,
   installation: PackageIcon,
+  "claude-code": BotIcon,
   typography: TypeIcon,
   colors: PaletteIcon,
   icons: ShapesIcon,

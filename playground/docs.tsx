@@ -303,10 +303,184 @@ export function InstallationDoc() {
       <Step n={6} title="Optional: build with Claude Code">
         <p className="text-sm text-muted-foreground">
           The <code>flycommerce-ui</code> plugin teaches Claude which component
-          to use, the design tokens, icon names and screen recipes.
+          to use, the design tokens, icon names and screen recipes.{" "}
+          <a
+            href="#claude-code"
+            className="font-medium text-primary-ink underline-offset-4 hover:underline"
+          >
+            Read the Claude Code guide
+          </a>
+          .
         </p>
         <CodeBlock code={CLAUDE} copyLabel="Copy plugin commands" />
       </Step>
     </ol>
+  )
+}
+
+const TEAM_SETTINGS = `{
+  "extraKnownMarketplaces": {
+    "flycommerce-ui": {
+      "source": { "source": "github", "repo": "getdokan/flycommerce-ui" }
+    }
+  },
+  "enabledPlugins": {
+    "flycommerce-ui@flycommerce-ui": true
+  }
+}`
+
+const KNOWS = [
+  [
+    "Which component to use",
+    "A table of needs → components, e.g. a hierarchy picker is TreeSelect, a list page is DataTable with TableFilters.",
+  ],
+  [
+    "Design tokens",
+    "Colours, radii, shadows and type through tokens only: no hex values, no one-off styling.",
+  ],
+  ["Icons", "The 150 semantic <Icon name> meanings, never raw icon imports."],
+  [
+    "Screen recipes",
+    "List, form and settings pages assembled the FlyCommerce way.",
+  ],
+  [
+    "Translation and accessibility",
+    "Every label passed through props, icon buttons named, inputs labelled.",
+  ],
+  [
+    "Migrating old screens",
+    "A map from @getdokan/dokan-ui, Headless UI and react-select to @flycommerce/ui.",
+  ],
+] as const
+
+const PROMPTS = [
+  "Build the vendor payouts page: search, status tabs, a date range filter and pagination.",
+  "Implement this Figma frame as a settings page: <paste the Figma link>",
+  "Migrate src/pages/orders/index.tsx from @getdokan/dokan-ui to @flycommerce/ui.",
+  "Add a category image picker to the category form, uploading with our uploadMediaFile.",
+  "Which component should I use for choosing a parent category?",
+]
+
+export function ClaudeCodeDoc() {
+  return (
+    <div className="flex w-full flex-col gap-8 text-sm text-foreground-secondary">
+      <p className="max-w-2xl text-base">
+        The <code>flycommerce-ui</code> plugin gives Claude Code the rules of
+        this design system, so the screens it builds use the right components,
+        tokens and icons the first time. It lives in the{" "}
+        <ExternalLink href={`${REPO}/tree/main/plugin`}>
+          same repository
+        </ExternalLink>{" "}
+        as the library and is updated with it.
+      </p>
+
+      <div className="flex flex-col gap-3">
+        <h3 className="text-base font-semibold text-foreground">1. Install</h3>
+        <Tabs defaultValue="me" className="min-w-0 gap-3">
+          <TabsList aria-label="Install scope">
+            <TabsTrigger value="me" className="px-3 py-1 text-xs">
+              Just for me
+            </TabsTrigger>
+            <TabsTrigger value="team" className="px-3 py-1 text-xs">
+              For everyone in a repo
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="me" className="flex flex-col gap-2">
+            <p>Run these two commands inside Claude Code:</p>
+            <CodeBlock code={CLAUDE} copyLabel="Copy plugin commands" />
+          </TabsContent>
+          <TabsContent value="team" className="flex flex-col gap-2">
+            <p>
+              Add this to the repository&apos;s checked-in{" "}
+              <code>.claude/settings.json</code> (for example in{" "}
+              <code>dashboard</code>). Claude Code then offers the plugin to
+              everyone who opens the repository.
+            </p>
+            <CodeBlock code={TEAM_SETTINGS} copyLabel="Copy settings" />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <h3 className="text-base font-semibold text-foreground">
+          2. Just ask. It switches on by itself
+        </h3>
+        <p className="max-w-2xl">
+          There&apos;s no command to run. Claude loads the plugin whenever you
+          create or edit FlyCommerce UI: a screen, form, table, modal or
+          settings page, a Figma frame to implement, or code still using
+          dokan-ui, Headless UI or react-select. It then knows:
+        </p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {KNOWS.map(([title, text]) => (
+            <li
+              key={title}
+              className="rounded-lg border border-border-subtle bg-card-header p-4"
+            >
+              <h4 className="font-semibold text-foreground">{title}</h4>
+              <p className="mt-1 text-muted-foreground">{text}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="max-w-2xl">
+          It also tells Claude to finish with a check: type-check, look at the
+          screen at desktop and phone width in light and dark, and search its
+          changes for raw colours and old UI libraries.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <h3 className="text-base font-semibold text-foreground">
+          3. Example prompts
+        </h3>
+        <ul className="flex flex-col gap-2">
+          {PROMPTS.map((prompt) => (
+            <li
+              key={prompt}
+              className="rounded-lg border border-border-subtle bg-page px-4 py-2.5 font-mono text-[12.5px] text-foreground"
+            >
+              {prompt}
+            </li>
+          ))}
+        </ul>
+        <p className="max-w-2xl">
+          Every component section in this gallery also has a{" "}
+          <strong>Code</strong> tab. Pasting one into your prompt (&quot;make it
+          like this&quot;) gives Claude an exact starting point.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h3 className="text-base font-semibold text-foreground">
+          4. Keeping it up to date
+        </h3>
+        <p className="max-w-2xl">
+          The plugin&apos;s component list, tokens and icons are generated from
+          the library source, and CI fails if they fall behind, so the plugin
+          always matches the latest release. Refresh your copy from the{" "}
+          <code>/plugin</code> menu in Claude Code.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h3 className="text-base font-semibold text-foreground">
+          If Claude doesn&apos;t seem to use it
+        </h3>
+        <ul className="flex list-disc flex-col gap-1 ps-5">
+          <li>
+            Open <code>/plugin</code> and check that <code>flycommerce-ui</code>{" "}
+            is installed and enabled.
+          </li>
+          <li>
+            Name it in your request: &quot;use the flycommerce-ui skill to
+            build…&quot;.
+          </li>
+          <li>
+            Make sure the app has <code>@flycommerce/ui</code> installed, so the
+            code Claude writes can import it.
+          </li>
+        </ul>
+      </div>
+    </div>
   )
 }
