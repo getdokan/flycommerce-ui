@@ -44,6 +44,7 @@ import {
   SearchInputDemo,
   StatusBadgeDemo,
 } from "./pattern-demos"
+import { InstallationDoc, WelcomeDoc } from "./docs"
 import { ColorsDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
@@ -269,6 +270,8 @@ export type Demo = {
   source?: Source
   /** Extra search terms: other names people use for the component. */
   keywords?: string
+  /** A written guide rather than a component: no source badge or Code tab. */
+  doc?: boolean
   render: () => React.ReactNode
 }
 
@@ -481,6 +484,24 @@ function CalendarDemo() {
 }
 
 export const demos: Demo[] = [
+  // Getting started
+  {
+    id: "welcome",
+    title: "Welcome",
+    group: "Getting started",
+    doc: true,
+    keywords: "introduction overview about npm version home",
+    render: () => <WelcomeDoc />,
+  },
+  {
+    id: "installation",
+    title: "Installation & setup",
+    group: "Getting started",
+    doc: true,
+    keywords:
+      "install setup npm pnpm yarn tailwind css providers dark mode rtl getting started quick start claude plugin",
+    render: () => <InstallationDoc />,
+  },
   // Foundations
   {
     id: "typography",
