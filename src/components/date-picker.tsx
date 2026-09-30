@@ -15,6 +15,7 @@ import {
 import { CalendarIcon } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 
+import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
@@ -190,6 +191,7 @@ function DateRangePicker({
   align = "start",
 }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false)
+  const isMobile = useIsMobile()
 
   const label = value?.from
     ? value.to && !isSameDay(value.from, value.to)
@@ -229,8 +231,9 @@ function DateRangePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="flex w-auto flex-col p-0 sm:flex-row"
+        className="flex max-h-(--radix-popover-content-available-height) w-auto max-w-[calc(100vw-2rem)] flex-col overflow-y-auto p-0 sm:flex-row"
         align={align}
+        collisionPadding={16}
       >
         {presets.length > 0 && (
           <div
@@ -259,9 +262,10 @@ function DateRangePicker({
           mode="range"
           selected={value}
           onSelect={onValueChange}
-          defaultMonth={value?.from ?? subMonths(new Date(), 1)}
-          numberOfMonths={2}
-          className="[&_.rdp-months]:flex-col sm:[&_.rdp-months]:flex-row"
+          defaultMonth={
+            value?.from ?? (isMobile ? new Date() : subMonths(new Date(), 1))
+          }
+          numberOfMonths={isMobile ? 1 : 2}
           autoFocus
         />
       </PopoverContent>
