@@ -57,33 +57,39 @@ CI runs all of these, plus the plugin reference check, on every push and pull re
 
 ## Releasing
 
-Releases are automatic: pushing a version tag publishes that version to npm and creates the GitHub release. Versions follow [semantic versioning](https://semver.org); while on `0.x`, breaking changes go in a minor release and are called out in the changelog.
+Releases are automatic once a version tag is pushed: GitHub Actions publishes that version to npm and creates the GitHub release. Versions follow [semantic versioning](https://semver.org); while on `0.x`, breaking changes go in a minor release and are called out in the changelog.
 
-1. **Changelog.** In `CHANGELOG.md`, rename **Unreleased** to the new version with today's date, e.g. `## [0.2.0] - 2026-10-15`. The release notes are taken from this section; the release stops if it's missing.
-2. **Version and tag.** On an up-to-date `main`:
+`main` is protected, so the version bump goes through a pull request like any other change.
+
+1. **Open a release PR** from an up-to-date `main`:
 
    ```bash
-   npm version 0.2.0 -m "Release %s"
+   git switch -c release/0.2.0 origin/main
+   npm version 0.2.0 --no-git-tag-version
    ```
 
-   This updates `package.json`, commits, and creates the tag `v0.2.0`.
+   In `CHANGELOG.md`, rename **Unreleased** to the new version with today's date, e.g. `## [0.2.0] - 2026-10-15`. The release notes are taken from this section, and the release stops if it's missing. Commit both files as `Release 0.2.0`, push, and open the PR.
 
-3. **Push:**
+2. **Merge it** with **Squash and merge** once CI is green.
+
+3. **Tag the merge commit.** Only repository admins can push `v*` tags.
 
    ```bash
-   git push --follow-tags
+   git switch main && git pull
+   git tag -a v0.2.0 -m "Release 0.2.0"
+   git push origin v0.2.0
    ```
 
 The **Release** workflow then:
 
-- checks that the tag matches `package.json` and is on `main`;
-- runs typecheck, lint and build;
-- publishes to npm with provenance;
+- checks that the tag matches `package.json`, is on `main`, and has a changelog section;
+- runs typecheck, lint, the tests, the build and the package checks;
+- publishes to npm through Trusted Publishing, with provenance;
 - creates the GitHub release from the changelog section.
 
 Details:
 
 - **Pre-releases.** A version like `0.2.0-beta.1` is published under the npm tag `next`, so `npm install @flycommerce/ui` keeps giving users the last stable version, and it's marked as a pre-release on GitHub.
-- **Re-running.** A failed release can be re-run from the Actions tab. A version that's already on npm is skipped, and the GitHub release is still created.
-- **Authentication.** npm **Trusted Publishing** (on npmjs.com: `@flycommerce/ui` → Settings → Trusted Publisher → GitHub Actions, repository `getdokan/flycommerce-ui`, workflow `release.yml`). No npm token is stored in GitHub. The very first release, before the package exists, uses a short-lived `NPM_TOKEN` repository secret instead; delete it once Trusted Publishing is set up.
+- **Re-running.** A failed release can be re-run from the Actions tab (**Re-run failed jobs**). A version that's already on npm is skipped, and the GitHub release is still created.
+- **Authentication.** npm Trusted Publishing: on npmjs.com, `@flycommerce/ui` → Settings → Trusted Publisher → GitHub Actions, repository `getdokan/flycommerce-ui`, workflow `release.yml`, no environment. Its permissions must include **npm publish**; with only "npm stage publish" the publish fails with `E403 OIDC permission denied`. No npm token is stored in GitHub. Keep the `NPM_TOKEN` secret unset: if it exists, the workflow uses it instead, and the package's 2FA policy rejects token publishes.
 - **Mistakes.** A published version can't be reused, even after it's unpublished. If a release is wrong, fix it and release the next patch version.
