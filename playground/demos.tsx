@@ -204,7 +204,6 @@ import {
   TableHeader,
   TableRow,
   Tabs,
-  TabsContent,
   TabsList,
   TabsTrigger,
   Textarea,
@@ -217,12 +216,41 @@ import {
   type ChartConfig,
 } from "@/index"
 
+export type Source = "prototype" | "figma" | "default"
+
 export type Demo = {
   id: string
   title: string
   group: string
-  restyled?: boolean
+  source?: Source
   render: () => React.ReactNode
+}
+
+const SOURCES: Record<string, Source> = {
+  button: "prototype",
+  "button-group": "prototype",
+  toggle: "prototype",
+  alert: "prototype",
+  toast: "prototype",
+  progress: "figma",
+  empty: "prototype",
+  input: "prototype",
+  "input-group": "prototype",
+  textarea: "prototype",
+  select: "prototype",
+  combobox: "prototype",
+  checkbox: "prototype",
+  badge: "prototype",
+  card: "prototype",
+  table: "prototype",
+  tabs: "prototype",
+  dialog: "prototype",
+  "alert-dialog": "prototype",
+  sheet: "prototype",
+  popover: "prototype",
+  "dropdown-menu": "prototype",
+  pagination: "prototype",
+  sidebar: "prototype",
 }
 
 const orders = [
@@ -302,7 +330,6 @@ export const demos: Demo[] = [
     id: "button",
     title: "Button",
     group: "Actions",
-    restyled: true,
     render: () => (
       <Stack>
         <Row label="Variants">
@@ -421,7 +448,6 @@ export const demos: Demo[] = [
     id: "alert",
     title: "Alert",
     group: "Feedback",
-    restyled: true,
     render: () => (
       <div className="grid w-full gap-3">
         <Alert>
@@ -743,12 +769,32 @@ export const demos: Demo[] = [
     title: "Badge",
     group: "Data display",
     render: () => (
-      <Row label="Variants">
-        <Badge>Default</Badge>
-        <Badge variant="secondary">Secondary</Badge>
-        <Badge variant="outline">Outline</Badge>
-        <Badge variant="destructive">Destructive</Badge>
-      </Row>
+      <Stack>
+        <Row label="Tones">
+          <Badge>Info</Badge>
+          <Badge variant="secondary">Draft</Badge>
+          <Badge variant="success">Published</Badge>
+          <Badge variant="warning">Pending</Badge>
+          <Badge variant="destructive">Out of stock</Badge>
+          <Badge variant="soon">Coming soon</Badge>
+          <Badge variant="outline">Outline</Badge>
+        </Row>
+        <Row label="With dot">
+          <Badge dot variant="success">
+            Active
+          </Badge>
+          <Badge dot variant="warning">
+            On hold
+          </Badge>
+          <Badge dot variant="destructive">
+            Suspended
+          </Badge>
+          <Badge dot>Processing</Badge>
+          <Badge dot variant="secondary">
+            Unfulfilled
+          </Badge>
+        </Row>
+      </Stack>
     ),
   },
   {
@@ -791,7 +837,7 @@ export const demos: Demo[] = [
           </CardFooter>
         </Card>
         <Card>
-          <CardHeader>
+          <CardHeader className="border-b">
             <CardTitle>Basic information</CardTitle>
             <CardDescription>
               Name and description customers see.
@@ -825,8 +871,13 @@ export const demos: Demo[] = [
               <TableCell>{order.customer}</TableCell>
               <TableCell>
                 <Badge
+                  dot
                   variant={
-                    order.status === "Cancelled" ? "destructive" : "secondary"
+                    order.status === "Cancelled"
+                      ? "destructive"
+                      : order.status === "Delivered"
+                        ? "success"
+                        : "default"
                   }
                 >
                   {order.status}
@@ -908,19 +959,21 @@ export const demos: Demo[] = [
     title: "Carousel",
     group: "Data display",
     render: () => (
-      <Carousel className="mx-auto w-full max-w-xs">
-        <CarouselContent>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <CarouselItem key={index}>
-              <div className="flex aspect-square items-center justify-center rounded-xl border bg-muted text-3xl font-semibold">
-                {index + 1}
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+      <div className="w-full px-12">
+        <Carousel className="mx-auto w-full max-w-xs">
+          <CarouselContent>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <CarouselItem key={index}>
+                <div className="flex aspect-square items-center justify-center rounded-xl border bg-muted text-3xl font-semibold">
+                  {index + 1}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
     ),
   },
   {
@@ -946,28 +999,26 @@ export const demos: Demo[] = [
     title: "Tabs",
     group: "Layout",
     render: () => (
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList>
-          <TabsTrigger value="all">All products</TabsTrigger>
-          <TabsTrigger value="published">Published</TabsTrigger>
-          <TabsTrigger value="draft">Draft</TabsTrigger>
-        </TabsList>
-        <TabsContent value="all" className="pt-2 text-sm text-muted-foreground">
-          250 products
-        </TabsContent>
-        <TabsContent
-          value="published"
-          className="pt-2 text-sm text-muted-foreground"
-        >
-          212 published
-        </TabsContent>
-        <TabsContent
-          value="draft"
-          className="pt-2 text-sm text-muted-foreground"
-        >
-          38 drafts
-        </TabsContent>
-      </Tabs>
+      <Stack>
+        <Row label="Segmented">
+          <Tabs defaultValue="all">
+            <TabsList>
+              <TabsTrigger value="all">All products</TabsTrigger>
+              <TabsTrigger value="published">Published</TabsTrigger>
+              <TabsTrigger value="draft">Draft</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </Row>
+        <Row label="Underline">
+          <Tabs defaultValue="general">
+            <TabsList variant="line">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="social">Social share</TabsTrigger>
+              <TabsTrigger value="advanced">Advanced</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </Row>
+      </Stack>
     ),
   },
   {
@@ -1120,7 +1171,7 @@ export const demos: Demo[] = [
                 Narrow the list by status and vendor.
               </SheetDescription>
             </SheetHeader>
-            <div className="px-4">
+            <div className="px-5">
               <Input placeholder="Vendor name" />
             </div>
             <SheetFooter>
@@ -1364,5 +1415,7 @@ export const demos: Demo[] = [
     ),
   },
 ]
+
+for (const demo of demos) demo.source = SOURCES[demo.id] ?? "default"
 
 export const groups = Array.from(new Set(demos.map((d) => d.group)))
