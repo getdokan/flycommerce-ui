@@ -107,7 +107,7 @@ const DEFAULT_LABELS = {
   libraryTab: "Media Library",
   dropTitle: (
     <>
-      <span className="font-semibold text-primary">Drag &amp; Drop</span> your
+      <span className="font-semibold text-primary-ink">Drag &amp; Drop</span> your
       image here
     </>
   ),
@@ -326,7 +326,7 @@ function PickerContent({
                 <button
                   type="button"
                   onClick={() => fileInput.current?.click()}
-                  className="flex aspect-[6/5] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-primary bg-primary-subtle text-sm font-semibold text-primary outline-none hover:bg-primary-subtle-2 focus-visible:ring-3 focus-visible:ring-ring"
+                  className="flex aspect-[6/5] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-primary bg-primary-subtle text-sm font-semibold text-primary-ink outline-none hover:bg-primary-subtle-2 focus-visible:ring-3 focus-visible:ring-ring"
                 >
                   <UploadCloudIcon className="size-6" aria-hidden="true" />
                   {labels.chooseFile}

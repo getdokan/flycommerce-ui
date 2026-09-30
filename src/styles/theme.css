@@ -17,11 +17,12 @@
     --primary-subtle: #eaf1ff; /* accent-weak */
     --primary-subtle-2: #f4f8ff; /* accent-weak-2: row hover, selected radio card */
     --primary-strong: #0b3aad; /* info text on a primary-subtle ground */
+    --primary-ink: #155dfc; /* brand blue as text; lighter in dark mode for 4.5:1 */
     --secondary: #f4f5f8;
     --secondary-foreground: #0f1729;
     --muted: #f8f9fb;
-    --muted-foreground: #727b92; /* ink-3 */
-    --placeholder: #9aa2b4; /* ink-4 */
+    --muted-foreground: #646c81; /* ink-3, darkened for 4.5:1 on every surface */
+    --placeholder: #68738c; /* ink-4, darkened for 4.5:1 on inputs */
     --accent: #f4f5f8;
     --accent-foreground: #0f1729;
     --destructive: #d6323b; /* danger */
@@ -80,11 +81,12 @@
     --primary-subtle: #101c33;
     --primary-subtle-2: #0d1526;
     --primary-strong: #8fb3ff; /* not in the prototype: its accent-press fails contrast on the dark tint */
+    --primary-ink: #5b8dff;
     --secondary: #1b1b26;
     --secondary-foreground: #e9eaf0;
     --muted: #1b1b26;
     --muted-foreground: #8a90a1;
-    --placeholder: #6b7183;
+    --placeholder: #80869a;
     --accent: #1b1b26;
     --accent-foreground: #e9eaf0;
     --destructive: #e5776a;

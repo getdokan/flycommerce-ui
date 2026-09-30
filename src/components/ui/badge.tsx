@@ -16,7 +16,7 @@ const badgeVariants = cva(
         soon: "bg-soon-subtle text-soon",
         outline: "border-border text-foreground",
         ghost: "hover:bg-page",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "text-primary-ink underline-offset-4 hover:underline",
       },
     },
     defaultVariants: {

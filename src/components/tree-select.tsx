@@ -348,7 +348,7 @@ function TreeSelect({
                         tabIndex={-1}
                         aria-label={labels.open(option.label)}
                         onClick={() => drill(entry)}
-                        className={cn(selected && "text-primary")}
+                        className={cn(selected && "text-primary-ink")}
                       >
                         <ChevronRightIcon className="rtl:rotate-180" />
                       </Button>
