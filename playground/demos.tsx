@@ -44,7 +44,7 @@ import {
   SearchInputDemo,
   StatusBadgeDemo,
 } from "./pattern-demos"
-import { InstallationDoc, WelcomeDoc } from "./docs"
+import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import { ColorsDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
@@ -501,6 +501,15 @@ export const demos: Demo[] = [
     keywords:
       "install setup npm pnpm yarn tailwind css providers dark mode rtl getting started quick start claude plugin",
     render: () => <InstallationDoc />,
+  },
+  {
+    id: "claude-code",
+    title: "Build with Claude Code",
+    group: "Getting started",
+    doc: true,
+    keywords:
+      "claude code plugin ai assistant skill prompts install marketplace agent",
+    render: () => <ClaudeCodeDoc />,
   },
   // Foundations
   {
