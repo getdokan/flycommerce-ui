@@ -21,7 +21,7 @@ export default defineConfig([
   },
   {
     // A library exports cva variants next to components by design; the rule only matters for app HMR.
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}', 'playground/demos.tsx'],
     rules: {
       'react-refresh/only-export-components': 'off',
     },
