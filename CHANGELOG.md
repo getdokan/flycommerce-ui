@@ -2,7 +2,9 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [0.2.0] - 2026-10-01
+
+The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.
 
 ### Added
 
@@ -11,7 +13,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Changed
 
-- **Matches the dashboard redesign.** The look now follows the dashboard's Figma tokens instead of the earlier prototype, so apps built with the library sit next to redesigned dashboard pages without a visible seam. Every component looks slightly different; no props or exports changed.
+- **Matches the dashboard redesign.** The look now follows the dashboard's Figma tokens instead of the earlier prototype, so apps built with the library sit next to redesigned dashboard pages without a visible seam. Every component looks slightly different. No props were removed; only the `IconProps` type changed (see Icons below).
   - Neutral greys replace the blue-tinted ones: text `#24242b`/`#464654`/`#68687e`, borders `#e2e2e7`/`#f1f1f3`, page `#f1f1f3`.
   - Controls (buttons, inputs, selects, toggles) are 40px tall with 8px corners, up from 38px and 4px.
   - `Card`, `DataTable` and `StatCard` drop their border for the new `shadow-card`; a `CardHeader` with `border-b` gets a grey header band; card titles are 16px bold.
