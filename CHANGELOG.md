@@ -4,6 +4,11 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+### Added
+
+- `IconChip`: an icon on a tinted tile (`tone`, `shape`, `size`), for stat cards, settings rows, card titles and status icons.
+- Claude plugin: `references/dashboard-design.md`, a guide to the redesigned dashboard's look (surfaces, shadows, corners, icons, icon chips, tables, tabs, forms) mapped to library components.
+
 ### Changed
 
 - **Matches the dashboard redesign.** The look now follows the dashboard's Figma tokens instead of the earlier prototype, so apps built with the library sit next to redesigned dashboard pages without a visible seam. Every component looks slightly different; no props or exports changed.
@@ -12,6 +17,10 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
   - `Card`, `DataTable` and `StatCard` drop their border for the new `shadow-card`; a `CardHeader` with `border-b` gets a grey header band; card titles are 16px bold.
   - `Tabs` and segmented `NavTabs`: grey track without a border, white active pill, 14px text, dark active label instead of blue.
   - Menus, selects and popovers use 8px corners and `shadow-card`; tooltips are smaller with 4px corners.
+  - `StatCard` follows the dashboard overview: value over the label, icon in a 36px chip on the right.
+  - Tables: 12px semibold uppercase headers, `px-4 py-5` cells, grey row hover.
+  - Icons default to a 2px stroke, the same weight as the dashboard's Feather icons.
+  - Card titles 16px bold; row titles and field labels 14px.
   - `destructive` is slightly darker (`#cc2d36`) to keep 4.5:1 on the grey surfaces.
 
 ## [0.1.1] - 2026-09-30

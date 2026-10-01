@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "cn"
+import { IconChip } from "./icon-chip"
 
 type StatCardProps = Omit<React.ComponentProps<"div">, "title"> & {
   label: React.ReactNode
@@ -41,30 +42,38 @@ function StatCard({
       )}
       {...props}
     >
-      <div className="mb-2 flex items-center gap-2 [&_svg]:size-[18px] [&_svg]:text-muted-foreground">
-        {icon}
-        <span
-          className={cn(
-            "text-muted-foreground",
-            hero
-              ? "text-[11px] font-[680] tracking-[0.09em] uppercase"
-              : "text-xs"
-          )}
-        >
-          {label}
-        </span>
-        {action && <span className="ms-auto">{action}</span>}
-      </div>
-      <div
-        className={cn(
-          "min-w-0 font-bold [overflow-wrap:anywhere] text-foreground tabular-nums",
-          hero ? "text-[34px] leading-none tracking-[-0.02em]" : "text-lg"
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div
+            className={cn(
+              "min-w-0 [overflow-wrap:anywhere] text-foreground tabular-nums",
+              hero
+                ? "text-[34px] leading-none font-bold tracking-[-0.02em]"
+                : "type-overview-value"
+            )}
+          >
+            {value}
+          </div>
+          <p
+            className={cn(
+              "text-muted-foreground",
+              hero
+                ? "mt-2 text-[11px] font-[680] tracking-[0.09em] uppercase"
+                : "mt-0.5 text-xs"
+            )}
+          >
+            {label}
+          </p>
+        </div>
+        {(action || icon) && (
+          <div className="flex shrink-0 items-center gap-2">
+            {action}
+            {icon && <IconChip>{icon}</IconChip>}
+          </div>
         )}
-      >
-        {value}
       </div>
       {delta !== undefined && (
-        <p className="mt-1.5 flex items-baseline gap-1.5">
+        <p className="mt-3 flex items-baseline gap-1.5">
           <Delta value={delta} />
           {deltaNote && (
             <span className="text-xs text-muted-foreground">{deltaNote}</span>

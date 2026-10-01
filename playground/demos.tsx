@@ -70,6 +70,7 @@ import {
   RadioCardDemo,
   RatingDemo,
   StatCardDemo,
+  IconChipDemo,
   SwitchFieldDemo,
   TagInputDemo,
 } from "./p2-demos"
@@ -322,6 +323,7 @@ const KEYWORDS: Record<string, string> = {
   "search-input": "search filter query",
   "status-badge": "status pill order state",
   "stat-card": "kpi metric statistic number dashboard",
+  "icon-chip": "icon tile badge avatar tinted background circle square",
   "radio-card": "option card choice",
   "switch-field": "toggle row setting",
   "nav-tabs": "tabs links route navigation",
@@ -390,6 +392,7 @@ const SOURCES: Record<string, Source> = {
   "radio-card": "prototype",
   "switch-field": "prototype",
   "stat-card": "prototype",
+  "icon-chip": "figma",
   "nav-tabs": "prototype",
   "async-combobox": "composite",
   "tag-input": "composite",
@@ -579,6 +582,12 @@ export const demos: Demo[] = [
     title: "Stat card (KPI)",
     group: "Patterns",
     render: () => <StatCardDemo />,
+  },
+  {
+    id: "icon-chip",
+    title: "Icon chip",
+    group: "Patterns",
+    render: () => <IconChipDemo />,
   },
   {
     id: "radio-card",

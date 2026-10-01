@@ -75,7 +75,7 @@ function PageHeaderDescription({
   return (
     <p
       data-slot="page-header-description"
-      className={cn("mt-1.5 max-w-[70ch] text-muted-foreground", className)}
+      className={cn("mt-1.5 max-w-[70ch] text-sm text-muted-foreground", className)}
       {...props}
     />
   )

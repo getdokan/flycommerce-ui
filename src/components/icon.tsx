@@ -319,7 +319,7 @@ function Icon({
   name,
   label,
   size = 16,
-  strokeWidth = 1.7,
+  strokeWidth = 2,
   className,
   ...props
 }: IconProps) {
