@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { FiEye as EyeIcon, FiEyeOff as EyeOffIcon } from "react-icons/fi"
 
 import {
   InputGroup,

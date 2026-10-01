@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { PlusIcon, Trash2Icon } from "lucide-react"
+import { FiPlus as PlusIcon, FiTrash2 as Trash2Icon } from "react-icons/fi"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { UploadCloudIcon } from "lucide-react"
+import { FiUploadCloud as UploadCloudIcon } from "react-icons/fi"
 
 import { Button } from "@/components/ui/button"
 
@@ -47,8 +47,8 @@ function Dropzone({
   inputLabel = "Upload files",
   title = (
     <>
-      <span className="font-semibold text-primary-ink">Drag &amp; Drop</span> your
-      files here
+      <span className="font-semibold text-primary-ink">Drag &amp; Drop</span>{" "}
+      your files here
     </>
   ),
   description,

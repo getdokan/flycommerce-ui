@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { XIcon } from "lucide-react"
+import { FiX as XIcon } from "react-icons/fi"
 
 type TagInputProps = Omit<
   React.ComponentProps<"input">,
@@ -82,7 +82,7 @@ function TagInput({
       aria-disabled={disabled || undefined}
       onClick={() => inputRef.current?.focus()}
       className={cn(
-        "flex min-h-[38px] w-full flex-wrap items-center gap-1.5 rounded-control border border-input bg-background px-2 py-1.5 text-sm transition-colors hover:border-placeholder has-[input:focus-visible]:border-primary aria-disabled:pointer-events-none aria-disabled:bg-page aria-invalid:border-destructive",
+        "flex min-h-10 w-full flex-wrap items-center gap-1.5 rounded-control border border-input bg-background px-2 py-1.5 text-sm transition-colors hover:border-placeholder has-[input:focus-visible]:border-primary aria-disabled:pointer-events-none aria-disabled:bg-page aria-invalid:border-destructive",
         containerClassName
       )}
     >

@@ -7,15 +7,15 @@ import { TextAlign } from "@tiptap/extension-text-align"
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import {
-  AlignCenterIcon,
-  AlignLeftIcon,
-  BoldIcon,
-  ItalicIcon,
-  LinkIcon,
-  ListIcon,
-  SparklesIcon,
-  UnderlineIcon,
-} from "lucide-react"
+  FiAlignCenter as AlignCenterIcon,
+  FiAlignLeft as AlignLeftIcon,
+  FiBold as BoldIcon,
+  FiItalic as ItalicIcon,
+  FiLink as LinkIcon,
+  FiList as ListIcon,
+  FiUnderline as UnderlineIcon,
+} from "react-icons/fi"
+import { LuSparkles as SparklesIcon } from "react-icons/lu"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

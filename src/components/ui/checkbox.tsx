@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Checkbox as CheckboxPrimitive } from "radix-ui"
-import { CheckIcon, MinusIcon } from "lucide-react"
+import { FiCheck as CheckIcon, FiMinus as MinusIcon } from "react-icons/fi"
 
 function Checkbox({
   className,

@@ -4,46 +4,46 @@
 
 Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`bg-primary`, `text-muted-foreground`, `border-border`, `shadow-1`, `rounded-control`), never the value.
 
-| Token                         | Light value                                                       | Note                                               |
-| ----------------------------- | ----------------------------------------------------------------- | -------------------------------------------------- |
-| `--page`                      | `#f4f5f8`                                                         | page: app canvas behind cards                      |
-| `--background`                | `#ffffff`                                                         | surface: cards, inputs, outline buttons            |
-| `--foreground`                | `#0f1729`                                                         | ink                                                |
-| `--foreground-secondary`      | `#475069`                                                         | ink-2                                              |
-| `--card`                      | `#ffffff`                                                         |                                                    |
-| `--card-header`               | `#f8f9fb`                                                         | head                                               |
-| `--popover`                   | `#ffffff`                                                         |                                                    |
-| `--primary`                   | `#155dfc`                                                         | accent                                             |
-| `--primary-foreground`        | `#ffffff`                                                         |                                                    |
-| `--primary-press`             | `#0b3aad`                                                         |                                                    |
-| `--primary-subtle-2`          | `#f4f8ff`                                                         | accent-weak-2: row hover, selected radio card      |
-| `--primary-strong`            | `#0b3aad`                                                         | info text on a primary-subtle ground               |
-| `--primary-ink`               | `#155dfc`                                                         | brand blue as text; lighter in dark mode for 4.5:1 |
-| `--secondary`                 | `#f4f5f8`                                                         |                                                    |
-| `--muted`                     | `#f8f9fb`                                                         |                                                    |
-| `--placeholder`               | `#68738c`                                                         | ink-4, darkened for 4.5:1 on inputs                |
-| `--accent`                    | `#f4f5f8`                                                         |                                                    |
-| `--destructive`               | `#d6323b`                                                         | danger                                             |
-| `--destructive-subtle`        | `#fcecec`                                                         |                                                    |
-| `--success`                   | `#0e9e6e`                                                         | ok                                                 |
-| `--success-subtle`            | `#e6f6ef`                                                         |                                                    |
-| `--warning`                   | `#b4770b`                                                         | warn                                               |
-| `--warning-subtle`            | `#fbf1de`                                                         |                                                    |
-| `--soon`                      | `#6d3be4`                                                         |                                                    |
-| `--border`                    | `#e6e8ef`                                                         | line                                               |
-| `--border-subtle`             | `#eef0f5`                                                         | line-2                                             |
-| `--input`                     | `#e6e8ef`                                                         |                                                    |
-| `--chart-1`                   | `#155dfc`                                                         |                                                    |
-| `--chart-3`                   | `#b4770b`                                                         |                                                    |
-| `--chart-5`                   | `#727b92`                                                         |                                                    |
-| `--radius-panel`              | `12px`                                                            | cards, toasts                                      |
-| `--font`                      | `"Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif`   |                                                    |
-| `--elevation-2`               | `0 4px 14px rgb(16 23 41 / 0.08), 0 2px 4px rgb(16 23 41 / 0.04)` |                                                    |
-| `--sidebar`                   | `#0a0a10`                                                         | side                                               |
-| `--sidebar-foreground`        | `#dbdee7`                                                         | side-ink                                           |
-| `--sidebar-muted`             | `#8a90a1`                                                         | side-ink-2                                         |
-| `--sidebar-heading`           | `#666c7c`                                                         | side-head                                          |
-| `--sidebar-primary`           | `#155dfc`                                                         |                                                    |
-| `--sidebar-accent`            | `#15151e`                                                         | side-2                                             |
-| `--sidebar-accent-foreground` | `#ffffff`                                                         |                                                    |
-| `--sidebar-ring`              | `rgb(21 93 252 / 0.45)`                                           |                                                    |
+| Token                         | Light value                                                         | Note                                               |
+| ----------------------------- | ------------------------------------------------------------------- | -------------------------------------------------- |
+| `--page`                      | `#f1f1f3`                                                           | page: app canvas behind cards                      |
+| `--background`                | `#ffffff`                                                           | surface: cards, inputs, outline buttons            |
+| `--foreground`                | `#24242b`                                                           | ink                                                |
+| `--foreground-secondary`      | `#464654`                                                           | ink-2                                              |
+| `--card`                      | `#ffffff`                                                           |                                                    |
+| `--card-header`               | `#f7f7f8`                                                           | head                                               |
+| `--popover`                   | `#ffffff`                                                           |                                                    |
+| `--primary`                   | `#155dfc`                                                           | accent                                             |
+| `--primary-foreground`        | `#ffffff`                                                           |                                                    |
+| `--primary-press`             | `#0b3aad`                                                           |                                                    |
+| `--primary-subtle-2`          | `#f4f8ff`                                                           | accent-weak-2: row hover, selected radio card      |
+| `--primary-strong`            | `#0b3aad`                                                           | info text on a primary-subtle ground               |
+| `--primary-ink`               | `#155dfc`                                                           | brand blue as text; lighter in dark mode for 4.5:1 |
+| `--secondary`                 | `#f1f1f3`                                                           |                                                    |
+| `--muted`                     | `#f7f7f8`                                                           |                                                    |
+| `--placeholder`               | `#6b6b80`                                                           | darker than the dashboard's #8f8fa3 for 4.5:1      |
+| `--accent`                    | `#f1f1f3`                                                           |                                                    |
+| `--destructive`               | `#cc2d36`                                                           | danger, darkened for 4.5:1 on grey surfaces        |
+| `--destructive-subtle`        | `#fcecec`                                                           |                                                    |
+| `--success`                   | `#0e9e6e`                                                           | ok                                                 |
+| `--success-subtle`            | `#e6f6ef`                                                           |                                                    |
+| `--warning`                   | `#b4770b`                                                           | warn                                               |
+| `--warning-subtle`            | `#fbf1de`                                                           |                                                    |
+| `--soon`                      | `#6d3be4`                                                           |                                                    |
+| `--border`                    | `#e2e2e7`                                                           | border/primary                                     |
+| `--border-subtle`             | `#f1f1f3`                                                           | border/secondary                                   |
+| `--input`                     | `#e2e2e7`                                                           |                                                    |
+| `--chart-1`                   | `#155dfc`                                                           |                                                    |
+| `--chart-3`                   | `#b4770b`                                                           |                                                    |
+| `--chart-5`                   | `#68687e`                                                           |                                                    |
+| `--radius-panel`              | `12px`                                                              | cards, toasts                                      |
+| `--font`                      | `"Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif`     |                                                    |
+| `--elevation-card`            | `0 1px 2px -1px rgb(0 0 0 / 0.1), 0 1px 3px rgb(0 0 0 / 0.1)`       |                                                    |
+| `--elevation-pop`             | `0 12px 34px rgb(16 23 41 / 0.16), 0 4px 10px rgb(16 23 41 / 0.08)` |                                                    |
+| `--sidebar-foreground`        | `#dbdee7`                                                           | side-ink                                           |
+| `--sidebar-muted`             | `#8a90a1`                                                           | side-ink-2                                         |
+| `--sidebar-heading`           | `#666c7c`                                                           | side-head                                          |
+| `--sidebar-primary`           | `#155dfc`                                                           |                                                    |
+| `--sidebar-accent`            | `#15151e`                                                           | side-2                                             |
+| `--sidebar-accent-foreground` | `#ffffff`                                                           |                                                    |
+| `--sidebar-ring`              | `rgb(21 93 252 / 0.45)`                                             |                                                    |

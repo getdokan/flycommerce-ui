@@ -21,12 +21,12 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import {
-  CheckIcon,
-  GripVerticalIcon,
-  PencilLineIcon,
-  Trash2Icon,
-  XIcon,
-} from "lucide-react"
+  FiCheck as CheckIcon,
+  FiEdit3 as PencilLineIcon,
+  FiTrash2 as Trash2Icon,
+  FiX as XIcon,
+} from "react-icons/fi"
+import { LuGripVertical as GripVerticalIcon } from "react-icons/lu"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

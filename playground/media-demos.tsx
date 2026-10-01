@@ -1,5 +1,6 @@
 import * as React from "react"
-import { ImagePlusIcon, Trash2Icon } from "lucide-react"
+import { FiTrash2 as Trash2Icon } from "react-icons/fi"
+import { LuImagePlus as ImagePlusIcon } from "react-icons/lu"
 import { toast } from "sonner"
 
 import {

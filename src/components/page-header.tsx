@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "cn"
-import { ChevronLeftIcon } from "lucide-react"
+import { FiChevronLeft as ChevronLeftIcon } from "react-icons/fi"
 import { Slot } from "radix-ui"
 
 function PageHeader({ className, ...props }: React.ComponentProps<"header">) {
@@ -75,7 +75,10 @@ function PageHeaderDescription({
   return (
     <p
       data-slot="page-header-description"
-      className={cn("mt-1.5 max-w-[70ch] text-muted-foreground", className)}
+      className={cn(
+        "mt-1.5 max-w-[70ch] text-sm text-muted-foreground",
+        className
+      )}
       {...props}
     />
   )

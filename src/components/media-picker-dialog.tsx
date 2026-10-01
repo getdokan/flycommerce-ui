@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { UploadCloudIcon } from "lucide-react"
+import { FiUploadCloud as UploadCloudIcon } from "react-icons/fi"
 
 import { Dropzone, type FileRejection } from "@/components/dropzone"
 import {
@@ -107,8 +107,8 @@ const DEFAULT_LABELS = {
   libraryTab: "Media Library",
   dropTitle: (
     <>
-      <span className="font-semibold text-primary-ink">Drag &amp; Drop</span> your
-      image here
+      <span className="font-semibold text-primary-ink">Drag &amp; Drop</span>{" "}
+      your image here
     </>
   ),
   dropDescription: "JPG, PNG or WebP (Max 5MB Each)",

@@ -3,13 +3,13 @@
 import * as React from "react"
 import { cn } from "cn"
 import {
-  CheckIcon,
-  EyeIcon,
-  FileIcon,
-  LockIcon,
-  PlayIcon,
-  Trash2Icon,
-} from "lucide-react"
+  FiCheck as CheckIcon,
+  FiEye as EyeIcon,
+  FiFile as FileIcon,
+  FiLock as LockIcon,
+  FiPlay as PlayIcon,
+  FiTrash2 as Trash2Icon,
+} from "react-icons/fi"
 
 type MediaItem = {
   id: string

@@ -5,7 +5,7 @@ import { cn } from "cn"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { Button } from "@/components/ui/button"
-import { XIcon } from "lucide-react"
+import { FiX as XIcon } from "react-icons/fi"
 
 function Dialog({
   ...props
@@ -67,7 +67,7 @@ function DialogContent({
         data-slot="dialog-content"
         data-size={size}
         className={cn(
-          "fixed start-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 overflow-y-auto rounded-xl border bg-popover p-6 text-sm text-popover-foreground shadow-pop duration-100 outline-none data-[size=default]:sm:max-w-[480px] data-[size=lg]:sm:max-w-[720px] data-[size=sm]:sm:max-w-[400px] data-[size=xl]:sm:max-w-[800px] data-[size=2xl]:sm:max-w-[900px] rtl:translate-x-1/2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed start-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 overflow-y-auto rounded-xl border bg-popover p-6 text-sm text-popover-foreground shadow-pop duration-100 outline-none data-[size=2xl]:sm:max-w-[900px] data-[size=default]:sm:max-w-[480px] data-[size=lg]:sm:max-w-[720px] data-[size=sm]:sm:max-w-[400px] data-[size=xl]:sm:max-w-[800px] rtl:translate-x-1/2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         {...props}
