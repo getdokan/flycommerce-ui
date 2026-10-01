@@ -3,12 +3,12 @@
 import * as React from "react"
 import { cn } from "cn"
 import {
-  CheckIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsUpDownIcon,
-  SearchIcon,
-} from "lucide-react"
+  FiCheck as CheckIcon,
+  FiChevronLeft as ChevronLeftIcon,
+  FiChevronRight as ChevronRightIcon,
+  FiSearch as SearchIcon,
+} from "react-icons/fi"
+import { LuChevronsUpDown as ChevronsUpDownIcon } from "react-icons/lu"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -220,7 +220,7 @@ function TreeSelect({
       <PopoverContent
         align="start"
         collisionPadding={16}
-        className="w-(--radix-popover-trigger-width) min-w-72 max-h-(--radix-popover-content-available-height) max-w-[calc(100vw-2rem)] gap-0 p-0"
+        className="max-h-(--radix-popover-content-available-height) w-(--radix-popover-trigger-width) max-w-[calc(100vw-2rem)] min-w-72 gap-0 p-0"
         onOpenAutoFocus={(event) => {
           if (options.length === 0) event.preventDefault()
         }}
@@ -284,7 +284,7 @@ function TreeSelect({
               id={listId}
               role="listbox"
               aria-label={level?.label ?? placeholder}
-              className="min-h-0 max-h-72 overflow-y-auto border-t border-border-subtle p-1.5"
+              className="max-h-72 min-h-0 overflow-y-auto border-t border-border-subtle p-1.5"
             >
               {rows.length === 0 && (
                 <div className="px-3 py-6 text-center text-sm text-muted-foreground">

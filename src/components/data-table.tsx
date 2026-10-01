@@ -35,16 +35,18 @@ import {
   type SortingState,
 } from "@tanstack/react-table"
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsUpDownIcon,
-  GripVerticalIcon,
-  InboxIcon,
-  TriangleAlertIcon,
-} from "lucide-react"
+  FiArrowDown as ArrowDownIcon,
+  FiArrowUp as ArrowUpIcon,
+  FiChevronDown as ChevronDownIcon,
+  FiChevronLeft as ChevronLeftIcon,
+  FiChevronRight as ChevronRightIcon,
+  FiInbox as InboxIcon,
+  FiAlertTriangle as TriangleAlertIcon,
+} from "react-icons/fi"
+import {
+  LuChevronsUpDown as ChevronsUpDownIcon,
+  LuGripVertical as GripVerticalIcon,
+} from "react-icons/lu"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"

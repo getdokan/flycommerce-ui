@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { ImageIcon } from "lucide-react"
+import { FiImage as ImageIcon } from "react-icons/fi"
 
 import {
   MediaTile,

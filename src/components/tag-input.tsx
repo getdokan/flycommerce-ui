@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { XIcon } from "lucide-react"
+import { FiX as XIcon } from "react-icons/fi"
 
 type TagInputProps = Omit<
   React.ComponentProps<"input">,

@@ -45,7 +45,7 @@ CI runs all of these, plus the plugin reference check, on every push and pull re
 1. **Start from shadcn** when it has the component:
    - `pnpm dlx shadcn@latest add <name>` for a new one;
    - `pnpm dlx shadcn@latest add <name> --diff` to compare ours with upstream.
-2. **Restyle it** to the design (Figma or the PM prototype) using tokens.
+2. **Restyle it** to the design (Figma or the PM prototype) using tokens. shadcn writes `lucide-react` imports; switch them to `react-icons/fi` (Feather, as the dashboard uses), or `react-icons/lu` when Feather has no match.
 3. **Export it** from `src/index.ts`.
 4. **Add a gallery section** in `playground/`:
    - register it in `demos.tsx` with a `source` badge and search `keywords`;

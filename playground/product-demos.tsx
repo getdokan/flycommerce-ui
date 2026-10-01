@@ -1,13 +1,13 @@
 import * as React from "react"
 import {
-  AlignLeftIcon,
-  CheckSquareIcon,
-  ChevronDownIcon,
-  CircleIcon,
-  HashIcon,
-  PlusIcon,
-  TypeIcon,
-} from "lucide-react"
+  FiAlignLeft as AlignLeftIcon,
+  FiCheckSquare as CheckSquareIcon,
+  FiChevronDown as ChevronDownIcon,
+  FiCircle as CircleIcon,
+  FiHash as HashIcon,
+  FiPlus as PlusIcon,
+  FiType as TypeIcon,
+} from "react-icons/fi"
 import { toast } from "sonner"
 
 import {

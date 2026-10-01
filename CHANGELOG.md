@@ -19,7 +19,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
   - Menus, selects and popovers use 8px corners and `shadow-card`; tooltips are smaller with 4px corners.
   - `StatCard` follows the dashboard overview: value over the label, icon in a 36px chip on the right.
   - Tables: 12px semibold uppercase headers, `px-4 py-5` cells, grey row hover.
-  - Icons default to a 2px stroke, the same weight as the dashboard's Feather icons.
+  - **Icons now come from `react-icons`, the package the dashboard uses**: Feather (`react-icons/fi`) wherever it has the glyph, the dashboard sidebar's own choices for navigation (`abandonedCart`, `vendors`, `themes`, `integrations`, `support`, `setupGuide` changed glyph), and Lucide (`react-icons/lu`) only where Feather has nothing. `lucide-react` is no longer a dependency. `<Icon name>` values are unchanged; `IconProps` now extends react-icons' `IconType` props instead of Lucide's.
   - Card titles 16px bold; row titles and field labels 14px.
   - `destructive` is slightly darker (`#cc2d36`) to keep 4.5:1 on the grey surfaces.
 

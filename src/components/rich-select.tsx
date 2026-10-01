@@ -2,7 +2,11 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { CheckIcon, ChevronDownIcon, SearchIcon } from "lucide-react"
+import {
+  FiCheck as CheckIcon,
+  FiChevronDown as ChevronDownIcon,
+  FiSearch as SearchIcon,
+} from "react-icons/fi"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -184,7 +188,7 @@ function RichSelect(props: RichSelectProps) {
       <PopoverContent
         align="start"
         collisionPadding={16}
-        className="w-(--radix-popover-trigger-width) min-w-64 max-h-(--radix-popover-content-available-height) max-w-[calc(100vw-2rem)] gap-0 p-0"
+        className="max-h-(--radix-popover-content-available-height) w-(--radix-popover-trigger-width) max-w-[calc(100vw-2rem)] min-w-64 gap-0 p-0"
         onOpenAutoFocus={(event) => {
           if (!withSearch) {
             event.preventDefault()
@@ -242,7 +246,7 @@ function RichSelect(props: RichSelectProps) {
           tabIndex={withSearch ? -1 : 0}
           onKeyDown={withSearch ? undefined : onKeyDown}
           className={cn(
-            "min-h-0 max-h-80 overflow-y-auto p-1.5 outline-none",
+            "max-h-80 min-h-0 overflow-y-auto p-1.5 outline-none",
             withSearch && "border-t border-border-subtle"
           )}
         >

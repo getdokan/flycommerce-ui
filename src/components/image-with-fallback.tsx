@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { ImageIcon } from "lucide-react"
+import { FiImage as ImageIcon } from "react-icons/fi"
 
 type ImageWithFallbackProps = React.ComponentProps<"img"> & {
   /** Rendered when `src` is missing or fails to load. */

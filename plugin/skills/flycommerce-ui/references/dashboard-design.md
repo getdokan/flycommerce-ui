@@ -61,7 +61,7 @@ Legacy code uses `rounded` / `rounded-sm` (4px) on dokan-ui `Button`, `SimpleInp
 
 ## Icons
 
-The dashboard imports `react-icons`, overwhelmingly Feather (`react-icons/fi`), plus a few Heroicons, BoxIcons and Font Awesome glyphs and custom SVGs in `src/components/icons/dashboard/`. The library uses Lucide, which is the maintained fork of Feather: same 24px grid, same 2px stroke, mostly the same shapes. So:
+The dashboard imports `react-icons`, overwhelmingly Feather (`react-icons/fi`), plus a few Heroicons, BoxIcons and Font Awesome glyphs and custom SVGs in `src/components/icons/dashboard/`. The library draws its icons from the same package: Feather (`react-icons/fi`) wherever Feather has the glyph, with the dashboard's own sidebar choices (`FiHome`, `FiShoppingBag`, `FiShoppingCart`, `TbShoppingCartX`, `FiUser` for vendors, `FiLayers`, `FiSliders`, `FiSettings`…), and Lucide (`react-icons/lu`) only for meanings Feather lacks. The dashboard's two custom sidebar SVGs (payouts, marketing) are not copied; the library uses `LuBanknote` and `LuMegaphone`. So:
 
 - Replace every `Fi*` (and the odd `Hi*`, `Bi*`, `Fa*`) with `<Icon name="…" />` using the meaning from `icons.md` (e.g. `FiTrash2` → `delete`, `FiEye` → `reveal`, `HiOutlineDotsHorizontal` → `more`). Filled or heavier sets (Font Awesome, solid Heroicons) don't match; don't bring them back.
 - Sizes by context: 16px in buttons and inputs (automatic in `Button`), 20px in nav, settings rows and 36px chips, 12px for inline validation, 24px or more only in empty states (`Empty`).
