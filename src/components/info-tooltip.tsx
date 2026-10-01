@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { InfoIcon } from "lucide-react"
+import { FiInfo as InfoIcon } from "react-icons/fi"
 
 import {
   Tooltip,

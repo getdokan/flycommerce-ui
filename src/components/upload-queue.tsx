@@ -2,12 +2,12 @@
 
 import { cn } from "cn"
 import {
-  CheckCircle2Icon,
-  CircleAlertIcon,
-  Trash2Icon,
-  UploadCloudIcon,
-  XIcon,
-} from "lucide-react"
+  FiCheckCircle as CheckCircle2Icon,
+  FiAlertCircle as CircleAlertIcon,
+  FiTrash2 as Trash2Icon,
+  FiUploadCloud as UploadCloudIcon,
+  FiX as XIcon,
+} from "react-icons/fi"
 
 import { formatBytes, MediaFileGlyph } from "@/components/media-tile"
 import { Button } from "@/components/ui/button"

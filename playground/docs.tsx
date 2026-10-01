@@ -1,10 +1,12 @@
 import {
-  AccessibilityIcon,
-  ArrowRightIcon,
-  BoxesIcon,
-  FeatherIcon,
-  LanguagesIcon,
-} from "lucide-react"
+  FiArrowRight as ArrowRightIcon,
+  FiFeather as FeatherIcon,
+} from "react-icons/fi"
+import {
+  LuAccessibility as AccessibilityIcon,
+  LuBoxes as BoxesIcon,
+  LuLanguages as LanguagesIcon,
+} from "react-icons/lu"
 
 import {
   Badge,

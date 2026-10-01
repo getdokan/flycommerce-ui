@@ -1,5 +1,9 @@
 import * as React from "react"
-import { MoonIcon, SearchIcon, SunIcon } from "lucide-react"
+import {
+  FiMoon as MoonIcon,
+  FiSearch as SearchIcon,
+  FiSun as SunIcon,
+} from "react-icons/fi"
 import sources from "virtual:demo-sources"
 
 import {

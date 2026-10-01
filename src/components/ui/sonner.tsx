@@ -2,12 +2,12 @@
 
 import { Toaster as Sonner, toast, type ToasterProps } from "sonner"
 import {
-  CircleCheckIcon,
-  InfoIcon,
-  TriangleAlertIcon,
-  OctagonXIcon,
-  Loader2Icon,
-} from "lucide-react"
+  FiCheckCircle as CircleCheckIcon,
+  FiInfo as InfoIcon,
+  FiAlertTriangle as TriangleAlertIcon,
+  FiXOctagon as OctagonXIcon,
+} from "react-icons/fi"
+import { LuLoaderCircle as Loader2Icon } from "react-icons/lu"
 
 const Toaster = ({ theme = "light", ...props }: ToasterProps) => {
   return (

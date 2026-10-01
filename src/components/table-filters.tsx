@@ -3,7 +3,10 @@
 import * as React from "react"
 import { cn } from "cn"
 import { format as formatDate } from "date-fns"
-import { SlidersHorizontalIcon, XIcon } from "lucide-react"
+import {
+  FiSliders as SlidersHorizontalIcon,
+  FiX as XIcon,
+} from "react-icons/fi"
 
 import { DateRangePicker, type DateRange } from "@/components/date-picker"
 import { Button } from "@/components/ui/button"

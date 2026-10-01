@@ -693,6 +693,7 @@
     --radius-control: var(--radius);
     --radius-card: var(--radius-panel);
     --shadow-1: var(--elevation-1);
+    --shadow-card: var(--elevation-card);
     --shadow-2: var(--elevation-2);
     --shadow-pop: var(--elevation-pop);
 }
@@ -717,10 +718,9 @@
   font-variant-numeric: tabular-nums;
 }
 @utility type-card-title {
-  font-size: 15px;
-  line-height: 22px;
-  font-weight: 640;
-  letter-spacing: -0.01em;
+  font-size: 16px;
+  line-height: 28px;
+  font-weight: 700;
 }
 @utility type-section-label {
   font-size: 14px;
@@ -733,14 +733,14 @@
   font-weight: 400;
 }
 @utility type-row-title {
-  font-size: 13.5px;
+  font-size: 14px;
   line-height: 20px;
-  font-weight: 560;
+  font-weight: 600;
 }
 @utility type-field-label {
-  font-size: 12.5px;
-  line-height: 18px;
-  font-weight: 560;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
 }
 @utility type-kpi-label {
   font-size: 12px;
@@ -758,10 +758,9 @@
   font-weight: 600;
 }
 @utility type-table-header {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 600;
   text-transform: uppercase;
 }
 @utility type-group-heading {

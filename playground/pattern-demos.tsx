@@ -1,11 +1,11 @@
 import * as React from "react"
 import {
-  DownloadIcon,
-  EllipsisIcon,
-  PlusIcon,
-  Trash2Icon,
-  UploadIcon,
-} from "lucide-react"
+  FiDownload as DownloadIcon,
+  FiPlus as PlusIcon,
+  FiTrash2 as Trash2Icon,
+  FiUpload as UploadIcon,
+} from "react-icons/fi"
+import { LuEllipsis as EllipsisIcon } from "react-icons/lu"
 import { toast } from "sonner"
 
 import {
@@ -567,7 +567,7 @@ export function IconsDemo() {
         <span className="text-xs text-muted-foreground">
           Click an icon to copy its usage. Use{" "}
           <code className="rounded bg-muted px-1">{`<Icon name="orders" />`}</code>
-          , never a lucide component directly.
+          , never a react-icons component directly.
         </span>
       </div>
       {Object.entries(ICON_GROUPS).map(([group, icons]) => {

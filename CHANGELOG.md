@@ -2,6 +2,29 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [0.2.0] - 2026-10-01
+
+The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.
+
+### Added
+
+- `IconChip`: an icon on a tinted tile (`tone`, `shape`, `size`), for stat cards, settings rows, card titles and status icons.
+- Claude plugin: `references/dashboard-design.md`, a guide to the redesigned dashboard's look (surfaces, shadows, corners, icons, icon chips, tables, tabs, forms) mapped to library components.
+
+### Changed
+
+- **Matches the dashboard redesign.** The look now follows the dashboard's Figma tokens instead of the earlier prototype, so apps built with the library sit next to redesigned dashboard pages without a visible seam. Every component looks slightly different. No props were removed; only the `IconProps` type changed (see Icons below).
+  - Neutral greys replace the blue-tinted ones: text `#24242b`/`#464654`/`#68687e`, borders `#e2e2e7`/`#f1f1f3`, page `#f1f1f3`.
+  - Controls (buttons, inputs, selects, toggles) are 40px tall with 8px corners, up from 38px and 4px.
+  - `Card`, `DataTable` and `StatCard` drop their border for the new `shadow-card`; a `CardHeader` with `border-b` gets a grey header band; card titles are 16px bold.
+  - `Tabs` and segmented `NavTabs`: grey track without a border, white active pill, 14px text, dark active label instead of blue.
+  - Menus, selects and popovers use 8px corners and `shadow-card`; tooltips are smaller with 4px corners.
+  - `StatCard` follows the dashboard overview: value over the label, icon in a 36px chip on the right.
+  - Tables: 12px semibold uppercase headers, `px-4 py-5` cells, grey row hover.
+  - **Icons now come from `react-icons`, the package the dashboard uses**: Feather (`react-icons/fi`) wherever it has the glyph, the dashboard sidebar's own choices for navigation (`abandonedCart`, `vendors`, `themes`, `integrations`, `support`, `setupGuide` changed glyph), and Lucide (`react-icons/lu`) only where Feather has nothing. `lucide-react` is no longer a dependency. `<Icon name>` values are unchanged; `IconProps` now extends react-icons' `IconType` props instead of Lucide's.
+  - Card titles 16px bold; row titles and field labels 14px.
+  - `destructive` is slightly darker (`#cc2d36`) to keep 4.5:1 on the grey surfaces.
+
 ## [0.1.1] - 2026-09-30
 
 ### Fixed

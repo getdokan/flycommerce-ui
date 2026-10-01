@@ -349,7 +349,7 @@ All colours, radii, shadows and type sizes are CSS variables defined once in the
 | Text             | `text-foreground`, `text-foreground-secondary`, `text-muted-foreground`                                                                               |
 | Brand and status | `bg-primary` (fills), `text-primary-ink` (blue text and links), `bg-primary-subtle`, `text-success-strong`, `text-warning-strong`, `text-destructive` |
 | Lines            | `border-border`, `border-border-subtle`                                                                                                               |
-| Shape and depth  | `rounded-control`, `rounded-card`, `shadow-1`, `shadow-2`, `shadow-pop`                                                                               |
+| Shape and depth  | `rounded-control`, `rounded-card`, `shadow-1`, `shadow-card`, `shadow-2`, `shadow-pop`                                                                |
 | Typography       | `type-page-title`, `type-card-title`, `type-body`, `type-field-label`, `type-hint`, `type-table-header` …                                             |
 
 The library leaves Tailwind's own radius and shadow scales untouched, so installing it never changes existing parts of your app.

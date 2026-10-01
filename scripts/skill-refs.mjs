@@ -49,7 +49,7 @@ writeFileSync(path.join(out, "exports.md"), exportsMd)
 const iconSrc = readFileSync(path.join(root, "src/components/icon.tsx"), "utf8")
 const groupsBody = iconSrc.slice(iconSrc.indexOf("const ICON_GROUPS = {"), iconSrc.indexOf("} satisfies"))
 let iconsMd = header("Icon names")
-iconsMd += "Use `<Icon name=\"…\" />` with one of these names. Never import a lucide icon in a screen.\n\n"
+iconsMd += "Use `<Icon name=\"…\" />` with one of these names. Never import from react-icons in a screen.\n\n"
 for (const g of groupsBody.matchAll(/^\s{2}(?:"([^"]+)"|(\w+)):\s*\{([^}]*)\}/gm)) {
   const [, quoted, bare, body] = g
   const names = [...body.matchAll(/^\s*"?([\w-]+)"?:\s*(\w+)/gm)].map((m) => `\`${m[1]}\` (${m[2].replace(/Icon$/, "")})`)

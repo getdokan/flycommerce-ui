@@ -1,12 +1,14 @@
 import * as React from "react"
 import {
-  CheckCircle2Icon,
-  DownloadIcon,
-  FileSpreadsheetIcon,
-  SparklesIcon,
-  UploadIcon,
-  XIcon,
-} from "lucide-react"
+  FiCheckCircle as CheckCircle2Icon,
+  FiDownload as DownloadIcon,
+  FiUpload as UploadIcon,
+  FiX as XIcon,
+} from "react-icons/fi"
+import {
+  LuFileSpreadsheet as FileSpreadsheetIcon,
+  LuSparkles as SparklesIcon,
+} from "react-icons/lu"
 import { toast } from "sonner"
 
 import {

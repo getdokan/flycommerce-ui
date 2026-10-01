@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { StarIcon } from "lucide-react"
+import { FiStar as StarIcon } from "react-icons/fi"
 
 type RatingProps = Omit<React.ComponentProps<"div">, "onChange"> & {
   value: number

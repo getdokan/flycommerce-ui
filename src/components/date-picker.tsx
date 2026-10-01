@@ -12,7 +12,7 @@ import {
   subDays,
   subMonths,
 } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { FiCalendar as CalendarIcon } from "react-icons/fi"
 import type { DateRange } from "react-day-picker"
 
 import { useIsMobile } from "@/hooks/use-mobile"

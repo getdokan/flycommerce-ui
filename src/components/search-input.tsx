@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { SearchIcon, XIcon } from "lucide-react"
+import { FiSearch as SearchIcon, FiX as XIcon } from "react-icons/fi"
 
 import {
   InputGroup,

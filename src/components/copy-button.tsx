@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { CheckIcon, CopyIcon } from "lucide-react"
+import { FiCheck as CheckIcon, FiCopy as CopyIcon } from "react-icons/fi"
 
 import { Button } from "@/components/ui/button"
 
