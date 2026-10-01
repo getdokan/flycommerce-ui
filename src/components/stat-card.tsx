@@ -35,7 +35,7 @@ function StatCard({
       data-slot="stat-card"
       data-hero={hero || undefined}
       className={cn(
-        "rounded-xl border bg-card text-card-foreground shadow-1",
+        "rounded-xl bg-card text-card-foreground shadow-card",
         hero ? "p-6" : "p-5",
         className
       )}

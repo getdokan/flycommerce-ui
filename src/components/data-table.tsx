@@ -408,7 +408,7 @@ function DataTable<TData>({
     <div
       data-slot="data-table"
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-xl border bg-card text-card-foreground shadow-1",
+        "w-full min-w-0 overflow-hidden rounded-xl bg-card text-card-foreground shadow-card",
         className
       )}
     >

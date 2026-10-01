@@ -190,7 +190,7 @@ function TreeSelect({
           disabled={disabled}
           data-placeholder={selectedPath.length === 0 || undefined}
           className={cn(
-            "flex h-[38px] w-full items-center gap-1.5 rounded-control border border-input bg-background ps-3 pe-2.5 text-start text-sm transition-colors outline-none hover:border-placeholder focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:border-primary aria-invalid:border-destructive data-placeholder:text-placeholder",
+            "flex h-10 w-full items-center gap-1.5 rounded-control border border-input bg-background ps-3 pe-2.5 text-start text-sm transition-colors outline-none hover:border-placeholder focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:border-primary aria-invalid:border-destructive data-placeholder:text-placeholder",
             className
           )}
         >

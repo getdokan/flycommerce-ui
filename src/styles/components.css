@@ -693,6 +693,7 @@
     --radius-control: var(--radius);
     --radius-card: var(--radius-panel);
     --shadow-1: var(--elevation-1);
+    --shadow-card: var(--elevation-card);
     --shadow-2: var(--elevation-2);
     --shadow-pop: var(--elevation-pop);
 }

@@ -20,7 +20,7 @@ function NavTabs({
         className={cn(
           "flex w-fit max-w-full [scrollbar-width:none] items-center overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden",
           variant === "segmented"
-            ? "gap-0.5 rounded-[9px] border border-border bg-page p-[3px]"
+            ? "gap-1 rounded-lg bg-border p-1"
             : "gap-[3px] shadow-[inset_0_-1px_0_var(--border)]",
           className
         )}
@@ -46,9 +46,9 @@ function NavTabsLink({
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative inline-flex shrink-0 items-center gap-1.5 text-[13px] font-[550] whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring [&_svg]:size-4",
+        "relative inline-flex shrink-0 items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring [&_svg]:size-4",
         variant === "segmented"
-          ? "rounded-[3px] px-[13px] py-1.5 text-foreground-secondary hover:text-foreground data-active:bg-background data-active:text-primary-ink data-active:shadow-1"
+          ? "rounded-md px-4 py-2 text-foreground-secondary hover:text-foreground data-active:bg-background data-active:text-foreground data-active:shadow-1"
           : "px-3 py-2.5 text-muted-foreground hover:text-foreground focus-visible:ring-inset data-active:text-primary-ink data-active:after:absolute data-active:after:inset-x-2 data-active:after:bottom-0 data-active:after:h-0.5 data-active:after:rounded-sm data-active:after:bg-primary",
         className
       )}

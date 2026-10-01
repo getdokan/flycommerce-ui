@@ -160,7 +160,7 @@ function RichSelect(props: RichSelectProps) {
           disabled={disabled}
           data-placeholder={selectedOptions.length === 0 || undefined}
           className={cn(
-            "flex h-[38px] w-full items-center gap-2 rounded-control border border-input bg-background ps-3 pe-2.5 text-start text-sm transition-colors outline-none hover:border-placeholder focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:border-primary aria-invalid:border-destructive data-placeholder:text-placeholder [&_svg:not([class*='size-'])]:size-4",
+            "flex h-10 w-full items-center gap-2 rounded-control border border-input bg-background ps-3 pe-2.5 text-start text-sm transition-colors outline-none hover:border-placeholder focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:border-primary aria-invalid:border-destructive data-placeholder:text-placeholder [&_svg:not([class*='size-'])]:size-4",
             className
           )}
         >
