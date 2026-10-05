@@ -147,6 +147,15 @@ Check the icon names you use against `references/icons.md`; `add` and `ai` above
 
 **Settings page**: `NavTabs` for sub-pages; a `Card` per group containing `SwitchField` rows; saving toggles show `loading`.
 
+## Pages of a FlyCommerce app
+
+An app that merchants install shows its pages inside the dashboard, framed on the app's own origin. This skill covers how those pages look. How they're framed, how they get a session token and how they call the store belong to FlyCommerce's other plugins, from the `flycommerce` marketplace (`getdokan/flycommerce-sdk`):
+
+- **flycommerce-apps**: installs, the app bridge, session tokens, webhooks, private and listed apps. It installs this plugin with it.
+- **flycommerce-api**: calling the store's endpoints.
+
+Use them alongside this one when they're available. If the project is an app and they aren't, ask the developer to run `/plugin marketplace add getdokan/flycommerce-sdk` and `/plugin install flycommerce-apps@flycommerce`; you can't run `/plugin` commands yourself.
+
 ## Before you finish
 
 - Type-check and lint the app.
