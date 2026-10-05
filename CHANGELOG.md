@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `SettingsNav`: a two-pane settings area. A rail of grouped links (icon tile, active state) with a filter over labels, group labels and keywords, a live result count, an empty state and a `/` shortcut; below a 56rem-wide area, a "Jump to section" select. Links render through `renderLink` for router links; every string is in `labels`.
+
 ## [0.2.0] - 2026-10-01
 
 The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.

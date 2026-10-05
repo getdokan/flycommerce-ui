@@ -10,6 +10,11 @@ import { toast } from "sonner"
 
 import {
   Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
   ConfirmDialog,
   DataTable,
   DropdownMenu,
@@ -30,8 +35,10 @@ import {
   PageHeaderTitle,
   SaveBar,
   SearchInput,
+  SettingsNav,
   StatusBadge,
   Switch,
+  SwitchField,
   Tabs,
   TabsContent,
   TabsList,
@@ -42,6 +49,7 @@ import {
   type FilterValues,
   type NumberRange,
   type IconName,
+  type SettingsNavGroup,
 } from "@/index"
 
 type Product = {
@@ -468,6 +476,152 @@ export function SaveBarDemo() {
           toast.success("Settings saved")
         }}
       />
+    </div>
+  )
+}
+
+const SETTINGS_GROUPS: SettingsNavGroup[] = [
+  {
+    id: "store",
+    label: "Store",
+    items: [
+      {
+        id: "general",
+        label: "General",
+        href: "#settings-nav",
+        icon: "storefront",
+      },
+      {
+        id: "brand",
+        label: "Brand & appearance",
+        href: "#settings-nav",
+        icon: "brandAppearance",
+        keywords: ["logo", "colors"],
+      },
+      {
+        id: "domains",
+        label: "Domains",
+        href: "#settings-nav",
+        icon: "domains",
+        keywords: ["url", "dns"],
+      },
+    ],
+  },
+  {
+    id: "selling",
+    label: "Selling",
+    items: [
+      {
+        id: "checkout",
+        label: "Checkout",
+        href: "#settings-nav",
+        icon: "orders",
+      },
+      {
+        id: "payments",
+        label: "Payments",
+        href: "#settings-nav",
+        icon: "payments",
+        keywords: ["stripe", "paypal"],
+      },
+      {
+        id: "taxes",
+        label: "Taxes",
+        href: "#settings-nav",
+        icon: "taxes",
+        keywords: ["vat", "gst"],
+      },
+    ],
+  },
+  {
+    id: "fulfilment",
+    label: "Shipping & delivery",
+    items: [
+      {
+        id: "shipping",
+        label: "Shipping",
+        href: "#settings-nav",
+        icon: "shipping",
+      },
+      {
+        id: "delivery",
+        label: "Local delivery",
+        href: "#settings-nav",
+        icon: "delivery",
+      },
+    ],
+  },
+  {
+    id: "account",
+    label: "Account",
+    items: [
+      {
+        id: "team",
+        label: "Team",
+        href: "#settings-nav",
+        icon: "team",
+        keywords: ["staff", "invite"],
+      },
+      {
+        id: "billing",
+        label: "Plan & billing",
+        href: "#settings-nav",
+        icon: "billing",
+        keywords: ["subscription"],
+      },
+      {
+        id: "notifications",
+        label: "Notifications",
+        href: "#settings-nav",
+        icon: "notifications",
+        keywords: ["email"],
+      },
+    ],
+  },
+]
+
+export function SettingsNavDemo() {
+  const [activeId, setActiveId] = React.useState("taxes")
+  const active = SETTINGS_GROUPS.flatMap((group) => group.items).find(
+    (item) => item.id === activeId
+  )
+  return (
+    <div className="w-full rounded-lg bg-page p-3">
+      <SettingsNav
+        groups={SETTINGS_GROUPS}
+        activeId={activeId}
+        shortcutKey="f"
+        renderLink={(item, props) => (
+          <a
+            {...props}
+            onClick={(event) => {
+              event.preventDefault()
+              setActiveId(item.id)
+            }}
+          />
+        )}
+        onNavigate={(item) => setActiveId(item.id)}
+      >
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>{active?.label}</CardTitle>
+            <CardDescription>
+              The page for the selected setting renders here.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SwitchField
+              title="Show prices with tax"
+              description="Customers see tax-inclusive prices in the store."
+              defaultChecked
+            />
+            <SwitchField
+              title="Charge tax on shipping"
+              description="Apply the same rate to shipping fees."
+            />
+          </CardContent>
+        </Card>
+      </SettingsNav>
     </div>
   )
 }
