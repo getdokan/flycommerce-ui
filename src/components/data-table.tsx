@@ -182,7 +182,10 @@ type DataTableProps<TData> = {
   sorting?: SortingState
   onSortingChange?: OnChangeFn<SortingState>
   manualSorting?: boolean
+  /** Makes rows focusable; a click or Enter calls it, except on links, buttons and inputs inside the row. */
   onRowClick?: (row: TData) => void
+  /** Row URL: cmd/ctrl-click and middle-click open it in a new tab; without `onRowClick`, a click or Enter goes to it. */
+  getRowHref?: (row: TData) => string
   getRowClassName?: (row: TData) => string | undefined
   pagination?: DataTablePaginationProps
   /** Figma puts pagination under the card; "inside" keeps it in the card footer. */
@@ -217,6 +220,7 @@ function DataTable<TData>({
   onSortingChange,
   manualSorting = false,
   onRowClick,
+  getRowHref,
   getRowClassName,
   pagination,
   paginationPlacement = "outside",
@@ -362,6 +366,31 @@ function DataTable<TData>({
         : undefined,
     onDragCancel: ({ active }: { active: { id: string | number } }) =>
       labels.reorderCancelled(rowLabel(active.id), position(active.id)),
+  }
+  const rowActions = (row: TData): React.ComponentProps<"tr"> => {
+    if (!onRowClick && !getRowHref) return {}
+    const href = getRowHref?.(row)
+    const openInNewTab = () => {
+      if (href !== undefined) window.open(href, "_blank", "noopener")
+    }
+    const activate = (event: React.MouseEvent | React.KeyboardEvent) => {
+      if (href !== undefined && (event.metaKey || event.ctrlKey)) openInNewTab()
+      else if (onRowClick) onRowClick(row)
+      else if (href !== undefined) window.location.assign(href)
+    }
+    return {
+      tabIndex: 0,
+      onClick: (event) => {
+        if (!fromInteractive(event)) activate(event)
+      },
+      onAuxClick: (event) => {
+        if (event.button === 1 && !fromInteractive(event)) openInNewTab()
+      },
+      onKeyDown: (event) => {
+        if (event.key === "Enter" && event.target === event.currentTarget)
+          activate(event)
+      },
+    }
   }
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!onReorder || !over || active.id === over.id) return
@@ -529,12 +558,11 @@ function DataTable<TData>({
                     sortable={reorderable}
                     selected={row.getIsSelected()}
                     className={cn(
-                      onRowClick && "cursor-pointer",
+                      (onRowClick || getRowHref) &&
+                        "cursor-pointer focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset",
                       getRowClassName?.(row.original)
                     )}
-                    onClick={
-                      onRowClick ? () => onRowClick(row.original) : undefined
-                    }
+                    {...rowActions(row.original)}
                   >
                     {row.getVisibleCells().map((cell, cellIndex) => {
                       const meta = cell.column.columnDef.meta
@@ -649,14 +677,11 @@ function DataTableRow({
   selected,
   className,
   children,
-  onClick,
-}: {
+  ...props
+}: Omit<React.ComponentProps<"tr">, "id"> & {
   id: string
   sortable: boolean
   selected: boolean
-  className?: string
-  children: React.ReactNode
-  onClick?: () => void
 }) {
   const {
     attributes,
@@ -694,7 +719,7 @@ function DataTableRow({
           "data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:shadow-2",
           className
         )}
-        onClick={onClick}
+        {...props}
       >
         {children}
       </TableRow>
@@ -720,6 +745,16 @@ function DragHandle({ label }: { label: string }) {
       <GripVerticalIcon aria-hidden="true" className="size-4" />
     </button>
   )
+}
+
+const INTERACTIVE =
+  "a, button, input, select, textarea, label, [role=button], [role=checkbox], [role=switch], [role=link], [role=menuitem], [data-slot=checkbox]"
+
+function fromInteractive(event: React.SyntheticEvent<HTMLElement>) {
+  const target = event.target as Element
+  if (!event.currentTarget.contains(target)) return true
+  const interactive = target.closest(INTERACTIVE)
+  return interactive !== null && event.currentTarget.contains(interactive)
 }
 
 function alignClass(align?: "start" | "center" | "end") {
