@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
 - `SegmentedControl` and `SegmentedControlItem`: one required choice among a few short options (e.g. Metric / Imperial) with the segmented `NavTabs` look. Radio semantics: arrow keys move and select, it can't be emptied, and `value` or `defaultValue` is required; `size="sm"` and `disabled` on the group or an item.
 
 ## [0.2.0] - 2026-10-01
