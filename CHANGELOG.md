@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
 - `@flycommerce/ui/tailwind-core.css`: `tailwind.css` without the global base layer (`body` background and text colour, border and outline colours on every element, Inter on `html`), for apps adopting the library page by page. `tailwind.css` and `styles.css` are unchanged.
 
 ## [0.2.0] - 2026-10-01
