@@ -31,6 +31,8 @@ Tailwind v4 apps, in the main CSS file:
 @import "@flycommerce/ui/fonts.css"; /* Inter, if the app doesn't load it already */
 ```
 
+An existing app adopting the library page by page imports `@flycommerce/ui/tailwind-core.css` instead of `tailwind.css`: the same minus the global base layer (`body` background and text colour, border and outline colours on every element, Inter on `html`), so unmigrated pages keep their look.
+
 Apps without Tailwind: `import "@flycommerce/ui/styles.css"`.
 
 At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for RTL locales), render one `<Toaster />`, and set `data-theme="dark"` (or the `dark` class) on `<html>` for dark mode.
