@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+
+- `DataTable` loads `@dnd-kit` only when `onReorder` is set: drag-and-drop is a separate module imported on first use, so tables without reordering no longer ship it (about 59 KB minified, 17 KB gzipped, less for an app that only uses `DataTable`). A reorderable table renders its rows straight away and enables the drag handles once the module has loaded, without moving anything.
+
 ## [0.2.0] - 2026-10-01
 
 The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.
