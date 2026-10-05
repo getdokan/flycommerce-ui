@@ -4,6 +4,10 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+### Added
+
+- Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
+
 ### Fixed
 
 - In apps that use `@tailwindcss/forms`, focused `Input`, `Textarea` and `NativeSelect` no longer get the plugin's 1px blue ring on top of their own focus border, and `NativeSelect` no longer shows the plugin's chevron next to its own.
