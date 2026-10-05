@@ -315,6 +315,7 @@ export function DataTableDemo() {
                 setPage(1)
               },
             }}
+            labels={{ pagination: "Products pagination" }}
           />
         </TabsContent>
       </Tabs>

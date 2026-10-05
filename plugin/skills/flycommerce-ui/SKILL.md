@@ -136,7 +136,7 @@ Components already apply these internally (`PageHeaderTitle`, `CardTitle`, `Fiel
   </>}
   subToolbar={<ActiveFilters fields={filterFields} value={filters} onValueChange={setFilters} />}
   pagination={{ page, pageSize, total: data?.total ?? 0, onPageChange: setPage, onPageSizeChange: setPageSize }}
-  labels={{ previous: t("Previous"), next: t("Next"), showing: (a, b, n) => t("Showing {{a}} to {{b}} of {{n}}", { a, b, n }) }}
+  labels={{ pagination: t("Pagination"), previous: t("Previous"), next: t("Next"), showing: (a, b, n) => t("Showing {{a}} to {{b}} of {{n}}", { a, b, n }) }}
 />
 ```
 

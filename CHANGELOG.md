@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `DataTable`: `labels.pagination` names the pagination landmark (default "Pagination") in offset and cursor mode; `PaginationEllipsis` takes a `label` (default "More pages"), now announced to screen readers instead of hidden.
+
 ## [0.2.0] - 2026-10-01
 
 The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.
