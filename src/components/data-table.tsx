@@ -124,6 +124,8 @@ type DataTableLabels = {
   emptyTitle?: React.ReactNode
   emptyDescription?: React.ReactNode
   errorTitle?: React.ReactNode
+  /** Name of the progress bar shown while `refreshing`. */
+  loading?: string
 }
 
 const DEFAULT_LABELS: Required<DataTableLabels> = {
@@ -150,6 +152,7 @@ const DEFAULT_LABELS: Required<DataTableLabels> = {
   emptyTitle: "Nothing here yet",
   emptyDescription: "Items you add will show up here.",
   errorTitle: "Couldn't load this list",
+  loading: "Loading…",
 }
 
 type DataTableProps<TData> = {
@@ -167,6 +170,8 @@ type DataTableProps<TData> = {
   /** `true` expands every level on first render. */
   defaultExpanded?: ExpandedState
   loading?: boolean
+  /** Refetching after the first load: keeps the rows and toolbar, dims the rows and shows a progress bar. */
+  refreshing?: boolean
   skeletonRows?: number
   /** Shown instead of rows, e.g. an error message with a retry button. */
   error?: React.ReactNode
@@ -205,6 +210,7 @@ function DataTable<TData>({
   getSubRows,
   defaultExpanded = {},
   loading = false,
+  refreshing = false,
   skeletonRows = 5,
   error,
   empty,
@@ -320,6 +326,7 @@ function DataTable<TData>({
     .getSelectedRowModel()
     .rows.map((row) => row.original)
   const clearSelection = () => table.resetRowSelection()
+  const showProgress = refreshing && !loading
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -459,7 +466,19 @@ function DataTable<TData>({
         </div>
       )}
 
-      <Table>
+      {showProgress && (
+        <div className="relative">
+          <div
+            data-slot="data-table-progress"
+            role="progressbar"
+            aria-label={labels.loading}
+            className="absolute inset-x-0 top-0 z-10 h-0.5 overflow-hidden bg-primary-subtle"
+          >
+            <div className="absolute inset-y-0 start-0 w-2/5 animate-progress-indeterminate bg-primary motion-reduce:w-full motion-reduce:animate-pulse" />
+          </div>
+        </div>
+      )}
+      <Table aria-busy={showProgress || undefined}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -493,7 +512,9 @@ function DataTable<TData>({
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
+        <TableBody
+          className={cn("transition-opacity", showProgress && "opacity-50")}
+        >
           {loading && !error ? (
             Array.from({ length: skeletonRows }).map((_, rowIndex) => (
               <TableRow key={rowIndex} className="hover:bg-transparent">
@@ -607,7 +628,14 @@ function DataTable<TData>({
       </Table>
       {/* Outside the table so it spans the card, not the scrollable column width. */}
       {state && (
-        <div data-slot="data-table-state" role="status" className="px-5 py-3.5">
+        <div
+          data-slot="data-table-state"
+          role="status"
+          className={cn(
+            "px-5 py-3.5 transition-opacity",
+            showProgress && "opacity-50"
+          )}
+        >
           {state}
         </div>
       )}
