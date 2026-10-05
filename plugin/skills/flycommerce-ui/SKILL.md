@@ -171,6 +171,15 @@ Check the icon names you use against `references/icons.md`; `add` and `ai` above
 
 The rail sits beside the page once the settings area is 56rem wide; narrower, a "Jump to section" select (one optgroup per group, calling `onNavigate`) replaces it. The filter matches item labels, group labels and `keywords`, announces the count, and `/` focuses it (`shortcutKey` to change, `false` to turn off).
 
+## Pages of a FlyCommerce app
+
+An app that merchants install shows its pages inside the dashboard, framed on the app's own origin. This skill covers how those pages look. How they're framed, how they get a session token and how they call the store belong to FlyCommerce's other plugins, from the `flycommerce` marketplace (`getdokan/flycommerce-sdk`):
+
+- **flycommerce-apps**: installs, the app bridge, session tokens, webhooks, private and listed apps. It installs this plugin with it.
+- **flycommerce-api**: calling the store's endpoints.
+
+Use them alongside this one when they're available. If the project is an app and they aren't, ask the developer to run `/plugin marketplace add getdokan/flycommerce-sdk` and `/plugin install flycommerce-apps@flycommerce`; you can't run `/plugin` commands yourself.
+
 ## Before you finish
 
 - Type-check and lint the app.
