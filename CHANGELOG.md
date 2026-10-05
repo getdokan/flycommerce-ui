@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
 - `DataTable`: while `loading`, the table is marked `aria-busy` and a visually hidden status announces `labels.loading` (default "Loading…").
 
 ## [0.2.0] - 2026-10-01
