@@ -4,6 +4,10 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+### Added
+
+- Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
+
 ### Changed
 
 - `StatusBadge` matches API values in snake_case or kebab-case (`on_hold`, `partially-refunded`) and normalises `tones` keys the same way; `data-status` holds the normalised key, and `partially paid`, `ready for pickup` (warning) and `partial` (default) are built in.
