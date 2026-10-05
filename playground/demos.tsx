@@ -44,6 +44,7 @@ import {
   PageHeaderDemo,
   SaveBarDemo,
   SearchInputDemo,
+  SegmentedControlDemo,
   StatusBadgeDemo,
 } from "./pattern-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
@@ -329,6 +330,8 @@ const KEYWORDS: Record<string, string> = {
   "radio-card": "option card choice",
   "switch-field": "toggle row setting",
   "nav-tabs": "tabs links route navigation",
+  "segmented-control":
+    "radio toggle switch choice option unit metric imperial pill button group",
   "async-combobox": "remote search autocomplete lookup api",
   "tag-input": "chips tags multi value creatable",
   "password-input": "password show hide eye",
@@ -396,6 +399,7 @@ const SOURCES: Record<string, Source> = {
   "stat-card": "prototype",
   "icon-chip": "figma",
   "nav-tabs": "prototype",
+  "segmented-control": "composite",
   "async-combobox": "composite",
   "tag-input": "composite",
   "password-input": "composite",
@@ -632,6 +636,12 @@ export const demos: Demo[] = [
     title: "Date & range pickers",
     group: "Patterns",
     render: () => <DatePickerDemo />,
+  },
+  {
+    id: "segmented-control",
+    title: "Segmented control",
+    group: "Forms",
+    render: () => <SegmentedControlDemo />,
   },
   {
     id: "tree-select",

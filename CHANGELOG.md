@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `SegmentedControl` and `SegmentedControlItem`: one required choice among a few short options (e.g. Metric / Imperial) with the segmented `NavTabs` look. Radio semantics: arrow keys move and select, it can't be emptied, and `value` or `defaultValue` is required; `size="sm"` and `disabled` on the group or an item.
+
 ## [0.2.0] - 2026-10-01
 
 The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.
