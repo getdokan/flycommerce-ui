@@ -10,6 +10,7 @@ import { toast } from "sonner"
 
 import {
   Button,
+  CardBrandIcon,
   ConfirmDialog,
   DataTable,
   DropdownMenu,
@@ -604,6 +605,47 @@ export function IconsDemo() {
           </div>
         )
       })}
+    </div>
+  )
+}
+
+const CARD_BRAND_SAMPLES = [
+  "visa",
+  "mastercard",
+  "amex",
+  "discover",
+  "diners",
+  "jcb",
+  "unionpay",
+  "eftpos_au",
+]
+
+export function CardBrandIconDemo() {
+  return (
+    <div className="flex w-full flex-col gap-5">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-8">
+        {CARD_BRAND_SAMPLES.map((brand) => (
+          <figure
+            key={brand}
+            className="flex flex-col items-center gap-2 rounded-lg border border-border-subtle px-2 py-3 text-foreground-secondary"
+          >
+            <CardBrandIcon brand={brand} size={32} />
+            <figcaption className="type-hint text-muted-foreground">
+              {brand}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="flex max-w-md items-center gap-3 rounded-xl bg-card p-4 shadow-card">
+        <CardBrandIcon brand="Visa" size={32} label="" />
+        <div className="min-w-0 flex-1">
+          <p className="type-row-title text-foreground">Visa ending in 4242</p>
+          <p className="type-hint text-muted-foreground">Expires 12/2027</p>
+        </div>
+        <Button variant="outline" size="sm">
+          Replace
+        </Button>
+      </div>
     </div>
   )
 }

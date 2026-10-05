@@ -370,7 +370,7 @@ export function AddOrder() {
 }
 ```
 
-The gallery's [Icons page](https://ui.flycommerce.com/#icons) lists all 150 names.
+The gallery's [Icons page](https://ui.flycommerce.com/#icons) lists all 151 names.
 
 ## Accessibility and localisation
 

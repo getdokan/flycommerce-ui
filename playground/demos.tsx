@@ -36,6 +36,7 @@ import {
 import { toast } from "sonner"
 
 import {
+  CardBrandIconDemo,
   ConfirmDialogDemo,
   DataTableDemo,
   DataTableReorderDemo,
@@ -313,6 +314,8 @@ const KEYWORDS: Record<string, string> = {
   "navigation-menu": "menubar nav mega menu",
   sidebar: "navigation nav rail",
   icons: "icon glyph feather react-icons svg",
+  "card-brand-icon":
+    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
   typography: "type font text heading size scale inter",
   colors: "color colour palette token swatch theme",
   "page-header": "title heading back link actions",
@@ -381,6 +384,7 @@ const SOURCES: Record<string, Source> = {
   pagination: "prototype",
   sidebar: "prototype",
   icons: "prototype",
+  "card-brand-icon": "composite",
   typography: "prototype",
   colors: "prototype",
   "page-header": "prototype",
@@ -534,6 +538,12 @@ export const demos: Demo[] = [
     title: "Icons",
     group: "Foundations",
     render: () => <IconsDemo />,
+  },
+  {
+    id: "card-brand-icon",
+    title: "Card brand icon",
+    group: "Foundations",
+    render: () => <CardBrandIconDemo />,
   },
 
   // Patterns
