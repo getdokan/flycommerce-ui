@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `SearchInput`: `searchOn="enter"` searches only on Enter (and with `""` on clear or Esc), for lists that refetch or navigate on each search; `onClear` fires when the clear button or Esc empties the field.
+
 ## [0.2.0] - 2026-10-01
 
 The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.
