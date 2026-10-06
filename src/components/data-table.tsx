@@ -70,7 +70,13 @@ let sortableRowsImport: Promise<SortableRowsModule> | undefined
 
 function loadSortableRows() {
   sortableRowsImport ??= import("@/components/data-table/sortable-rows")
-    .catch((): SortableRowsModule => ({ default: StaticRows }))
+    .catch((error): SortableRowsModule => {
+      console.warn(
+        "DataTable: row reordering failed to load; rows render without drag handles.",
+        error
+      )
+      return { default: StaticRows }
+    })
     .then((module) => {
       loadedSortableRows = module.default
       return module
@@ -80,8 +86,14 @@ function loadSortableRows() {
 
 const LazySortableRows = React.lazy(loadSortableRows)
 
+const ReorderUnavailableContext = React.createContext(false)
+
 function StaticRows({ ids, renderRow }: SortableRowsProps) {
-  return ids.map((_, index) => renderRow(index))
+  return (
+    <ReorderUnavailableContext.Provider value>
+      {ids.map((_, index) => renderRow(index))}
+    </ReorderUnavailableContext.Provider>
+  )
 }
 
 declare module "@tanstack/react-table" {
@@ -269,7 +281,9 @@ function DataTable<TData>({
 
   const reorderable = Boolean(onReorder) && !getSubRows
   const reorderEnabled = reorderable && sorting.length === 0
-  const SortableRows = loadedSortableRows ?? LazySortableRows
+  const [SortableRows] = React.useState(
+    () => loadedSortableRows ?? LazySortableRows
+  )
 
   React.useEffect(() => {
     if (reorderable) void loadSortableRows()
@@ -698,8 +712,9 @@ function DataTableRow({
 
 function DragHandle({ label }: { label: string }) {
   const drag = React.useContext(RowDragContext)
+  const unavailable = React.useContext(ReorderUnavailableContext)
   if (!drag)
-    return (
+    return unavailable ? null : (
       <span
         aria-hidden="true"
         className="inline-flex size-7 items-center justify-center text-muted-foreground"
