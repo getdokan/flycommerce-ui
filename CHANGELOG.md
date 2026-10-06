@@ -16,6 +16,10 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - `DataTable`: with a `title`, the `toolbar` now gets its own full-width row below `sm`, so a `SearchInput` with `containerClassName="w-full sm:w-72"` fills it instead of shrinking to its content. Wider screens are unchanged.
 - `RichTextEditor`: `@tiptap/core` and `@tiptap/extensions` are now dependencies, so an app on another tiptap version no longer mixes two copies of `@tiptap/core` and fails to build (`"isValidCSSStyleValue" is not exported by @tiptap/core`).
 
+### Changed
+
+- `StatusBadge` matches API values in snake_case or kebab-case (`on_hold`, `partially-refunded`) and normalises `tones` keys the same way; `data-status` holds the normalised key, and `partially paid`, `ready for pickup` (warning) and `partial` (default) are built in.
+
 ## [0.2.0] - 2026-10-01
 
 The library now matches the redesigned dashboard. Every component looks different, so check your screens after upgrading.

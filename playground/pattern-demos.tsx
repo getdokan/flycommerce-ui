@@ -42,6 +42,7 @@ import {
   type FilterValues,
   type NumberRange,
   type IconName,
+  type StatusTone,
 } from "@/index"
 
 type Product = {
@@ -540,6 +541,16 @@ export function SearchInputDemo() {
   )
 }
 
+const ORDER_STATUSES = [
+  { value: "on_hold", label: "On hold" },
+  { value: "partially_paid", label: "Partially paid" },
+  { value: "partially-refunded", label: "Partially refunded" },
+  { value: "ready_for_pickup", label: "Ready for pickup" },
+  { value: "partial", label: "Partial" },
+  { value: "awaiting_shipment", label: "Awaiting shipment" },
+]
+const ORDER_TONES: Record<string, StatusTone> = { awaiting_shipment: "default" }
+
 export function StatusBadgeDemo() {
   const statuses = [
     "Published",
@@ -557,10 +568,24 @@ export function StatusBadgeDemo() {
     "Coming soon",
   ]
   return (
-    <div className="flex flex-wrap gap-2">
-      {statuses.map((status) => (
-        <StatusBadge key={status} status={status} />
-      ))}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {statuses.map((status) => (
+          <StatusBadge key={status} status={status} />
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-muted-foreground">
+          API values (on_hold, partially-refunded) with display labels
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {ORDER_STATUSES.map(({ value, label }) => (
+            <StatusBadge key={value} status={value} tones={ORDER_TONES}>
+              {label}
+            </StatusBadge>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
