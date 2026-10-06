@@ -66,6 +66,8 @@ yarn add @flycommerce/ui
 @import "@flycommerce/ui/fonts.css"; /* Inter, if your app doesn't load it already */
 ```
 
+**Adopting the library page by page?** Import `@flycommerce/ui/tailwind-core.css` instead of `tailwind.css`. It leaves out the global base layer (page background and text colour on `body`, border and focus-outline colours on every element, Inter on `html`), so pages you haven't migrated keep their look. Switch to `tailwind.css` once the whole app uses the library.
+
 **Apps without Tailwind.** Import the precompiled stylesheet once at the app root. It contains no CSS reset, so it won't restyle the rest of your page:
 
 ```ts

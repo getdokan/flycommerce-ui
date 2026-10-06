@@ -43,6 +43,7 @@ import {
   type FilterValues,
   type NumberRange,
   type IconName,
+  type StatusTone,
 } from "@/index"
 
 type Product = {
@@ -80,7 +81,7 @@ const STATUSES: Product["status"][] = [
   "Pending",
 ]
 
-const PRODUCTS: Product[] = Array.from({ length: 42 }, (_, i) => ({
+const PRODUCTS: Product[] = Array.from({ length: 120 }, (_, i) => ({
   id: String(i + 1),
   name: `${NAMES[i % NAMES.length]}${i >= NAMES.length ? ` #${Math.floor(i / NAMES.length) + 1}` : ""}`,
   vendor: VENDORS[i % VENDORS.length],
@@ -145,7 +146,6 @@ const productColumns: ColumnDef<Product, unknown>[] = [
             size="icon-sm"
             variant="ghost"
             aria-label={`Actions for ${row.original.name}`}
-            onClick={(event) => event.stopPropagation()}
           >
             <EllipsisIcon />
           </Button>
@@ -191,9 +191,13 @@ export function DataTableDemo() {
   const [query, setQuery] = React.useState("")
   const [status, setStatus] = React.useState("all")
   const [filters, setFilters] = React.useState<FilterValues>({})
-  const [page, setPage] = React.useState(1)
+  // Page links carry ?page=, so a page opened in a new tab starts there.
+  const [page, setPage] = React.useState(
+    () => Number(new URLSearchParams(window.location.search).get("page")) || 1
+  )
   const [pageSize, setPageSize] = React.useState(10)
   const [loading, setLoading] = React.useState(false)
+  const [refreshing, setRefreshing] = React.useState(false)
   const [failed, setFailed] = React.useState(false)
   const [confirmIds, setConfirmIds] = React.useState<string[] | null>(null)
 
@@ -223,6 +227,10 @@ export function DataTableDemo() {
           <Switch checked={loading} onCheckedChange={setLoading} /> Loading
         </label>
         <label className="flex items-center gap-2">
+          <Switch checked={refreshing} onCheckedChange={setRefreshing} />{" "}
+          Refreshing
+        </label>
+        <label className="flex items-center gap-2">
           <Switch checked={failed} onCheckedChange={setFailed} /> Error
         </label>
         <span>Search for “zzz” to see the empty state.</span>
@@ -248,6 +256,7 @@ export function DataTableDemo() {
             data={pageRows}
             getRowId={(row) => row.id}
             loading={loading}
+            refreshing={refreshing}
             error={
               failed ? (
                 <span className="flex flex-col items-center gap-3">
@@ -265,6 +274,7 @@ export function DataTableDemo() {
             sortable
             enableRowSelection
             onRowClick={(row) => toast(`Open ${row.name}`)}
+            getRowHref={(row) => `?product=${row.id}#data-table`}
             toolbar={
               <>
                 <SearchInput
@@ -315,7 +325,10 @@ export function DataTableDemo() {
                 setPageSize(size)
                 setPage(1)
               },
+              showPageNumbers: true,
+              getPageHref: (page) => `?page=${page}#data-table`,
             }}
+            labels={{ pagination: "Products pagination" }}
           />
         </TabsContent>
       </Tabs>
@@ -517,15 +530,39 @@ export function ConfirmDialogDemo() {
 
 export function SearchInputDemo() {
   const [last, setLast] = React.useState("")
+  const [query, setQuery] = React.useState("")
   return (
-    <div className="flex w-full flex-col gap-2 sm:w-80">
-      <SearchInput placeholder="Search orders" onSearch={setLast} />
-      <span className="text-xs text-muted-foreground">
-        onSearch (after typing pauses): {last ? `“${last}”` : "—"}
-      </span>
+    <div className="flex w-full flex-col gap-5 sm:w-80">
+      <div className="flex flex-col gap-2">
+        <SearchInput placeholder="Search products" onSearch={setLast} />
+        <span className="text-xs text-muted-foreground">
+          onSearch (after typing pauses): {last ? `“${last}”` : "—"}
+        </span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <SearchInput
+          placeholder="Search orders"
+          searchOn="enter"
+          onSearch={setQuery}
+          onClear={() => toast("Search cleared")}
+        />
+        <span className="text-xs text-muted-foreground">
+          searchOn="enter" (press Enter): {query ? `“${query}”` : "—"}
+        </span>
+      </div>
     </div>
   )
 }
+
+const ORDER_STATUSES = [
+  { value: "on_hold", label: "On hold" },
+  { value: "partially_paid", label: "Partially paid" },
+  { value: "partially-refunded", label: "Partially refunded" },
+  { value: "ready_for_pickup", label: "Ready for pickup" },
+  { value: "partial", label: "Partial" },
+  { value: "awaiting_shipment", label: "Awaiting shipment" },
+]
+const ORDER_TONES: Record<string, StatusTone> = { awaiting_shipment: "default" }
 
 export function StatusBadgeDemo() {
   const statuses = [
@@ -544,10 +581,24 @@ export function StatusBadgeDemo() {
     "Coming soon",
   ]
   return (
-    <div className="flex flex-wrap gap-2">
-      {statuses.map((status) => (
-        <StatusBadge key={status} status={status} />
-      ))}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {statuses.map((status) => (
+          <StatusBadge key={status} status={status} />
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-muted-foreground">
+          API values (on_hold, partially-refunded) with display labels
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {ORDER_STATUSES.map(({ value, label }) => (
+            <StatusBadge key={value} status={value} tones={ORDER_TONES}>
+              {label}
+            </StatusBadge>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

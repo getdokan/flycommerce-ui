@@ -25,7 +25,8 @@ CI runs all of these, plus the plugin reference check, on every push and pull re
 | `src/components/`           | FlyCommerce patterns built from them (`DataTable`, `MediaPickerDialog`, …)      |
 | `src/styles/theme.css`      | **Design tokens**: the only place colours, radii, shadows and fonts are defined |
 | `src/styles/components.css` | Token → Tailwind mapping, `type-*` utilities, variants                          |
-| `src/styles/tailwind.css`   | Entry for Tailwind apps                                                         |
+| `src/styles/base.css`       | Global base layer (`body`, `*` border and outline colours, font)                |
+| `src/styles/tailwind.css`   | Entry for Tailwind apps; `tailwind-core.css` is the same without `base.css`     |
 | `src/styles/standalone.css` | Source of the precompiled `styles.css` (no CSS reset)                           |
 | `src/index.ts`              | Public exports                                                                  |
 | `playground/`               | The gallery. `demos.tsx` registers every section                                |
@@ -55,6 +56,32 @@ CI runs all of these, plus the plugin reference check, on every push and pull re
    - edit `plugin/skills/flycommerce-ui/SKILL.md` if the "which component" guidance changes.
 6. **Add a line** to `CHANGELOG.md` under **Unreleased**.
 
+## Commit messages
+
+Commit messages and pull request titles follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+
+```
+<type>(<scope>): <summary>
+```
+
+| Type | For |
+|---|---|
+| `feat` | something new people can use |
+| `fix` | a bug fix |
+| `perf` | faster or smaller, same behaviour |
+| `refactor` | a code change that doesn't change behaviour |
+| `docs` | documentation only |
+| `test` | tests only |
+| `build` | the build, dependencies or release configuration |
+| `ci` | GitHub Actions |
+| `chore` | anything else, such as a release |
+
+- The scope is optional: the component in kebab-case, such as `data-table` or `rich-text-editor`, or an area: `gallery`, `plugin`, `styles`.
+- Write the summary in the imperative, in lower case, with no full stop: `fix(data-table): keep the toolbar on one row`.
+- A breaking change adds `!` after the type or scope and says in the body what to change.
+
+PRs are squash-merged, and a check fails the PR until its title follows the format. Keep the commits in the format too: a PR with one commit is squashed under that commit's message.
+
 ## Releasing
 
 Releases are automatic once a version tag is pushed: GitHub Actions publishes that version to npm and creates the GitHub release. Versions follow [semantic versioning](https://semver.org); while on `0.x`, breaking changes go in a minor release and are called out in the changelog.
@@ -68,7 +95,7 @@ Releases are automatic once a version tag is pushed: GitHub Actions publishes th
    npm version 0.2.0 --no-git-tag-version
    ```
 
-   In `CHANGELOG.md`, rename **Unreleased** to the new version with today's date, e.g. `## [0.2.0] - 2026-10-15`. The release notes are taken from this section, and the release stops if it's missing. Commit both files as `Release 0.2.0`, push, and open the PR.
+   In `CHANGELOG.md`, rename **Unreleased** to the new version with today's date, e.g. `## [0.2.0] - 2026-10-15`. The release notes are taken from this section, and the release stops if it's missing. Commit both files as `chore(release): 0.2.0`, push, and open the PR with the same title.
 
 2. **Merge it** with **Squash and merge** once CI is green.
 

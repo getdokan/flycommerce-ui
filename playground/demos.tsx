@@ -437,6 +437,16 @@ const orders = [
   { id: "#1040", customer: "Sara Kim", status: "Cancelled", total: "$19.99" },
 ]
 
+const paymentMethods = [
+  { name: "Stripe", description: "Cards, Apple Pay, Google Pay", active: true },
+  { name: "PayPal", description: "PayPal balance, Pay Later", active: true },
+  {
+    name: "Cash on delivery",
+    description: "Paid when the order arrives",
+    active: false,
+  },
+]
+
 const categories = [
   "Apparel",
   "Electronics",
@@ -1273,6 +1283,32 @@ export const demos: Demo[] = [
           </CardHeader>
           <CardContent>
             <Input placeholder="e.g. Smartwatch" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Payment methods</CardTitle>
+            <CardDescription>How customers pay at checkout.</CardDescription>
+          </CardHeader>
+          <CardContent flush>
+            <ul className="divide-y divide-border-subtle">
+              {paymentMethods.map((method) => (
+                <li
+                  key={method.name}
+                  className="flex items-center gap-3 px-5 py-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">{method.name}</div>
+                    <div className="text-xs text-foreground-secondary">
+                      {method.description}
+                    </div>
+                  </div>
+                  <Badge dot variant={method.active ? "success" : "secondary"}>
+                    {method.active ? "Active" : "Inactive"}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </div>
