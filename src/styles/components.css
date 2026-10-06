@@ -786,7 +786,9 @@
   text-transform: uppercase;
 }
 
-/* Inside the dashboard the frame is only as tall as the page, so "the space left" squeezes a popup into a scroll box: cap it at a fixed height instead, and @flycommerce/app-bridge grows the frame to fit. */
-html[data-embedded] [data-radix-popper-content-wrapper] > * {
-  max-height: 24rem;
+/* Inside the dashboard the frame is only as tall as the page, so "the space left" squeezes a popup into a scroll box: popups capped at it get a fixed height instead, and @flycommerce/app-bridge grows the frame to fit. */
+@layer utilities {
+  html[data-embedded] [data-radix-popper-content-wrapper] > [class*="available-height"] {
+    max-height: 24rem;
+  }
 }

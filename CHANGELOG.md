@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- Inside a FlyCommerce app page, the 24rem popup cap from 0.3.0 now applies only to popups that size themselves to the space left in the frame: date pickers, menus, popper-mode selects, `RichSelect` and `TreeSelect`, which scroll past it. Plain `Popover` content is no longer cut off at 24rem without a scrollbar, tooltips and hover cards are untouched, and an app can override the cap with its own `!max-h-*` class.
+
 ## [0.3.0] - 2026-10-06
 
 New: `SettingsNav`, `SegmentedControl`, `CardBrandIcon`, numbered pages, row links and a refreshing state in `DataTable`, and a `tailwind-core.css` entry for apps adopting the library page by page.
