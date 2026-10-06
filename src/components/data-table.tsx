@@ -56,11 +56,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { RowDrag } from "@/components/data-table/sortable-rows"
+import type {
+  RowDrag,
+  SortableRowsProps,
+} from "@/components/data-table/sortable-rows"
 
-const SortableRows = React.lazy(
-  () => import("@/components/data-table/sortable-rows")
-)
+type SortableRowsModule = {
+  default: React.ComponentType<SortableRowsProps>
+}
+
+let loadedSortableRows: React.ComponentType<SortableRowsProps> | undefined
+let sortableRowsImport: Promise<SortableRowsModule> | undefined
+
+function loadSortableRows() {
+  sortableRowsImport ??= import("@/components/data-table/sortable-rows")
+    .catch((): SortableRowsModule => ({ default: StaticRows }))
+    .then((module) => {
+      loadedSortableRows = module.default
+      return module
+    })
+  return sortableRowsImport
+}
+
+const LazySortableRows = React.lazy(loadSortableRows)
+
+function StaticRows({ ids, renderRow }: SortableRowsProps) {
+  return ids.map((_, index) => renderRow(index))
+}
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -247,6 +269,11 @@ function DataTable<TData>({
 
   const reorderable = Boolean(onReorder) && !getSubRows
   const reorderEnabled = reorderable && sorting.length === 0
+  const SortableRows = loadedSortableRows ?? LazySortableRows
+
+  React.useEffect(() => {
+    if (reorderable) void loadSortableRows()
+  }, [reorderable])
 
   const allColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
     const dragColumn: ColumnDef<TData, unknown>[] = reorderable

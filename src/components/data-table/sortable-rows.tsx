@@ -43,7 +43,7 @@ type SortableRowsProps = {
   }
   getLabel: (id: string) => string
   onMove: (from: number, to: number) => void
-  renderRow: (index: number, drag: RowDrag) => React.ReactNode
+  renderRow: (index: number, drag?: RowDrag) => React.ReactNode
 }
 
 function SortableRows({
@@ -139,4 +139,4 @@ function SortableRow({
   })
 }
 
-export { SortableRows as default, type RowDrag }
+export { SortableRows as default, type RowDrag, type SortableRowsProps }
