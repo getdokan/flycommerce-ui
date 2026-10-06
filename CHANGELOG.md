@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 New: `SettingsNav`, `SegmentedControl`, `CardBrandIcon`, numbered pages, row links and a refreshing state in `DataTable`, and a `tailwind-core.css` entry for apps adopting the library page by page.
 
 **Check when upgrading:**
+
 - `DataTable`: clicks on a link, button, input or checkbox inside a row no longer call `onRowClick`. A cell that is a bare `<button>` relying on the row click needs its own handler.
 - `StatusBadge`: `data-status` now holds the normalised key (`on_hold` becomes `on hold`), so CSS or tests that select `[data-status=on_hold]` need updating.
 - `Alert`: pass `AlertAction` as a direct child of `Alert`. An action inside a fragment or a wrapper component isn't detected.
