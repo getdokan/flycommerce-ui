@@ -197,6 +197,7 @@ export function DataTableDemo() {
   )
   const [pageSize, setPageSize] = React.useState(10)
   const [loading, setLoading] = React.useState(false)
+  const [refreshing, setRefreshing] = React.useState(false)
   const [failed, setFailed] = React.useState(false)
   const [confirmIds, setConfirmIds] = React.useState<string[] | null>(null)
 
@@ -226,6 +227,10 @@ export function DataTableDemo() {
           <Switch checked={loading} onCheckedChange={setLoading} /> Loading
         </label>
         <label className="flex items-center gap-2">
+          <Switch checked={refreshing} onCheckedChange={setRefreshing} />{" "}
+          Refreshing
+        </label>
+        <label className="flex items-center gap-2">
           <Switch checked={failed} onCheckedChange={setFailed} /> Error
         </label>
         <span>Search for “zzz” to see the empty state.</span>
@@ -251,6 +256,7 @@ export function DataTableDemo() {
             data={pageRows}
             getRowId={(row) => row.id}
             loading={loading}
+            refreshing={refreshing}
             error={
               failed ? (
                 <span className="flex flex-col items-center gap-3">
