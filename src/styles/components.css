@@ -630,6 +630,21 @@
   }
 }
 
+/* Indeterminate progress: a 2/5-wide bar crossing its track, start to end. */
+@theme inline {
+  --animate-progress-indeterminate: progress-indeterminate 1.4s ease-in-out
+    infinite;
+
+  @keyframes progress-indeterminate {
+    from {
+      inset-inline-start: -40%;
+    }
+    to {
+      inset-inline-start: 100%;
+    }
+  }
+}
+
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
 
 @theme inline {

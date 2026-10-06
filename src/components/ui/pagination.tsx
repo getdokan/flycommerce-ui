@@ -69,7 +69,10 @@ function PaginationPrevious({
   className,
   text = "Previous",
   ...props
-}: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
+}: React.ComponentProps<typeof PaginationLink> & {
+  /** Shown from `sm` up. Translate `aria-label` too ("Go to previous page"). */
+  text?: string
+}) {
   return (
     <PaginationLink
       aria-label="Go to previous page"
@@ -87,7 +90,10 @@ function PaginationNext({
   className,
   text = "Next",
   ...props
-}: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
+}: React.ComponentProps<typeof PaginationLink> & {
+  /** Shown from `sm` up. Translate `aria-label` too ("Go to next page"). */
+  text?: string
+}) {
   return (
     <PaginationLink
       aria-label="Go to next page"
@@ -103,11 +109,11 @@ function PaginationNext({
 
 function PaginationEllipsis({
   className,
+  label = "More pages",
   ...props
-}: React.ComponentProps<"span">) {
+}: React.ComponentProps<"span"> & { label?: string }) {
   return (
     <span
-      aria-hidden
       data-slot="pagination-ellipsis"
       className={cn(
         "flex size-8 items-center justify-center [&_svg:not([class*='size-'])]:size-4",
@@ -115,8 +121,8 @@ function PaginationEllipsis({
       )}
       {...props}
     >
-      <MoreHorizontalIcon />
-      <span className="sr-only">More pages</span>
+      <MoreHorizontalIcon aria-hidden="true" />
+      <span className="sr-only">{label}</span>
     </span>
   )
 }
