@@ -112,6 +112,8 @@ type CursorPagination = {
 type DataTablePaginationProps = OffsetPagination | CursorPagination
 
 type DataTableLabels = {
+  /** Name of the pagination landmark (`<nav aria-label>`). */
+  pagination?: string
   previous?: string
   next?: string
   rowsPerPage?: string
@@ -136,6 +138,7 @@ type DataTableLabels = {
 }
 
 const DEFAULT_LABELS: Required<DataTableLabels> = {
+  pagination: "Pagination",
   previous: "Previous",
   next: "Next",
   rowsPerPage: "Rows per page",
@@ -167,7 +170,7 @@ type DataTableProps<TData> = {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   getRowId?: (row: TData, index: number) => string
-  /** Card title on the left of the toolbar, e.g. "Brand List". */
+  /** Card title on the left of the toolbar, e.g. "Brand List". Below `sm` the toolbar moves under it, full width. */
   title?: React.ReactNode
   /** Header strip above the table: search, filter tabs, actions. */
   toolbar?: React.ReactNode
@@ -451,9 +454,11 @@ function DataTable<TData>({
                 <h2 className="me-auto type-card-title text-foreground">
                   {title}
                 </h2>
-                <div className="flex flex-wrap items-center gap-3">
-                  {toolbar}
-                </div>
+                {toolbar && (
+                  <div className="flex basis-full flex-wrap items-center gap-3 sm:basis-auto">
+                    {toolbar}
+                  </div>
+                )}
               </>
             ) : (
               toolbar
@@ -795,7 +800,7 @@ function DataTablePagination(
     return (
       <nav
         data-slot="data-table-pagination"
-        aria-label="Pagination"
+        aria-label={labels.pagination}
         className={cn(
           "flex items-center justify-end gap-2 border-t border-border-subtle px-5 py-3",
           props.className
@@ -844,7 +849,7 @@ function DataTablePagination(
   return (
     <nav
       data-slot="data-table-pagination"
-      aria-label="Pagination"
+      aria-label={labels.pagination}
       className={cn(
         "flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border-subtle px-5 py-3",
         showPageNumbers && "@container/pagination",

@@ -8,6 +8,20 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 - Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
 - `DataTable`: offset `pagination` takes `showPageNumbers` (numbered pages with first, last and ellipses; `siblingCount`, default 1) and `getPageHref`, which renders the page controls as links so they can be opened in a new tab while a plain click still calls `onPageChange`. New labels: `page`, `morePages`.
+- `DataTable`: `labels.pagination` names the pagination landmark (default "Pagination") in offset and cursor mode; `PaginationEllipsis` takes a `label` (default "More pages"), now announced to screen readers instead of hidden.
+- `CardContent flush`: edge-to-edge content for a divided list of rows, with no side padding, no gap against a header or footer band and no card padding below it when it comes last.
+- `RadioCard` `badge`: a node shown after the title, such as an "Active" `Badge` on the saved option; it wraps under a long title and keeps the title and description where they are in cards without one.
+- `SearchInput`: `searchOn="enter"` searches only on Enter (and with `""` on clear or Esc), for lists that refetch or navigate on each search; `onClear` fires when the clear button or Esc empties the field.
+
+### Fixed
+
+- In apps that use `@tailwindcss/forms`, focused `Input`, `Textarea` and `NativeSelect` no longer get the plugin's 1px blue ring on top of their own focus border, and `NativeSelect` no longer shows the plugin's chevron next to its own.
+- `DataTable`: with a `title`, the `toolbar` now gets its own full-width row below `sm`, so a `SearchInput` with `containerClassName="w-full sm:w-72"` fills it instead of shrinking to its content. Wider screens are unchanged.
+- `RichTextEditor`: `@tiptap/core` and `@tiptap/extensions` are now dependencies, so an app on another tiptap version no longer mixes two copies of `@tiptap/core` and fails to build (`"isValidCSSStyleValue" is not exported by @tiptap/core`).
+
+### Changed
+
+- `StatusBadge` matches API values in snake_case or kebab-case (`on_hold`, `partially-refunded`) and normalises `tones` keys the same way; `data-status` holds the normalised key, and `partially paid`, `ready for pickup` (warning) and `partial` (default) are built in.
 
 ## [0.2.0] - 2026-10-01
 
