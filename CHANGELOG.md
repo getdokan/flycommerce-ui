@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
+- `@flycommerce/ui/tailwind-core.css`: `tailwind.css` without the global base layer (`body` background and text colour, border and outline colours on every element, Inter on `html`), for apps adopting the library page by page. `tailwind.css` and `styles.css` are unchanged.
 - `DataTable`: rows with `onRowClick` or the new `getRowHref` are focusable (focus ring) and open with Enter; with `getRowHref`, cmd/ctrl-click, middle-click and cmd/ctrl+Enter open the row's URL in a new tab. Clicks and keys on links, buttons, inputs and checkboxes inside a row, or on content portaled out of it such as menus, no longer open the row, so `stopPropagation` workarounds can go.
 - `DataTable`: `refreshing` keeps the current rows and toolbar while data is refetched, dims the rows, shows a thin progress bar at the top of the table (named by `labels.loading`, default "Loading…") and marks the table `aria-busy`. `loading` still shows skeleton rows and wins when both are set.
 - `DataTable`: while `loading`, the table is marked `aria-busy` and a visually hidden status announces `labels.loading` (default "Loading…").

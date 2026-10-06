@@ -1,0 +1,16 @@
+/* Global base layer: page background, text, border and outline colours, font and button cursor for the whole app. tailwind.css includes it; tailwind-core.css leaves it out. */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-page text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+  }
+}

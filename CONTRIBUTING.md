@@ -25,7 +25,8 @@ CI runs all of these, plus the plugin reference check, on every push and pull re
 | `src/components/`           | FlyCommerce patterns built from them (`DataTable`, `MediaPickerDialog`, …)      |
 | `src/styles/theme.css`      | **Design tokens**: the only place colours, radii, shadows and fonts are defined |
 | `src/styles/components.css` | Token → Tailwind mapping, `type-*` utilities, variants                          |
-| `src/styles/tailwind.css`   | Entry for Tailwind apps                                                         |
+| `src/styles/base.css`       | Global base layer (`body`, `*` border and outline colours, font)                |
+| `src/styles/tailwind.css`   | Entry for Tailwind apps; `tailwind-core.css` is the same without `base.css`     |
 | `src/styles/standalone.css` | Source of the precompiled `styles.css` (no CSS reset)                           |
 | `src/index.ts`              | Public exports                                                                  |
 | `playground/`               | The gallery. `demos.tsx` registers every section                                |
