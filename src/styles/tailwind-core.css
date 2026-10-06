@@ -1,0 +1,6 @@
+/* Entry for Tailwind v4 apps adopting the library gradually: tailwind.css without base.css, so unmigrated pages keep their own body background, border and outline colours and font. */
+@import "tw-animate-css";
+@import "./components.css";
+@import "./theme.css";
+
+@source "../";

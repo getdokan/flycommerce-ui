@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 type StatusTone =
   "success" | "warning" | "destructive" | "default" | "secondary" | "soon"
 
-/** Keys are lowercase; lookups ignore case and surrounding whitespace. */
+/** Keys are lowercase with single spaces; lookups ignore case and extra whitespace, and read `_` and `-` as spaces. */
 const STATUS_TONES: Record<string, StatusTone> = {
   active: "success",
   approved: "success",
@@ -22,12 +22,15 @@ const STATUS_TONES: Record<string, StatusTone> = {
   "awaiting payment": "warning",
   "low stock": "warning",
   "on hold": "warning",
+  "partially paid": "warning",
   "partially refunded": "warning",
   pending: "warning",
   "pending payment": "warning",
   "pending review": "warning",
+  "ready for pickup": "warning",
   unpaid: "warning",
   "in transit": "default",
+  partial: "default",
   processing: "default",
   scheduled: "default",
   shipped: "default",
@@ -49,11 +52,18 @@ const STATUS_TONES: Record<string, StatusTone> = {
   "coming soon": "soon",
 }
 
+function normaliseStatus(status: string) {
+  return status
+    .toLowerCase()
+    .replace(/[\s_-]+/g, " ")
+    .trim()
+}
+
 type StatusBadgeProps = Omit<React.ComponentProps<typeof Badge>, "variant"> & {
   status: string
   /** Forces a tone, e.g. for a status the map doesn't know. */
   tone?: StatusTone
-  /** Extra or overriding mappings, keyed by lowercase status. */
+  /** Extra or overriding mappings; keys match like `status`, so `on_hold` and `On hold` are the same key. */
   tones?: Record<string, StatusTone>
 }
 
@@ -65,8 +75,11 @@ function StatusBadge({
   children,
   ...props
 }: StatusBadgeProps) {
-  const key = status.trim().toLowerCase()
-  const variant = tone ?? tones?.[key] ?? STATUS_TONES[key] ?? "secondary"
+  const key = normaliseStatus(status)
+  const custom = Object.entries(tones ?? {}).find(
+    ([name]) => normaliseStatus(name) === key
+  )?.[1]
+  const variant = tone ?? custom ?? STATUS_TONES[key] ?? "secondary"
 
   return (
     <Badge data-status={key} variant={variant} dot={dot} {...props}>

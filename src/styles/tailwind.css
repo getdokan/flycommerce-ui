@@ -1,6 +1,7 @@
 /* Entry for Tailwind v4 apps: `@import "tailwindcss"; @import "@flycommerce/ui/tailwind.css";` */
 @import "tw-animate-css";
 @import "./components.css";
+@import "./base.css";
 @import "./theme.css";
 
 @source "../";
