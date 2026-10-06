@@ -86,6 +86,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   Alert,
+  AlertAction,
   AlertDescription,
   AlertDialog,
   AlertDialogAction,
@@ -918,6 +919,39 @@ export const demos: Demo[] = [
             Your card was declined. Update your billing details.
           </AlertDescription>
         </Alert>
+        <Alert variant="warning">
+          <AlertTriangleIcon />
+          <AlertTitle>Your free trial ends in 3 days</AlertTitle>
+          <AlertDescription>
+            Choose a plan to keep your store open and your products listed.
+          </AlertDescription>
+          <AlertAction>
+            <Button size="sm">Subscribe to the billing plan</Button>
+          </AlertAction>
+        </Alert>
+        <Alert>
+          <AlertTitle>Product moved to Archive</AlertTitle>
+          <AlertDescription>It no longer shows in your store.</AlertDescription>
+          <AlertAction>
+            <Button size="sm" variant="outline">
+              Undo
+            </Button>
+          </AlertAction>
+        </Alert>
+        <div className="w-fit">
+          <Alert variant="info">
+            <InfoIcon />
+            <AlertTitle>New version available</AlertTitle>
+            <AlertDescription>
+              Reload to get the latest changes.
+            </AlertDescription>
+            <AlertAction>
+              <Button size="sm" variant="outline">
+                Reload
+              </Button>
+            </AlertAction>
+          </Alert>
+        </div>
       </div>
     ),
   },
