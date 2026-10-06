@@ -42,6 +42,7 @@
       "default": "./dist/index.js"
     },
     "./tailwind.css": "./dist/styles/tailwind.css",
+    "./tailwind-core.css": "./dist/styles/tailwind-core.css",
     "./theme.css": "./dist/styles/theme.css",
     "./styles.css": "./dist/styles.css",
     "./fonts.css": "./dist/styles/fonts.css",
@@ -55,11 +56,11 @@
   "scripts": {
     "dev": "vite --config playground/vite.config.ts",
     "build": "vite build && node scripts/fix-dts-extensions.mjs && pnpm build:css",
-    "build:css": "mkdir -p dist/styles && cp src/styles/components.css src/styles/theme.css src/styles/tailwind.css src/styles/fonts.css dist/styles/ && tailwindcss -i src/styles/standalone.css -o dist/styles.css --minify",
+    "build:css": "mkdir -p dist/styles && cp src/styles/components.css src/styles/base.css src/styles/theme.css src/styles/tailwind.css src/styles/tailwind-core.css src/styles/fonts.css dist/styles/ && tailwindcss -i src/styles/standalone.css -o dist/styles.css --minify",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
-    "check:package": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints tailwind.css theme.css styles.css fonts.css",
+    "check:package": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints tailwind.css tailwind-core.css theme.css styles.css fonts.css",
     "format": "prettier --write \"**/*.{ts,tsx,css}\"",
     "build:site": "vite build --config playground/vite.config.ts",
     "skill:refs": "node scripts/skill-refs.mjs && prettier --write plugin/skills/flycommerce-ui/references --log-level warn"
@@ -90,8 +91,10 @@
     "@fontsource-variable/inter": "^5.3.0",
     "@shadcn/react": "^0.3.1",
     "@tanstack/react-table": "^8.21.3",
+    "@tiptap/core": "^3.31.3",
     "@tiptap/extension-placeholder": "^3.31.3",
     "@tiptap/extension-text-align": "^3.31.3",
+    "@tiptap/extensions": "^3.31.3",
     "@tiptap/pm": "^3.31.3",
     "@tiptap/react": "^3.31.3",
     "@tiptap/starter-kit": "^3.31.3",

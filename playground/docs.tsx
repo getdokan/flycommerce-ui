@@ -263,6 +263,13 @@ export function InstallationDoc() {
               tokens and tells Tailwind to scan the library&apos;s components.
             </p>
             <CodeBlock code={TAILWIND_CSS} />
+            <p className="text-sm text-muted-foreground">
+              Adopting the library page by page? Import{" "}
+              <code>@flycommerce/ui/tailwind-core.css</code> instead of{" "}
+              <code>tailwind.css</code>. It leaves out the global base layer
+              (page background, border and outline colours, font), so pages you
+              haven&apos;t migrated keep their look.
+            </p>
           </TabsContent>
           <TabsContent value="plain" className="flex flex-col gap-2">
             <p className="text-sm text-muted-foreground">
@@ -340,7 +347,7 @@ const KNOWS = [
     "Design tokens",
     "Colours, radii, shadows and type through tokens only: no hex values, no one-off styling.",
   ],
-  ["Icons", "The 150 semantic <Icon name> meanings, never raw icon imports."],
+  ["Icons", "The 151 semantic <Icon name> meanings, never raw icon imports."],
   [
     "Screen recipes",
     "List, form and settings pages assembled the FlyCommerce way.",

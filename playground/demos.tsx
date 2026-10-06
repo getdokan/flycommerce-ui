@@ -36,6 +36,7 @@ import {
 import { toast } from "sonner"
 
 import {
+  CardBrandIconDemo,
   ConfirmDialogDemo,
   DataTableDemo,
   DataTableReorderDemo,
@@ -314,6 +315,8 @@ const KEYWORDS: Record<string, string> = {
   "navigation-menu": "menubar nav mega menu",
   sidebar: "navigation nav rail",
   icons: "icon glyph feather react-icons svg",
+  "card-brand-icon":
+    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
   typography: "type font text heading size scale inter",
   colors: "color colour palette token swatch theme",
   "page-header": "title heading back link actions",
@@ -384,6 +387,7 @@ const SOURCES: Record<string, Source> = {
   pagination: "prototype",
   sidebar: "prototype",
   icons: "prototype",
+  "card-brand-icon": "composite",
   typography: "prototype",
   colors: "prototype",
   "page-header": "prototype",
@@ -435,6 +439,16 @@ const orders = [
     total: "$54.50",
   },
   { id: "#1040", customer: "Sara Kim", status: "Cancelled", total: "$19.99" },
+]
+
+const paymentMethods = [
+  { name: "Stripe", description: "Cards, Apple Pay, Google Pay", active: true },
+  { name: "PayPal", description: "PayPal balance, Pay Later", active: true },
+  {
+    name: "Cash on delivery",
+    description: "Paid when the order arrives",
+    active: false,
+  },
 ]
 
 const categories = [
@@ -538,6 +552,12 @@ export const demos: Demo[] = [
     title: "Icons",
     group: "Foundations",
     render: () => <IconsDemo />,
+  },
+  {
+    id: "card-brand-icon",
+    title: "Card brand icon",
+    group: "Foundations",
+    render: () => <CardBrandIconDemo />,
   },
 
   // Patterns
@@ -1273,6 +1293,32 @@ export const demos: Demo[] = [
           </CardHeader>
           <CardContent>
             <Input placeholder="e.g. Smartwatch" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Payment methods</CardTitle>
+            <CardDescription>How customers pay at checkout.</CardDescription>
+          </CardHeader>
+          <CardContent flush>
+            <ul className="divide-y divide-border-subtle">
+              {paymentMethods.map((method) => (
+                <li
+                  key={method.name}
+                  className="flex items-center gap-3 px-5 py-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">{method.name}</div>
+                    <div className="text-xs text-foreground-secondary">
+                      {method.description}
+                    </div>
+                  </div>
+                  <Badge dot variant={method.active ? "success" : "secondary"}>
+                    {method.active ? "Active" : "Inactive"}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </div>
