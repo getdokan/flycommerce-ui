@@ -10,6 +10,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Fixed
 
+- In apps that use `@tailwindcss/forms`, focused `Input`, `Textarea` and `NativeSelect` no longer get the plugin's 1px blue ring on top of their own focus border, and `NativeSelect` no longer shows the plugin's chevron next to its own.
 - `DataTable`: with a `title`, the `toolbar` now gets its own full-width row below `sm`, so a `SearchInput` with `containerClassName="w-full sm:w-72"` fills it instead of shrinking to its content. Wider screens are unchanged.
 - `RichTextEditor`: `@tiptap/core` and `@tiptap/extensions` are now dependencies, so an app on another tiptap version no longer mixes two copies of `@tiptap/core` and fails to build (`"isValidCSSStyleValue" is not exported by @tiptap/core`).
 
