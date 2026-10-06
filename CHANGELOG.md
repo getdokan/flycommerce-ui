@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
+- `DataTable`: offset `pagination` takes `showPageNumbers` (numbered pages with first, last and ellipses; `siblingCount`, default 1) and `getPageHref`, which renders the page controls as links so they can be opened in a new tab while a plain click still calls `onPageChange`. New labels: `page`, `morePages`.
 - `DataTable`: `labels.pagination` names the pagination landmark (default "Pagination") in offset and cursor mode; `PaginationEllipsis` takes a `label` (default "More pages"), now announced to screen readers instead of hidden.
 - `CardContent flush`: edge-to-edge content for a divided list of rows, with no side padding, no gap against a header or footer band and no card padding below it when it comes last.
 - `RadioCard` `badge`: a node shown after the title, such as an "Active" `Badge` on the saved option; it wraps under a long title and keeps the title and description where they are in cards without one.

@@ -80,7 +80,7 @@ const STATUSES: Product["status"][] = [
   "Pending",
 ]
 
-const PRODUCTS: Product[] = Array.from({ length: 42 }, (_, i) => ({
+const PRODUCTS: Product[] = Array.from({ length: 120 }, (_, i) => ({
   id: String(i + 1),
   name: `${NAMES[i % NAMES.length]}${i >= NAMES.length ? ` #${Math.floor(i / NAMES.length) + 1}` : ""}`,
   vendor: VENDORS[i % VENDORS.length],
@@ -191,7 +191,10 @@ export function DataTableDemo() {
   const [query, setQuery] = React.useState("")
   const [status, setStatus] = React.useState("all")
   const [filters, setFilters] = React.useState<FilterValues>({})
-  const [page, setPage] = React.useState(1)
+  // Page links carry ?page=, so a page opened in a new tab starts there.
+  const [page, setPage] = React.useState(
+    () => Number(new URLSearchParams(window.location.search).get("page")) || 1
+  )
   const [pageSize, setPageSize] = React.useState(10)
   const [loading, setLoading] = React.useState(false)
   const [failed, setFailed] = React.useState(false)
@@ -315,6 +318,8 @@ export function DataTableDemo() {
                 setPageSize(size)
                 setPage(1)
               },
+              showPageNumbers: true,
+              getPageHref: (page) => `?page=${page}#data-table`,
             }}
             labels={{ pagination: "Products pagination" }}
           />
