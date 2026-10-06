@@ -1,6 +1,6 @@
 {
   "name": "@flycommerce/ui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "FlyCommerce design system for React: accessible components, design tokens and commerce patterns built on shadcn/ui, Radix and Tailwind CSS.",
   "license": "MIT",
   "author": "FlyCommerce",
