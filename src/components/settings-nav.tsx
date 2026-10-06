@@ -9,10 +9,14 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Kbd } from "@/components/ui/kbd"
 import {
-  NativeSelect,
-  NativeSelectOptGroup,
-  NativeSelectOption,
-} from "@/components/ui/native-select"
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type SettingsNavItem = {
   id: string
@@ -55,9 +59,9 @@ type SettingsNavProps = Omit<React.ComponentProps<"div">, "children"> & {
     item: SettingsNavItem,
     props: SettingsNavLinkProps
   ) => React.ReactNode
-  /** Called when an item is picked in the jump menu. Defaults to `window.location.assign(item.href)`. */
+  /** Called when an item is picked in the jump menu. Defaults to `window.location.assign(item.href)`, a full page load: pass your router's navigate when `renderLink` renders router links. */
   onNavigate?: (item: SettingsNavItem) => void
-  /** Focuses the filter from anywhere on the page, except while typing in a field; `false` turns it off. */
+  /** Opt-in key, e.g. "/", that focuses the filter from anywhere on the page, except while typing in a field. Off by default, so it never takes a key from the app's own search. */
   shortcutKey?: string | false
   labels?: SettingsNavLabels
   /** The settings page. Beside the rail from a 56rem-wide area; below the jump menu when narrower. */
@@ -89,7 +93,7 @@ function SettingsNav({
   activeId,
   renderLink = renderAnchor,
   onNavigate = navigateTo,
-  shortcutKey = "/",
+  shortcutKey = false,
   labels: labelsProp,
   className,
   children,
@@ -159,7 +163,7 @@ function SettingsNav({
   return (
     <div
       data-slot="settings-nav"
-      className={cn("@container/settings-nav", className)}
+      className={cn("@container/settings-nav w-full", className)}
       {...props}
     >
       <div className="flex flex-col gap-6 @4xl/settings-nav:flex-row @4xl/settings-nav:items-start @4xl/settings-nav:gap-8">
@@ -274,29 +278,44 @@ function SettingsNav({
           </div>
           <Field className="@4xl/settings-nav:hidden">
             <FieldLabel htmlFor={`${id}-jump`}>{labels.jump}</FieldLabel>
-            <NativeSelect
-              id={`${id}-jump`}
+            <Select
               value={activeItem?.id ?? ""}
-              onChange={(event) => {
+              onValueChange={(value) => {
                 const item = groups
                   .flatMap((group) => group.items)
-                  .find((candidate) => candidate.id === event.target.value)
+                  .find((candidate) => candidate.id === value)
                 if (item) onNavigate(item)
               }}
             >
-              {!activeItem && (
-                <NativeSelectOption value="">{labels.nav}</NativeSelectOption>
-              )}
-              {groups.map((group) => (
-                <NativeSelectOptGroup key={group.id} label={group.label}>
-                  {group.items.map((item) => (
-                    <NativeSelectOption key={item.id} value={item.id}>
-                      {item.label}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelectOptGroup>
-              ))}
-            </NativeSelect>
+              <SelectTrigger
+                id={`${id}-jump`}
+                className="w-full"
+                onKeyDown={(event) => {
+                  if (
+                    event.key.length === 1 &&
+                    event.key !== " " &&
+                    !event.ctrlKey &&
+                    !event.altKey &&
+                    !event.metaKey
+                  )
+                    event.preventDefault()
+                }}
+              >
+                <SelectValue placeholder={labels.nav} />
+              </SelectTrigger>
+              <SelectContent>
+                {groups.map((group) => (
+                  <SelectGroup key={group.id}>
+                    <SelectLabel>{group.label}</SelectLabel>
+                    {group.items.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))}
+              </SelectContent>
+            </Select>
           </Field>
         </nav>
         {children !== undefined && (

@@ -7,7 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
-- `SettingsNav`: a two-pane settings area. A rail of grouped links (icon tile, active state) with a filter over labels, group labels and keywords, a live result count, an empty state and a `/` shortcut; below a 56rem-wide area, a "Jump to section" select. Links render through `renderLink` for router links; every string is in `labels`.
+- `SettingsNav`: a two-pane settings area. A rail of grouped links (icon tile, active state) with a filter over labels, group labels and keywords, a live result count, an empty state and an opt-in shortcut key (`shortcutKey="/"`); below a 56rem-wide area, a "Jump to section" menu that navigates only on Enter or click. Links render through `renderLink` for router links; every string is in `labels`.
 - `SegmentedControl` and `SegmentedControlItem`: one required choice among a few short options (e.g. Metric / Imperial) with the segmented `NavTabs` look. Radio semantics: arrow keys move and select, it can't be emptied, and `value` or `defaultValue` is required; `size="sm"` and `disabled` on the group or an item.
 - `CardBrandIcon brand="visa"`: payment card brand marks for Visa, Mastercard, American Express, Discover, Diners Club and JCB, accepting the brand strings payment APIs return; UnionPay and unknown brands show a generic card. Named after the brand by default, decorative with `label=""`.
 - `Icon` name `spreadsheet`, for CSV and spreadsheet files.

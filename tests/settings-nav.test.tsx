@@ -92,12 +92,19 @@ describe("SettingsNav", () => {
     expect(document.activeElement).toBe(filter())
   })
 
-  it("focuses the filter on / unless the user is typing in a field", async () => {
+  it("has no shortcut key by default", async () => {
+    const user = userEvent.setup()
+    render(<SettingsNav groups={GROUPS} />)
+    await user.keyboard("/")
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  it("focuses the filter on its shortcut key unless the user is typing in a field", async () => {
     const user = userEvent.setup()
     render(
       <>
         <input aria-label="Store name" />
-        <SettingsNav groups={GROUPS} />
+        <SettingsNav groups={GROUPS} shortcutKey="/" />
       </>
     )
 
@@ -151,24 +158,72 @@ describe("SettingsNav", () => {
       <SettingsNav groups={GROUPS} activeId="general" onNavigate={onNavigate} />
     )
     const jump = screen.getByRole("combobox", { name: "Jump to section" })
-    expect((jump as HTMLSelectElement).value).toBe("general")
-    expect(
-      within(jump)
-        .getAllByRole("group")
-        .map((group) => group.getAttribute("label"))
-    ).toEqual(["Store", "Money"])
+    expect(jump.textContent).toBe("General")
 
-    await user.selectOptions(jump, "taxes")
+    await user.click(jump)
+    const listbox = screen.getByRole("listbox")
+    expect(
+      within(listbox)
+        .getAllByRole("group")
+        .map((group) => within(group).getAllByRole("option")[0].textContent)
+    ).toEqual(["General", "Payments"])
+    expect(within(listbox).getByText("Store")).toBeTruthy()
+    expect(within(listbox).getByText("Money")).toBeTruthy()
+
+    await user.click(screen.getByRole("option", { name: "Taxes" }))
+    expect(onNavigate).toHaveBeenCalledTimes(1)
     expect(onNavigate).toHaveBeenCalledWith(GROUPS[1].items[1])
   })
 
-  it("follows the item's href from the jump menu by default", async () => {
+  it("never navigates from keys on the closed jump menu", async () => {
+    const user = userEvent.setup()
+    const onNavigate = vi.fn()
+    render(
+      <SettingsNav groups={GROUPS} activeId="general" onNavigate={onNavigate} />
+    )
+    const jump = screen.getByRole("combobox", { name: "Jump to section" })
+    jump.focus()
+
+    await user.keyboard("t")
+    expect(onNavigate).not.toHaveBeenCalled()
+    expect(jump.textContent).toBe("General")
+
+    await user.keyboard("{ArrowDown}")
+    expect(jump.getAttribute("aria-expanded")).toBe("true")
+    expect(onNavigate).not.toHaveBeenCalled()
+
+    await user.keyboard("{ArrowDown}{ArrowDown}")
+    expect(onNavigate).not.toHaveBeenCalled()
+
+    await user.keyboard("{Escape}")
+    expect(jump.getAttribute("aria-expanded")).toBe("false")
+    expect(onNavigate).not.toHaveBeenCalled()
+  })
+
+  it("navigates once Enter picks a highlighted item", async () => {
+    const user = userEvent.setup()
+    const onNavigate = vi.fn()
+    render(
+      <SettingsNav groups={GROUPS} activeId="general" onNavigate={onNavigate} />
+    )
+    screen.getByRole("combobox", { name: "Jump to section" }).focus()
+
+    await user.keyboard("{Enter}")
+    await user.keyboard("{ArrowDown}")
+    expect(onNavigate).not.toHaveBeenCalled()
+    await user.keyboard("{Enter}")
+    expect(onNavigate).toHaveBeenCalledTimes(1)
+    expect(onNavigate).toHaveBeenCalledWith(GROUPS[0].items[1])
+  })
+
+  it("shows the nav label until an item is active, and follows the href by default", async () => {
     const user = userEvent.setup()
     render(<SettingsNav groups={GROUPS} />)
     const jump = screen.getByRole("combobox", { name: "Jump to section" })
-    expect((jump as HTMLSelectElement).value).toBe("")
+    expect(jump.textContent).toBe("Settings")
 
-    await user.selectOptions(jump, "domains")
+    await user.click(jump)
+    await user.click(screen.getByRole("option", { name: "Domains" }))
     expect(window.location.hash).toBe("#domains")
   })
 
