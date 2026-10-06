@@ -135,6 +135,8 @@ type DataTableLabels = {
   emptyTitle?: React.ReactNode
   emptyDescription?: React.ReactNode
   errorTitle?: React.ReactNode
+  /** Announced while `loading`; the table is also marked `aria-busy`. */
+  loading?: string
 }
 
 const DEFAULT_LABELS: Required<DataTableLabels> = {
@@ -164,6 +166,7 @@ const DEFAULT_LABELS: Required<DataTableLabels> = {
   emptyTitle: "Nothing here yet",
   emptyDescription: "Items you add will show up here.",
   errorTitle: "Couldn't load this list",
+  loading: "Loading…",
 }
 
 type DataTableProps<TData> = {
@@ -334,6 +337,7 @@ function DataTable<TData>({
     .getSelectedRowModel()
     .rows.map((row) => row.original)
   const clearSelection = () => table.resetRowSelection()
+  const busy = loading && !error
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -475,7 +479,7 @@ function DataTable<TData>({
         </div>
       )}
 
-      <Table>
+      <Table aria-busy={busy || undefined}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -510,7 +514,7 @@ function DataTable<TData>({
           ))}
         </TableHeader>
         <TableBody>
-          {loading && !error ? (
+          {busy ? (
             Array.from({ length: skeletonRows }).map((_, rowIndex) => (
               <TableRow key={rowIndex} className="hover:bg-transparent">
                 {Array.from({ length: columnCount }).map((_, cellIndex) => (
@@ -621,6 +625,9 @@ function DataTable<TData>({
           )}
         </TableBody>
       </Table>
+      <div role="status" className="sr-only">
+        {busy ? labels.loading : null}
+      </div>
       {/* Outside the table so it spans the card, not the scrollable column width. */}
       {state && (
         <div data-slot="data-table-state" role="status" className="px-5 py-3.5">
