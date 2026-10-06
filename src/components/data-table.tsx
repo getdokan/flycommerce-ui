@@ -159,7 +159,7 @@ type DataTableProps<TData> = {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   getRowId?: (row: TData, index: number) => string
-  /** Card title on the left of the toolbar, e.g. "Brand List". */
+  /** Card title on the left of the toolbar, e.g. "Brand List". Below `sm` the toolbar moves under it, full width. */
   title?: React.ReactNode
   /** Header strip above the table: search, filter tabs, actions. */
   toolbar?: React.ReactNode
@@ -443,9 +443,11 @@ function DataTable<TData>({
                 <h2 className="me-auto type-card-title text-foreground">
                   {title}
                 </h2>
-                <div className="flex flex-wrap items-center gap-3">
-                  {toolbar}
-                </div>
+                {toolbar && (
+                  <div className="flex basis-full flex-wrap items-center gap-3 sm:basis-auto">
+                    {toolbar}
+                  </div>
+                )}
               </>
             ) : (
               toolbar
