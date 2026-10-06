@@ -46,6 +46,7 @@ import {
   SaveBarDemo,
   SearchInputDemo,
   SegmentedControlDemo,
+  SettingsNavDemo,
   StatusBadgeDemo,
 } from "./pattern-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
@@ -328,6 +329,8 @@ const KEYWORDS: Record<string, string> = {
   "confirm-dialog": "confirm delete modal are you sure",
   "save-bar": "unsaved changes discard sticky footer",
   "search-input": "search filter query",
+  "settings-nav":
+    "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
   "stat-card": "kpi metric statistic number dashboard",
   "icon-chip": "icon tile badge avatar tinted background circle square",
@@ -393,6 +396,7 @@ const SOURCES: Record<string, Source> = {
   colors: "prototype",
   "page-header": "prototype",
   "save-bar": "prototype",
+  "settings-nav": "composite",
   "confirm-dialog": "prototype",
   "search-input": "prototype",
   "status-badge": "prototype",
@@ -597,6 +601,12 @@ export const demos: Demo[] = [
     title: "Save bar",
     group: "Patterns",
     render: () => <SaveBarDemo />,
+  },
+  {
+    id: "settings-nav",
+    title: "Settings navigation",
+    group: "Patterns",
+    render: () => <SettingsNavDemo />,
   },
   {
     id: "search-input",

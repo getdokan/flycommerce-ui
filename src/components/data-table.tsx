@@ -3,24 +3,6 @@
 import * as React from "react"
 import { cn } from "cn"
 import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core"
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import {
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
@@ -74,6 +56,45 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import type {
+  RowDrag,
+  SortableRowsProps,
+} from "@/components/data-table/sortable-rows"
+
+type SortableRowsModule = {
+  default: React.ComponentType<SortableRowsProps>
+}
+
+let loadedSortableRows: React.ComponentType<SortableRowsProps> | undefined
+let sortableRowsImport: Promise<SortableRowsModule> | undefined
+
+function loadSortableRows() {
+  sortableRowsImport ??= import("@/components/data-table/sortable-rows")
+    .catch((error): SortableRowsModule => {
+      console.warn(
+        "DataTable: row reordering failed to load; rows render without drag handles.",
+        error
+      )
+      return { default: StaticRows }
+    })
+    .then((module) => {
+      loadedSortableRows = module.default
+      return module
+    })
+  return sortableRowsImport
+}
+
+const LazySortableRows = React.lazy(loadSortableRows)
+
+const ReorderUnavailableContext = React.createContext(false)
+
+function StaticRows({ ids, renderRow }: SortableRowsProps) {
+  return (
+    <ReorderUnavailableContext.Provider value>
+      {ids.map((_, index) => renderRow(index))}
+    </ReorderUnavailableContext.Provider>
+  )
+}
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -260,6 +281,13 @@ function DataTable<TData>({
 
   const reorderable = Boolean(onReorder) && !getSubRows
   const reorderEnabled = reorderable && sorting.length === 0
+  const [SortableRows] = React.useState(
+    () => loadedSortableRows ?? LazySortableRows
+  )
+
+  React.useEffect(() => {
+    if (reorderable) void loadSortableRows()
+  }, [reorderable])
 
   const allColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
     const dragColumn: ColumnDef<TData, unknown>[] = reorderable
@@ -347,47 +375,15 @@ function DataTable<TData>({
   const showProgress = refreshing && !loading
   const busy = loading && !error
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  )
-  const rowIds = rows.map((row) => row.id)
-  const rowLabel = (id: string | number) => {
-    const row = rows.find((r) => r.id === String(id))
-    return row
-      ? (getRowLabel?.(row.original) ?? `Row ${rowIds.indexOf(row.id) + 1}`)
-      : ""
+  const rowLabel = (id: string) => {
+    const index = rows.findIndex((row) => row.id === id)
+    if (index < 0) return ""
+    return getRowLabel?.(rows[index].original) ?? `Row ${index + 1}`
   }
-  const position = (id: string | number) => rowIds.indexOf(String(id)) + 1
-  const announcements = {
-    onDragStart: ({ active }: { active: { id: string | number } }) =>
-      labels.pickedUp(rowLabel(active.id), position(active.id), rowIds.length),
-    onDragOver: ({
-      active,
-      over,
-    }: {
-      active: { id: string | number }
-      over: { id: string | number } | null
-    }) =>
-      over
-        ? labels.movedTo(rowLabel(active.id), position(over.id), rowIds.length)
-        : undefined,
-    onDragEnd: ({
-      active,
-      over,
-    }: {
-      active: { id: string | number }
-      over: { id: string | number } | null
-    }) =>
-      over
-        ? labels.droppedAt(
-            rowLabel(active.id),
-            position(over.id),
-            rowIds.length
-          )
-        : undefined,
-    onDragCancel: ({ active }: { active: { id: string | number } }) =>
-      labels.reorderCancelled(rowLabel(active.id), position(active.id)),
+  const moveRow = (from: number, to: number) => {
+    const next = [...data]
+    next.splice(to, 0, ...next.splice(from, 1))
+    onReorder?.(next, { from, to })
   }
   const rowActions = (row: TData): React.ComponentProps<"tr"> => {
     if (!onRowClick && !getRowHref) return {}
@@ -414,13 +410,68 @@ function DataTable<TData>({
       },
     }
   }
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!onReorder || !over || active.id === over.id) return
-    const from = rowIds.indexOf(String(active.id))
-    const to = rowIds.indexOf(String(over.id))
-    if (from < 0 || to < 0) return
-    onReorder(arrayMove([...data], from, to), { from, to })
-  }
+  const renderRow = (row: Row<TData>, drag?: RowDrag) => (
+    <DataTableRow
+      key={row.id}
+      drag={drag}
+      selected={row.getIsSelected()}
+      className={cn(
+        (onRowClick || getRowHref) &&
+          "cursor-pointer focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset",
+        getRowClassName?.(row.original)
+      )}
+      {...rowActions(row.original)}
+    >
+      {row.getVisibleCells().map((cell, cellIndex) => {
+        const meta = cell.column.columnDef.meta
+        const isTreeCell =
+          Boolean(getSubRows) && cellIndex === (enableRowSelection ? 1 : 0)
+        return (
+          <TableCell
+            key={cell.id}
+            className={cn(alignClass(meta?.align), meta?.cellClassName)}
+          >
+            {isTreeCell ? (
+              <div
+                className="flex items-center gap-1.5"
+                style={{ paddingInlineStart: row.depth * 24 }}
+              >
+                {row.getCanExpand() ? (
+                  <button
+                    type="button"
+                    aria-expanded={row.getIsExpanded()}
+                    aria-label={
+                      row.getIsExpanded()
+                        ? labels.collapseRow
+                        : labels.expandRow
+                    }
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      row.toggleExpanded()
+                    }}
+                    className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+                  >
+                    <ChevronDownIcon
+                      aria-hidden="true"
+                      className={cn(
+                        "size-4 transition-transform",
+                        !row.getIsExpanded() && "-rotate-90 rtl:rotate-90"
+                      )}
+                    />
+                  </button>
+                ) : (
+                  <span aria-hidden="true" className="w-6 shrink-0" />
+                )}
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </div>
+            ) : (
+              flexRender(cell.column.columnDef.cell, cell.getContext())
+            )}
+          </TableCell>
+        )
+      })}
+    </DataTableRow>
+  )
 
   const state = error ? (
     <Empty>
@@ -571,103 +622,19 @@ function DataTable<TData>({
                 ))}
               </TableRow>
             ))
-          ) : state ? null : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              modifiers={[restrictToVerticalAxis]}
-              // Announcer divs are invalid inside <tbody>; dnd-kit only renders them after mount.
-              accessibility={{
-                announcements,
-                container:
-                  typeof document === "undefined" ? undefined : document.body,
-              }}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={rowIds}
-                strategy={verticalListSortingStrategy}
+          ) : state ? null : reorderable ? (
+            <React.Suspense fallback={rows.map((row) => renderRow(row))}>
+              <SortableRows
+                ids={rows.map((row) => row.id)}
                 disabled={!reorderEnabled}
-              >
-                {rows.map((row) => (
-                  <DataTableRow
-                    key={row.id}
-                    id={row.id}
-                    sortable={reorderable}
-                    selected={row.getIsSelected()}
-                    className={cn(
-                      (onRowClick || getRowHref) &&
-                        "cursor-pointer focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset",
-                      getRowClassName?.(row.original)
-                    )}
-                    {...rowActions(row.original)}
-                  >
-                    {row.getVisibleCells().map((cell, cellIndex) => {
-                      const meta = cell.column.columnDef.meta
-                      const isTreeCell =
-                        Boolean(getSubRows) &&
-                        cellIndex === (enableRowSelection ? 1 : 0)
-                      return (
-                        <TableCell
-                          key={cell.id}
-                          className={cn(
-                            alignClass(meta?.align),
-                            meta?.cellClassName
-                          )}
-                        >
-                          {isTreeCell ? (
-                            <div
-                              className="flex items-center gap-1.5"
-                              style={{ paddingInlineStart: row.depth * 24 }}
-                            >
-                              {row.getCanExpand() ? (
-                                <button
-                                  type="button"
-                                  aria-expanded={row.getIsExpanded()}
-                                  aria-label={
-                                    row.getIsExpanded()
-                                      ? labels.collapseRow
-                                      : labels.expandRow
-                                  }
-                                  onClick={(event) => {
-                                    event.stopPropagation()
-                                    row.toggleExpanded()
-                                  }}
-                                  className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
-                                >
-                                  <ChevronDownIcon
-                                    aria-hidden="true"
-                                    className={cn(
-                                      "size-4 transition-transform",
-                                      !row.getIsExpanded() &&
-                                        "-rotate-90 rtl:rotate-90"
-                                    )}
-                                  />
-                                </button>
-                              ) : (
-                                <span
-                                  aria-hidden="true"
-                                  className="w-6 shrink-0"
-                                />
-                              )}
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </div>
-                          ) : (
-                            flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )
-                          )}
-                        </TableCell>
-                      )
-                    })}
-                  </DataTableRow>
-                ))}
-              </SortableContext>
-            </DndContext>
+                labels={labels}
+                getLabel={rowLabel}
+                onMove={moveRow}
+                renderRow={(index, drag) => renderRow(rows[index], drag)}
+              />
+            </React.Suspense>
+          ) : (
+            rows.map((row) => renderRow(row))
           )}
         </TableBody>
       </Table>
@@ -712,57 +679,25 @@ function DataTable<TData>({
   )
 }
 
-const RowDragContext = React.createContext<{
-  attributes: Record<string, unknown>
-  listeners: Record<string, unknown> | undefined
-  bindHandle: (node: HTMLElement | null) => void
-  disabled: boolean
-} | null>(null)
+const RowDragContext = React.createContext<RowDrag["handle"] | null>(null)
 
 function DataTableRow({
-  id,
-  sortable,
+  drag,
   selected,
   className,
   children,
   ...props
 }: Omit<React.ComponentProps<"tr">, "id"> & {
-  id: string
-  sortable: boolean
+  drag?: RowDrag
   selected: boolean
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id, disabled: !sortable })
-
   return (
-    <RowDragContext.Provider
-      value={
-        sortable
-          ? {
-              attributes: attributes as unknown as Record<string, unknown>,
-              listeners,
-              bindHandle: setActivatorNodeRef,
-              disabled: attributes["aria-disabled"] === true,
-            }
-          : null
-      }
-    >
+    <RowDragContext.Provider value={drag?.handle ?? null}>
       <TableRow
-        ref={sortable ? setNodeRef : undefined}
+        ref={drag?.ref}
         data-state={selected ? "selected" : undefined}
-        data-dragging={isDragging || undefined}
-        style={
-          sortable
-            ? { transform: CSS.Translate.toString(transform), transition }
-            : undefined
-        }
+        data-dragging={drag?.dragging || undefined}
+        style={drag?.style}
         className={cn(
           "data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:shadow-2",
           className
@@ -777,7 +712,16 @@ function DataTableRow({
 
 function DragHandle({ label }: { label: string }) {
   const drag = React.useContext(RowDragContext)
-  if (!drag) return null
+  const unavailable = React.useContext(ReorderUnavailableContext)
+  if (!drag)
+    return unavailable ? null : (
+      <span
+        aria-hidden="true"
+        className="inline-flex size-7 items-center justify-center text-muted-foreground"
+      >
+        <GripVerticalIcon className="size-4" />
+      </span>
+    )
   const { bindHandle, attributes, listeners, disabled } = drag
   return (
     <button

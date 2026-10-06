@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
+- `SettingsNav`: a two-pane settings area. A rail of grouped links (icon tile, active state) with a filter over labels, group labels and keywords, a live result count, an empty state and an opt-in shortcut key (`shortcutKey="/"`); below a 56rem-wide area, a "Jump to section" menu that navigates only on Enter or click. Links render through `renderLink` for router links; every string is in `labels`.
 - `SegmentedControl` and `SegmentedControlItem`: one required choice among a few short options (e.g. Metric / Imperial) with the segmented `NavTabs` look. Radio semantics: arrow keys move and select, it can't be emptied, and `value` or `defaultValue` is required; `size="sm"` and `disabled` on the group or an item.
 - `CardBrandIcon brand="visa"`: payment card brand marks for Visa, Mastercard, American Express, Discover, Diners Club and JCB, accepting the brand strings payment APIs return; UnionPay and unknown brands show a generic card. Named after the brand by default, decorative with `label=""`.
 - `Icon` name `spreadsheet`, for CSV and spreadsheet files.
@@ -30,6 +31,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Changed
 
 - `StatusBadge` matches API values in snake_case or kebab-case (`on_hold`, `partially-refunded`) and normalises `tones` keys the same way; `data-status` holds the normalised key, and `partially paid`, `ready for pickup` (warning) and `partial` (default) are built in.
+- `DataTable` loads `@dnd-kit` only when `onReorder` is set: drag-and-drop is a separate module imported on first use, so tables without reordering no longer ship it (about 59 KB minified, 17 KB gzipped, less for an app that only uses `DataTable`). The module starts loading as soon as a table with `onReorder` mounts, even while it is still `loading`. A reorderable table renders its rows straight away and enables the drag handles once the module has loaded, without moving anything; if the module fails to load (an old tab after a deploy), the rows stay, without drag handles, instead of the table failing, and a console warning says why.
 
 ## [0.2.0] - 2026-10-01
 
