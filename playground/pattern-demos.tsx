@@ -517,12 +517,26 @@ export function ConfirmDialogDemo() {
 
 export function SearchInputDemo() {
   const [last, setLast] = React.useState("")
+  const [query, setQuery] = React.useState("")
   return (
-    <div className="flex w-full flex-col gap-2 sm:w-80">
-      <SearchInput placeholder="Search orders" onSearch={setLast} />
-      <span className="text-xs text-muted-foreground">
-        onSearch (after typing pauses): {last ? `“${last}”` : "—"}
-      </span>
+    <div className="flex w-full flex-col gap-5 sm:w-80">
+      <div className="flex flex-col gap-2">
+        <SearchInput placeholder="Search products" onSearch={setLast} />
+        <span className="text-xs text-muted-foreground">
+          onSearch (after typing pauses): {last ? `“${last}”` : "—"}
+        </span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <SearchInput
+          placeholder="Search orders"
+          searchOn="enter"
+          onSearch={setQuery}
+          onClear={() => toast("Search cleared")}
+        />
+        <span className="text-xs text-muted-foreground">
+          searchOn="enter" (press Enter): {query ? `“${query}”` : "—"}
+        </span>
+      </div>
     </div>
   )
 }
