@@ -18,6 +18,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Field,
+  FieldDescription,
+  FieldLabel,
   Icon,
   ICON_GROUPS,
   ActiveFilters,
@@ -31,6 +34,8 @@ import {
   PageHeaderTitle,
   SaveBar,
   SearchInput,
+  SegmentedControl,
+  SegmentedControlItem,
   StatusBadge,
   Switch,
   Tabs,
@@ -550,6 +555,65 @@ export function SearchInputDemo() {
           searchOn="enter" (press Enter): {query ? `“${query}”` : "—"}
         </span>
       </div>
+    </div>
+  )
+}
+
+export function SegmentedControlDemo() {
+  const [units, setUnits] = React.useState("metric")
+  return (
+    <div className="flex w-full flex-col gap-6">
+      <Field className="w-full sm:w-80">
+        <FieldLabel id="unit-system-label">Unit system</FieldLabel>
+        <SegmentedControl
+          aria-labelledby="unit-system-label"
+          aria-describedby="unit-system-description"
+          value={units}
+          onValueChange={setUnits}
+        >
+          <SegmentedControlItem value="metric">Metric</SegmentedControlItem>
+          <SegmentedControlItem value="imperial">Imperial</SegmentedControlItem>
+        </SegmentedControl>
+        <FieldDescription id="unit-system-description">
+          {units === "metric"
+            ? "Weights in kilograms, dimensions in centimetres."
+            : "Weights in pounds, dimensions in inches."}
+        </FieldDescription>
+      </Field>
+      <Field className="w-full sm:w-80">
+        <FieldLabel id="weight-unit-label">Default weight unit</FieldLabel>
+        <SegmentedControl
+          size="sm"
+          aria-labelledby="weight-unit-label"
+          defaultValue="kg"
+        >
+          <SegmentedControlItem value="g">g</SegmentedControlItem>
+          <SegmentedControlItem value="kg">kg</SegmentedControlItem>
+          <SegmentedControlItem value="lb">lb</SegmentedControlItem>
+          <SegmentedControlItem value="oz" disabled>
+            oz
+          </SegmentedControlItem>
+        </SegmentedControl>
+      </Field>
+      <Field className="w-full sm:w-80">
+        <FieldLabel id="tax-display-label">Prices shown</FieldLabel>
+        <SegmentedControl
+          aria-labelledby="tax-display-label"
+          aria-describedby="tax-display-description"
+          defaultValue="incl"
+          disabled
+        >
+          <SegmentedControlItem value="incl">
+            Including tax
+          </SegmentedControlItem>
+          <SegmentedControlItem value="excl">
+            Excluding tax
+          </SegmentedControlItem>
+        </SegmentedControl>
+        <FieldDescription id="tax-display-description">
+          Set by your store&apos;s tax region.
+        </FieldDescription>
+      </Field>
     </div>
   )
 }

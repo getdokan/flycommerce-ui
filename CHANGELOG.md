@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
+- `SegmentedControl` and `SegmentedControlItem`: one required choice among a few short options (e.g. Metric / Imperial) with the segmented `NavTabs` look. Radio semantics: arrow keys move and select, it can't be emptied, and `value` or `defaultValue` is required; `size="sm"` and `disabled` on the group or an item.
 - `CardBrandIcon brand="visa"`: payment card brand marks for Visa, Mastercard, American Express, Discover, Diners Club and JCB, accepting the brand strings payment APIs return; UnionPay and unknown brands show a generic card. Named after the brand by default, decorative with `label=""`.
 - `Icon` name `spreadsheet`, for CSV and spreadsheet files.
 - `@flycommerce/ui/tailwind-core.css`: `tailwind.css` without the global base layer (`body` background and text colour, border and outline colours on every element, Inter on `html`), for apps adopting the library page by page. `tailwind.css` and `styles.css` are unchanged.
