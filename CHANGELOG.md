@@ -30,6 +30,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Changed
 
 - `StatusBadge` matches API values in snake_case or kebab-case (`on_hold`, `partially-refunded`) and normalises `tones` keys the same way; `data-status` holds the normalised key, and `partially paid`, `ready for pickup` (warning) and `partial` (default) are built in.
+- `DataTable` loads `@dnd-kit` only when `onReorder` is set: drag-and-drop is a separate module imported on first use, so tables without reordering no longer ship it (about 59 KB minified, 17 KB gzipped, less for an app that only uses `DataTable`). The module starts loading as soon as a table with `onReorder` mounts, even while it is still `loading`. A reorderable table renders its rows straight away and enables the drag handles once the module has loaded, without moving anything; if the module fails to load (an old tab after a deploy), the rows stay, without drag handles, instead of the table failing, and a console warning says why.
 
 ## [0.2.0] - 2026-10-01
 
