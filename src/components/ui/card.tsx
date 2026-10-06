@@ -11,7 +11,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground shadow-card [--card-spacing:--spacing(5)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground shadow-card [--card-spacing:--spacing(5)] has-data-[slot=card-footer]:pb-0 has-[>[data-flush]:first-child]:pt-0 has-[>[data-flush]:last-child]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
         className
       )}
       {...props}
@@ -68,11 +68,22 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+function CardContent({
+  className,
+  flush = false,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** Edge to edge, for a divided list of rows: no side padding, no gap against a header or footer band, and no card padding above or below it when it comes first or last. */
+  flush?: boolean
+}) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-(--card-spacing)", className)}
+      data-flush={flush || undefined}
+      className={cn(
+        "px-(--card-spacing) data-flush:px-0 data-flush:[[data-slot=card-header].border-b+&]:-mt-(--card-spacing)",
+        className
+      )}
       {...props}
     />
   )
@@ -83,7 +94,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-xl border-t border-border-subtle bg-card-header px-(--card-spacing) py-3.5",
+        "flex items-center rounded-b-xl border-t border-border-subtle bg-card-header px-(--card-spacing) py-3.5 [[data-flush]+&]:-mt-(--card-spacing)",
         className
       )}
       {...props}
