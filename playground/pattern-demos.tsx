@@ -145,7 +145,6 @@ const productColumns: ColumnDef<Product, unknown>[] = [
             size="icon-sm"
             variant="ghost"
             aria-label={`Actions for ${row.original.name}`}
-            onClick={(event) => event.stopPropagation()}
           >
             <EllipsisIcon />
           </Button>
@@ -274,6 +273,7 @@ export function DataTableDemo() {
             sortable
             enableRowSelection
             onRowClick={(row) => toast(`Open ${row.name}`)}
+            getRowHref={(row) => `?product=${row.id}#data-table`}
             toolbar={
               <>
                 <SearchInput

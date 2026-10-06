@@ -7,6 +7,9 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - Claude plugin 0.3.1: pages of an installable FlyCommerce app hand off to the `flycommerce-apps` and `flycommerce-api` plugins (from the `flycommerce` marketplace in `getdokan/flycommerce-sdk`) for framing, session tokens and store calls.
+<<<<<<< HEAD
+- `DataTable`: rows with `onRowClick` or the new `getRowHref` are focusable (focus ring) and open with Enter; with `getRowHref`, cmd/ctrl-click, middle-click and cmd/ctrl+Enter open the row's URL in a new tab. Clicks and keys on links, buttons, inputs and checkboxes inside a row, or on content portaled out of it such as menus, no longer open the row, so `stopPropagation` workarounds can go.
+=======
 - `DataTable`: `refreshing` keeps the current rows and toolbar while data is refetched, dims the rows, shows a thin progress bar at the top of the table (named by `labels.loading`, default "Loading…") and marks the table `aria-busy`. `loading` still shows skeleton rows and wins when both are set.
 - `DataTable`: while `loading`, the table is marked `aria-busy` and a visually hidden status announces `labels.loading` (default "Loading…").
 - `DataTable`: offset `pagination` takes `showPageNumbers` (numbered pages with first, last and ellipses; `siblingCount`, default 1) and `getPageHref`, which renders the page controls as links so they can be opened in a new tab while a plain click still calls `onPageChange`. New labels: `page`, `morePages`.
@@ -24,6 +27,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Changed
 
 - `StatusBadge` matches API values in snake_case or kebab-case (`on_hold`, `partially-refunded`) and normalises `tones` keys the same way; `data-status` holds the normalised key, and `partially paid`, `ready for pickup` (warning) and `partial` (default) are built in.
+>>>>>>> origin/main
 
 ## [0.2.0] - 2026-10-01
 
