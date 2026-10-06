@@ -928,6 +928,20 @@ export const demos: Demo[] = [
             </Button>
           </AlertAction>
         </Alert>
+        <div className="w-fit">
+          <Alert variant="info">
+            <InfoIcon />
+            <AlertTitle>New version available</AlertTitle>
+            <AlertDescription>
+              Reload to get the latest changes.
+            </AlertDescription>
+            <AlertAction>
+              <Button size="sm" variant="outline">
+                Reload
+              </Button>
+            </AlertAction>
+          </Alert>
+        </div>
       </div>
     ),
   },
