@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { cn } from "cn"
 import { FiCheck as CheckIcon, FiCopy as CopyIcon } from "react-icons/fi"
 
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ function CopyButton({
   variant = "outline",
   size,
   children,
+  className,
   ...props
 }: CopyButtonProps) {
   const [copied, setCopied] = React.useState(false)
@@ -56,6 +58,7 @@ function CopyButton({
       aria-label={iconOnly ? text : undefined}
       data-copied={copied || undefined}
       onClick={copy}
+      className={cn("relative", className)}
       {...props}
     >
       <Icon
