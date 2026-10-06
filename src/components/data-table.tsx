@@ -41,6 +41,7 @@ import {
   FiChevronLeft as ChevronLeftIcon,
   FiChevronRight as ChevronRightIcon,
   FiInbox as InboxIcon,
+  FiMoreHorizontal as MoreHorizontalIcon,
   FiAlertTriangle as TriangleAlertIcon,
 } from "react-icons/fi"
 import {
@@ -92,6 +93,12 @@ type OffsetPagination = {
   onPageChange: (page: number) => void
   onPageSizeChange?: (pageSize: number) => void
   pageSizeOptions?: number[]
+  /** Numbered pages between Previous and Next; hidden while the pagination is under 28rem wide. */
+  showPageNumbers?: boolean
+  /** Pages either side of the current one; the first and last always show. Default 1. */
+  siblingCount?: number
+  /** Renders page controls as links: a plain click calls `onPageChange`, a modified click opens the URL. */
+  getPageHref?: (page: number) => string
 }
 
 type CursorPagination = {
@@ -105,9 +112,13 @@ type CursorPagination = {
 type DataTablePaginationProps = OffsetPagination | CursorPagination
 
 type DataTableLabels = {
+  /** Name of the pagination landmark (`<nav aria-label>`). */
+  pagination?: string
   previous?: string
   next?: string
   rowsPerPage?: string
+  page?: (page: number) => string
+  morePages?: string
   selectAll?: string
   selectRow?: string
   clearSelection?: string
@@ -129,9 +140,12 @@ type DataTableLabels = {
 }
 
 const DEFAULT_LABELS: Required<DataTableLabels> = {
+  pagination: "Pagination",
   previous: "Previous",
   next: "Next",
   rowsPerPage: "Rows per page",
+  page: (page) => `Page ${page}`,
+  morePages: "More pages",
   selectAll: "Select all rows",
   selectRow: "Select row",
   clearSelection: "Clear",
@@ -159,7 +173,7 @@ type DataTableProps<TData> = {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   getRowId?: (row: TData, index: number) => string
-  /** Card title on the left of the toolbar, e.g. "Brand List". */
+  /** Card title on the left of the toolbar, e.g. "Brand List". Below `sm` the toolbar moves under it, full width. */
   title?: React.ReactNode
   /** Header strip above the table: search, filter tabs, actions. */
   toolbar?: React.ReactNode
@@ -444,9 +458,11 @@ function DataTable<TData>({
                 <h2 className="me-auto type-card-title text-foreground">
                   {title}
                 </h2>
-                <div className="flex flex-wrap items-center gap-3">
-                  {toolbar}
-                </div>
+                {toolbar && (
+                  <div className="flex basis-full flex-wrap items-center gap-3 sm:basis-auto">
+                    {toolbar}
+                  </div>
+                )}
               </>
             ) : (
               toolbar
@@ -791,7 +807,7 @@ function DataTablePagination(
     return (
       <nav
         data-slot="data-table-pagination"
-        aria-label="Pagination"
+        aria-label={labels.pagination}
         className={cn(
           "flex items-center justify-end gap-2 border-t border-border-subtle px-5 py-3",
           props.className
@@ -817,18 +833,33 @@ function DataTablePagination(
     )
   }
 
-  const { page, pageSize, total, onPageChange, onPageSizeChange } = props
+  const {
+    page,
+    pageSize,
+    total,
+    onPageChange,
+    onPageSizeChange,
+    showPageNumbers = false,
+    siblingCount = 1,
+    getPageHref,
+  } = props
   const pageSizeOptions = props.pageSizeOptions ?? [10, 15, 25, 50, 100]
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1
   const to = Math.min(page * pageSize, total)
+  const linkTo = (target: number, disabled = false) => ({
+    disabled,
+    href: disabled ? undefined : getPageHref?.(target),
+    onNavigate: target === page ? undefined : () => onPageChange(target),
+  })
 
   return (
     <nav
       data-slot="data-table-pagination"
-      aria-label="Pagination"
+      aria-label={labels.pagination}
       className={cn(
         "flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border-subtle px-5 py-3",
+        showPageNumbers && "@container/pagination",
         props.className
       )}
     >
@@ -855,26 +886,110 @@ function DataTablePagination(
           </Select>
         </label>
       )}
-      <div className="ms-auto flex items-center gap-2">
-        <Button
+      <div className="ms-auto flex flex-wrap items-center justify-end gap-2">
+        <PageControl
           variant="outline"
           size="sm"
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
+          {...linkTo(page - 1, page <= 1)}
         >
           <ChevronLeftIcon className="rtl:rotate-180" /> {labels.previous}
-        </Button>
-        <Button
+        </PageControl>
+        {showPageNumbers && (
+          <div className="hidden items-center gap-1 @md/pagination:flex">
+            {pageItems(page, pageCount, siblingCount).map((item, index) =>
+              item === "ellipsis" ? (
+                <span
+                  key={`ellipsis-${index}`}
+                  className="flex size-8 items-center justify-center text-muted-foreground"
+                >
+                  <MoreHorizontalIcon aria-hidden="true" className="size-4" />
+                  <span className="sr-only">{labels.morePages}</span>
+                </span>
+              ) : (
+                <PageControl
+                  key={item}
+                  variant={item === page ? "secondary" : "ghost"}
+                  size="sm"
+                  className="min-w-8 px-2 tabular-nums"
+                  aria-label={labels.page(item)}
+                  aria-current={item === page ? "page" : undefined}
+                  {...linkTo(item)}
+                >
+                  {item}
+                </PageControl>
+              )
+            )}
+          </div>
+        )}
+        <PageControl
           variant="outline"
           size="sm"
-          disabled={page >= pageCount}
-          onClick={() => onPageChange(page + 1)}
+          {...linkTo(page + 1, page >= pageCount)}
         >
           {labels.next} <ChevronRightIcon className="rtl:rotate-180" />
-        </Button>
+        </PageControl>
       </div>
     </nav>
   )
+}
+
+function PageControl({
+  href,
+  onNavigate,
+  disabled,
+  children,
+  ...props
+}: Omit<React.ComponentProps<typeof Button>, "asChild"> & {
+  href?: string
+  onNavigate?: () => void
+}) {
+  if (href === undefined || disabled)
+    return (
+      <Button disabled={disabled} onClick={onNavigate} {...props}>
+        {children}
+      </Button>
+    )
+  return (
+    <Button asChild {...props}>
+      <a
+        href={href}
+        onClick={(event) => {
+          if (
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+          )
+            return
+          event.preventDefault()
+          onNavigate?.()
+        }}
+      >
+        {children}
+      </a>
+    </Button>
+  )
+}
+
+function pageItems(page: number, pageCount: number, siblingCount: number) {
+  const range = (from: number, to: number) =>
+    Array.from({ length: to - from + 1 }, (_, index) => from + index)
+  const slots = siblingCount * 2 + 5
+  if (pageCount <= slots) return range(1, pageCount)
+  const start = Math.max(page - siblingCount, 1)
+  const end = Math.min(page + siblingCount, pageCount)
+  if (start <= 3)
+    return [...range(1, slots - 2), "ellipsis" as const, pageCount]
+  if (end >= pageCount - 2)
+    return [1, "ellipsis" as const, ...range(pageCount - slots + 3, pageCount)]
+  return [
+    1,
+    "ellipsis" as const,
+    ...range(start, end),
+    "ellipsis" as const,
+    pageCount,
+  ]
 }
 
 export {
