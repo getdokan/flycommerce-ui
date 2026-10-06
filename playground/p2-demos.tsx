@@ -3,6 +3,7 @@ import { toast } from "sonner"
 
 import {
   AsyncCombobox,
+  Badge,
   Button,
   CopyButton,
   DatePicker,
@@ -110,6 +111,11 @@ export function RadioCardDemo() {
       <RadioCard
         value="physical"
         title="Physical product"
+        badge={
+          <Badge dot variant="success">
+            Active
+          </Badge>
+        }
         description="A physical product that requires shipping"
       />
       <RadioCard
@@ -252,25 +258,53 @@ export function IconChipDemo() {
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-wrap items-center gap-3">
-        <IconChip size="sm"><Icon name="orders" /></IconChip>
-        <IconChip><Icon name="orders" /></IconChip>
-        <IconChip size="lg"><Icon name="orders" /></IconChip>
-        <IconChip size="xl"><Icon name="orders" /></IconChip>
-        <IconChip shape="round"><Icon name="orders" /></IconChip>
+        <IconChip size="sm">
+          <Icon name="orders" />
+        </IconChip>
+        <IconChip>
+          <Icon name="orders" />
+        </IconChip>
+        <IconChip size="lg">
+          <Icon name="orders" />
+        </IconChip>
+        <IconChip size="xl">
+          <Icon name="orders" />
+        </IconChip>
+        <IconChip shape="round">
+          <Icon name="orders" />
+        </IconChip>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <IconChip tone="grey"><Icon name="settings" /></IconChip>
-        <IconChip tone="primary" shape="round"><Icon name="payouts" /></IconChip>
-        <IconChip tone="success" shape="round"><Icon name="check" /></IconChip>
-        <IconChip tone="warning" shape="round"><Icon name="warning" /></IconChip>
-        <IconChip tone="destructive" shape="round"><Icon name="delete" /></IconChip>
-        <IconChip tone="soon" shape="round"><Icon name="vendors" /></IconChip>
+        <IconChip tone="grey">
+          <Icon name="settings" />
+        </IconChip>
+        <IconChip tone="primary" shape="round">
+          <Icon name="payouts" />
+        </IconChip>
+        <IconChip tone="success" shape="round">
+          <Icon name="check" />
+        </IconChip>
+        <IconChip tone="warning" shape="round">
+          <Icon name="warning" />
+        </IconChip>
+        <IconChip tone="destructive" shape="round">
+          <Icon name="delete" />
+        </IconChip>
+        <IconChip tone="soon" shape="round">
+          <Icon name="vendors" />
+        </IconChip>
       </div>
       <div className="flex max-w-md items-center gap-3 rounded-xl bg-card p-5 shadow-card">
-        <IconChip tone="grey"><Icon name="vendors" /></IconChip>
+        <IconChip tone="grey">
+          <Icon name="vendors" />
+        </IconChip>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-foreground">Vendor approval</p>
-          <p className="text-sm text-muted-foreground">Review new vendors before they can sell.</p>
+          <p className="text-sm font-semibold text-foreground">
+            Vendor approval
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Review new vendors before they can sell.
+          </p>
         </div>
       </div>
     </div>

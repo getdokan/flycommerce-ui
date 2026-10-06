@@ -17,15 +17,18 @@ function RadioCardGroup({
   )
 }
 
-/** Prototype option card: an 18px radio, a title and an optional description. */
+/** Prototype option card: an 18px radio, a title with an optional badge, and an optional description. */
 function RadioCard({
   className,
   title,
+  badge,
   description,
   children,
   ...props
 }: Omit<React.ComponentProps<typeof RadioGroupPrimitive.Item>, "title"> & {
   title: React.ReactNode
+  /** Shown after the title, e.g. a `Badge` marking the saved option as "Active". */
+  badge?: React.ReactNode
   description?: React.ReactNode
 }) {
   return (
@@ -44,8 +47,9 @@ function RadioCard({
         <span className="absolute inset-[3.5px] hidden rounded-full bg-primary group-data-[state=checked]/radio-card:block" />
       </span>
       <span className="min-w-0">
-        <span className="block text-[13.5px] font-[570] text-foreground">
-          {title}
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13.5px]">
+          <span className="font-[570] text-foreground">{title}</span>
+          {badge && <span className="flex h-lh items-center">{badge}</span>}
         </span>
         {description && (
           <span className="mt-0.5 block text-[12px] text-muted-foreground">

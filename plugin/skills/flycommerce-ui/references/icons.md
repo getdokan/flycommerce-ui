@@ -6,7 +6,7 @@ Use `<Icon name="…" />` with one of these names. Never import from react-icons
 
 ## Navigation & objects
 
-`dashboard` (House), `orders` (ShoppingCart), `products` (ShoppingBag), `categories` (FolderTree), `brands` (Tag), `collections` (Layers), `attributes` (SlidersHorizontal), `reviews` (Star), `questions` (MessageCircleQuestion), `customers` (Users), `customer` (UserCircle), `vendors` (UserCircle), `invoices` (FileText), `preorders` (CalendarClock), `refunds` (RotateCcw), `returns` (PackageX), `abandonedCart` (TbShoppingCartX), `coupons` (Ticket), `marketing` (Megaphone), `blogs` (Newspaper), `pages` (File), `themes` (SlidersHorizontal), `media` (Image), `abuse` (Flag)
+`dashboard` (House), `orders` (ShoppingCart), `products` (ShoppingBag), `categories` (FolderTree), `brands` (Tag), `collections` (Layers), `attributes` (SlidersHorizontal), `reviews` (Star), `questions` (MessageCircleQuestion), `customers` (Users), `customer` (UserCircle), `vendors` (UserCircle), `invoices` (FileText), `preorders` (CalendarClock), `refunds` (RotateCcw), `returns` (PackageX), `abandonedCart` (TbShoppingCartX), `coupons` (Ticket), `marketing` (Megaphone), `blogs` (Newspaper), `pages` (File), `spreadsheet` (FileSpreadsheet), `themes` (SlidersHorizontal), `media` (Image), `abuse` (Flag)
 
 ## Fulfilment
 

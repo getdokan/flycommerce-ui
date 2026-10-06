@@ -3,6 +3,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "tw-animate-css";
 @import "./components.css";
+@import "./base.css";
 @import "./theme.css";
 
 @source "../components";
