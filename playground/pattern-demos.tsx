@@ -10,6 +10,7 @@ import { toast } from "sonner"
 
 import {
   Button,
+  CardBrandIcon,
   ConfirmDialog,
   DataTable,
   DropdownMenu,
@@ -17,6 +18,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Field,
+  FieldDescription,
+  FieldLabel,
   Icon,
   ICON_GROUPS,
   ActiveFilters,
@@ -30,6 +34,8 @@ import {
   PageHeaderTitle,
   SaveBar,
   SearchInput,
+  SegmentedControl,
+  SegmentedControlItem,
   StatusBadge,
   Switch,
   Tabs,
@@ -42,6 +48,7 @@ import {
   type FilterValues,
   type NumberRange,
   type IconName,
+  type StatusTone,
 } from "@/index"
 
 type Product = {
@@ -79,7 +86,7 @@ const STATUSES: Product["status"][] = [
   "Pending",
 ]
 
-const PRODUCTS: Product[] = Array.from({ length: 42 }, (_, i) => ({
+const PRODUCTS: Product[] = Array.from({ length: 120 }, (_, i) => ({
   id: String(i + 1),
   name: `${NAMES[i % NAMES.length]}${i >= NAMES.length ? ` #${Math.floor(i / NAMES.length) + 1}` : ""}`,
   vendor: VENDORS[i % VENDORS.length],
@@ -144,7 +151,6 @@ const productColumns: ColumnDef<Product, unknown>[] = [
             size="icon-sm"
             variant="ghost"
             aria-label={`Actions for ${row.original.name}`}
-            onClick={(event) => event.stopPropagation()}
           >
             <EllipsisIcon />
           </Button>
@@ -190,9 +196,13 @@ export function DataTableDemo() {
   const [query, setQuery] = React.useState("")
   const [status, setStatus] = React.useState("all")
   const [filters, setFilters] = React.useState<FilterValues>({})
-  const [page, setPage] = React.useState(1)
+  // Page links carry ?page=, so a page opened in a new tab starts there.
+  const [page, setPage] = React.useState(
+    () => Number(new URLSearchParams(window.location.search).get("page")) || 1
+  )
   const [pageSize, setPageSize] = React.useState(10)
   const [loading, setLoading] = React.useState(false)
+  const [refreshing, setRefreshing] = React.useState(false)
   const [failed, setFailed] = React.useState(false)
   const [confirmIds, setConfirmIds] = React.useState<string[] | null>(null)
 
@@ -222,6 +232,10 @@ export function DataTableDemo() {
           <Switch checked={loading} onCheckedChange={setLoading} /> Loading
         </label>
         <label className="flex items-center gap-2">
+          <Switch checked={refreshing} onCheckedChange={setRefreshing} />{" "}
+          Refreshing
+        </label>
+        <label className="flex items-center gap-2">
           <Switch checked={failed} onCheckedChange={setFailed} /> Error
         </label>
         <span>Search for “zzz” to see the empty state.</span>
@@ -247,6 +261,7 @@ export function DataTableDemo() {
             data={pageRows}
             getRowId={(row) => row.id}
             loading={loading}
+            refreshing={refreshing}
             error={
               failed ? (
                 <span className="flex flex-col items-center gap-3">
@@ -264,6 +279,7 @@ export function DataTableDemo() {
             sortable
             enableRowSelection
             onRowClick={(row) => toast(`Open ${row.name}`)}
+            getRowHref={(row) => `?product=${row.id}#data-table`}
             toolbar={
               <>
                 <SearchInput
@@ -314,7 +330,10 @@ export function DataTableDemo() {
                 setPageSize(size)
                 setPage(1)
               },
+              showPageNumbers: true,
+              getPageHref: (page) => `?page=${page}#data-table`,
             }}
+            labels={{ pagination: "Products pagination" }}
           />
         </TabsContent>
       </Tabs>
@@ -516,15 +535,98 @@ export function ConfirmDialogDemo() {
 
 export function SearchInputDemo() {
   const [last, setLast] = React.useState("")
+  const [query, setQuery] = React.useState("")
   return (
-    <div className="flex w-full flex-col gap-2 sm:w-80">
-      <SearchInput placeholder="Search orders" onSearch={setLast} />
-      <span className="text-xs text-muted-foreground">
-        onSearch (after typing pauses): {last ? `“${last}”` : "—"}
-      </span>
+    <div className="flex w-full flex-col gap-5 sm:w-80">
+      <div className="flex flex-col gap-2">
+        <SearchInput placeholder="Search products" onSearch={setLast} />
+        <span className="text-xs text-muted-foreground">
+          onSearch (after typing pauses): {last ? `“${last}”` : "—"}
+        </span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <SearchInput
+          placeholder="Search orders"
+          searchOn="enter"
+          onSearch={setQuery}
+          onClear={() => toast("Search cleared")}
+        />
+        <span className="text-xs text-muted-foreground">
+          searchOn="enter" (press Enter): {query ? `“${query}”` : "—"}
+        </span>
+      </div>
     </div>
   )
 }
+
+export function SegmentedControlDemo() {
+  const [units, setUnits] = React.useState("metric")
+  return (
+    <div className="flex w-full flex-col gap-6">
+      <Field className="w-full sm:w-80">
+        <FieldLabel id="unit-system-label">Unit system</FieldLabel>
+        <SegmentedControl
+          aria-labelledby="unit-system-label"
+          aria-describedby="unit-system-description"
+          value={units}
+          onValueChange={setUnits}
+        >
+          <SegmentedControlItem value="metric">Metric</SegmentedControlItem>
+          <SegmentedControlItem value="imperial">Imperial</SegmentedControlItem>
+        </SegmentedControl>
+        <FieldDescription id="unit-system-description">
+          {units === "metric"
+            ? "Weights in kilograms, dimensions in centimetres."
+            : "Weights in pounds, dimensions in inches."}
+        </FieldDescription>
+      </Field>
+      <Field className="w-full sm:w-80">
+        <FieldLabel id="weight-unit-label">Default weight unit</FieldLabel>
+        <SegmentedControl
+          size="sm"
+          aria-labelledby="weight-unit-label"
+          defaultValue="kg"
+        >
+          <SegmentedControlItem value="g">g</SegmentedControlItem>
+          <SegmentedControlItem value="kg">kg</SegmentedControlItem>
+          <SegmentedControlItem value="lb">lb</SegmentedControlItem>
+          <SegmentedControlItem value="oz" disabled>
+            oz
+          </SegmentedControlItem>
+        </SegmentedControl>
+      </Field>
+      <Field className="w-full sm:w-80">
+        <FieldLabel id="tax-display-label">Prices shown</FieldLabel>
+        <SegmentedControl
+          aria-labelledby="tax-display-label"
+          aria-describedby="tax-display-description"
+          defaultValue="incl"
+          disabled
+        >
+          <SegmentedControlItem value="incl">
+            Including tax
+          </SegmentedControlItem>
+          <SegmentedControlItem value="excl">
+            Excluding tax
+          </SegmentedControlItem>
+        </SegmentedControl>
+        <FieldDescription id="tax-display-description">
+          Set by your store&apos;s tax region.
+        </FieldDescription>
+      </Field>
+    </div>
+  )
+}
+
+const ORDER_STATUSES = [
+  { value: "on_hold", label: "On hold" },
+  { value: "partially_paid", label: "Partially paid" },
+  { value: "partially-refunded", label: "Partially refunded" },
+  { value: "ready_for_pickup", label: "Ready for pickup" },
+  { value: "partial", label: "Partial" },
+  { value: "awaiting_shipment", label: "Awaiting shipment" },
+]
+const ORDER_TONES: Record<string, StatusTone> = { awaiting_shipment: "default" }
 
 export function StatusBadgeDemo() {
   const statuses = [
@@ -543,10 +645,24 @@ export function StatusBadgeDemo() {
     "Coming soon",
   ]
   return (
-    <div className="flex flex-wrap gap-2">
-      {statuses.map((status) => (
-        <StatusBadge key={status} status={status} />
-      ))}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {statuses.map((status) => (
+          <StatusBadge key={status} status={status} />
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-muted-foreground">
+          API values (on_hold, partially-refunded) with display labels
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {ORDER_STATUSES.map(({ value, label }) => (
+            <StatusBadge key={value} status={value} tones={ORDER_TONES}>
+              {label}
+            </StatusBadge>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -604,6 +720,47 @@ export function IconsDemo() {
           </div>
         )
       })}
+    </div>
+  )
+}
+
+const CARD_BRAND_SAMPLES = [
+  "visa",
+  "mastercard",
+  "amex",
+  "discover",
+  "diners",
+  "jcb",
+  "unionpay",
+  "eftpos_au",
+]
+
+export function CardBrandIconDemo() {
+  return (
+    <div className="flex w-full flex-col gap-5">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-8">
+        {CARD_BRAND_SAMPLES.map((brand) => (
+          <figure
+            key={brand}
+            className="flex flex-col items-center gap-2 rounded-lg border border-border-subtle px-2 py-3 text-foreground-secondary"
+          >
+            <CardBrandIcon brand={brand} size={32} />
+            <figcaption className="type-hint text-muted-foreground">
+              {brand}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="flex max-w-md items-center gap-3 rounded-xl bg-card p-4 shadow-card">
+        <CardBrandIcon brand="Visa" size={32} label="" />
+        <div className="min-w-0 flex-1">
+          <p className="type-row-title text-foreground">Visa ending in 4242</p>
+          <p className="type-hint text-muted-foreground">Expires 12/2027</p>
+        </div>
+        <Button variant="outline" size="sm">
+          Replace
+        </Button>
+      </div>
     </div>
   )
 }

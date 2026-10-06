@@ -18,8 +18,12 @@ type SearchInputProps = Omit<
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void
-  /** Fires after typing pauses, and immediately on Enter or clear. */
+  /** `"debounce"` searches after typing pauses; `"enter"` only on Enter, for lists that refetch or navigate on each search. */
+  searchOn?: "debounce" | "enter"
+  /** Fires on Enter, with `""` on clear or Esc, and after typing pauses unless `searchOn="enter"`. */
   onSearch?: (value: string) => void
+  /** Fires when the clear button or Esc empties the field, after `onSearch("")`. */
+  onClear?: () => void
   debounceMs?: number
   clearLabel?: string
   containerClassName?: string
@@ -29,7 +33,9 @@ function SearchInput({
   value: valueProp,
   defaultValue = "",
   onValueChange,
+  searchOn = "debounce",
   onSearch,
+  onClear,
   debounceMs = 300,
   clearLabel = "Clear search",
   placeholder = "Search",
@@ -54,8 +60,13 @@ function SearchInput({
     onValueChange?.(next)
     clearTimeout(timer.current)
     if (immediate) onSearchRef.current?.(next)
-    else
+    else if (searchOn === "debounce")
       timer.current = setTimeout(() => onSearchRef.current?.(next), debounceMs)
+  }
+
+  const clear = () => {
+    update("", true)
+    onClear?.()
   }
 
   return (
@@ -71,7 +82,7 @@ function SearchInput({
         onChange={(event) => update(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Enter") update(value, true)
-          if (event.key === "Escape" && value) update("", true)
+          if (event.key === "Escape" && value) clear()
           onKeyDown?.(event)
         }}
         {...props}
@@ -81,7 +92,7 @@ function SearchInput({
           <InputGroupButton
             size="icon-xs"
             aria-label={clearLabel}
-            onClick={() => update("", true)}
+            onClick={clear}
           >
             <XIcon />
           </InputGroupButton>
