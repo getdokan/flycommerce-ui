@@ -135,7 +135,7 @@
     "publint": "^0.3.24",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "recharts": "3.8.0",
+    "recharts": "3.10.1",
     "sugar-high": "^2.5.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6",
