@@ -150,18 +150,45 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
+const linkStyles =
+  "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-ink"
+
+/** Hint under a field; `icon` puts a decorative glyph before the text, aligned to its first line. */
+function FieldDescription({
+  className,
+  icon,
+  children,
+  ...props
+}: React.ComponentProps<"p"> & {
+  /** A decorative glyph before the text, such as `<Icon name="info" />`, sized to 14px. */
+  icon?: React.ReactNode
+}) {
   return (
     <p
       data-slot="field-description"
       className={cn(
         "text-start text-[11.5px] leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
         "last:mt-0 nth-last-2:-mt-1",
-        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-ink",
+        icon ? "flex items-start gap-1" : linkStyles,
         className
       )}
       {...props}
-    />
+    >
+      {icon ? (
+        <>
+          <span
+            aria-hidden="true"
+            data-slot="field-description-icon"
+            className="flex h-lh shrink-0 items-center [&>svg]:pointer-events-none [&>svg:not([class*='size-'])]:size-3.5"
+          >
+            {icon}
+          </span>
+          <span className={cn("min-w-0", linkStyles)}>{children}</span>
+        </>
+      ) : (
+        children
+      )}
+    </p>
   )
 }
 

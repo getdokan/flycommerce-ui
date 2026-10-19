@@ -7,6 +7,12 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `ComboboxChip` `removeLabel` (default "Remove") names the chip's remove button, which had no accessible name. Pass a translation, or a label per chip such as `` `Remove ${value}` ``.
+- `FieldDescription icon`: a decorative glyph before the hint, sized to 14px and centred on its first line, for the settings hint style (`icon={<Icon name="info" />}`).
+- `SwitchField variant="row"`: the settings toggle row for a flush card. It is padded (`px-5 py-4`, 24px sides from `sm`), uses 14px type, shows an "Enabled" or "Disabled" label before the switch, and the whole row toggles it. On both variants, `stateLabel` turns that label on or off (`{ on, off }` sets the words; screen readers skip it, since the switch announces its state), `badge` goes after the title, and `children` show under the row while the switch is on.
+- `RadioCardGroup variant="rows"`: full-width option rows divided by hairlines, each with the control, a semibold title, the `badge` and a secondary description, a tint on the selected row and a hover tint. In rows, `RadioCard details` holds the chosen option's own fields under its row, outside the radio. Arrow keys still move and select.
+- `CheckboxCard` and `CheckboxCardGroup`: the same cards and rows for picking several options, with `badge`, `details` and the indeterminate state.
+- `PasswordInput savedSuffix`: marks a secret that is already saved. The empty field shows the last characters after a mask (`••••••••4f2a`), and screen readers hear "Saved, ends in 4f2a. Leave blank to keep it."; `savedPlaceholder` and `savedLabel` set the words.
+- `Textarea softLimit`: the count measures against a soft limit and turns to the warning tone past it, without cutting the text off. `Input` takes the same `showCount`, `softLimit` and `countLabel`.
 
 ### Changed
 
@@ -16,6 +22,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - Chip pickers: `ComboboxChips` has 6px gaps and 6px × 8px padding, with or without chips. `ComboboxChip` is 26px tall with 13px/18px text and 8px padding (2px beside the remove button). `ComboboxChipsInput` is 26px tall and at least 7rem wide. `TagInput` chips are 26px tall with 6px corners and brand text on a brand tint (13px/18px, medium), and its input is 26px tall. Both inputs use 14px/20px text and the muted text colour for their placeholder.
 - `SaveBar` matches the dashboard's unsaved-changes bar (`BottomActionBar`): a `gray-900` bar (new `inverse` token) with 8px corners, as wide as the dashboard's (`max-w-lg` up to `max-w-4xl`), `px-6 py-4`, a white message, an outlined Discard and a normal-size Save. The default `saveLabel` is now "Save changes". New `saveMenu` adds a chevron joined to Save for extra save options, like the dashboard's split button.
 - **Breaking:** `sonner` is now a peer dependency (`^2`) instead of a dependency, so `toast()` from this package and an app's own `<Toaster>` share one copy of sonner. With the library's own copy, an app that already had sonner rendered its `<Toaster>` from one copy while `toast()` called the other, so those toasts never appeared. Apps must have `sonner@^2` installed: npm and pnpm add peer dependencies automatically, but Yarn doesn't, so a Yarn app fails to build with "Could not resolve 'sonner'" until it runs `yarn add sonner@^2`.
+- `Input` is marked `"use client"`, because its count keeps the typed length in state. It renders exactly as before; in a React Server Components app it now renders as a client component.
 
 ### Fixed
 

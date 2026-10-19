@@ -10,6 +10,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CheckboxCard,
+  CheckboxCardGroup,
   CopyButton,
   DatePicker,
   DateRangePicker,
@@ -21,6 +23,10 @@ import {
   IconChip,
   ImageWithFallback,
   InfoTooltip,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
   LoadingOverlay,
   NavTabs,
   NavTabsLink,
@@ -29,6 +35,11 @@ import {
   RadioCard,
   RadioCardGroup,
   Rating,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   StatCard,
   StatGroup,
   SwitchField,
@@ -103,60 +114,279 @@ export function TagInputDemo() {
 
 export function PasswordInputDemo() {
   return (
-    <Field className="w-full sm:w-80">
-      <FieldLabel htmlFor="password" required>
-        Password
-      </FieldLabel>
-      <PasswordInput id="password" defaultValue="hunter2-secret" />
-    </Field>
+    <>
+      <Field className="w-full sm:w-80">
+        <FieldLabel htmlFor="password" required>
+          Password
+        </FieldLabel>
+        <PasswordInput id="password" defaultValue="hunter2-secret" />
+      </Field>
+      <Field className="w-full sm:w-80">
+        <FieldLabel htmlFor="secret-key">Secret key</FieldLabel>
+        <PasswordInput
+          id="secret-key"
+          autoComplete="off"
+          savedSuffix="4f2a"
+          showLabel="Show secret"
+          hideLabel="Hide secret"
+        />
+        <FieldDescription icon={<Icon name="info" />}>
+          Saved, ends in 4f2a. Leave blank to keep it.
+        </FieldDescription>
+      </Field>
+    </>
   )
 }
 
 export function RadioCardDemo() {
+  const [warranty, setWarranty] = React.useState("custom")
+  const [methods, setMethods] = React.useState(["couriers", "manual"])
+  const setMethod = (method: string, on: boolean) =>
+    setMethods((current) =>
+      on ? [...current, method] : current.filter((m) => m !== method)
+    )
+
   return (
-    <RadioCardGroup defaultValue="physical" className="w-full">
-      <RadioCard
-        value="physical"
-        title="Physical product"
-        badge={
-          <Badge dot variant="success">
-            Active
-          </Badge>
-        }
-        description="A physical product that requires shipping"
-      />
-      <RadioCard
-        value="digital"
-        title="Digital product"
-        description="A virtual or downloadable product"
-      />
-    </RadioCardGroup>
+    <div className="flex w-full flex-col gap-6">
+      <RadioCardGroup defaultValue="physical" className="w-full">
+        <RadioCard
+          value="physical"
+          title="Physical product"
+          badge={
+            <Badge dot variant="success">
+              Active
+            </Badge>
+          }
+          description="A physical product that requires shipping"
+        />
+        <RadioCard
+          value="digital"
+          title="Digital product"
+          description="A virtual or downloadable product"
+        />
+      </RadioCardGroup>
+
+      <Card>
+        <CardHeader className="border-b sm:px-6">
+          <CardTitle>Refund shipping</CardTitle>
+          <CardDescription>
+            Who bears the shipping cost when an order is refunded.
+          </CardDescription>
+        </CardHeader>
+        <CardContent flush>
+          <RadioCardGroup
+            variant="rows"
+            defaultValue="customer"
+            aria-label="Refund shipping"
+          >
+            <RadioCard
+              value="customer"
+              title="Customer"
+              badge={<Badge variant="success">Active</Badge>}
+              description="Shipping is non-refundable. The customer bears it and it is never returned on a refund."
+            />
+            <RadioCard
+              value="system"
+              title="System (platform absorbs)"
+              description="Shipping is refunded to the customer and the platform absorbs the cost. The vendor keeps it."
+            />
+            <RadioCard
+              value="vendor"
+              title="Vendor"
+              description="Shipping is refunded to the customer and deducted back from the vendor."
+            />
+          </RadioCardGroup>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="border-b sm:px-6">
+          <CardTitle>Warranty</CardTitle>
+          <CardDescription>
+            What this product promises after the sale.
+          </CardDescription>
+        </CardHeader>
+        <CardContent flush>
+          <RadioCardGroup
+            variant="rows"
+            value={warranty}
+            onValueChange={setWarranty}
+            aria-label="Warranty"
+          >
+            <RadioCard
+              value="inherit"
+              title="Use default"
+              description="From the brand or store default: 1-year limited warranty."
+            />
+            <RadioCard
+              value="custom"
+              title="Choose a policy"
+              description="Pick a specific policy for this product."
+              details={
+                warranty === "custom" && (
+                  <Field className="sm:max-w-sm">
+                    <FieldLabel htmlFor="warranty-policy" required>
+                      Warranty policy
+                    </FieldLabel>
+                    <Select defaultValue="extended">
+                      <SelectTrigger id="warranty-policy" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="limited">
+                          1-year limited warranty
+                        </SelectItem>
+                        <SelectItem value="extended">
+                          2-year extended warranty
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                )
+              }
+            />
+            <RadioCard
+              value="none"
+              title="No warranty"
+              description="Don’t show a warranty."
+            />
+          </RadioCardGroup>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="border-b sm:px-6">
+          <CardTitle>Fulfilment methods</CardTitle>
+          <CardDescription>
+            How orders may be fulfilled. Vendors pick from what you enable here.
+          </CardDescription>
+        </CardHeader>
+        <CardContent flush>
+          <CheckboxCardGroup variant="rows" aria-label="Fulfilment methods">
+            <CheckboxCard
+              title="Third-party couriers"
+              badge={<Badge variant="secondary">Default</Badge>}
+              description="Vendors push orders to a connected courier or aggregator."
+              checked={methods.includes("couriers")}
+              onCheckedChange={(on) => setMethod("couriers", on === true)}
+            />
+            <CheckboxCard
+              title="In-house delivery"
+              description="Orders go to the delivery drivers you recruit, pay and settle cash on delivery with."
+              disabled
+            />
+            <CheckboxCard
+              title="Manual"
+              description="Vendors arrange delivery themselves. Nothing is dispatched automatically."
+              checked={methods.includes("manual")}
+              onCheckedChange={(on) => setMethod("manual", on === true)}
+            />
+          </CheckboxCardGroup>
+        </CardContent>
+      </Card>
+
+      <CheckboxCardGroup aria-label="Sales channels" className="w-full">
+        <CheckboxCard
+          title="Online store"
+          description="Your storefront and checkout"
+          defaultChecked
+        />
+        <CheckboxCard
+          title="Point of sale"
+          description="Sell in person with the POS app"
+        />
+      </CheckboxCardGroup>
+    </div>
   )
 }
 
 export function SwitchFieldDemo() {
   const [saving, setSaving] = React.useState(false)
   const [reviews, setReviews] = React.useState(true)
+  const [reporting, setReporting] = React.useState(true)
+  const [reportSaving, setReportSaving] = React.useState(false)
+
   return (
-    <div className="w-full">
-      <SwitchField
-        title="Product reviews"
-        description="Let customers rate products they bought."
-        checked={reviews}
-        loading={saving}
-        onCheckedChange={async (value) => {
-          setSaving(true)
-          await new Promise((resolve) => setTimeout(resolve, 700))
-          setReviews(value)
-          setSaving(false)
-        }}
-      />
-      <SwitchField
-        title="Questions & answers"
-        description="Show a Q&A section on product pages."
-        defaultChecked
-      />
-      <SwitchField title="Vacation mode" />
+    <div className="flex w-full flex-col gap-6">
+      <div className="w-full">
+        <SwitchField
+          title="Product reviews"
+          description="Let customers rate products they bought."
+          checked={reviews}
+          loading={saving}
+          onCheckedChange={async (value) => {
+            setSaving(true)
+            await new Promise((resolve) => setTimeout(resolve, 700))
+            setReviews(value)
+            setSaving(false)
+          }}
+        />
+        <SwitchField
+          title="Questions & answers"
+          description="Show a Q&A section on product pages."
+          defaultChecked
+        />
+        <SwitchField title="Vacation mode" />
+      </div>
+
+      <Card>
+        <CardHeader className="border-b sm:px-6">
+          <CardTitle>Features</CardTitle>
+          <CardDescription>
+            What AvaTax does for your store. Changes save with the page.
+          </CardDescription>
+        </CardHeader>
+        <CardContent flush>
+          <SwitchField
+            variant="row"
+            title="Report transactions to AvaTax"
+            description="Record completed orders in Avalara for reporting and filing. Off means estimates only."
+            checked={reporting}
+            loading={reportSaving}
+            onCheckedChange={async (value) => {
+              setReportSaving(true)
+              await new Promise((resolve) => setTimeout(resolve, 700))
+              setReporting(value)
+              setReportSaving(false)
+            }}
+          />
+          <SwitchField
+            variant="row"
+            title="Avalara API logging"
+            description="Keep request and response payloads for troubleshooting and certification review."
+            defaultChecked
+          >
+            <Field className="sm:max-w-xs">
+              <FieldLabel htmlFor="log-retention">Log retention</FieldLabel>
+              <InputGroup>
+                <InputGroupInput
+                  id="log-retention"
+                  inputMode="numeric"
+                  defaultValue="30"
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupText>days</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+              <FieldDescription icon={<Icon name="info" />}>
+                Older logs are removed automatically.
+              </FieldDescription>
+            </Field>
+          </SwitchField>
+          <SwitchField
+            variant="row"
+            title="Multi-vendor marketplace transactions"
+            badge={<Badge variant="secondary">Recommended</Badge>}
+            description="One Avalara document per vendor in a multi-vendor cart, so each vendor is tracked for nexus and filing."
+          />
+          <SwitchField
+            variant="row"
+            title="Tax-inclusive pricing"
+            description="Only for storefronts that show prices with tax included."
+            disabled
+          />
+        </CardContent>
+      </Card>
     </div>
   )
 }

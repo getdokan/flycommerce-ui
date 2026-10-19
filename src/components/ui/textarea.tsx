@@ -6,12 +6,15 @@ import { cn } from "cn"
 type TextareaProps = React.ComponentProps<"textarea"> & {
   /** Shows "12/500 characters" under the field; uses `maxLength` when set. */
   showCount?: boolean
+  /** A limit the count measures against without truncating: past it the count turns to the warning tone. Shows the count. */
+  softLimit?: number
   countLabel?: (count: number, max?: number) => React.ReactNode
 }
 
 function Textarea({
   className,
   showCount = false,
+  softLimit,
   countLabel = (count, max) =>
     max ? `${count}/${max} characters` : `${count} characters`,
   onChange,
@@ -21,6 +24,7 @@ function Textarea({
     () => String(props.defaultValue ?? "").length
   )
   const count = props.value !== undefined ? String(props.value).length : typed
+  const over = softLimit !== undefined && count > softLimit
 
   const field = (
     <textarea
@@ -37,17 +41,18 @@ function Textarea({
     />
   )
 
-  if (!showCount) return field
+  if (!showCount && softLimit === undefined) return field
 
   return (
     <div data-slot="textarea-wrapper" className="flex w-full flex-col gap-1.5">
       {field}
       <span
         data-slot="textarea-count"
+        data-over={over || undefined}
         aria-live="polite"
-        className="text-[11.5px] text-muted-foreground tabular-nums"
+        className="text-[11.5px] text-muted-foreground tabular-nums data-over:text-warning-strong"
       >
-        {countLabel(count, props.maxLength)}
+        {countLabel(count, softLimit ?? props.maxLength)}
       </span>
     </div>
   )
