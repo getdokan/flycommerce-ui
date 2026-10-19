@@ -116,6 +116,8 @@ Inter throughout. Use the `type-*` utilities for size, weight and spacing and pa
 
 Components already apply these internally (`PageHeaderTitle`, `CardTitle`, `FieldLabel`, table headers…); reach for the utilities only in custom layout.
 
+The P3 type scale is also available, as `<Text variant weight tone numeric>` or as the `type-display` … `type-caption-s` utilities (size, line height and letter spacing only): `display` 96/100 · `h1` 64/72 · `h2` 56/64 · `h3` 48/56 · `h4` 40/48 · `h5` 32/40 · `h6` 24/32 · `body-l` 20/28 · `body-m` 18/26 · `body-s` 16/24 · `caption-l` 14/20 · `caption-m` 12/16 · `caption-s` 10/14. `Text` defaults to `body-s`, `weight="regular"` and `tone="primary"`; weights run from `light` to `black`, and the tones are `primary`, `secondary`, `muted`, `brand`, `success`, `danger` and `inherit`. Headings render `h1`–`h6`, body sizes `p` and captions `span`; pass `as="span"` for body text inside a `<p>`, `<label>` or button. Numbers take `numeric`.
+
 ## Screen recipes
 
 **List page**

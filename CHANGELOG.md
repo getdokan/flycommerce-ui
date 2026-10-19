@@ -7,6 +7,8 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `ComboboxChip` `removeLabel` (default "Remove") names the chip's remove button, which had no accessible name. Pass a translation, or a label per chip such as `` `Remove ${value}` ``.
+- `Text`: the P3 type scale as a component. `variant` picks one of 13 sizes (`display`, `h1`–`h6`, `body-l`, `body-m`, `body-s`, `caption-l`, `caption-m`, `caption-s`; default `body-s`), `weight` one of 7 (`light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black`; default `regular`) and `tone` a token colour (`primary`, `secondary`, `muted`, `brand`, `success`, `danger`, or `inherit` for none; default `primary`); `numeric` sets tabular figures. `display` and the headings render `h1`–`h6`, body sizes a `p` and captions a `span`; `as` changes the element. `TEXT_VARIANTS`, `TEXT_WEIGHTS` and `textVariants` are exported too, for pickers and for giving another element the same look.
+- `type-display`, `type-h1` to `type-h6`, `type-body-l`, `type-body-m`, `type-body-s`, `type-caption-l`, `type-caption-m` and `type-caption-s`: the 13 P3 sizes as utilities for plain markup, from 96/100 down to 10/14, each setting font size, line height and letter spacing only. The existing `type-*` utilities and every component's own type are unchanged.
 
 ### Changed
 
