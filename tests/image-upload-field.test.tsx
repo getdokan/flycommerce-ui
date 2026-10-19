@@ -116,9 +116,45 @@ describe("ImageUploadField", () => {
       "[data-slot=image-upload-field-preview]"
     )!
     expect(preview.style.backgroundColor).toBe("rgb(31, 42, 68)")
-    expect(preview.querySelector("img")?.getAttribute("src")).toBe(LOGO.src)
+    const img = preview.querySelector("img")!
+    expect(img.getAttribute("src")).toBe(LOGO.src)
+    expect(img.dataset.fit).toBe("cover")
     expect(screen.getByText("maison-oriel-wordmark.svg")).toBeTruthy()
     expect(screen.getByText("48 KB")).toBeTruthy()
+  })
+
+  it("fits the image inside the tile with previewFit=contain", () => {
+    render(
+      <ImageUploadField value={LOGO} previewFit="contain" onFiles={() => {}} />
+    )
+    expect(document.querySelector("img")?.dataset.fit).toBe("contain")
+  })
+
+  it("draws a preview node in the tile instead of the image", () => {
+    render(
+      <ImageUploadField
+        value={{ name: "maison-oriel-wordmark.svg", size: 48 * 1024 }}
+        preview={<span data-testid="wordmark">Maison Oriel</span>}
+        previewBackground="#1f2a44"
+        onFiles={() => {}}
+      />
+    )
+    const preview = document.querySelector<HTMLElement>(
+      "[data-slot=image-upload-field-preview]"
+    )!
+    expect(preview.contains(screen.getByTestId("wordmark"))).toBe(true)
+    expect(preview.querySelector("img")).toBeNull()
+    expect(preview.style.backgroundColor).toBe("rgb(31, 42, 68)")
+    expect(screen.getByText("48 KB")).toBeTruthy()
+  })
+
+  it("shows an icon in the tile when there is no image or preview", () => {
+    render(<ImageUploadField value={{ name: "logo.png" }} onFiles={() => {}} />)
+    const preview = document.querySelector(
+      "[data-slot=image-upload-field-preview]"
+    )!
+    expect(preview.querySelector("img")).toBeNull()
+    expect(preview.querySelector("svg")).not.toBeNull()
   })
 
   it("changes the image through its own file input, with the same checks", async () => {

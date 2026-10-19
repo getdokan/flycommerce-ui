@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { sortFiles } from "@/lib/files"
 
 type ImageUploadFieldValue = {
-  src: string
+  src?: string
   name?: string
   /** Bytes. */
   size?: number
@@ -45,8 +45,11 @@ type ImageUploadFieldProps = Omit<
   accept?: string
   /** Bytes. */
   maxSize?: number
-  /** The preview tile's colour, e.g. the brand colour behind a logo. */
+  /** Drawn in the preview tile instead of the image, e.g. a wordmark. */
+  preview?: React.ReactNode
+  /** The preview tile's colour, e.g. the brand colour behind a logo; its text turns white. */
   previewBackground?: string
+  previewFit?: "cover" | "contain"
   loading?: boolean
   invalid?: boolean
   disabled?: boolean
@@ -77,7 +80,9 @@ function ImageUploadField({
   onChooseExisting,
   accept = "image/png,image/jpeg,image/svg+xml,image/webp",
   maxSize,
+  preview,
   previewBackground,
+  previewFit = "cover",
   loading = false,
   invalid = false,
   disabled = false,
@@ -144,21 +149,31 @@ function ImageUploadField({
                   ? { backgroundColor: previewBackground }
                   : undefined
               }
-              className="grid h-16 w-24 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted ring-1 ring-border"
-            >
-              {brokenSrc === value.src ? (
-                <ImageIcon
-                  aria-hidden="true"
-                  className="size-5 text-muted-foreground"
-                />
-              ) : (
-                <img
-                  src={value.src}
-                  alt=""
-                  className="size-full object-contain"
-                  onError={() => setBrokenSrc(value.src)}
-                />
+              className={cn(
+                "grid h-16 w-24 shrink-0 place-items-center overflow-hidden rounded-lg ring-1 ring-border",
+                previewBackground ? "text-white" : "bg-muted"
               )}
+            >
+              {preview ||
+                (value.src && brokenSrc !== value.src ? (
+                  <img
+                    src={value.src}
+                    alt=""
+                    data-fit={previewFit}
+                    className={cn(
+                      "size-full",
+                      previewFit === "contain"
+                        ? "object-contain"
+                        : "object-cover"
+                    )}
+                    onError={() => setBrokenSrc(value.src)}
+                  />
+                ) : (
+                  <ImageIcon
+                    aria-hidden="true"
+                    className="size-5 text-muted-foreground"
+                  />
+                ))}
             </span>
             <div className="w-0 flex-1">
               {value.name && (
@@ -189,12 +204,12 @@ function ImageUploadField({
             )}
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <label className="relative inline-flex cursor-pointer items-center gap-1.5 rounded-sm text-sm font-medium text-primary-ink hover:underline has-[input:disabled]:pointer-events-none has-[input:disabled]:opacity-50 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring">
+            <label className="relative">
               <input
                 type="file"
                 accept={accept}
                 disabled={disabled}
-                className="sr-only"
+                className="peer sr-only"
                 onChange={(event) => {
                   const { accepted, rejected } = sortFiles(
                     Array.from(event.target.files ?? []),
@@ -206,18 +221,20 @@ function ImageUploadField({
                 }}
                 {...inputProps}
               />
-              <RefreshIcon aria-hidden="true" className="size-3.5" />
-              {labels.change}
+              <span className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm text-primary-ink peer-focus-visible:ring-3 peer-focus-visible:ring-ring peer-disabled:pointer-events-none peer-disabled:opacity-50 hover:underline">
+                <RefreshIcon aria-hidden="true" className="size-3.5" />
+                <span className="text-sm font-medium">{labels.change}</span>
+              </span>
             </label>
             {onChooseExisting && (
               <button
                 type="button"
                 disabled={disabled}
-                className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 onClick={onChooseExisting}
               >
                 <ImageIcon aria-hidden="true" className="size-3.5" />
-                {labels.library}
+                <span className="text-sm font-medium">{labels.library}</span>
               </button>
             )}
           </div>

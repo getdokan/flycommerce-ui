@@ -3,17 +3,26 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import { ColorInput, Field, FieldLabel, type ColorInputProps } from "@/index"
+import {
+  ColorInput,
+  Field,
+  FieldError,
+  FieldLabel,
+  type ColorInputProps,
+} from "@/index"
 
 type Props = Omit<ColorInputProps, "value" | "onValueChange"> & {
   initial?: string | null
   onValueChange?: (value: string | null) => void
 }
 
+const HEX_ERROR = "Use 3 or 6 hex digits, like #1F2A44."
+
 function BrandColour({ initial = null, onValueChange, ...props }: Props) {
   const [value, setValue] = React.useState<string | null>(initial)
+  const valid = value !== null && /^#[0-9a-f]{6}$/.test(value)
   return (
-    <Field>
+    <Field data-invalid={!valid || undefined}>
       <FieldLabel htmlFor="brand-colour">Brand colour</FieldLabel>
       <ColorInput
         id="brand-colour"
@@ -24,20 +33,27 @@ function BrandColour({ initial = null, onValueChange, ...props }: Props) {
         }}
         {...props}
       />
+      {!valid && <FieldError>{HEX_ERROR}</FieldError>}
     </Field>
   )
 }
 
 const hexInput = () => screen.getByLabelText("Brand colour") as HTMLInputElement
 const picker = () => screen.getByLabelText("Pick a colour") as HTMLInputElement
-const error = () => screen.queryByRole("alert")
+const root = () => hexInput().closest<HTMLElement>("[data-slot=color-input]")!
+const swatch = () =>
+  root().querySelector<HTMLElement>("[data-slot=color-input-swatch]")!
+const marked = () =>
+  hexInput().getAttribute("aria-invalid") === "true" &&
+  root().hasAttribute("data-invalid")
 
 describe("ColorInput", () => {
   it("is labelled by its Field and shows the colour without the #", () => {
     render(<BrandColour initial="#1F2A44" />)
     expect(hexInput().value).toBe("1F2A44")
     expect(picker().value).toBe("#1f2a44")
-    expect(error()).toBeNull()
+    expect(swatch().style.backgroundColor).toBe("rgb(31, 42, 68)")
+    expect(marked()).toBe(false)
   })
 
   it("normalises 6 digits to lower-case #rrggbb", async () => {
@@ -78,28 +94,48 @@ describe("ColorInput", () => {
     expect(onValueChange).toHaveBeenCalledTimes(1)
   })
 
-  it("shows the error for other lengths and passes the text on", async () => {
+  it("marks other lengths invalid and passes the text on", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(<BrandColour initial="#c9a4" onValueChange={onValueChange} />)
 
-    expect(error()?.textContent).toBe("Use 3 or 6 hex digits, like #1F2A44.")
-    expect(hexInput().getAttribute("aria-invalid")).toBe("true")
-    expect(hexInput().getAttribute("aria-describedby")).toBe(error()?.id)
-    expect(
-      hexInput()
-        .closest("[data-slot=color-input]")
-        ?.hasAttribute("data-invalid")
-    ).toBe(true)
+    expect(marked()).toBe(true)
+    expect(swatch().style.backgroundColor).toBe("")
 
     await user.type(hexInput(), "6")
     expect(onValueChange).toHaveBeenLastCalledWith("#c9a46")
-    expect(error()).not.toBeNull()
+    expect(marked()).toBe(true)
 
     await user.type(hexInput(), "A")
     expect(onValueChange).toHaveBeenLastCalledWith("#c9a46a")
-    expect(error()).toBeNull()
+    expect(marked()).toBe(false)
     expect(hexInput().hasAttribute("aria-invalid")).toBe(false)
+  })
+
+  it("leaves the message to the Field, so it shows once", () => {
+    render(<BrandColour initial="#c9a4" />)
+    const alerts = screen.getAllByRole("alert")
+    expect(alerts).toHaveLength(1)
+    expect(alerts[0].textContent).toBe(HEX_ERROR)
+    expect(root().contains(alerts[0])).toBe(false)
+    expect(
+      hexInput().closest("[data-slot=field]")?.getAttribute("data-invalid")
+    ).toBe("true")
+  })
+
+  it("never renders a message of its own", () => {
+    render(
+      <ColorInput
+        aria-label="Accent"
+        value="#c9a4"
+        invalid
+        onValueChange={() => {}}
+      />
+    )
+    expect(screen.queryByRole("alert")).toBeNull()
+    expect(screen.getByLabelText("Accent").getAttribute("aria-invalid")).toBe(
+      "true"
+    )
   })
 
   it("treats an empty field as invalid unless allowClear", async () => {
@@ -109,7 +145,7 @@ describe("ColorInput", () => {
 
     await user.clear(hexInput())
     expect(onValueChange).toHaveBeenLastCalledWith(null)
-    expect(error()).not.toBeNull()
+    expect(marked()).toBe(true)
     expect(screen.queryByRole("button")).toBeNull()
   })
 
@@ -117,25 +153,29 @@ describe("ColorInput", () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(
-      <BrandColour
-        initial="#c9a46a"
+      <ColorInput
+        aria-label="Invoice colour"
+        value="#c9a46a"
         allowClear
         fallback="#1f2a44"
         labels={{ clear: "Use brand colour" }}
         onValueChange={onValueChange}
       />
     )
+    const input = screen.getByLabelText("Invoice colour") as HTMLInputElement
 
     await user.click(screen.getByRole("button", { name: "Use brand colour" }))
 
     expect(onValueChange).toHaveBeenLastCalledWith(null)
-    expect(hexInput().value).toBe("")
-    expect(document.activeElement).toBe(hexInput())
-    expect(error()).toBeNull()
+    expect(input.value).toBe("")
+    expect(document.activeElement).toBe(input)
+    expect(input.hasAttribute("aria-invalid")).toBe(false)
     expect(
       screen.queryByRole("button", { name: "Use brand colour" })
     ).toBeNull()
-    expect(picker().value).toBe("#1f2a44")
+    expect(
+      (screen.getByLabelText("Pick a colour") as HTMLInputElement).value
+    ).toBe("#1f2a44")
   })
 
   it("takes the colour picked with the native picker", () => {
@@ -166,21 +206,22 @@ describe("ColorInput", () => {
     expect(screen.getByLabelText("Accent")).toHaveProperty("value", "C9A46A")
   })
 
-  it("marks the field invalid without its own message when told to", () => {
+  it("marks a valid colour invalid when told to, and keeps its swatch", () => {
     render(<BrandColour initial="#1f2a44" invalid />)
-    expect(hexInput().getAttribute("aria-invalid")).toBe("true")
-    expect(error()).toBeNull()
+    expect(marked()).toBe(true)
+    expect(swatch().style.backgroundColor).toBe("rgb(31, 42, 68)")
   })
 
-  it("translates every string", () => {
+  it("translates its strings", () => {
     render(
       <BrandColour
-        initial="#12"
-        labels={{ picker: "Choisir une couleur", error: "3 ou 6 chiffres." }}
+        initial="#1f2a44"
+        allowClear
+        labels={{ picker: "Choisir une couleur", clear: "Effacer" }}
       />
     )
     expect(screen.getByLabelText("Choisir une couleur")).toBeTruthy()
-    expect(error()?.textContent).toBe("3 ou 6 chiffres.")
+    expect(screen.getByRole("button", { name: "Effacer" })).toBeTruthy()
   })
 
   it("disables the picker and the text field", () => {

@@ -63,6 +63,8 @@ export function CopyFieldDemo() {
   )
 }
 
+const HEX_ERROR = "Use 3 or 6 hex digits, like #1F2A44."
+
 const isHexColor = (value: string | null): value is string =>
   value !== null && /^#[0-9a-f]{6}$/.test(value)
 
@@ -70,6 +72,7 @@ export function ColorInputDemo() {
   const [brand, setBrand] = React.useState<string | null>("#1f2a44")
   const [accent, setAccent] = React.useState<string | null>("#c9a4")
   const [invoice, setInvoice] = React.useState<string | null>(null)
+  const invoiceValid = invoice === null || isHexColor(invoice)
 
   return (
     <div className="grid w-full gap-6 sm:grid-cols-2">
@@ -81,6 +84,7 @@ export function ColorInputDemo() {
           onValueChange={setBrand}
           labels={{ picker: "Pick the brand colour" }}
         />
+        {!isHexColor(brand) && <FieldError>{HEX_ERROR}</FieldError>}
       </Field>
       <Field data-invalid={!isHexColor(accent) || undefined}>
         <FieldLabel htmlFor="accent-colour">Accent colour</FieldLabel>
@@ -90,8 +94,9 @@ export function ColorInputDemo() {
           onValueChange={setAccent}
           labels={{ picker: "Pick the accent colour" }}
         />
+        {!isHexColor(accent) && <FieldError>{HEX_ERROR}</FieldError>}
       </Field>
-      <Field>
+      <Field data-invalid={!invoiceValid || undefined}>
         <FieldLabel htmlFor="invoice-colour" optional>
           Invoice colour
         </FieldLabel>
@@ -107,10 +112,14 @@ export function ColorInputDemo() {
             clear: "Use brand colour",
           }}
         />
-        <FieldDescription>
-          Used for the top rule, the title and the total. Empty uses your brand
-          colour.
-        </FieldDescription>
+        {invoiceValid ? (
+          <FieldDescription>
+            Used for the top rule, the title and the total. Empty uses your
+            brand colour.
+          </FieldDescription>
+        ) : (
+          <FieldError>{HEX_ERROR}</FieldError>
+        )}
       </Field>
       <Field>
         <FieldLabel htmlFor="email-colour">Email button colour</FieldLabel>
@@ -132,6 +141,28 @@ const MAX_SIZE = 25 * 1024 * 1024
 const LOGO = `data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120"><path d="M120 46c-6-14-22-24-32-16s0 26 32 18c32 8 42-10 32-18s-26 2-32 16z" fill="none" stroke="white" stroke-width="2.5"/><text x="120" y="92" fill="white" font-family="Georgia, serif" font-size="19" letter-spacing="7" text-anchor="middle">MAISON ORIEL</text></svg>'
 )}`
+
+const WORDMARK = (
+  <svg viewBox="0 0 240 120" aria-hidden="true" className="w-20">
+    <path
+      d="M120 46c-6-14-22-24-32-16s0 26 32 18c32 8 42-10 32-18s-26 2-32 16z"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+    />
+    <text
+      x="120"
+      y="92"
+      fill="currentColor"
+      fontFamily="Georgia, serif"
+      fontSize="19"
+      letterSpacing="7"
+      textAnchor="middle"
+    >
+      MAISON ORIEL
+    </text>
+  </svg>
+)
 
 const LIBRARY: MediaItem[] = [
   ["boutique-front", "Boutique front"],
@@ -169,6 +200,8 @@ const BRAND_IMAGES = [
 
 type BrandImage = (typeof BRAND_IMAGES)[number]["slot"]
 
+type BrandImageValue = ImageUploadFieldValue & { preview?: React.ReactNode }
+
 const rejectionMessage = ([rejection]: FileRejection[]) =>
   rejection.reason === "size"
     ? `${rejection.file.name} is ${(rejection.file.size / 1024 / 1024).toFixed(1)} MB. The limit is 25 MB.`
@@ -177,9 +210,13 @@ const rejectionMessage = ([rejection]: FileRejection[]) =>
 export function ImageUploadFieldDemo() {
   const brandColour = "#1f2a44"
   const [images, setImages] = React.useState<
-    Record<BrandImage, ImageUploadFieldValue | null>
+    Record<BrandImage, BrandImageValue | null>
   >({
-    logo: { src: LOGO, name: "maison-oriel-wordmark.svg", size: 48 * 1024 },
+    logo: {
+      name: "maison-oriel-wordmark.svg",
+      size: 48 * 1024,
+      preview: WORDMARK,
+    },
     icon: null,
   })
   const [errors, setErrors] = React.useState<
@@ -188,7 +225,7 @@ export function ImageUploadFieldDemo() {
   const [uploading, setUploading] = React.useState<BrandImage | null>(null)
   const [picking, setPicking] = React.useState<BrandImage | null>(null)
 
-  const setImage = (slot: BrandImage, image: ImageUploadFieldValue | null) => {
+  const setImage = (slot: BrandImage, image: BrandImageValue | null) => {
     setImages((current) => ({ ...current, [slot]: image }))
     setErrors((current) => ({ ...current, [slot]: undefined }))
   }
@@ -212,6 +249,7 @@ export function ImageUploadFieldDemo() {
           <FieldLabel>{label}</FieldLabel>
           <ImageUploadField
             value={images[slot]}
+            preview={images[slot]?.preview}
             previewBackground={brandColour}
             maxSize={MAX_SIZE}
             invalid={Boolean(errors[slot])}
@@ -269,6 +307,7 @@ export function ImageUploadFieldDemo() {
             size: 48 * 1024,
           }}
           previewBackground={brandColour}
+          previewFit="contain"
           disabled
           onFiles={() => {}}
           onRemove={() => {}}
