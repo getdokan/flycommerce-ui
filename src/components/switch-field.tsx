@@ -94,10 +94,7 @@ function SwitchField({
       <div
         data-slot="switch-field"
         data-variant="row"
-        className={cn(
-          "border-b border-border px-5 py-4 last:border-b-0 sm:px-6",
-          containerClassName
-        )}
+        className={cn("px-5 py-4 sm:px-6", containerClassName)}
       >
         <label
           htmlFor={switchId}

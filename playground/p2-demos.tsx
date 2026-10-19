@@ -336,7 +336,7 @@ export function SwitchFieldDemo() {
             What AvaTax does for your store. Changes save with the page.
           </CardDescription>
         </CardHeader>
-        <CardContent flush>
+        <CardContent flush className="divide-y divide-border">
           <SwitchField
             variant="row"
             title="Report transactions to AvaTax"
