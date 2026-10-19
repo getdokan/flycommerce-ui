@@ -20,7 +20,7 @@ Generated references in this skill (always current, read them instead of guessin
 ## Setup (once per app)
 
 ```bash
-pnpm add @flycommerce/ui
+pnpm add @flycommerce/ui sonner
 ```
 
 Tailwind v4 apps, in the main CSS file:
