@@ -73,4 +73,72 @@ describe("PasswordInput", () => {
     expect((input as HTMLInputElement).value).toBe("new-key")
     expect(screen.getByRole("button", { name: "Hide secret" })).toBeTruthy()
   })
+
+  it("keeps browsers and password managers from filling a saved secret", () => {
+    const { rerender } = render(<PasswordInput aria-label="Password" />)
+    const input = screen.getByLabelText("Password")
+    expect(input.getAttribute("autocomplete")).toBe("current-password")
+    expect(input.hasAttribute("data-1p-ignore")).toBe(false)
+    expect(input.hasAttribute("data-lpignore")).toBe(false)
+
+    rerender(<PasswordInput aria-label="Password" savedSuffix="4f2a" />)
+    expect(input.getAttribute("autocomplete")).toBe("new-password")
+    expect(input.hasAttribute("data-1p-ignore")).toBe(true)
+    expect(input.getAttribute("data-lpignore")).toBe("true")
+
+    rerender(
+      <PasswordInput
+        aria-label="Password"
+        savedSuffix="4f2a"
+        autoComplete="off"
+      />
+    )
+    expect(input.getAttribute("autocomplete")).toBe("off")
+  })
+
+  it("offers to reveal a saved secret only once something is typed", async () => {
+    const user = userEvent.setup()
+    render(
+      <PasswordInput
+        aria-label="Secret key"
+        savedSuffix="4f2a"
+        showLabel="Show secret"
+      />
+    )
+    const input = screen.getByLabelText("Secret key")
+    expect(screen.queryByRole("button", { name: "Show secret" })).toBeNull()
+
+    await user.type(input, "sk")
+    expect(screen.getByRole("button", { name: "Show secret" })).toBeTruthy()
+
+    await user.clear(input)
+    expect(screen.queryByRole("button", { name: "Show secret" })).toBeNull()
+  })
+
+  it("follows a controlled value", () => {
+    const { rerender } = render(
+      <PasswordInput
+        aria-label="Secret key"
+        savedSuffix="4f2a"
+        value=""
+        onChange={() => {}}
+      />
+    )
+    expect(screen.queryByRole("button", { name: "Show password" })).toBeNull()
+
+    rerender(
+      <PasswordInput
+        aria-label="Secret key"
+        savedSuffix="4f2a"
+        value="sk_live"
+        onChange={() => {}}
+      />
+    )
+    expect(screen.getByRole("button", { name: "Show password" })).toBeTruthy()
+  })
+
+  it("always offers to reveal a password with nothing saved", () => {
+    render(<PasswordInput aria-label="Password" />)
+    expect(screen.getByRole("button", { name: "Show password" })).toBeTruthy()
+  })
 })

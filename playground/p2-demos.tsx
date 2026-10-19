@@ -155,7 +155,6 @@ export function PasswordInputDemo() {
         <FieldLabel htmlFor="secret-key">Secret key</FieldLabel>
         <PasswordInput
           id="secret-key"
-          autoComplete="off"
           savedSuffix="4f2a"
           showLabel="Show secret"
           hideLabel="Hide secret"
