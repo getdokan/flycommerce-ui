@@ -53,7 +53,12 @@ import {
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
-import { BrandMarkDemo, PillButtonDemo, TrayDemo } from "./display-demos"
+import {
+  BrandMarkDemo,
+  CardBrandMarkDemo,
+  PillButtonDemo,
+  TrayDemo,
+} from "./display-demos"
 import { ColorsDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
@@ -336,7 +341,9 @@ const KEYWORDS: Record<string, string> = {
   sidebar: "navigation nav rail",
   icons: "icon glyph feather react-icons svg",
   "card-brand-icon":
-    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing colour color full colour",
+    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
+  "card-brand-mark":
+    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing colour color full colour accepted cards",
   "brand-mark":
     "logo brand mark tile third party provider gateway carrier app icon simple icons white",
   "pill-button": "pill cta call to action arrow rounded full width primary",
@@ -419,6 +426,7 @@ const SOURCES: Record<string, Source> = {
   sidebar: "prototype",
   icons: "prototype",
   "card-brand-icon": "composite",
+  "card-brand-mark": "prototype",
   "brand-mark": "prototype",
   "pill-button": "prototype",
   tray: "prototype",
@@ -739,6 +747,12 @@ export const demos: Demo[] = [
     title: "Card brand icon",
     group: "Foundations",
     render: () => <CardBrandIconDemo />,
+  },
+  {
+    id: "card-brand-mark",
+    title: "Card brand mark",
+    group: "Foundations",
+    render: () => <CardBrandMarkDemo />,
   },
   {
     id: "brand-mark",

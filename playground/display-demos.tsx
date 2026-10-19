@@ -12,7 +12,7 @@ import {
   BrandMark,
   Button,
   ButtonArrow,
-  CardBrandIcon,
+  CardBrandMark,
   Icon,
   Tray,
 } from "@/index"
@@ -121,6 +121,47 @@ export function BrandMarkDemo() {
   )
 }
 
+const CARD_BRAND_SAMPLES = [
+  "visa",
+  "mastercard",
+  "amex",
+  "discover",
+  "diners",
+  "jcb",
+  "unionpay",
+  "eftpos_au",
+]
+
+export function CardBrandMarkDemo() {
+  return (
+    <div className="flex w-full flex-col gap-5">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-8">
+        {CARD_BRAND_SAMPLES.map((brand) => (
+          <figure
+            key={brand}
+            className="flex flex-col items-center gap-2 rounded-lg border border-border-subtle px-2 py-3 text-foreground-secondary"
+          >
+            <CardBrandMark brand={brand} />
+            <figcaption className="type-hint text-muted-foreground">
+              {brand}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="flex max-w-md items-center gap-3 rounded-xl bg-card p-4 shadow-card">
+        <CardBrandMark brand="Visa" label="" />
+        <div className="min-w-0 flex-1">
+          <p className="type-row-title text-foreground">Visa ending in 4242</p>
+          <p className="type-hint text-muted-foreground">Expires 12/2027</p>
+        </div>
+        <Button variant="outline" size="sm">
+          Replace
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 const CARD_NETWORKS = [
   "visa",
   "mastercard",
@@ -177,12 +218,7 @@ export function TrayDemo() {
         </div>
         <div className="mt-6 flex flex-wrap items-center gap-1.5">
           {CARD_NETWORKS.map((brand) => (
-            <CardBrandIcon
-              key={brand}
-              brand={brand}
-              variant="color"
-              size={26}
-            />
+            <CardBrandMark key={brand} brand={brand} size={26} />
           ))}
         </div>
       </Tray>

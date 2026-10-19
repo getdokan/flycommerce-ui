@@ -4,9 +4,9 @@
 
 ## Card network marks
 
-The full-colour cards drawn by `CardBrandIcon variant="color"` (Visa, Mastercard, American Express, UnionPay, Discover, JCB and Diners Club) are the "flat-rounded" set of [svg-credit-card-payment-icons](https://github.com/aaronfagan/svg-credit-card-payment-icons) by Aaron Fagan, as published at commit `6dd023a`, licensed under the Apache License, Version 2.0, reproduced below.
+The full-colour cards drawn by `CardBrandMark` (Visa, Mastercard, American Express, UnionPay, Discover, JCB and Diners Club) are the "flat-rounded" set of [svg-credit-card-payment-icons](https://github.com/aaronfagan/svg-credit-card-payment-icons) by Aaron Fagan, as published at commit `6dd023a`, licensed under the Apache License, Version 2.0, reproduced below.
 
-Changes made by FlyCommerce: the SVG files were converted to React components (`src/components/card-brand-icon/color-marks.tsx`, built to `dist/components/card-brand-icon/color-marks.js`); the clip paths of the Visa and Mastercard marks, which cover the whole card and clip nothing, were removed; and the JCB gradients get ids generated for each instance, so several marks can share a page. The drawings are otherwise unchanged.
+Changes made by FlyCommerce: the SVG files were converted to React components (`src/components/card-brand-mark/color-marks.tsx`, built to `dist/components/card-brand-mark/color-marks.js`); the clip paths of the Visa and Mastercard marks, which cover the whole card and clip nothing, were removed; and the JCB gradients get ids generated for each instance, so several marks can share a page. The drawings are otherwise unchanged.
 
 The marks are trademarks of their card networks and are used only to name the card a customer pays with.
 

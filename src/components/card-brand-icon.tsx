@@ -10,7 +10,6 @@ import {
   FaCcVisa,
 } from "react-icons/fa"
 
-import { COLOR_CARD_MARKS } from "@/components/card-brand-icon/color-marks"
 import { Icon } from "@/components/icon"
 
 const CARD_BRANDS = new Map<string, { name: string; glyph?: IconType }>([
@@ -33,15 +32,12 @@ type CardBrandIconProps = Omit<React.ComponentProps<IconType>, "ref"> & {
   brand: string
   /** Accessible name; defaults to the brand's name, or "Card" when unknown. Pass "" when the brand is written beside it. */
   label?: string
-  /** `color` draws the network's full-colour card, `size` tall and 1.56 times as wide; `mono` is the one-colour glyph. */
-  variant?: "mono" | "color"
 }
 
-/** Payment card brand mark (Visa, Mastercard, Amex…) in mono or colour; a generic card otherwise. */
+/** Payment card brand mark (Visa, Mastercard, Amex…); a generic card for any other brand. */
 function CardBrandIcon({
   brand,
   label,
-  variant = "mono",
   size = 24,
   className,
   ...props
@@ -50,41 +46,9 @@ function CardBrandIcon({
   const id = BRAND_ALIASES.get(normalized) ?? normalized
   const known = CARD_BRANDS.get(id)
   const accessibleName = label ?? known?.name ?? "Card"
-  const a11y = {
-    "aria-hidden": accessibleName ? undefined : true,
-    "aria-label": accessibleName || undefined,
-    role: accessibleName ? "img" : undefined,
-  }
-  const ColorMark = known && variant === "color" ? COLOR_CARD_MARKS[id] : null
-
-  if (ColorMark) {
-    const { title, children, style, ...svgProps } = props
-    const width = typeof size === "number" ? Math.round(size * 1.56) : undefined
-    return (
-      <ColorMark
-        {...a11y}
-        data-slot="card-brand-icon"
-        data-brand={id}
-        data-variant="color"
-        height={size}
-        width={width}
-        className={cn(
-          "shrink-0 rounded-sm ring-1 ring-card-brand-ring",
-          className
-        )}
-        {...svgProps}
-        style={{ height: size, width: width ?? "auto", ...style }}
-      >
-        {title && <title>{title}</title>}
-        {children}
-      </ColorMark>
-    )
-  }
-
   const shared = {
     "data-slot": "card-brand-icon",
     "data-brand": known ? id : "unknown",
-    "data-variant": variant,
     size,
     className: cn("shrink-0", className),
     ...props,
@@ -94,7 +58,14 @@ function CardBrandIcon({
     return <Icon {...shared} name="billing" label={accessibleName} />
 
   const Glyph = known.glyph
-  return <Glyph {...a11y} {...shared} />
+  return (
+    <Glyph
+      aria-hidden={accessibleName ? undefined : true}
+      aria-label={accessibleName || undefined}
+      role={accessibleName ? "img" : undefined}
+      {...shared}
+    />
+  )
 }
 
 export { CardBrandIcon, type CardBrandIconProps }

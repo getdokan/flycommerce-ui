@@ -88,6 +88,7 @@ import {
   LuTags as TagsIcon,
   LuTextCursorInput as TextCursorInputIcon,
   LuTextSearch as TextSearchIcon,
+  LuWalletCards as WalletCardsIcon,
 } from "react-icons/lu"
 
 // Sidebar icons, most visible when the sidebar is collapsed.
@@ -99,6 +100,7 @@ const ICONS: Record<string, IconType> = {
   colors: PaletteIcon,
   icons: ShapesIcon,
   "card-brand-icon": CreditCardIcon,
+  "card-brand-mark": WalletCardsIcon,
   "brand-mark": BadgeCheckIcon,
   tray: SquareStackIcon,
   "pill-button": ArrowRightCircleIcon,
