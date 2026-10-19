@@ -15,7 +15,7 @@ Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com
 - **Accessible by default.** Keyboard support throughout, focus rings for keyboard users only, labelled controls, screen-reader announcements for drag and drop and uploads.
 - **Ready for every market.** RTL layouts, and every user-visible string can be translated through props.
 - **Mobile first.** Every component is checked at 375px.
-- **Lightweight.** Tree-shakeable ESM with TypeScript types: an app pays only for what it imports (a `Button` adds about 14 KB gzipped). Heavy extras like charts are opt-in.
+- **Lightweight.** Tree-shakeable ESM with TypeScript types: an app pays only for what it imports (a `Button` adds about 14 KB gzipped). Heavy extras like charts and the code editor are opt-in.
 
 ## Contents
 
@@ -42,6 +42,7 @@ Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com
 | Styling       | Tailwind CSS 4 (recommended), or the precompiled stylesheet for apps without Tailwind |
 | Module format | ESM only                                                                              |
 | Charts        | Optional: install `recharts` 3 only if you use `@flycommerce/ui/chart`                |
+| Code editor   | Optional: install CodeMirror 6 only if you use `@flycommerce/ui/code-editor`          |
 | Browsers      | Those Tailwind CSS 4 supports: Chrome 111+, Safari 16.4+, Firefox 128+                |
 
 ## Installation
@@ -182,6 +183,16 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@flycommerce/ui/chart"
+```
+
+**The code editor** ships the same way, as `@flycommerce/ui/code-editor`, with CodeMirror 6 as optional peer dependencies:
+
+```bash
+pnpm add @codemirror/commands @codemirror/lang-css @codemirror/lang-html @codemirror/lang-javascript @codemirror/lang-json @codemirror/language @codemirror/state @codemirror/view
+```
+
+```tsx
+import { CodeEditor } from "@flycommerce/ui/code-editor"
 ```
 
 ## Recipes

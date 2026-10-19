@@ -2,6 +2,13 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `CodeEditor`, a code field on CodeMirror 6, as its own entry point, `@flycommerce/ui/code-editor` (like `@flycommerce/ui/chart`): a file tab with the language badge, Copy and Clear; a line-number gutter that, like the prototype, numbers the empty rows under short code too; HTML, CSS, JavaScript, JSON or plain text, which drive auto-closing tags and indentation (the code itself stays in the plain text colour); Tab indents and Escape then Tab moves on; the cursor's line and column, line and character counts (with the limit when `maxLength` is set); and a "No problems" / "N problems" status from the app's own `problems`, whose lines turn red in the gutter. `value`/`defaultValue`/`onValueChange`, `readOnly`, `disabled`, `invalid`, `minRows`/`maxRows`, every string in `labels`, and a ref with `insertText()` (at the cursor, e.g. a merge tag) and `focus()`. Code stays left-to-right on RTL pages.
+- The CodeMirror packages (`@codemirror/commands`, `lang-css`, `lang-html`, `lang-javascript`, `lang-json`, `language`, `state` and `view`) are optional peer dependencies: install them only if you use `@flycommerce/ui/code-editor`. The main entry never imports them.
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed

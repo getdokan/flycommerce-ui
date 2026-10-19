@@ -49,6 +49,7 @@ import {
   SettingsNavDemo,
   StatusBadgeDemo,
 } from "./pattern-demos"
+import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import { ColorsDemo, TypographyDemo } from "./foundation-demos"
 import {
@@ -355,6 +356,8 @@ const KEYWORDS: Record<string, string> = {
     "attribute values choices sortable list reorder drag enter to add",
   "rich-text-editor":
     "wysiwyg tiptap description textarea formatting bold html",
+  "code-editor":
+    "code snippet html css javascript json script codemirror monospace line numbers merge tags custom code",
   "modal-figma": "dialog popup new category form",
   "modal-use-cases":
     "dialog popup import export csv bulk edit invite details terms reject success wizard",
@@ -415,6 +418,7 @@ const SOURCES: Record<string, Source> = {
   "date-picker": "composite",
   dropzone: "composite",
   "rich-text-editor": "figma",
+  "code-editor": "prototype",
   "media-picker": "figma",
   "media-page": "composite",
   "media-parts": "figma",
@@ -697,6 +701,12 @@ export const demos: Demo[] = [
     title: "Rich text editor",
     group: "Forms",
     render: () => <RichTextEditorDemo />,
+  },
+  {
+    id: "code-editor",
+    title: "Code editor",
+    group: "Forms",
+    render: () => <CodeEditorDemo />,
   },
   {
     id: "media-picker",
