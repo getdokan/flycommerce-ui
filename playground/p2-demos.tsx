@@ -256,6 +256,38 @@ export function RadioCardDemo() {
 
       <Card>
         <CardHeader className="border-b sm:px-6">
+          <CardTitle>How orders are paid</CardTitle>
+          <CardDescription>
+            When an agent prepares a checkout, this decides where the shopper
+            pays.
+          </CardDescription>
+        </CardHeader>
+        <CardContent flush>
+          <RadioCardGroup
+            variant="rows"
+            defaultValue="handoff"
+            aria-label="How orders are paid"
+          >
+            <RadioCard
+              value="handoff"
+              title="The shopper confirms and pays on your checkout"
+              badge={<Badge variant="secondary">Active</Badge>}
+              description="The agent hands the shopper a checkout link. Your payment methods, taxes and fraud checks apply as usual."
+            />
+            <RadioCard
+              value="mandate"
+              disabled
+              className="opacity-60"
+              title="Autonomous purchase with a signed mandate"
+              badge={<Badge variant="soon">Not available yet</Badge>}
+              description="Needs verified AP2 (Agent Payments Protocol) mandates, which agents can’t send yet. Orders are refused rather than charged."
+            />
+          </RadioCardGroup>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="border-b sm:px-6">
           <CardTitle>Fulfilment methods</CardTitle>
           <CardDescription>
             How orders may be fulfilled. Vendors pick from what you enable here.

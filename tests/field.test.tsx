@@ -3,6 +3,11 @@ import { describe, expect, it } from "vitest"
 
 import { Field, FieldDescription, FieldLabel, Icon, Input } from "@/index"
 
+const linkRules = (hint: Element) =>
+  [hint, ...hint.querySelectorAll("*")].flatMap((el) =>
+    [...el.classList].filter((name) => name.startsWith("[&>a"))
+  )
+
 describe("FieldDescription", () => {
   it("renders the hint as before without an icon", () => {
     const { container } = render(
@@ -15,6 +20,29 @@ describe("FieldDescription", () => {
     expect(hint.querySelector("[data-slot=field-description-icon]")).toBeNull()
     expect(hint.firstChild?.textContent).toBe("Shown on ")
     expect(hint.querySelector(":scope > a")).not.toBeNull()
+    expect(linkRules(hint)).toContain("[&>a]:underline")
+  })
+
+  it("leaves a link in a hint with an icon to its own classes", () => {
+    render(
+      <FieldDescription icon={<Icon name="info" />}>
+        Set by your base currency in{" "}
+        <a
+          href="#currencies"
+          className="text-primary-ink underline-offset-2 hover:underline"
+        >
+          Currencies
+        </a>
+        .
+      </FieldDescription>
+    )
+    const link = screen.getByRole("link", { name: "Currencies" })
+    expect(linkRules(link.closest("[data-slot=field-description]")!)).toEqual(
+      []
+    )
+    expect(link.getAttribute("class")).toBe(
+      "text-primary-ink underline-offset-2 hover:underline"
+    )
   })
 
   it("puts a decorative icon before the text", () => {

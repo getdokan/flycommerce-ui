@@ -6,7 +6,9 @@ import {
   Checkbox as CheckboxPrimitive,
   RadioGroup as RadioGroupPrimitive,
 } from "radix-ui"
-import { FiCheck as CheckIcon, FiMinus as MinusIcon } from "react-icons/fi"
+
+import { CheckboxIndicator } from "@/components/ui/checkbox"
+import { RadioGroupIndicator } from "@/components/ui/radio-group"
 
 type OptionCardVariant = "cards" | "rows"
 
@@ -76,17 +78,22 @@ function OptionCardText({
 
 function OptionCardRow({
   slot,
+  className,
   details,
   children,
 }: {
   slot: string
+  className?: string
   details?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
     <div
       data-slot={`${slot}-row`}
-      className="transition-colors has-[>:disabled]:opacity-60 has-[>[data-state=checked]]:bg-primary/3"
+      className={cn(
+        "transition-colors has-[>[data-state=checked]]:bg-primary/3",
+        className
+      )}
     >
       {children}
       {details && (
@@ -107,7 +114,7 @@ function RadioCardGroup({
   variant = "cards",
   ...props
 }: React.ComponentProps<typeof RadioGroupPrimitive.Root> & {
-  /** `rows`: full-width rows divided by hairlines, for a flush card. */
+  /** `rows`: full-width rows divided by hairlines, for a flush card; each option's `className` goes on its row. */
   variant?: OptionCardVariant
 }) {
   return (
@@ -134,22 +141,36 @@ function RadioCard({
 }: Omit<React.ComponentProps<typeof RadioGroupPrimitive.Item>, "title"> &
   OptionCardProps) {
   const variant = React.useContext(OptionCardVariantContext)
+  const rows = variant === "rows"
   const option = (
     <RadioGroupPrimitive.Item
       data-slot="radio-card"
       data-variant={variant}
-      className={cn("group/radio-card", optionVariants[variant], className)}
+      className={cn(
+        "group/radio-card",
+        optionVariants[variant],
+        !rows && className
+      )}
       {...props}
     >
-      <span
-        aria-hidden="true"
-        className={cn(
-          "relative size-[18px] shrink-0 rounded-full border-[1.6px] border-placeholder group-data-[state=checked]/radio-card:border-primary",
-          variant === "rows" ? "mt-0.5 bg-background dark:bg-input/30" : "mt-px"
-        )}
-      >
-        <span className="absolute inset-[3.5px] hidden rounded-full bg-primary group-data-[state=checked]/radio-card:block" />
-      </span>
+      {rows ? (
+        <RadioGroupPrimitive.Indicator forceMount asChild>
+          <span
+            aria-hidden="true"
+            data-slot="radio-card-control"
+            className="relative mt-0.5 flex aspect-square size-[18px] shrink-0 rounded-full border-[1.6px] border-placeholder bg-background dark:bg-input/30 data-checked:border-primary data-checked:bg-background dark:data-checked:bg-primary data-disabled:opacity-50"
+          >
+            <RadioGroupIndicator />
+          </span>
+        </RadioGroupPrimitive.Indicator>
+      ) : (
+        <span
+          aria-hidden="true"
+          className="relative mt-px size-[18px] shrink-0 rounded-full border-[1.6px] border-placeholder group-data-[state=checked]/radio-card:border-primary"
+        >
+          <span className="absolute inset-[3.5px] hidden rounded-full bg-primary group-data-[state=checked]/radio-card:block" />
+        </span>
+      )}
       <OptionCardText
         variant={variant}
         title={title}
@@ -161,9 +182,9 @@ function RadioCard({
     </RadioGroupPrimitive.Item>
   )
 
-  if (variant !== "rows") return option
+  if (!rows) return option
   return (
-    <OptionCardRow slot="radio-card" details={details}>
+    <OptionCardRow slot="radio-card" className={className} details={details}>
       {option}
     </OptionCardRow>
   )
@@ -175,7 +196,7 @@ function CheckboxCardGroup({
   variant = "cards",
   ...props
 }: React.ComponentProps<"div"> & {
-  /** `rows`: full-width rows divided by hairlines, for a flush card. */
+  /** `rows`: full-width rows divided by hairlines, for a flush card; each option's `className` goes on its row. */
   variant?: OptionCardVariant
 }) {
   return (
@@ -203,20 +224,30 @@ function CheckboxCard({
 }: Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, "title"> &
   OptionCardProps) {
   const variant = React.useContext(OptionCardVariantContext)
+  const rows = variant === "rows"
   const option = (
     <CheckboxPrimitive.Root
       data-slot="checkbox-card"
       data-variant={variant}
-      className={cn("group/checkbox-card", optionVariants[variant], className)}
+      className={cn(
+        "group/checkbox-card",
+        optionVariants[variant],
+        !rows && className
+      )}
       {...props}
     >
-      <span
-        aria-hidden="true"
-        className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-[3px] border border-input bg-background text-primary-foreground transition-colors group-data-[state=checked]/checkbox-card:border-primary group-data-[state=checked]/checkbox-card:bg-primary group-data-[state=indeterminate]/checkbox-card:border-primary group-data-[state=indeterminate]/checkbox-card:bg-primary dark:bg-input/30 [&>svg]:size-3.5"
-      >
-        <CheckIcon className="hidden group-data-[state=checked]/checkbox-card:block" />
-        <MinusIcon className="hidden group-data-[state=indeterminate]/checkbox-card:block" />
-      </span>
+      <CheckboxPrimitive.Indicator forceMount asChild>
+        <span
+          aria-hidden="true"
+          data-slot="checkbox-card-control"
+          className={cn(
+            "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-[3px] border border-input bg-background transition-colors data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground dark:bg-input/30 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary",
+            rows && "data-disabled:opacity-50"
+          )}
+        >
+          <CheckboxIndicator />
+        </span>
+      </CheckboxPrimitive.Indicator>
       <OptionCardText
         variant={variant}
         title={title}
@@ -228,9 +259,9 @@ function CheckboxCard({
     </CheckboxPrimitive.Root>
   )
 
-  if (variant !== "rows") return option
+  if (!rows) return option
   return (
-    <OptionCardRow slot="checkbox-card" details={details}>
+    <OptionCardRow slot="checkbox-card" className={className} details={details}>
       {option}
     </OptionCardRow>
   )

@@ -150,9 +150,6 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-const linkStyles =
-  "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-ink"
-
 /** Hint under a field; `icon` puts a decorative glyph before the text, aligned to its first line. */
 function FieldDescription({
   className,
@@ -169,7 +166,9 @@ function FieldDescription({
       className={cn(
         "text-start text-[11.5px] leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
         "last:mt-0 nth-last-2:-mt-1",
-        icon ? "flex items-start gap-1" : linkStyles,
+        icon
+          ? "flex items-start gap-1"
+          : "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-ink",
         className
       )}
       {...props}
@@ -183,7 +182,7 @@ function FieldDescription({
           >
             {icon}
           </span>
-          <span className={cn("min-w-0", linkStyles)}>{children}</span>
+          <span className="min-w-0">{children}</span>
         </>
       ) : (
         children
