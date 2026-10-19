@@ -112,7 +112,7 @@ function TagInput({
         disabled={disabled || atLimit}
         placeholder={tags.length === 0 ? placeholder : undefined}
         className={cn(
-          "h-6.5 min-w-24 flex-1 border-0 bg-transparent px-1 py-0 text-sm text-foreground shadow-none ring-0 outline-none placeholder:text-placeholder disabled:cursor-not-allowed",
+          "h-6.5 min-w-24 flex-1 border-0 bg-transparent px-1 py-0 text-sm text-foreground shadow-none ring-0 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed",
           className
         )}
         onChange={(event) => {
