@@ -80,18 +80,67 @@ describe("ColorInput", () => {
     expect(hexInput().value).toBe("AbC")
   })
 
-  it("drops the # and anything that isn't a hex digit, up to 6 digits", async () => {
+  it.each([
+    ["#1F2A44", "1F2A44", "#1f2a44"],
+    ["1f2a44", "1f2a44", "#1f2a44"],
+    ["#ABC", "ABC", "#aabbcc"],
+    [" #1F2A44 ", "1F2A44", "#1f2a44"],
+  ])("takes a pasted %j", async (pasted, shown, value) => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(<BrandColour onValueChange={onValueChange} />)
 
     await user.click(hexInput())
-    await user.paste("#1F2A44")
-    expect(onValueChange).toHaveBeenLastCalledWith("#1f2a44")
+    await user.paste(pasted)
 
-    await user.type(hexInput(), "9z")
-    expect(hexInput().value).toBe("1F2A44")
-    expect(onValueChange).toHaveBeenCalledTimes(1)
+    expect(onValueChange).toHaveBeenLastCalledWith(value)
+    expect(hexInput().value).toBe(shown)
+    expect(marked()).toBe(false)
+  })
+
+  it.each([
+    ["rgb(255,0,0)", "#rgb(255,0,0)"],
+    ["red", "#red"],
+    ["#1F2A44FF", "#1f2a44ff"],
+    ["#1F2A", "#1f2a"],
+  ])("refuses %j instead of reading hex out of it", async (pasted, value) => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<BrandColour onValueChange={onValueChange} />)
+
+    await user.click(hexInput())
+    await user.paste(pasted)
+
+    expect(onValueChange).toHaveBeenLastCalledWith(value)
+    expect(hexInput().value).toBe(pasted.replace(/^#/, ""))
+    expect(marked()).toBe(true)
+    expect(swatch().style.backgroundColor).toBe("")
+    expect(screen.getByRole("alert").textContent).toBe(HEX_ERROR)
+  })
+
+  it("marks a typed colour name invalid as it is typed", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<BrandColour initial="#1f2a44" onValueChange={onValueChange} />)
+
+    await user.clear(hexInput())
+    await user.type(hexInput(), "red")
+
+    expect(hexInput().value).toBe("red")
+    expect(onValueChange).toHaveBeenLastCalledWith("#red")
+    expect(marked()).toBe(true)
+  })
+
+  it("marks a 7th digit invalid instead of dropping it", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<BrandColour initial="#1f2a44" onValueChange={onValueChange} />)
+
+    await user.type(hexInput(), "9")
+
+    expect(hexInput().value).toBe("1f2a449")
+    expect(onValueChange).toHaveBeenLastCalledWith("#1f2a449")
+    expect(marked()).toBe(true)
   })
 
   it("marks other lengths invalid and passes the text on", async () => {

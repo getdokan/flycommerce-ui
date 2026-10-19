@@ -21,7 +21,7 @@ type ColorInputProps = Omit<
   "value" | "defaultValue" | "onChange" | "type" | "size"
 > & {
   value: string | null
-  /** Receives lower-case `#rrggbb` for 3 or 6 hex digits, `null` when empty, and anything else as typed after a `#`. */
+  /** Receives lower-case `#rrggbb` for 3 or 6 hex digits and `null` when empty. Anything else, alpha (4 or 8 digits), `rgb()` and colour names included, isn't read: it comes through lower-cased after a `#`. */
   onValueChange: (value: string | null) => void
   /** An empty field is valid, and a clear button shows while there is a value. */
   allowClear?: boolean
@@ -39,19 +39,19 @@ const DEFAULT_LABELS: Required<ColorInputLabels> = {
 
 const HEX_DIGITS = /^(?:[0-9a-f]{3}){1,2}$/i
 
-function digitsOf(value: string | null | undefined) {
-  return (value ?? "").replace(/[^0-9a-f]/gi, "").slice(0, 6)
+function textOf(value: string | null | undefined) {
+  return (value ?? "").trim().replace(/^#/, "")
 }
 
-function toHex(digits: string) {
-  if (!HEX_DIGITS.test(digits)) return null
-  const full = digits.length === 3 ? digits.replace(/./g, "$&$&") : digits
+function toHex(text: string) {
+  if (!HEX_DIGITS.test(text)) return null
+  const full = text.length === 3 ? text.replace(/./g, "$&$&") : text
   return `#${full.toLowerCase()}`
 }
 
-function toValue(digits: string) {
-  if (!digits) return null
-  return toHex(digits) ?? `#${digits.toLowerCase()}`
+function toValue(text: string) {
+  if (!text) return null
+  return toHex(text) ?? `#${text.toLowerCase()}`
 }
 
 /** Hex colour field: a swatch over the native picker and a `#` field taking 3 or 6 digits. */
@@ -69,22 +69,22 @@ function ColorInput({
   ...props
 }: ColorInputProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
-  const [digits, setDigits] = React.useState(() => digitsOf(value))
+  const [text, setText] = React.useState(() => textOf(value))
   const [syncedValue, setSyncedValue] = React.useState(value)
 
   if (value !== syncedValue) {
     setSyncedValue(value)
-    if (toValue(digits) !== toValue(digitsOf(value))) setDigits(digitsOf(value))
+    if (toValue(text) !== toValue(textOf(value))) setText(textOf(value))
   }
 
-  const hex = toHex(digits)
-  const fallbackHex = toHex(digitsOf(fallback))
-  const malformed = digits ? hex === null : !allowClear
-  const swatch = digits ? hex : fallbackHex
+  const hex = toHex(text)
+  const fallbackHex = toHex(textOf(fallback))
+  const malformed = text ? hex === null : !allowClear
+  const swatch = text ? hex : fallbackHex
 
   const commit = (next: string) => {
-    if (next === digits) return
-    setDigits(next)
+    if (next === text) return
+    setText(next)
     onValueChange(toValue(next))
   }
 
@@ -109,7 +109,7 @@ function ColorInput({
           value={hex ?? fallbackHex ?? "#000000"}
           disabled={disabled}
           className="absolute inset-0 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
-          onChange={(event) => commit(digitsOf(event.target.value))}
+          onChange={(event) => commit(textOf(event.target.value))}
         />
       </span>
       <InputGroup dir="ltr" className="flex-1">
@@ -117,18 +117,18 @@ function ColorInput({
           <InputGroupText>#</InputGroupText>
         </InputGroupAddon>
         <InputGroupInput
-          value={digits}
+          value={text}
           placeholder={placeholder}
           autoComplete="off"
           spellCheck={false}
           disabled={disabled}
           aria-invalid={invalid || malformed || undefined}
           className={cn("font-mono uppercase", className)}
-          onChange={(event) => commit(digitsOf(event.target.value))}
+          onChange={(event) => commit(textOf(event.target.value))}
           {...props}
         />
       </InputGroup>
-      {allowClear && digits && (
+      {allowClear && text && (
         <Button
           type="button"
           variant="ghost"
