@@ -6,7 +6,10 @@ import { FiCheck as CheckIcon, FiCopy as CopyIcon } from "react-icons/fi"
 
 import { Button } from "@/components/ui/button"
 
-type CopyButtonProps = Omit<React.ComponentProps<typeof Button>, "onClick"> & {
+type CopyButtonProps = Omit<
+  React.ComponentProps<typeof Button>,
+  "onClick" | "onCopy"
+> & {
   value: string
   onCopy?: (value: string) => void
   /** Accessible label; also the visible text unless `iconOnly`. */

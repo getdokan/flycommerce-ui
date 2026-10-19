@@ -5,6 +5,7 @@ import { cn } from "cn"
 import { FiUploadCloud as UploadCloudIcon } from "react-icons/fi"
 
 import { Button } from "@/components/ui/button"
+import { sortFiles } from "@/lib/files"
 
 type FileRejection = {
   file: File
@@ -23,6 +24,8 @@ type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop" | "title"> & {
   multiple?: boolean
   maxFiles?: number
   disabled?: boolean
+  /** Replaces the upload icon; `null` leaves it out. */
+  icon?: React.ReactNode
   title?: React.ReactNode
   /** Accessible name of the file input, e.g. "Upload category image". */
   inputLabel?: string
@@ -44,6 +47,13 @@ function Dropzone({
   multiple = true,
   maxFiles,
   disabled = false,
+  icon = (
+    <UploadCloudIcon
+      aria-hidden="true"
+      className="size-8 text-muted-foreground"
+      strokeWidth={1.5}
+    />
+  ),
   inputLabel = "Upload files",
   title = (
     <>
@@ -65,18 +75,11 @@ function Dropzone({
 
   const handle = (list: FileList | null) => {
     if (!list || disabled) return
-    const accepted: File[] = []
-    const rejected: FileRejection[] = []
-    const limit = multiple ? (maxFiles ?? Infinity) : 1
-    for (const file of Array.from(list)) {
-      if (accept && !matchesAccept(file, accept))
-        rejected.push({ file, reason: "type" })
-      else if (maxSize !== undefined && file.size > maxSize)
-        rejected.push({ file, reason: "size" })
-      else if (accepted.length >= limit)
-        rejected.push({ file, reason: "count" })
-      else accepted.push(file)
-    }
+    const { accepted, rejected } = sortFiles(Array.from(list), {
+      accept,
+      maxSize,
+      maxFiles: multiple ? maxFiles : 1,
+    })
     if (accepted.length) onFiles(accepted)
     if (rejected.length) onReject?.(rejected)
   }
@@ -110,11 +113,7 @@ function Dropzone({
     >
       {children ?? (
         <>
-          <UploadCloudIcon
-            aria-hidden="true"
-            className="size-8 text-muted-foreground"
-            strokeWidth={1.5}
-          />
+          {icon}
           <div className="flex flex-col gap-2">
             <span className="text-base text-foreground-secondary">{title}</span>
             {description && (
@@ -155,22 +154,6 @@ function Dropzone({
       />
     </div>
   )
-}
-
-function matchesAccept(file: File, accept: string) {
-  const name = file.name.toLowerCase()
-  const type = file.type.toLowerCase()
-  return accept
-    .split(",")
-    .map((rule) => rule.trim().toLowerCase())
-    .filter(Boolean)
-    .some((rule) =>
-      rule.startsWith(".")
-        ? name.endsWith(rule)
-        : rule.endsWith("/*")
-          ? type.startsWith(rule.slice(0, -1))
-          : type === rule
-    )
 }
 
 export { Dropzone, type DropzoneProps, type FileRejection }
