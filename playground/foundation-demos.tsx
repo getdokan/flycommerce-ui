@@ -2,6 +2,13 @@ const TYPE_SCALE = [
   ["type-page-title", "Page title", "24 / 700", "One per screen"],
   ["type-overview-value", "$12,480.00", "24 / 600", "Report overview figure"],
   ["type-kpi-value", "280 orders", "18 / 700", "KPI tile value"],
+  ["type-stat-value", "$1,240.00", "24 / 600", "Label-first stat value"],
+  [
+    "type-stat-value-sm",
+    "$49.00 on 15 November",
+    "16 / 600",
+    "Label-first stat value as a phrase",
+  ],
   [
     "type-card-title",
     "Basic information",

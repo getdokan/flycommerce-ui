@@ -155,6 +155,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DescriptionItem,
+  DescriptionList,
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -232,6 +234,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
   ScrollArea,
+  SegmentedControl,
+  SegmentedControlItem,
   Select,
   SelectContent,
   SelectItem,
@@ -267,6 +271,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  cn,
 } from "@/index"
 
 export type Source = "prototype" | "figma" | "composite" | "default"
@@ -288,7 +293,8 @@ const KEYWORDS: Record<string, string> = {
   toggle: "pressed bold formatting",
   alert: "notice banner warning info error callout message",
   toast: "snackbar notification sonner flash",
-  progress: "loader loading bar skeleton spinner placeholder",
+  progress:
+    "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
   empty: "no data blank zero state",
   input: "text field form label error hint required optional",
   "input-group": "prefix suffix addon currency",
@@ -300,7 +306,9 @@ const KEYWORDS: Record<string, string> = {
   badge: "pill tag chip label status",
   avatar: "user profile photo",
   card: "panel box container tile",
-  table: "grid rows columns list",
+  table: "grid rows columns list density compact roomy",
+  "description-list":
+    "meta row facts details key value label definition dl summary",
   item: "list row",
   kbd: "shortcut keyboard",
   chart: "graph bar line analytics recharts",
@@ -309,7 +317,7 @@ const KEYWORDS: Record<string, string> = {
   accordion: "collapse expand disclosure faq",
   dialog: "modal popup overlay",
   "alert-dialog": "confirm delete modal",
-  sheet: "drawer side panel offcanvas bottom sheet",
+  sheet: "drawer side panel offcanvas bottom sheet size wide form",
   popover: "hover card tooltip flyout",
   "dropdown-menu": "menu context right click actions kebab",
   command: "palette cmdk spotlight search",
@@ -327,13 +335,15 @@ const KEYWORDS: Record<string, string> = {
     "table grid tanstack sort select bulk pagination filter sidebar thumbnail image",
   "data-table-tree": "tree nested category expand hierarchy",
   "data-table-reorder": "drag drop reorder sort order position handle dnd",
-  "confirm-dialog": "confirm delete modal are you sure",
+  "confirm-dialog":
+    "confirm delete remove modal are you sure acknowledge checkbox type to confirm",
   "save-bar": "unsaved changes discard sticky footer",
   "search-input": "search filter query",
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
-  "stat-card": "kpi metric statistic number dashboard",
+  "stat-card":
+    "kpi metric statistic number dashboard figure label first band group joined",
   "icon-chip": "icon tile badge avatar tinted background circle square",
   "radio-card": "option card choice",
   "switch-field": "toggle row setting",
@@ -355,7 +365,7 @@ const KEYWORDS: Record<string, string> = {
   "option-list-editor":
     "attribute values choices sortable list reorder drag enter to add",
   "rich-text-editor":
-    "wysiwyg tiptap description textarea formatting bold html",
+    "wysiwyg tiptap description textarea formatting bold html heading h1 h4 ai assistant rewrite paraphrase simplify extend suggestion",
   "code-editor":
     "code snippet html css javascript json script codemirror monospace line numbers merge tags custom code",
   "modal-figma": "dialog popup new category form",
@@ -385,6 +395,7 @@ const SOURCES: Record<string, Source> = {
   badge: "prototype",
   card: "prototype",
   table: "prototype",
+  "description-list": "prototype",
   tabs: "prototype",
   dialog: "prototype",
   "alert-dialog": "prototype",
@@ -450,6 +461,20 @@ const orders = [
   { id: "#1040", customer: "Sara Kim", status: "Cancelled", total: "$19.99" },
 ]
 
+const sheetSizes = ["sm", "md", "lg", "xl", "2xl", "3xl", "4xl"] as const
+
+const seatUsage = [
+  { used: 3, limit: 5 },
+  { used: 5, limit: 5 },
+]
+
+const taxRates = [
+  { region: "California", appliesTo: "All products", rate: "7.25%" },
+  { region: "New York", appliesTo: "Clothing over $110", rate: "4.00%" },
+  { region: "Texas", appliesTo: "All products", rate: "6.25%" },
+  { region: "Ontario", appliesTo: "Products and shipping", rate: "13.00%" },
+]
+
 const paymentMethods = [
   { name: "Stripe", description: "Cards, Apple Pay, Google Pay", active: true },
   { name: "PayPal", description: "PayPal balance, Pay Later", active: true },
@@ -501,6 +526,61 @@ function Row({
 
 function Stack({ children }: { children: React.ReactNode }) {
   return <div className="flex w-full flex-col gap-5">{children}</div>
+}
+
+function ListTableDemo() {
+  const [size, setSize] = React.useState<"sm" | "default" | "lg">("default")
+  const editRate = (region: string) => toast(`Edit the ${region} rate`)
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <SegmentedControl
+        value={size}
+        onValueChange={(value) => setSize(value as typeof size)}
+        size="sm"
+        aria-label="Row size"
+        className="self-start"
+      >
+        <SegmentedControlItem value="sm">sm</SegmentedControlItem>
+        <SegmentedControlItem value="default">default</SegmentedControlItem>
+        <SegmentedControlItem value="lg">lg</SegmentedControlItem>
+      </SegmentedControl>
+      <Card>
+        <CardHeader className="border-b sm:px-6">
+          <CardTitle>Tax rates</CardTitle>
+          <CardDescription>
+            Charged at checkout by region. Select a rate to edit it.
+          </CardDescription>
+        </CardHeader>
+        <CardContent flush>
+          <Table variant="list" size={size}>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Region</TableHead>
+                <TableHead>Applies to</TableHead>
+                <TableHead className="text-end">Rate</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {taxRates.map((rate) => (
+                <TableRow
+                  key={rate.region}
+                  tabIndex={0}
+                  onClick={() => editRate(rate.region)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") editRate(rate.region)
+                  }}
+                >
+                  <TableCell className="font-medium">{rate.region}</TableCell>
+                  <TableCell>{rate.appliesTo}</TableCell>
+                  <TableCell className="text-end">{rate.rate}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }
 
 function CalendarDemo() {
@@ -1007,6 +1087,50 @@ export const demos: Demo[] = [
         <Row label="Progress">
           <Progress value={62} className="w-64" aria-label="Setup progress" />
         </Row>
+        <Row label="Tones">
+          <Progress
+            value={100}
+            tone="success"
+            className="w-40"
+            aria-label="Import complete"
+          />
+          <Progress
+            value={85}
+            tone="warning"
+            className="w-40"
+            aria-label="Storage used"
+          />
+          <Progress
+            value={40}
+            tone="destructive"
+            className="w-40"
+            aria-label="Failed rows"
+          />
+        </Row>
+        <Row label="Usage">
+          {seatUsage.map(({ used, limit }) => (
+            <div key={used} className="flex items-center gap-3">
+              <span className="text-sm text-foreground-secondary">
+                Seats{" "}
+                <span
+                  className={cn(
+                    "font-semibold tabular-nums",
+                    used >= limit ? "text-warning-strong" : "text-foreground"
+                  )}
+                >
+                  {used} of {limit}
+                </span>
+              </span>
+              <Progress
+                value={(used / limit) * 100}
+                tone={used >= limit ? "warning" : "default"}
+                className="h-1.5 w-20"
+                aria-label="Seats used"
+                getValueLabel={() => `${used} of ${limit}`}
+              />
+            </div>
+          ))}
+        </Row>
         <Row label="Spinner">
           <Spinner />
           <Spinner className="size-6" />
@@ -1383,39 +1507,87 @@ export const demos: Demo[] = [
     title: "Table",
     group: "Data display",
     render: () => (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-end">Total</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {orders.map((order) => (
-            <TableRow key={order.id}>
-              <TableCell className="font-medium">{order.id}</TableCell>
-              <TableCell>{order.customer}</TableCell>
-              <TableCell>
-                <Badge
-                  dot
-                  variant={
-                    order.status === "Cancelled"
-                      ? "destructive"
-                      : order.status === "Delivered"
-                        ? "success"
-                        : "default"
-                  }
-                >
-                  {order.status}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-end">{order.total}</TableCell>
+      <div className="flex w-full flex-col gap-6">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Order</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-end">Total</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {orders.map((order) => (
+              <TableRow key={order.id}>
+                <TableCell className="font-medium">{order.id}</TableCell>
+                <TableCell>{order.customer}</TableCell>
+                <TableCell>
+                  <Badge
+                    dot
+                    variant={
+                      order.status === "Cancelled"
+                        ? "destructive"
+                        : order.status === "Delivered"
+                          ? "success"
+                          : "default"
+                    }
+                  >
+                    {order.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-end">{order.total}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <ListTableDemo />
+      </div>
+    ),
+  },
+  {
+    id: "description-list",
+    title: "Description list",
+    group: "Data display",
+    render: () => (
+      <div className="grid w-full gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader className="border-b sm:px-6">
+            <CardTitle>Sign-in</CardTitle>
+          </CardHeader>
+          <CardContent flush>
+            <DescriptionList>
+              <DescriptionItem label="Signs in with">
+                Email and password
+              </DescriptionItem>
+              <DescriptionItem label="Account created">
+                March 12, 2026
+              </DescriptionItem>
+              <DescriptionItem label="Last signed in">
+                October 18, 2026, 9:42 AM
+              </DescriptionItem>
+            </DescriptionList>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="border-b sm:px-6">
+            <CardTitle>Tax exemption</CardTitle>
+          </CardHeader>
+          <CardContent flush>
+            <DescriptionList>
+              <DescriptionItem label="Status">
+                <Badge dot variant="warning">
+                  Waiting for approval
+                </Badge>
+              </DescriptionItem>
+              <DescriptionItem label="Region">California</DescriptionItem>
+              <DescriptionItem label="Certificate">
+                CA-EX-2026-00193
+              </DescriptionItem>
+            </DescriptionList>
+          </CardContent>
+        </Card>
+      </div>
     ),
   },
   {
@@ -1737,47 +1909,95 @@ export const demos: Demo[] = [
     title: "Sheet & drawer",
     group: "Overlays",
     render: () => (
-      <Row label="Open">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline">Filters (side sheet)</Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Filter products</SheetTitle>
-              <SheetDescription>
-                Narrow the list by status and vendor.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="px-5">
-              <Input placeholder="Vendor name" />
-            </div>
-            <SheetFooter>
-              <SheetClose asChild>
-                <Button>Apply</Button>
-              </SheetClose>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
-        <Drawer>
-          <DrawerTrigger asChild>
-            <Button variant="outline">Order details (drawer)</Button>
-          </DrawerTrigger>
-          <DrawerContent>
-            <DrawerHeader>
-              <DrawerTitle>Order #1042</DrawerTitle>
-              <DrawerDescription>
-                Placed by Amina Rahman · $128.00
-              </DrawerDescription>
-            </DrawerHeader>
-            <DrawerFooter>
-              <DrawerClose asChild>
-                <Button variant="outline">Close</Button>
-              </DrawerClose>
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      </Row>
+      <Stack>
+        <Row label="Open">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline">Filters (side sheet)</Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Filter products</SheetTitle>
+                <SheetDescription>
+                  Narrow the list by status and vendor.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="px-5">
+                <Input placeholder="Vendor name" />
+              </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button>Apply</Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button variant="outline">Order details (drawer)</Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>Order #1042</DrawerTitle>
+                <DrawerDescription>
+                  Placed by Amina Rahman · $128.00
+                </DrawerDescription>
+              </DrawerHeader>
+              <DrawerFooter>
+                <DrawerClose asChild>
+                  <Button variant="outline">Close</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        </Row>
+        <Row label="Sizes">
+          {sheetSizes.map((size) => (
+            <Sheet key={size}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                  {size}
+                </Button>
+              </SheetTrigger>
+              <SheetContent size={size}>
+                <SheetHeader>
+                  <SheetTitle>Invite a team member</SheetTitle>
+                  <SheetDescription>
+                    They get an email with a link to join your store.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="flex flex-col gap-5 px-5">
+                  <Field>
+                    <FieldLabel htmlFor={`invite-email-${size}`}>
+                      Email
+                    </FieldLabel>
+                    <Input
+                      id={`invite-email-${size}`}
+                      type="email"
+                      placeholder="name@example.com"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor={`invite-role-${size}`} optional>
+                      Designation
+                    </FieldLabel>
+                    <Input
+                      id={`invite-role-${size}`}
+                      placeholder="e.g. Store manager"
+                    />
+                  </Field>
+                </div>
+                <SheetFooter>
+                  <SheetClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </SheetClose>
+                  <Button>Send invite</Button>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
+          ))}
+        </Row>
+      </Stack>
     ),
   },
   {

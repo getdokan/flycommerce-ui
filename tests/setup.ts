@@ -3,7 +3,7 @@ import { afterEach } from "vitest"
 
 afterEach(cleanup)
 
-// Browser APIs jsdom doesn't implement but Radix, cmdk, vaul, embla, recharts and CodeMirror expect.
+// Browser APIs jsdom doesn't implement but Radix, cmdk, vaul, embla, recharts, ProseMirror and CodeMirror expect.
 class ResizeObserverStub {
   observe() {}
   unobserve() {}
