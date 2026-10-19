@@ -28,6 +28,7 @@ import {
   FieldLabel,
   Icon,
   ICON_GROUPS,
+  IconProvider,
   ActiveFilters,
   Label,
   MediaCell,
@@ -37,6 +38,7 @@ import {
   PageHeaderContent,
   PageHeaderDescription,
   PageHeaderTitle,
+  P3_GLYPHS,
   SaveBar,
   SearchInput,
   SegmentedControl,
@@ -844,6 +846,8 @@ export function StatusBadgeDemo() {
 
 export function IconsDemo() {
   const [query, setQuery] = React.useState("")
+  const [set, setSet] = React.useState("default")
+  const [p3Only, setP3Only] = React.useState(false)
   const q = query.trim().toLowerCase()
 
   return (
@@ -855,46 +859,71 @@ export function IconsDemo() {
           debounceMs={0}
           onSearch={setQuery}
         />
+        <SegmentedControl
+          size="sm"
+          aria-label="Icon set"
+          value={set}
+          onValueChange={setSet}
+        >
+          <SegmentedControlItem value="default">Default</SegmentedControlItem>
+          <SegmentedControlItem value="p3">P3</SegmentedControlItem>
+        </SegmentedControl>
+        <div className="flex items-center gap-2">
+          <Switch
+            id="icons-p3-only"
+            checked={p3Only}
+            onCheckedChange={setP3Only}
+          />
+          <Label htmlFor="icons-p3-only" className="text-xs font-normal">
+            Only names P3 changes
+          </Label>
+        </div>
         <span className="text-xs text-muted-foreground">
           Click an icon to copy its usage. Use{" "}
           <code className="rounded bg-muted px-1">{`<Icon name="orders" />`}</code>
-          , never a react-icons component directly.
+          , never a react-icons component directly. For the P3 Figma set, wrap
+          the app in{" "}
+          <code className="rounded bg-muted px-1">{`<IconProvider glyphs={P3_GLYPHS}>`}</code>
+          .
         </span>
       </div>
-      {Object.entries(ICON_GROUPS).map(([group, icons]) => {
-        const names = Object.keys(icons).filter((name) =>
-          name.toLowerCase().includes(q)
-        ) as IconName[]
-        if (names.length === 0) return null
-        return (
-          <div key={group} className="flex flex-col gap-2">
-            <h3 className="text-[11px] font-bold tracking-[0.06em] text-muted-foreground uppercase">
-              {group}
-            </h3>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-2">
-              {names.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  title={`<Icon name="${name}" />`}
-                  onClick={() => {
-                    void navigator.clipboard?.writeText(
-                      `<Icon name="${name}" />`
-                    )
-                    toast(`Copied <Icon name="${name}" />`)
-                  }}
-                  className="flex flex-col items-center gap-2 rounded-lg border border-border-subtle px-2 py-3 text-foreground-secondary transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 hover:text-primary-ink focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
-                >
-                  <Icon name={name} size={20} />
-                  <span className="w-full truncate text-center text-[11.5px]">
-                    {name}
-                  </span>
-                </button>
-              ))}
+      <IconProvider glyphs={set === "p3" ? P3_GLYPHS : undefined}>
+        {Object.entries(ICON_GROUPS).map(([group, icons]) => {
+          const names = (Object.keys(icons) as IconName[]).filter(
+            (name) =>
+              name.toLowerCase().includes(q) && (!p3Only || name in P3_GLYPHS)
+          )
+          if (names.length === 0) return null
+          return (
+            <div key={group} className="flex flex-col gap-2">
+              <h3 className="text-[11px] font-bold tracking-[0.06em] text-muted-foreground uppercase">
+                {group}
+              </h3>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-2">
+                {names.map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    title={`<Icon name="${name}" />`}
+                    onClick={() => {
+                      void navigator.clipboard?.writeText(
+                        `<Icon name="${name}" />`
+                      )
+                      toast(`Copied <Icon name="${name}" />`)
+                    }}
+                    className="flex flex-col items-center gap-2 rounded-lg border border-border-subtle px-2 py-3 text-foreground-secondary transition-colors hover:border-primary/40 hover:bg-primary-subtle-2 hover:text-primary-ink focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+                  >
+                    <Icon name={name} size={20} />
+                    <span className="w-full truncate text-center text-[11.5px]">
+                      {name}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </IconProvider>
     </div>
   )
 }

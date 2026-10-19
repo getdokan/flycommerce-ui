@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { cn } from "cn"
 import type { IconType } from "react-icons"
@@ -7,18 +9,26 @@ import {
   FiActivity as ActivityIcon,
   FiArrowLeft as ArrowLeftIcon,
   FiArrowRight as ArrowRightIcon,
+  FiBarChart2 as BarChart2Icon,
   FiBell as BellIcon,
+  FiBook as BookIcon,
   FiBookOpen as BookOpenIcon,
   FiCalendar as CalendarDaysIcon,
   FiCheck as CheckIcon,
+  FiCheckSquare as CheckSquareIcon,
   FiChevronDown as ChevronDownIcon,
   FiChevronLeft as ChevronLeftIcon,
   FiChevronRight as ChevronRightIcon,
   FiChevronUp as ChevronUpIcon,
   FiAlertCircle as CircleAlertIcon,
+  FiArrowDownCircle as CircleArrowDownIcon,
+  FiArrowUpCircle as CircleArrowUpIcon,
   FiCheckCircle as CircleCheckIcon,
   FiDollarSign as CircleDollarSignIcon,
+  FiCircle as CircleIcon,
+  FiPlayCircle as CirclePlayIcon,
   FiUser as CircleUserIcon,
+  FiClock as ClockIcon,
   FiDownloadCloud as CloudDownloadIcon,
   FiCode as CodeIcon,
   FiColumns as Columns3Icon,
@@ -32,15 +42,22 @@ import {
   FiFile as FileIcon,
   FiFileText as FileTextIcon,
   FiFlag as FlagIcon,
+  FiFolder as FolderIcon,
   FiGift as GiftIcon,
   FiGlobe as GlobeIcon,
+  FiGrid as GridIcon,
+  FiHeadphones as HeadphonesIcon,
   FiHome as HouseIcon,
   FiImage as ImageIcon,
   FiInbox as InboxIcon,
   FiInfo as InfoIcon,
   FiKey as KeyRoundIcon,
   FiLayers as LayersIcon,
+  FiLayout as LayoutIcon,
+  FiLifeBuoy as LifeBuoyIcon,
   FiFilter as ListFilterIcon,
+  FiList as ListIcon,
+  FiLoader as LoaderIcon,
   FiLock as LockIcon,
   FiLogIn as LogInIcon,
   FiLogOut as LogOutIcon,
@@ -54,6 +71,7 @@ import {
   FiMoreHorizontal as MoreHorizontalIcon,
   FiNavigation as NavigationIcon,
   FiPackage as PackageIcon,
+  FiSidebar as PanelLeftIcon,
   FiEdit2 as PencilIcon,
   FiPercent as PercentIcon,
   FiPhoneCall as PhoneCallIcon,
@@ -64,6 +82,7 @@ import {
   FiSearch as SearchIcon,
   FiSettings as SettingsIcon,
   FiShare2 as Share2Icon,
+  FiShield as ShieldIcon,
   FiShoppingBag as ShoppingBagIcon,
   FiShoppingCart as ShoppingCartIcon,
   FiSliders as SlidersHorizontalIcon,
@@ -75,11 +94,13 @@ import {
   FiTrendingUp as TrendingUpIcon,
   FiAlertTriangle as TriangleAlertIcon,
   FiTruck as TruckIcon,
+  FiUnlock as UnlockIcon,
   FiUpload as UploadIcon,
   FiUser as UserCircleIcon,
   FiUserPlus as UserPlusIcon,
   FiUsers as UsersIcon,
   FiX as XIcon,
+  FiZap as ZapIcon,
 } from "react-icons/fi"
 import {
   LuArrowDownToLine as ArrowDownToLineIcon,
@@ -128,6 +149,32 @@ import {
   LuWebhook as WebhookIcon,
 } from "react-icons/lu"
 
+import {
+  FlyAi,
+  FlyAnnouncement,
+  FlyBank,
+  FlyBrandTag,
+  FlyCollections,
+  FlyCoupons,
+  FlyCustomers,
+  FlyDelivery,
+  FlyDigitalProduct,
+  FlyInvoice,
+  FlyLineChart,
+  FlyMoneyBag,
+  FlyPayment,
+  FlyPayoutRequest,
+  FlyProduct,
+  FlyRefund,
+  FlyReturnRequest,
+  FlySeller,
+  FlySessions,
+  FlyShipping,
+  FlyStore,
+  FlySubscription,
+  FlyTemplate,
+} from "@/components/icon/fly-glyphs"
+
 /* Semantic icon registry. Glyphs follow the dashboard (Feather via react-icons, its sidebar choices first); Lucide fills gaps Feather lacks. */
 const ICON_GROUPS = {
   "Navigation & objects": {
@@ -156,6 +203,7 @@ const ICON_GROUPS = {
     themes: SlidersHorizontalIcon,
     media: ImageIcon,
     abuse: FlagIcon,
+    barChart: BarChart2Icon,
   },
   Fulfilment: {
     shipping: TruckIcon,
@@ -215,10 +263,12 @@ const ICON_GROUPS = {
     notifications: BellIcon,
     policies: ScaleIcon,
     setupGuide: PiSlidersHorizontal,
+    listChecks: ListIcon,
     brandAppearance: PaletteIcon,
     onboarding: UserPlusIcon,
     resources: LibraryBigIcon,
     support: MessageCircleQuestionIcon,
+    lifeBuoy: LifeBuoyIcon,
     supportPin: KeyRoundIcon,
     roadmap: MessageSquareIcon,
     docs: BookOpenIcon,
@@ -260,12 +310,15 @@ const ICON_GROUPS = {
     print: PrinterIcon,
     refresh: RefreshCwIcon,
     impersonate: LogInIcon,
+    play: CirclePlayIcon,
+    sidebarToggle: PanelLeftIcon,
   },
   Feedback: {
     info: InfoIcon,
     warning: TriangleAlertIcon,
     error: CircleAlertIcon,
     success: CircleCheckIcon,
+    circleDashed: CircleIcon,
     empty: InboxIcon,
     loading: LoaderCircleIcon,
   },
@@ -316,6 +369,11 @@ type IconProps = Omit<React.ComponentProps<IconType>, "ref"> & {
   label?: string
 }
 
+const IconGlyphsContext = React.createContext<
+  Partial<Record<IconName, IconType>> | undefined
+>(undefined)
+
+/** An icon by meaning (`name`): the built-in glyph, or the one an enclosing `IconProvider` swaps in. */
 function Icon({
   name,
   label,
@@ -324,7 +382,7 @@ function Icon({
   className,
   ...props
 }: IconProps) {
-  const Glyph = ICONS[name]
+  const Glyph = React.useContext(IconGlyphsContext)?.[name] ?? ICONS[name]
   return (
     <Glyph
       data-slot="icon"
@@ -340,4 +398,111 @@ function Icon({
   )
 }
 
-export { Icon, ICONS, ICON_GROUPS, type IconName, type IconProps }
+type IconProviderProps = {
+  glyphs?: Partial<Record<IconName, IconType>>
+  children?: React.ReactNode
+}
+
+/** Swaps the glyph every `Icon` below it draws for the names in `glyphs` (e.g. `P3_GLYPHS`), on top of any outer provider's. */
+function IconProvider({ glyphs, children }: IconProviderProps) {
+  const outer = React.useContext(IconGlyphsContext)
+  const value = React.useMemo(
+    () => (outer && glyphs ? { ...outer, ...glyphs } : (glyphs ?? outer)),
+    [outer, glyphs]
+  )
+  return (
+    <IconGlyphsContext.Provider value={value}>
+      {children}
+    </IconGlyphsContext.Provider>
+  )
+}
+
+/** The FlyCommerce P3 Figma icon set, as the glyphs for every name it draws differently from the default. */
+const P3_GLYPHS: Partial<Record<IconName, IconType>> = {
+  products: FlyProduct,
+  categories: FolderIcon,
+  brands: FlyBrandTag,
+  collections: FlyCollections,
+  customers: FlyCustomers,
+  vendors: FlySeller,
+  invoices: FlyInvoice,
+  preorders: ClockIcon,
+  refunds: FlyRefund,
+  returns: FlyReturnRequest,
+  abandonedCart: ShoppingCartIcon,
+  coupons: FlyCoupons,
+  marketing: FlyAnnouncement,
+  blogs: FileTextIcon,
+  spreadsheet: GridIcon,
+  themes: FlyTemplate,
+  shipping: FlyShipping,
+  delivery: FlyDelivery,
+  drivers: TruckIcon,
+  fulfilment: PackageIcon,
+  plan: FlySubscription,
+  payments: FlyPayment,
+  payouts: FlyPayoutRequest,
+  vendorPayouts: FlyPayoutRequest,
+  taxes: FileTextIcon,
+  revenue: FlyLineChart,
+  ledgerbook: BookIcon,
+  cash: FlyMoneyBag,
+  yours: FlyMoneyBag,
+  taxOwed: FileTextIcon,
+  onItsWay: ClockIcon,
+  arriving: CircleArrowDownIcon,
+  leaving: CircleArrowUpIcon,
+  comingUp: CalendarDaysIcon,
+  whereItWent: MapIcon,
+  bank: FlyBank,
+  inTransit: ClockIcon,
+  held: LockIcon,
+  settlement: CircleArrowDownIcon,
+  reconcile: RefreshCwIcon,
+  period: CalendarDaysIcon,
+  chargeback: TriangleAlertIcon,
+  pending: ClockIcon,
+  ledgerEntry: BookOpenIcon,
+  unlock: UnlockIcon,
+  permissions: ShieldIcon,
+  webhooks: ZapIcon,
+  ai: FlyAi,
+  languages: GlobeIcon,
+  policies: FileTextIcon,
+  setupGuide: CheckSquareIcon,
+  brandAppearance: LayoutIcon,
+  resources: BookIcon,
+  support: HeadphonesIcon,
+  passkey: KeyRoundIcon,
+  password: KeyRoundIcon,
+  twoStep: ShieldIcon,
+  device: SmartphoneIcon,
+  loading: LoaderIcon,
+  taskEmail: MailIcon,
+  taskProduct: FlyProduct,
+  taskPayment: FlyPayment,
+  taskDelivery: FlyShipping,
+  taskFiles: CloudDownloadIcon,
+  taskAvailability: CalendarDaysIcon,
+  taskVendor: FlySeller,
+  taskStore: FlyStore,
+  storefront: FlyStore,
+  sellNotYet: StarIcon,
+  sellMarketplace: FlyStore,
+  sellInPerson: MapPinIcon,
+  goodsPhysical: FlyProduct,
+  goodsDigital: FlyDigitalProduct,
+  goodsPod: ImageIcon,
+  visitors: FlySessions,
+}
+
+export {
+  Icon,
+  IconProvider,
+  ICONS,
+  ICON_GROUPS,
+  P3_GLYPHS,
+  type IconName,
+  type IconProps,
+  type IconProviderProps,
+}
