@@ -2,6 +2,22 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `SheetContent size`: the width of a left or right sheet from `sm` up, `sm` (24rem, the default and today's width), `md`, `lg`, `xl`, `2xl`, `3xl` or `4xl` (28 to 56rem), e.g. `lg` for a create or edit form and `2xl` for a wide one. Top and bottom sheets ignore it. A plain `sm:max-w-lg` class never beat the built-in width; a `data-[side=right]:sm:max-w-*` class still does.
+- `Progress tone`: `default`, `success`, `warning` or `destructive` colours the fill, e.g. a seats meter that turns orange at the plan limit, instead of overriding `[data-slot=progress-indicator]`.
+- `Table variant="list"`: a light table for lists inside a card. The header is 12px medium in sentence case with no grey band, cells are 14px and wrap, rows are divided by hairlines, and only rows with an `onClick` tint on hover (and show a focus ring when focusable). The first and last columns line up with a 20px card edge, 24px from `sm`.
+- `Table size`: `sm` and `lg` move the row padding one 4px step tighter or roomier than `default`: 8, 12 or 16px in a list table, 16, 20 or 24px (header included) in a default one.
+- `DescriptionList` and `DescriptionItem`: read-only facts as divided label and value rows (`dl`, `dt`, `dd`), the muted label on the left and the value on the right, stacking when the row is too narrow. Pass the label as `label` and the value as children.
+- `ConfirmDialog acknowledgeLabel`: a checkbox with this label that must be ticked before the confirm button enables, e.g. "I am sure I want to remove them". It clears when the dialog closes and works together with `confirmText`.
+
+### Fixed
+
+- `Progress` passes `value` to the progress bar, so screen readers announce it: `aria-valuenow` and `aria-valuetext` ("62%", or your `getValueLabel`) are set, and `data-state` is `loading` or `complete` instead of always `indeterminate`.
+- `Progress` fills from the right in right-to-left layouts.
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed
