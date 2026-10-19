@@ -89,7 +89,7 @@ function TagInput({
       {tags.map((tag, index) => (
         <span
           key={`${tag}-${index}`}
-          className="inline-flex h-6 items-center gap-1 rounded-sm bg-page ps-2 pe-0.5 text-[12.5px] font-[560] text-foreground"
+          className="inline-flex h-6.5 items-center gap-1 rounded-md bg-primary-subtle ps-2 pe-0.5 text-[13px] leading-[18px] font-medium text-primary-ink"
         >
           {tag}
           <button
@@ -112,7 +112,7 @@ function TagInput({
         disabled={disabled || atLimit}
         placeholder={tags.length === 0 ? placeholder : undefined}
         className={cn(
-          "min-w-24 flex-1 bg-transparent px-1 outline-none placeholder:text-placeholder disabled:cursor-not-allowed",
+          "h-6.5 min-w-24 flex-1 border-0 bg-transparent px-1 py-0 text-sm text-foreground shadow-none ring-0 outline-none placeholder:text-placeholder disabled:cursor-not-allowed",
           className
         )}
         onChange={(event) => {

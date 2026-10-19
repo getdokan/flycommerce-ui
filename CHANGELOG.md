@@ -2,6 +2,25 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `ComboboxChip` `removeLabel` (default "Remove") names the chip's remove button, which had no accessible name. Pass a translation, or a label per chip such as `` `Remove ${value}` ``.
+
+### Changed
+
+- `SelectContent` opens the list 6px below the field, aligned to its start and at least as wide as it, instead of over the field with the chosen row on the value: `position` now defaults to `"popper"`, `align` to `"start"` and `sideOffset` to `2` (the list's own 4px slide makes 6px). The list has 4px inner padding and grows with its items up to 18rem, or the space left if that is less, then scrolls. Pass `position="item-aligned"` for the old placement. Lists that already pass `position="popper"` now start-align, sit 2px further away and stop at 18rem; pass `align="center"` and `sideOffset={0}` to keep their old position.
+- `Select` rows are at least 36px tall and 1px apart, and the chosen row is medium weight. While the list is open, the trigger's border is brand blue and its chevron turns up. In the trigger, an icon or flag sits 8px from the value (was 6px).
+- Highlighted menu rows take a soft brand tint with the popover's text colour instead of grey: hover, keyboard focus and open submenus in `DropdownMenu`, `ContextMenu` and `Menubar`, and highlighted rows in `Select`, `Combobox` and `Command`. Check marks are brand blue (`--primary-ink`) in all of them, chosen `Combobox` rows are medium weight like `Select`'s, and destructive items keep their red. The tint is the `--accent` token, which only menu rows use; it now points at `--primary-subtle`. To keep grey rows, set `--accent: #f1f1f3` in your theme.
+- Chip pickers: `ComboboxChips` has 6px gaps and 6px × 8px padding, with or without chips. `ComboboxChip` is 26px tall with 13px/18px text and 8px padding (2px beside the remove button). `ComboboxChipsInput` is 26px tall and at least 7rem wide. `TagInput` chips are 26px tall with 6px corners and brand text on a brand tint (13px/18px, medium), and its input is 26px tall. Both inputs use 14px/20px text.
+
+### Fixed
+
+- In dark mode, highlighted menu rows had no background: `--accent` was the popover's own colour. They now show the dark brand tint.
+- In apps that use `@tailwindcss/forms`, the typing box in `ComboboxChips` and `TagInput` no longer gets the plugin's border, white background, padding, 16px text or focus ring.
+- `Button variant="link"` with an icon marked `data-icon="inline-start"` or `"inline-end"` no longer gets the size's 12px (10px at `sm`) padding on that side, so it sits flush like a link without an icon, and a leading icon is pulled 3px towards the start so an arrow's tip lines up with the text below it. To pad an icon link again, add `has-data-[icon=inline-start]:ps-3` (`has-data-[icon=inline-end]:pe-3` for a trailing icon).
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed

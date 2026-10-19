@@ -22,7 +22,7 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--secondary`                 | `#f1f1f3`                                                           |                                                    |
 | `--muted`                     | `#f7f7f8`                                                           |                                                    |
 | `--placeholder`               | `#6b6b80`                                                           | darker than the dashboard's #8f8fa3 for 4.5:1      |
-| `--accent`                    | `#f1f1f3`                                                           |                                                    |
+| `--accent`                    | `var(--primary-subtle)`                                             |                                                    |
 | `--destructive`               | `#cc2d36`                                                           | danger, darkened for 4.5:1 on grey surfaces        |
 | `--destructive-subtle`        | `#fcecec`                                                           |                                                    |
 | `--success`                   | `#0e9e6e`                                                           | ok                                                 |
