@@ -153,7 +153,7 @@ type StatGroupProps = React.ComponentProps<"div"> & {
   flush?: boolean
 }
 
-/** Stat cards joined into one band on hairline gaps, each child a list item; pass the columns in `className`, e.g. `grid-cols-2 lg:grid-cols-4`. */
+/** Stat cards joined into one band on hairline gaps, each child a list item; pass a column count the cards fill in `className`, e.g. `grid-cols-2 lg:grid-cols-4`, or end the band with an empty cell (`after:bg-card`). */
 function StatGroup({
   flush = false,
   className,
