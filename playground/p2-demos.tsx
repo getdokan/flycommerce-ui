@@ -169,6 +169,7 @@ export function PasswordInputDemo() {
 }
 
 export function RadioCardDemo() {
+  const [rate, setRate] = React.useState("flat")
   const [warranty, setWarranty] = React.useState("custom")
   const [methods, setMethods] = React.useState(["couriers", "manual"])
   const setMethod = (method: string, on: boolean) =>
@@ -193,6 +194,41 @@ export function RadioCardDemo() {
           value="digital"
           title="Digital product"
           description="A virtual or downloadable product"
+        />
+      </RadioCardGroup>
+
+      <RadioCardGroup
+        value={rate}
+        onValueChange={setRate}
+        aria-label="Shipping rate"
+        className="w-full"
+      >
+        <RadioCard
+          value="flat"
+          title="Flat rate"
+          description="One price for every order"
+          details={
+            rate === "flat" && (
+              <Field className="sm:max-w-xs">
+                <FieldLabel htmlFor="flat-rate">Rate per order</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <InputGroupText>$</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    id="flat-rate"
+                    inputMode="decimal"
+                    defaultValue="4.99"
+                  />
+                </InputGroup>
+              </Field>
+            )
+          }
+        />
+        <RadioCard
+          value="free"
+          title="Free shipping"
+          description="Customers pay nothing for delivery"
         />
       </RadioCardGroup>
 

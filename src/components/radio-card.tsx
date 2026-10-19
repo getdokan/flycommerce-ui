@@ -15,7 +15,8 @@ type OptionCardVariant = "cards" | "rows"
 const OptionCardVariantContext = React.createContext<OptionCardVariant>("cards")
 
 const groupVariants: Record<OptionCardVariant, string> = {
-  cards: "grid gap-3 sm:grid-cols-2",
+  cards:
+    "grid gap-3 sm:grid-cols-2 has-[>[data-slot$=card-details]]:grid-flow-row-dense",
   rows: "flex flex-col divide-y divide-border",
 }
 
@@ -30,7 +31,7 @@ type OptionCardProps = {
   /** Shown after the title, e.g. a `Badge` marking the saved option as "Active". */
   badge?: React.ReactNode
   description?: React.ReactNode
-  /** Rows only: shown under the row, outside the control, so it can hold fields for that option. */
+  /** Shown under the option, outside the control, so it can hold fields for that option; under a card it spans the group. */
   details?: React.ReactNode
 }
 
@@ -182,7 +183,17 @@ function RadioCard({
     </RadioGroupPrimitive.Item>
   )
 
-  if (!rows) return option
+  if (!rows)
+    return (
+      <>
+        {option}
+        {details && (
+          <div data-slot="radio-card-details" className="col-span-full">
+            {details}
+          </div>
+        )}
+      </>
+    )
   return (
     <OptionCardRow slot="radio-card" className={className} details={details}>
       {option}
@@ -259,7 +270,17 @@ function CheckboxCard({
     </CheckboxPrimitive.Root>
   )
 
-  if (!rows) return option
+  if (!rows)
+    return (
+      <>
+        {option}
+        {details && (
+          <div data-slot="checkbox-card-details" className="col-span-full">
+            {details}
+          </div>
+        )}
+      </>
+    )
   return (
     <OptionCardRow slot="checkbox-card" className={className} details={details}>
       {option}

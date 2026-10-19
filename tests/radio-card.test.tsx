@@ -98,21 +98,45 @@ describe("RadioCard", () => {
     expect(screen.getByRole("radio", { name: "Digital product" })).toBeDefined()
   })
 
-  it("defaults to cards and ignores details there", () => {
+  it("defaults to cards and shows details under the card, outside the radio", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
     const { container } = render(
-      <RadioCardGroup defaultValue="a">
-        <RadioCard value="a" title="A" details={<span>Fields for A</span>} />
+      <RadioCardGroup
+        defaultValue="flat"
+        aria-label="Shipping rate"
+        onValueChange={onValueChange}
+      >
+        <RadioCard
+          value="flat"
+          title="Flat rate"
+          details={
+            <label>
+              Rate per order <input defaultValue="4.99" />
+            </label>
+          }
+        />
+        <RadioCard value="free" title="Free shipping" />
       </RadioCardGroup>
     )
-    expect(
-      container
-        .querySelector("[data-slot=radio-card-group]")
-        ?.getAttribute("data-variant")
-    ).toBe("cards")
-    expect(
-      screen.getByRole("radio", { name: "A" }).getAttribute("data-variant")
-    ).toBe("cards")
-    expect(screen.queryByText("Fields for A")).toBeNull()
+    const group = container.querySelector("[data-slot=radio-card-group]")!
+    expect(group.getAttribute("data-variant")).toBe("cards")
+    const radio = screen.getByRole("radio", { name: "Flat rate" })
+    expect(radio.getAttribute("data-variant")).toBe("cards")
+
+    const field = screen.getByRole("textbox", { name: /Rate per order/ })
+    const details = container.querySelector("[data-slot=radio-card-details]")!
+    expect(radio.contains(field)).toBe(false)
+    expect(details.contains(field)).toBe(true)
+    expect(details.parentElement).toBe(group)
+    expect(details.previousElementSibling).toBe(radio)
+
+    await user.tab()
+    await user.tab()
+    expect(document.activeElement).toBe(field)
+    await user.keyboard("{ArrowLeft}{ArrowDown}{End}5")
+    expect((field as HTMLInputElement).value).toBe("4.995")
+    expect(onValueChange).not.toHaveBeenCalled()
   })
 
   it("renders rows with details outside the radio", () => {
@@ -276,6 +300,29 @@ describe("CheckboxCard", () => {
     const inHouse = screen.getByRole("checkbox", { name: "In-house delivery" })
     await user.click(inHouse)
     expect(inHouse.getAttribute("aria-checked")).toBe("false")
+  })
+
+  it("shows details under a card, outside the checkbox", () => {
+    const { container } = render(
+      <CheckboxCardGroup aria-label="Sales channels">
+        <CheckboxCard
+          title="Online store"
+          defaultChecked
+          details={<button type="button">Choose a theme</button>}
+        />
+        <CheckboxCard title="Point of sale" />
+      </CheckboxCardGroup>
+    )
+    const group = screen.getByRole("group", { name: "Sales channels" })
+    const store = screen.getByRole("checkbox", { name: "Online store" })
+    const theme = screen.getByRole("button", { name: "Choose a theme" })
+    const details = container.querySelector(
+      "[data-slot=checkbox-card-details]"
+    )!
+    expect(store.contains(theme)).toBe(false)
+    expect(details.contains(theme)).toBe(true)
+    expect(details.parentElement).toBe(group)
+    expect(details.previousElementSibling).toBe(store)
   })
 
   it("shows the indeterminate state", () => {
