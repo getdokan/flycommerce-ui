@@ -2,6 +2,15 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `StatCard layout="label-first"`: the label over the value, as in the Settings and report figure tiles. A 14px medium label in `foreground-secondary`, then the value at 24px semibold in tabular figures; an `action` such as an `InfoTooltip` sits right after the label. `value-first` stays the default and looks exactly as before; `hero` applies to it only.
+- `StatCard foot`: a muted 12px line under the value, or a `Progress` meter.
+- `StatGroup`: joins stat cards into one band of equal cells divided by hairlines, with no double borders. It follows its own width, not the window's: one row from 48rem, two columns from 24rem, one column below, and an odd last cell keeps the empty cell beside it outlined. Dividers use logical sides, so they mirror in RTL. It is a list for screen readers (name it with `aria-label` or `aria-labelledby`), with each card a list item. `flush` drops its own card surface for use inside a `Card`: `<CardContent flush><StatGroup flush>`.
+- `type-stat-value` utility: 24/32, weight 600, -0.3px tracking, tabular figures (P3 H6 semibold), used by label-first stat cards.
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed
