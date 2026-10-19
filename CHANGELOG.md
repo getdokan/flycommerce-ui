@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- Claude plugin: `references/tokens.md` lists every light-theme token. It left out 20 of the 61, among them `--muted-foreground`, `--primary-subtle`, `--ring` and `--radius`, because the generator skipped the line after any token without a comment.
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed
