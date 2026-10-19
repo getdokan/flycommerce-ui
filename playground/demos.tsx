@@ -1,6 +1,8 @@
 import * as React from "react"
 import {
   FiAlertTriangle as AlertTriangleIcon,
+  FiArrowLeft as ArrowLeftIcon,
+  FiArrowRight as ArrowRightIcon,
   FiBold as BoldIcon,
   FiCalendar as CalendarIcon,
   FiCheckCircle as CheckCircle2Icon,
@@ -130,11 +132,15 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
   Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
+  ComboboxValue,
   Command,
   CommandEmpty,
   CommandGroup,
@@ -166,6 +172,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -271,6 +278,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  useComboboxAnchor,
   cn,
 } from "@/index"
 
@@ -289,7 +297,7 @@ export type Demo = {
 }
 
 const KEYWORDS: Record<string, string> = {
-  button: "cta action submit link loading",
+  button: "cta action submit link back arrow loading",
   toggle: "pressed bold formatting",
   alert: "notice banner warning info error callout message",
   toast: "snackbar notification sonner flash",
@@ -299,7 +307,7 @@ const KEYWORDS: Record<string, string> = {
   input: "text field form label error hint required optional",
   "input-group": "prefix suffix addon currency",
   select: "dropdown picker options",
-  combobox: "autocomplete searchable select typeahead",
+  combobox: "autocomplete searchable select typeahead multiple chips",
   checkbox: "radio switch toggle tick indeterminate",
   "input-otp": "otp pin verification code",
   calendar: "date",
@@ -319,7 +327,7 @@ const KEYWORDS: Record<string, string> = {
   "alert-dialog": "confirm delete modal",
   sheet: "drawer side panel offcanvas bottom sheet size wide form",
   popover: "hover card tooltip flyout",
-  "dropdown-menu": "menu context right click actions kebab",
+  "dropdown-menu": "menu context right click actions kebab checkbox columns",
   command: "palette cmdk spotlight search",
   breadcrumb: "path trail",
   pagination: "pages next previous",
@@ -526,6 +534,82 @@ function Row({
 
 function Stack({ children }: { children: React.ReactNode }) {
   return <div className="flex w-full flex-col gap-5">{children}</div>
+}
+
+function ComboboxChipsDemo() {
+  const anchor = useComboboxAnchor()
+  const [value, setValue] = React.useState(["Apparel", "Electronics"])
+  return (
+    <Field className="w-full sm:w-96">
+      <FieldLabel htmlFor="product-categories">Categories</FieldLabel>
+      <Combobox
+        multiple
+        items={categories}
+        value={value}
+        onValueChange={setValue}
+      >
+        <ComboboxChips ref={anchor}>
+          <ComboboxValue>
+            {(values: string[]) =>
+              values.map((item) => (
+                <ComboboxChip key={item} removeLabel={`Remove ${item}`}>
+                  {item}
+                </ComboboxChip>
+              ))
+            }
+          </ComboboxValue>
+          <ComboboxChipsInput
+            id="product-categories"
+            placeholder={value.length ? undefined : "Add a category"}
+          />
+        </ComboboxChips>
+        <ComboboxContent anchor={anchor}>
+          <ComboboxEmpty>No category found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item: string) => (
+              <ComboboxItem key={item} value={item}>
+                {item}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+    </Field>
+  )
+}
+
+const COLUMNS = ["Status", "Total", "Date"]
+
+function ColumnsMenuDemo() {
+  const [shown, setShown] = React.useState(["Status", "Total"])
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">
+          Columns <ChevronDownIcon data-icon="inline-end" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel>Show columns</DropdownMenuLabel>
+        {COLUMNS.map((column) => (
+          <DropdownMenuCheckboxItem
+            key={column}
+            checked={shown.includes(column)}
+            onCheckedChange={(checked) =>
+              setShown(
+                checked
+                  ? [...shown, column]
+                  : shown.filter((item) => item !== column)
+              )
+            }
+            onSelect={(event) => event.preventDefault()}
+          >
+            {column}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 function ListTableDemo() {
@@ -879,6 +963,19 @@ export const demos: Demo[] = [
           </Button>
           <Button variant="destructive">
             <Trash2Icon /> Remove
+          </Button>
+        </Row>
+        <Row label="Link with icon">
+          <Button variant="link">
+            <ArrowLeftIcon
+              data-icon="inline-start"
+              className="rtl:rotate-180"
+            />
+            All posts
+          </Button>
+          <Button variant="link">
+            View report
+            <ArrowRightIcon data-icon="inline-end" className="rtl:rotate-180" />
           </Button>
         </Row>
         <Row label="Small (32px)">
@@ -1282,20 +1379,23 @@ export const demos: Demo[] = [
     title: "Combobox",
     group: "Forms",
     render: () => (
-      <div className="w-72">
-        <Combobox items={categories}>
-          <ComboboxInput placeholder="Search or select a category" />
-          <ComboboxContent>
-            <ComboboxEmpty>No category found.</ComboboxEmpty>
-            <ComboboxList>
-              {(item: string) => (
-                <ComboboxItem key={item} value={item}>
-                  {item}
-                </ComboboxItem>
-              )}
-            </ComboboxList>
-          </ComboboxContent>
-        </Combobox>
+      <div className="flex w-full flex-col gap-6 sm:flex-row sm:items-end">
+        <div className="w-72">
+          <Combobox items={categories}>
+            <ComboboxInput placeholder="Search or select a category" />
+            <ComboboxContent>
+              <ComboboxEmpty>No category found.</ComboboxEmpty>
+              <ComboboxList>
+                {(item: string) => (
+                  <ComboboxItem key={item} value={item}>
+                    {item}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        </div>
+        <ComboboxChipsDemo />
       </div>
     ),
   },
@@ -2055,6 +2155,7 @@ export const demos: Demo[] = [
             <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <ColumnsMenuDemo />
         <ContextMenu>
           <ContextMenuTrigger className="flex h-16 w-56 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
             Right-click here

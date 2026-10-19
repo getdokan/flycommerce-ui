@@ -501,7 +501,7 @@ function RichTextEditor({
           <SelectTrigger
             size="sm"
             aria-label={labels.paragraph}
-            className="me-1 h-7 w-auto gap-1 bg-background px-3 text-xs font-medium text-foreground-secondary shadow-xs"
+            className="me-1 h-7 w-auto bg-background px-3 text-xs font-medium text-foreground-secondary shadow-xs"
           >
             <SelectValue />
           </SelectTrigger>
