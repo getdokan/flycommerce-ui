@@ -11,6 +11,25 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - `StatCard foot`: a muted 12px line under the value, or a `Progress` meter.
 - `StatGroup`: joins stat cards into one band. The cards sit on a 1px gap over `border-subtle`, so hairlines divide them at any column count. Pass the columns per band in `className`, such as `sm:grid-cols-2`, `grid-cols-2 lg:grid-cols-4` or `sm:grid-cols-3`; without one the band is a single column. It is a list for screen readers (name it with `aria-label` or `aria-labelledby`), and each card in it is a list item without its own corners or shadow. The band is a card of its own; `flush` drops that surface for use inside a `Card`, where `className="border-t border-border-subtle"` divides it from the content above.
 - `type-stat-value` and `type-stat-value-sm` utilities: P3 H6 and Body S, semibold, in tabular figures, used by label-first stat cards.
+- `SheetContent size`: the width of a left or right sheet from `sm` up, `sm` (24rem, the default and today's width), `md`, `lg`, `xl`, `2xl`, `3xl` or `4xl` (28 to 56rem), e.g. `lg` for a create or edit form and `2xl` for a wide one. Top and bottom sheets ignore it. A plain `sm:max-w-lg` class never beat the built-in width; a `data-[side=right]:sm:max-w-*` class still does.
+- `Progress tone`: `default`, `success`, `warning` or `destructive` colours the fill, e.g. a seats meter that turns orange at the plan limit, instead of overriding `[data-slot=progress-indicator]`.
+- `Table variant="list"`: a light table for lists inside a card. The header is 12px medium in sentence case with no grey band, cells are 14px and wrap, rows are divided by hairlines, and only rows with an `onClick` tint on hover (and show a focus ring when focusable). The first and last columns line up with a 20px card edge, 24px from `sm`.
+- `Table size`: `sm` and `lg` move the row padding one 4px step tighter or roomier than `default`: 8, 12 or 16px in a list table, 16, 20 or 24px (header included) in a default one.
+- `DescriptionList` and `DescriptionItem`: read-only facts as divided label and value rows (`dl`, `dt`, `dd`), the muted label on the left and the value on the right, stacking when the row is too narrow. Pass the label as `label` and the value as children.
+- `ConfirmDialog acknowledgeLabel`: a checkbox with this label that must be ticked before the confirm button enables, e.g. "I am sure I want to remove them". It clears when the dialog closes and works together with `confirmText`.
+
+### Changed
+
+- `SaveBar` matches the dashboard's unsaved-changes bar (`BottomActionBar`): a `gray-900` bar (new `inverse` token) with 8px corners, as wide as the dashboard's (`max-w-lg` up to `max-w-4xl`), `px-6 py-4`, a white message, an outlined Discard and a normal-size Save. The default `saveLabel` is now "Save changes". New `saveMenu` adds a chevron joined to Save for extra save options, like the dashboard's split button.
+- **Breaking:** `sonner` is now a peer dependency (`^2`) instead of a dependency, so `toast()` from this package and an app's own `<Toaster>` share one copy of sonner. With the library's own copy, an app that already had sonner rendered its `<Toaster>` from one copy while `toast()` called the other, so those toasts never appeared. Apps must have `sonner@^2` installed: npm and pnpm add peer dependencies automatically, but Yarn doesn't, so a Yarn app fails to build with "Could not resolve 'sonner'" until it runs `yarn add sonner@^2`.
+
+### Fixed
+
+- `Progress` passes `value` to the progress bar, so screen readers announce it: `aria-valuenow` and `aria-valuetext` ("62%", or your `getValueLabel`) are set, and `data-state` is `loading` or `complete` instead of always `indeterminate`.
+- `Progress` fills from the right in right-to-left layouts.
+- `ConfirmDialog`: the typed-confirmation label reads as one sentence again. It had gaps around the name, because the label lays out its children as a flex row with a gap. Only the text to type is bold now, so it stands out from the regular-weight "Type … to confirm".
+- Claude plugin: `references/tokens.md` lists every light-theme token. It left out 20 of the 61, among them `--muted-foreground`, `--primary-subtle`, `--ring` and `--radius`, because the generator skipped the line after any token without a comment.
+- Screen-reader-only text no longer stretches the page in apps whose content scrolls inside a container (an app shell with a scrolling `main`). `sr-only` text is absolutely positioned. In `DataTable` (its loading status and the "More pages" label of its page numbers), `PaginationEllipsis`, `CopyButton` and `SidebarTrigger` it had no positioned ancestor inside the component, so it was placed against the page instead, at its unscrolled position far below the window. That made the document taller than the window, and scrolling past the end of the content moved the whole layout up. Each now has a positioned parent of its own.
 
 ## [0.3.1] - 2026-10-06
 

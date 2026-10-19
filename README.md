@@ -41,18 +41,21 @@ Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com
 | React         | 19                                                                                    |
 | Styling       | Tailwind CSS 4 (recommended), or the precompiled stylesheet for apps without Tailwind |
 | Module format | ESM only                                                                              |
+| Toasts        | `sonner` 2, a peer dependency: install it with the library                            |
 | Charts        | Optional: install `recharts` 3 only if you use `@flycommerce/ui/chart`                |
 | Browsers      | Those Tailwind CSS 4 supports: Chrome 111+, Safari 16.4+, Firefox 128+                |
 
 ## Installation
 
 ```bash
-pnpm add @flycommerce/ui
+pnpm add @flycommerce/ui sonner
 # or
-npm install @flycommerce/ui
+npm install @flycommerce/ui sonner
 # or
-yarn add @flycommerce/ui
+yarn add @flycommerce/ui sonner
 ```
+
+`sonner` (2.x) is a peer dependency, so `toast()` from the library and your app's `<Toaster>` share one copy. npm and pnpm install it for you; Yarn doesn't.
 
 ## Setup
 

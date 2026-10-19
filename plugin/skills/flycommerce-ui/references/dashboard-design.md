@@ -14,13 +14,13 @@ Still legacy: themes, integrations, email templates, settings for payment, billi
 
 ## Page shell
 
-| Part        | Dashboard                                       | Library                                                    |
-| ----------- | ----------------------------------------------- | ---------------------------------------------------------- |
-| Canvas      | `#f1f1f3`                                       | `bg-page`                                                  |
-| Page title  | `text-2xl font-bold`, subtitle `text-sm` grey   | `PageHeader` > `PageHeaderTitle` + `PageHeaderDescription` |
-| Primary CTA | brand blue, 40px, 8px corners, semibold         | `Button` (default)                                         |
-| Secondary   | white, `#e2e2e7` border, 8px corners, no shadow | `Button variant="outline"`                                 |
-| Save bar    | dark floating bar, Discard + Save               | `SaveBar`                                                  |
+| Part        | Dashboard                                                                                                          | Library                                                    |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Canvas      | `#f1f1f3`                                                                                                          | `bg-page`                                                  |
+| Page title  | `text-2xl font-bold`, subtitle `text-sm` grey                                                                      | `PageHeader` > `PageHeaderTitle` + `PageHeaderDescription` |
+| Primary CTA | brand blue, 40px, 8px corners, semibold                                                                            | `Button` (default)                                         |
+| Secondary   | white, `#e2e2e7` border, 8px corners, no shadow                                                                    | `Button variant="outline"`                                 |
+| Save bar    | `gray-900` bar, 8px corners, wide (`max-w-4xl`), white text, outlined Discard + Save Changes (split menu optional) | `SaveBar`                                                  |
 
 ## Surfaces
 
