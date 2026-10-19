@@ -54,6 +54,32 @@ describe("CopyField", () => {
     )
   })
 
+  it("names the copy button after its label, so several stay distinct", () => {
+    render(
+      <>
+        <CopyField label="API key" value="pk_live_51H" />
+        <CopyField label="Signing secret" value="whsec_1" />
+        <CopyField
+          label="Webhook URL"
+          value={URL_VALUE}
+          copyLabel="Copier l'URL du webhook"
+        />
+      </>
+    )
+    expect(screen.getByRole("button", { name: "Copy API key" })).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: "Copy Signing secret" })
+    ).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: "Copier l'URL du webhook" })
+    ).toBeTruthy()
+  })
+
+  it("keeps the plain name when the label isn't text", () => {
+    render(<CopyField label={<span>API key</span>} value="pk_live_51H" />)
+    expect(screen.getByRole("button", { name: "Copy" })).toBeTruthy()
+  })
+
   it("works inside a Field with its own label", () => {
     render(
       <Field>

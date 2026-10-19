@@ -19,6 +19,7 @@ type CopyFieldProps = Omit<
   label?: React.ReactNode
   /** Monospace text, for URLs, keys, codes and DNS records. */
   mono?: boolean
+  /** The copy button's name: "Copy {label}" when `label` is text, otherwise "Copy". */
   copyLabel?: string
   copiedLabel?: string
   onCopy?: (value: string) => void
@@ -30,7 +31,7 @@ function CopyField({
   value,
   label,
   mono = false,
-  copyLabel = "Copy",
+  copyLabel = typeof label === "string" ? `Copy ${label}` : "Copy",
   copiedLabel = "Copied",
   onCopy,
   id,

@@ -21,13 +21,11 @@ export function CopyFieldDemo() {
         label="Callback URL"
         value="https://maison-oriel.flycom.shop/api/payments/paytr/callback"
         mono
-        copyLabel="Copy callback URL"
       />
       <CopyField
         label="Vendor redirect URI"
         value="https://maison-oriel.flycom.shop/vendor/settings/payment?gateway=stripe"
         mono
-        copyLabel="Copy vendor redirect URI"
       />
       <Field>
         <FieldLabel htmlFor="cname-target">CNAME target</FieldLabel>
