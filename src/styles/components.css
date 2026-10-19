@@ -706,6 +706,11 @@
     --color-border-subtle: var(--border-subtle);
     --color-sidebar-muted: var(--sidebar-muted);
     --color-sidebar-heading: var(--sidebar-heading);
+    --color-sidebar-primary-ink: var(--sidebar-primary-ink);
+    --color-sidebar-elevate: var(--sidebar-elevate);
+    --color-sidebar-strong: var(--sidebar-strong);
+    --color-sidebar-alt: var(--sidebar-alt);
+    --color-sidebar-tabs: var(--sidebar-tabs);
     /* Stock Tailwind radius and shadow scales stay untouched: host apps rely on them. */
     --radius-control: var(--radius);
     --radius-card: var(--radius-panel);

@@ -7,6 +7,9 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `ComboboxChip` `removeLabel` (default "Remove") names the chip's remove button, which had no accessible name. Pass a translation, or a label per chip such as `` `Remove ${value}` ``.
+- `Sidebar` `theme="light"`: the light rail of the redesigned dashboard (white rail, grey hover, brand-blue current item) on the desktop rail, a `collapsible="none"` panel and the mobile sheet. Without the prop, a sidebar follows `data-sidebar-theme="light"` on an ancestor (on `<html>`, the mobile sheet's portal follows too), and `theme="dark"` keeps one dark there. The light colours are set on the sidebar itself, so tooltips, menus and toasts opened from it keep their own.
+- `SidebarProvider` `shortcutKey`: the key that toggles the sidebar with Cmd or Ctrl (default `"b"`), or `false` to turn the shortcut off, e.g. for a second provider on the page.
+- Rail tokens from the dashboard design, with `bg-`/`text-` utilities: `--sidebar-primary-ink` (brand blue as text on the rail), `--sidebar-elevate` (a raised tile or button), `--sidebar-strong` (emphasised text), `--sidebar-alt` and `--sidebar-tabs` (the selected segment and track of a switch on the rail).
 
 ### Changed
 
@@ -16,6 +19,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - Chip pickers: `ComboboxChips` has 6px gaps and 6px × 8px padding, with or without chips. `ComboboxChip` is 26px tall with 13px/18px text and 8px padding (2px beside the remove button). `ComboboxChipsInput` is 26px tall and at least 7rem wide. `TagInput` chips are 26px tall with 6px corners and brand text on a brand tint (13px/18px, medium), and its input is 26px tall. Both inputs use 14px/20px text and the muted text colour for their placeholder.
 - `SaveBar` matches the dashboard's unsaved-changes bar (`BottomActionBar`): a `gray-900` bar (new `inverse` token) with 8px corners, as wide as the dashboard's (`max-w-lg` up to `max-w-4xl`), `px-6 py-4`, a white message, an outlined Discard and a normal-size Save. The default `saveLabel` is now "Save changes". New `saveMenu` adds a chevron joined to Save for extra save options, like the dashboard's split button.
 - **Breaking:** `sonner` is now a peer dependency (`^2`) instead of a dependency, so `toast()` from this package and an app's own `<Toaster>` share one copy of sonner. With the library's own copy, an app that already had sonner rendered its `<Toaster>` from one copy while `toast()` called the other, so those toasts never appeared. Apps must have `sonner@^2` installed: npm and pnpm add peer dependencies automatically, but Yarn doesn't, so a Yarn app fails to build with "Could not resolve 'sonner'" until it runs `yarn add sonner@^2`.
+- The sidebar takes the redesigned dashboard's rail colours, dark in both page themes: background `#09090b`, text `#cdcdd6`, muted `#8f8fa3`, group headings `#68687e`, hover `#18181d`, lines `#24242b`. They were `#0a0a10`, `#dbdee7`, `#8a90a1`, `#666c7c` and `#15151e` on a light page, `#05050a`, `#e9eaf0`, `#8a90a1`, `#6b7183` and `#101018` on a dark page, with lines in white at 7% on both, so text is slightly dimmer and separators and sub-menu lines slightly brighter.
 
 ### Fixed
 
@@ -42,6 +46,8 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - `ConfirmDialog`: the typed-confirmation label reads as one sentence again. It had gaps around the name, because the label lays out its children as a flex row with a gap. Only the text to type is bold now, so it stands out from the regular-weight "Type … to confirm".
 - Claude plugin: `references/tokens.md` lists every light-theme token. It left out 20 of the 61, among them `--muted-foreground`, `--primary-subtle`, `--ring` and `--radius`, because the generator skipped the line after any token without a comment.
 - Screen-reader-only text no longer stretches the page in apps whose content scrolls inside a container (an app shell with a scrolling `main`). `sr-only` text is absolutely positioned. In `DataTable` (its loading status and the "More pages" label of its page numbers), `PaginationEllipsis`, `CopyButton` and `SidebarTrigger` it had no positioned ancestor inside the component, so it was placed against the page instead, at its unscrolled position far below the window. That made the document taller than the window, and scrolling past the end of the content moved the whole layout up. Each now has a positioned parent of its own.
+- The sidebar's edge line takes `--sidebar-border` (`#24242b`, or `#e2e2e7` on a light rail), on the desktop rail and the mobile sheet. It had no colour of its own: it showed the page border (`#e2e2e7`) with `tailwind.css` and the text colour with `tailwind-core.css`, a light line along the dark rail.
+- Cmd/Ctrl+B no longer toggles the sidebar while focus is in an input, textarea, select or contenteditable (Cmd+B in `RichTextEditor` only makes text bold now), or when another handler has already called `preventDefault()` on the key. To toggle from those places as before, pass `shortcutKey={false}` and add your own listener.
 
 ## [0.3.1] - 2026-10-06
 
