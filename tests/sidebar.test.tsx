@@ -20,6 +20,25 @@ const LIGHT_RAIL = themeCss
   .split("{")[0]
   .trim()
 
+const tokenIn = (selector: string, name: string) =>
+  themeCss
+    .split("}")
+    .find((block) => block.split("{")[0].trim().endsWith(selector))!
+    .match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6});`))![1]
+
+const luminance = (hex: string) => {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+const contrast = (a: string, b: string) => {
+  const [lighter, darker] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
 const rail = () => document.querySelector<HTMLElement>('[data-slot="sidebar"]')!
 const pressShortcut = (target: Element, init: KeyboardEventInit = {}) =>
   fireEvent.keyDown(target, { key: "b", ctrlKey: true, ...init })
@@ -140,6 +159,19 @@ describe("Sidebar theme", () => {
     document.documentElement.dataset.sidebarTheme = "light"
     render(<Rail theme="dark" />)
     expect(rail().matches(LIGHT_RAIL)).toBe(false)
+  })
+
+  it.each([
+    ["the dark rail", ":root"],
+    ["the dark rail on a dark page", ".dark"],
+    ["the light rail", LIGHT_RAIL],
+  ])("gives group headings 4.5:1 contrast on %s", (_name, selector) => {
+    expect(
+      contrast(
+        tokenIn(selector, "sidebar-heading"),
+        tokenIn(selector, "sidebar")
+      )
+    ).toBeGreaterThanOrEqual(4.5)
   })
 
   it("is dark by default", () => {

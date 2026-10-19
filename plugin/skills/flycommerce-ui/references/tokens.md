@@ -64,7 +64,7 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--sidebar`                    | `#09090b`                                                           | side                                               |
 | `--sidebar-foreground`         | `#cdcdd6`                                                           | side-ink                                           |
 | `--sidebar-muted`              | `#8f8fa3`                                                           | side-ink-2                                         |
-| `--sidebar-heading`            | `#68687e`                                                           | side-head                                          |
+| `--sidebar-heading`            | `#7a7a91`                                                           | side-head; lighter than the design for 4.5:1       |
 | `--sidebar-primary`            | `#155dfc`                                                           |                                                    |
 | `--sidebar-primary-foreground` | `#ffffff`                                                           |                                                    |
 | `--sidebar-primary-ink`        | `#2b7fff`                                                           | brand blue as text on the rail                     |
