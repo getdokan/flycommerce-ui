@@ -494,6 +494,16 @@ export function SaveBarDemo() {
           setDirty(false)
           toast.success("Settings saved")
         }}
+        saveMenu={
+          <DropdownMenuItem
+            onSelect={() => {
+              setDirty(false)
+              toast.success("Saved and published")
+            }}
+          >
+            Save and publish
+          </DropdownMenuItem>
+        }
       />
     </div>
   )
@@ -681,6 +691,17 @@ export function ConfirmDialogDemo() {
         confirmText="Trendy Store"
         onConfirm={() => {
           toast.success("Store deleted")
+        }}
+      />
+      <ConfirmDialog
+        trigger={<Button variant="destructive">Remove member</Button>}
+        title="Remove Amina Rahman?"
+        description="They lose access straight away and their seat is freed. Orders and notes they added stay."
+        acknowledgeLabel="I am sure I want to remove them"
+        confirmLabel="Yes, remove"
+        destructive
+        onConfirm={() => {
+          toast.success("Amina Rahman removed")
         }}
       />
     </div>
