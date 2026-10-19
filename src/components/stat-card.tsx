@@ -88,11 +88,8 @@ function StatCard({
       data-layout={layout}
       data-value-size={labelFirst ? valueSize : undefined}
       data-hero={isHero || undefined}
-      role={grouped ? "listitem" : undefined}
       className={cn(
-        grouped
-          ? "bg-card text-card-foreground"
-          : "rounded-xl bg-card text-card-foreground shadow-card",
+        !grouped && "rounded-xl bg-card text-card-foreground shadow-card",
         labelFirst ? "px-5 py-5 sm:px-6" : isHero ? "p-6" : "p-5",
         className
       )}
@@ -156,7 +153,7 @@ type StatGroupProps = React.ComponentProps<"div"> & {
   flush?: boolean
 }
 
-/** Stat cards joined into one band on hairline gaps; pass the columns in `className`, e.g. `grid-cols-2 lg:grid-cols-4`. */
+/** Stat cards joined into one band on hairline gaps, each child a list item; pass the columns in `className`, e.g. `grid-cols-2 lg:grid-cols-4`. */
 function StatGroup({
   flush = false,
   className,
@@ -176,7 +173,17 @@ function StatGroup({
       {...props}
     >
       <StatGroupContext.Provider value={true}>
-        {children}
+        {React.Children.map(children, (child) =>
+          child == null ? null : (
+            <div
+              role="listitem"
+              data-slot="stat-group-item"
+              className="grid bg-card text-card-foreground *:min-w-0"
+            >
+              {child}
+            </div>
+          )
+        )}
       </StatGroupContext.Provider>
     </div>
   )
