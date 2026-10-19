@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useId, useMemo } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
@@ -191,11 +191,13 @@ function FieldDescription({
   )
 }
 
-/** "52 / 60" at the end of a field's label row: a character count that turns to the warning tone past `limit`. */
+/** "52 / 60" at the end of a field's label row: a character count that turns to the warning tone past `limit`; point the control's `aria-describedby` at its `id`. */
 function FieldCount({
   count,
   limit,
   unitLabel = "characters",
+  overLimitLabel = (limit) => `Over the ${limit} character limit`,
+  id,
   className,
   ...props
 }: Omit<React.ComponentProps<"span">, "children"> & {
@@ -204,15 +206,18 @@ function FieldCount({
   limit: number
   /** Read after the numbers by screen readers, hidden on screen. */
   unitLabel?: React.ReactNode
+  /** Announced once when the count goes past `limit`. */
+  overLimitLabel?: (limit: number) => React.ReactNode
 }) {
+  const generatedId = useId()
   const over = count > limit
   return (
     <span
+      id={id ?? generatedId}
       data-slot="field-count"
       data-over={over || undefined}
-      aria-live="polite"
       className={cn(
-        "relative text-[12px] leading-[16px] font-normal text-muted-foreground tabular-nums data-over:text-warning-strong",
+        "relative text-xs font-normal text-muted-foreground tabular-nums data-over:text-warning-strong",
         className
       )}
       {...props}
@@ -224,6 +229,13 @@ function FieldCount({
           {unitLabel}
         </span>
       )}
+      <span
+        data-slot="field-count-status"
+        aria-live="polite"
+        className="sr-only"
+      >
+        {over && <> {overLimitLabel(limit)}</>}
+      </span>
     </span>
   )
 }

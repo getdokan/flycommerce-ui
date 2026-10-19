@@ -9,6 +9,8 @@ type TextareaProps = React.ComponentProps<"textarea"> & {
   /** A limit the count measures against without truncating: past it the count turns to the warning tone. Shows the count. */
   softLimit?: number
   countLabel?: (count: number, max?: number) => React.ReactNode
+  /** Announced once when the count goes past `softLimit`. */
+  overLimitLabel?: (limit: number) => React.ReactNode
 }
 
 function Textarea({
@@ -17,12 +19,16 @@ function Textarea({
   softLimit,
   countLabel = (count, max) =>
     max ? `${count}/${max} characters` : `${count} characters`,
+  overLimitLabel = (limit) => `Over the ${limit} character limit`,
   onChange,
+  "aria-describedby": describedBy,
   ...props
 }: TextareaProps) {
   const [typed, setTyped] = React.useState(
     () => String(props.defaultValue ?? "").length
   )
+  const countId = React.useId()
+  const counted = showCount || softLimit !== undefined
   const count = props.value !== undefined ? String(props.value).length : typed
   const over = softLimit !== undefined && count > softLimit
 
@@ -33,6 +39,9 @@ function Textarea({
         "flex field-sizing-content min-h-[78px] w-full rounded-control border border-input bg-background px-3 py-2.5 text-base shadow-none ring-0 transition-colors outline-none placeholder:text-placeholder hover:border-placeholder focus-visible:border-primary disabled:cursor-not-allowed disabled:bg-page disabled:text-muted-foreground aria-invalid:border-destructive md:text-sm dark:aria-invalid:border-destructive/50",
         className
       )}
+      aria-describedby={
+        counted ? [describedBy, countId].filter(Boolean).join(" ") : describedBy
+      }
       onChange={(event) => {
         setTyped(event.target.value.length)
         onChange?.(event)
@@ -41,18 +50,27 @@ function Textarea({
     />
   )
 
-  if (!showCount && softLimit === undefined) return field
+  if (!counted) return field
 
   return (
     <div data-slot="textarea-wrapper" className="flex w-full flex-col gap-1.5">
       {field}
       <span
+        id={countId}
         data-slot="textarea-count"
         data-over={over || undefined}
-        aria-live="polite"
-        className="text-[11.5px] text-muted-foreground tabular-nums data-over:text-warning-strong"
+        className="relative text-[11.5px] text-muted-foreground tabular-nums data-over:text-warning-strong"
       >
         {countLabel(count, softLimit ?? props.maxLength)}
+        {softLimit !== undefined && (
+          <span
+            data-slot="textarea-count-status"
+            aria-live="polite"
+            className="sr-only"
+          >
+            {over && <> {overLimitLabel(softLimit)}</>}
+          </span>
+        )}
       </span>
     </div>
   )

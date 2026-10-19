@@ -78,8 +78,7 @@ describe("FieldCount", () => {
       .filter(
         (node) =>
           !(
-            node instanceof Element &&
-            node.matches("[data-slot=field-count-unit]")
+            node instanceof Element && node.matches("[data-slot^=field-count-]")
           )
       )
       .map((node) => node.textContent)
@@ -90,7 +89,6 @@ describe("FieldCount", () => {
     const count = container.querySelector("[data-slot=field-count]")!
     expect(shown(count)).toBe("52 / 60")
     expect(count.textContent).toBe("52 / 60 characters")
-    expect(count.getAttribute("aria-live")).toBe("polite")
     expect(count.hasAttribute("data-over")).toBe(false)
 
     rerender(<FieldCount count={60} limit={60} />)
@@ -102,36 +100,84 @@ describe("FieldCount", () => {
     expect(count.hasAttribute("data-over")).toBe(true)
   })
 
-  it("takes the unit's words and span props", () => {
+  it("announces only when the count crosses the limit", () => {
+    const { container, rerender } = render(<FieldCount count={59} limit={60} />)
+    const count = container.querySelector("[data-slot=field-count]")!
+    const status = count.querySelector("[data-slot=field-count-status]")!
+    expect(count.hasAttribute("aria-live")).toBe(false)
+    expect(status.getAttribute("aria-live")).toBe("polite")
+
+    let mutations = 0
+    const observer = new MutationObserver((records) => {
+      mutations += records.length
+    })
+    const mutated = () => {
+      const seen = mutations + observer.takeRecords().length
+      mutations = 0
+      return seen > 0
+    }
+    observer.observe(status, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    })
+    const heard: [string, boolean][] = []
+    for (const n of [60, 61, 62, 75, 59]) {
+      rerender(<FieldCount count={n} limit={60} />)
+      heard.push([status.textContent ?? "", mutated()])
+    }
+    observer.disconnect()
+    expect(heard).toEqual([
+      ["", false],
+      [" Over the 60 character limit", true],
+      [" Over the 60 character limit", false],
+      [" Over the 60 character limit", false],
+      ["", true],
+    ])
+  })
+
+  it("takes its words, an id and span props", () => {
     const { container, rerender } = render(
-      <FieldCount count={3} limit={70} unitLabel="karakter" id="title-count" />
+      <FieldCount
+        count={73}
+        limit={70}
+        unitLabel="karakter"
+        overLimitLabel={(limit) => `${limit} karakter sınırı aşıldı`}
+        id="title-count"
+      />
     )
     const count = container.querySelector("[data-slot=field-count]")!
     expect(count.id).toBe("title-count")
-    expect(count.textContent).toBe("3 / 70 karakter")
+    expect(count.textContent).toBe("73 / 70 karakter 70 karakter sınırı aşıldı")
 
     rerender(<FieldCount count={3} limit={70} unitLabel={null} />)
     expect(count.querySelector("[data-slot=field-count-unit]")).toBeNull()
     expect(count.textContent).toBe("3 / 70")
+    expect(count.id).not.toBe("")
   })
 
-  it("sits in a label row beside the label", () => {
+  it("sits in a label row beside the label and describes the field", () => {
     render(
       <Field>
         <div className="flex items-center justify-between gap-2">
           <FieldLabel htmlFor="share-title">Share title</FieldLabel>
-          <FieldCount count={32} limit={60} />
+          <FieldCount id="share-title-count" count={32} limit={60} />
         </div>
         <Input
           id="share-title"
+          aria-describedby="share-title-count"
           defaultValue="Maison Oriel: tailored outerwear"
         />
       </Field>
     )
-    expect(screen.getByRole("textbox", { name: "Share title" })).toBeTruthy()
+    const field = screen.getByRole("textbox", { name: "Share title" })
     const label = screen.getByText("Share title")
     expect(label.nextElementSibling?.getAttribute("data-slot")).toBe(
       "field-count"
     )
+    expect(
+      document.getElementById(field.getAttribute("aria-describedby")!)
+        ?.textContent
+    ).toBe("32 / 60 characters")
   })
 })

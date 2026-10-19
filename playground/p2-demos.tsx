@@ -130,10 +130,11 @@ export function TitleField({
     <Field>
       <div className="flex items-center justify-between gap-2">
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
-        <FieldCount count={title.length} limit={limit} />
+        <FieldCount id={`${id}-count`} count={title.length} limit={limit} />
       </div>
       <Input
         id={id}
+        aria-describedby={`${id}-count`}
         value={title}
         maxLength={100}
         onChange={(event) => setTitle(event.target.value)}
