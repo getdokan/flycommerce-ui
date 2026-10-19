@@ -5,6 +5,11 @@ import {
   AsyncCombobox,
   Badge,
   Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
   CopyButton,
   DatePicker,
   DateRangePicker,
@@ -20,10 +25,12 @@ import {
   NavTabs,
   NavTabsLink,
   PasswordInput,
+  Progress,
   RadioCard,
   RadioCardGroup,
   Rating,
   StatCard,
+  StatGroup,
   SwitchField,
   TagInput,
   type DateRange,
@@ -226,30 +233,149 @@ export function DatePickerDemo() {
 
 export function StatCardDemo() {
   return (
-    <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr]">
-      <StatCard
-        hero
-        label="Gross sales"
-        value="$34,500"
-        delta={50}
-        deltaNote="vs last month"
-        icon={<Icon name="payouts" />}
-        action={<InfoTooltip content="Sales before refunds, fees and tax." />}
-      />
-      <StatCard
-        label="Orders"
-        value="280"
-        delta={-12}
-        deltaNote="vs last month"
-        icon={<Icon name="orders" />}
-      />
-      <StatCard
-        label="New vendors"
-        value="4"
-        delta={0}
-        icon={<Icon name="vendors" />}
-        sub="2 waiting for approval"
-      />
+    <div className="flex w-full flex-col gap-6">
+      <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr]">
+        <StatCard
+          hero
+          label="Gross sales"
+          value="$34,500"
+          delta={50}
+          deltaNote="vs last month"
+          icon={<Icon name="payouts" />}
+          action={<InfoTooltip content="Sales before refunds, fees and tax." />}
+        />
+        <StatCard
+          label="Orders"
+          value="280"
+          delta={-12}
+          deltaNote="vs last month"
+          icon={<Icon name="orders" />}
+        />
+        <StatCard
+          label="New vendors"
+          value="4"
+          delta={0}
+          icon={<Icon name="vendors" />}
+          sub="2 waiting for approval"
+        />
+      </div>
+
+      <div className="grid w-full gap-4 md:grid-cols-3">
+        <StatCard
+          layout="label-first"
+          label="Total requests"
+          value="1,284"
+          foot="Since 28 Sep 2026"
+        />
+        <StatCard
+          layout="label-first"
+          label="Total tokens"
+          value="412,880"
+          foot="About 322 per request"
+        />
+        <StatCard
+          layout="label-first"
+          label="Credits used"
+          value="640 of 1,000"
+          foot={<Progress value={64} aria-label="Credits used" />}
+        />
+      </div>
+
+      <StatGroup
+        aria-label="Orders this period"
+        className="grid-cols-2 lg:grid-cols-4"
+      >
+        <StatCard
+          layout="label-first"
+          label="Extra orders"
+          value="12"
+          foot="So far"
+        />
+        <StatCard
+          layout="label-first"
+          label="Charge so far"
+          value="$24.00"
+          foot="12 × $2.00"
+        />
+        <StatCard
+          layout="label-first"
+          label="Projected"
+          value="$58.00"
+          foot="29 extra by 30 Nov"
+        />
+        <StatCard
+          layout="label-first"
+          label="Upgrade point"
+          action={
+            <InfoTooltip
+              label="About upgrade point"
+              content="Above this many orders, Growth costs less per month."
+            />
+          }
+          value="1,200"
+          foot="Orders per period"
+        />
+      </StatGroup>
+
+      <Card>
+        <CardHeader>
+          <CardTitle id="plan-figures">Growth plan</CardTitle>
+          <CardDescription>$49.00 a month, billed monthly</CardDescription>
+        </CardHeader>
+        <StatGroup
+          flush
+          aria-labelledby="plan-figures"
+          className="border-t border-border-subtle sm:grid-cols-2"
+        >
+          <StatCard
+            layout="label-first"
+            valueSize="sm"
+            label="Next payment"
+            value="$49.00 on 15 November"
+            foot="Plus extra orders, $12.00 projected"
+          />
+          <StatCard
+            layout="label-first"
+            valueSize="sm"
+            label="Vendors"
+            value="64 of 100"
+            foot={<Progress value={64} aria-label="Vendors used" />}
+          />
+        </StatGroup>
+      </Card>
+
+      <Card>
+        <CardHeader className="border-b">
+          <CardTitle id="cart-figures">Key figures</CardTitle>
+          <CardDescription>1 to 19 October</CardDescription>
+        </CardHeader>
+        <CardContent flush>
+          <StatGroup
+            flush
+            aria-labelledby="cart-figures"
+            className="sm:grid-cols-3"
+          >
+            <StatCard
+              layout="label-first"
+              label="Recovered revenue"
+              value="$1,240.00"
+              foot="Net of refunds"
+            />
+            <StatCard
+              layout="label-first"
+              label="Recovery rate"
+              value="18.4%"
+              foot="23 of 125 abandoned carts"
+            />
+            <StatCard
+              layout="label-first"
+              label="Reminders sent"
+              value="96"
+              foot="Daily at 9:00 AM UTC"
+            />
+          </StatGroup>
+        </CardContent>
+      </Card>
     </div>
   )
 }

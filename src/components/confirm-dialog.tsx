@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
@@ -33,6 +34,8 @@ type ConfirmDialogProps = {
   /** Require typing this exact text before confirming (e.g. a store name). */
   confirmText?: string
   confirmTextLabel?: React.ReactNode
+  /** Require ticking a checkbox with this label before confirming (e.g. "I am sure I want to remove them"). */
+  acknowledgeLabel?: React.ReactNode
   /** The dialog closes when this resolves and stays open when it throws. */
   onConfirm: () => void | Promise<void>
 }
@@ -50,20 +53,27 @@ function ConfirmDialog({
   loading,
   confirmText,
   confirmTextLabel,
+  acknowledgeLabel,
   onConfirm,
 }: ConfirmDialogProps) {
   const [openState, setOpenState] = React.useState(false)
   const [pending, setPending] = React.useState(false)
   const [typed, setTyped] = React.useState("")
+  const [acknowledged, setAcknowledged] = React.useState(false)
   const inputId = React.useId()
 
   const open = openProp ?? openState
   const busy = loading ?? pending
-  const blocked = confirmText !== undefined && typed !== confirmText
+  const blocked =
+    (confirmText !== undefined && typed !== confirmText) ||
+    (Boolean(acknowledgeLabel) && !acknowledged)
 
   const setOpen = (next: boolean) => {
     if (busy && !next) return
-    if (!next) setTyped("")
+    if (!next) {
+      setTyped("")
+      setAcknowledged(false)
+    }
     if (openProp === undefined) setOpenState(next)
     onOpenChange?.(next)
   }
@@ -95,10 +105,13 @@ function ConfirmDialog({
           <Field>
             <FieldLabel htmlFor={inputId}>
               {confirmTextLabel ?? (
-                <>
-                  Type <strong className="font-semibold">{confirmText}</strong>{" "}
+                <span className="font-normal text-foreground-secondary">
+                  Type{" "}
+                  <strong className="font-bold text-foreground">
+                    {confirmText}
+                  </strong>{" "}
                   to confirm
-                </>
+                </span>
               )}
             </FieldLabel>
             <Input
@@ -108,6 +121,18 @@ function ConfirmDialog({
               onChange={(event) => setTyped(event.target.value)}
             />
           </Field>
+        )}
+        {acknowledgeLabel && (
+          <label
+            data-slot="confirm-dialog-acknowledge"
+            className="flex cursor-pointer items-center gap-2.5 text-sm"
+          >
+            <Checkbox
+              checked={acknowledged}
+              onCheckedChange={(checked) => setAcknowledged(checked === true)}
+            />
+            {acknowledgeLabel}
+          </label>
         )}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={busy}>{cancelLabel}</AlertDialogCancel>

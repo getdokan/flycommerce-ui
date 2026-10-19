@@ -657,6 +657,8 @@
     --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
     --color-sidebar-primary: var(--sidebar-primary);
     --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-inverse: var(--inverse);
+    --color-inverse-foreground: var(--inverse-foreground);
     --color-sidebar: var(--sidebar);
     --color-chart-5: var(--chart-5);
     --color-chart-4: var(--chart-4);
@@ -730,6 +732,20 @@
   font-size: 18px;
   line-height: 26px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+@utility type-stat-value {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+@utility type-stat-value-sm {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
   font-variant-numeric: tabular-nums;
 }
 @utility type-card-title {

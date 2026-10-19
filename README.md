@@ -41,18 +41,21 @@ Built on [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com
 | React         | 19                                                                                    |
 | Styling       | Tailwind CSS 4 (recommended), or the precompiled stylesheet for apps without Tailwind |
 | Module format | ESM only                                                                              |
+| Toasts        | `sonner` 2, a peer dependency: install it with the library                            |
 | Charts        | Optional: install `recharts` 3 only if you use `@flycommerce/ui/chart`                |
 | Browsers      | Those Tailwind CSS 4 supports: Chrome 111+, Safari 16.4+, Firefox 128+                |
 
 ## Installation
 
 ```bash
-pnpm add @flycommerce/ui
+pnpm add @flycommerce/ui sonner
 # or
-npm install @flycommerce/ui
+npm install @flycommerce/ui sonner
 # or
-yarn add @flycommerce/ui
+yarn add @flycommerce/ui sonner
 ```
+
+`sonner` (2.x) is a peer dependency, so `toast()` from the library and your app's `<Toaster>` share one copy. npm and pnpm install it for you; Yarn doesn't.
 
 ## Setup
 
@@ -163,7 +166,7 @@ The [live gallery](https://ui.flycommerce.com) shows every component, variant an
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Actions               | `Button`, `ButtonGroup`, `Toggle`, `ToggleGroup`, `CopyButton`                                                                                                                                                                                                                                                                               |
 | Forms                 | `Field`, `Input`, `InputGroup`, `Textarea`, `PasswordInput`, `SearchInput`, `Select`, `Combobox`, `AsyncCombobox`, `RichSelect`, `TreeSelect`, `TagInput`, `OptionListEditor`, `Checkbox`, `RadioGroup`, `RadioCard`, `Switch`, `SwitchField`, `Slider`, `InputOTP`, `DatePicker`, `DateRangePicker`, `RichTextEditor`, `Dropzone`, `Rating` |
-| Data display          | `DataTable`, `Table`, `TableFilters`, `ActiveFilters`, `MediaCell`, `StatCard`, `Badge`, `StatusBadge`, `Avatar`, `ImageWithFallback`, `Item`, `Kbd`                                                                                                                                                                                         |
+| Data display          | `DataTable`, `Table`, `TableFilters`, `ActiveFilters`, `MediaCell`, `StatCard`, `StatGroup`, `Badge`, `StatusBadge`, `Avatar`, `ImageWithFallback`, `Item`, `Kbd`                                                                                                                                                                            |
 | Media                 | `MediaPickerDialog`, `MediaGrid`, `MediaTile`, `MediaDetailsPanel`, `UploadQueue`, `VideoUrlList`                                                                                                                                                                                                                                            |
 | Feedback              | `Alert`, `toast`, `Progress`, `Skeleton`, `Spinner`, `Empty`, `LoadingOverlay`                                                                                                                                                                                                                                                               |
 | Overlays              | `Dialog`, `ConfirmDialog`, `AlertDialog`, `Sheet`, `Drawer`, `Popover`, `Tooltip`, `InfoTooltip`, `HoverCard`, `DropdownMenu`, `ContextMenu`                                                                                                                                                                                                 |
