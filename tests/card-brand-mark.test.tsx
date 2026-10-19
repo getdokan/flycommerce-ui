@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { CardBrandMark } from "@/index"
 
@@ -73,5 +73,28 @@ describe("CardBrandMark", () => {
         expect(mark.querySelector(`[id="${id}"]`)).not.toBeNull()
       }
     }
+  })
+})
+
+describe("card mark artwork", () => {
+  const ARTWORK = "@/components/card-brand-mark/color-marks"
+
+  afterEach(() => {
+    vi.doUnmock(ARTWORK)
+    vi.resetModules()
+  })
+
+  it("loads with CardBrandMark and never with CardBrandIcon", async () => {
+    const factory = vi.fn(async (importOriginal: () => Promise<unknown>) =>
+      importOriginal()
+    )
+    vi.doMock(ARTWORK, factory)
+    vi.resetModules()
+
+    await import("@/components/card-brand-icon")
+    expect(factory).not.toHaveBeenCalled()
+
+    await import("@/components/card-brand-mark")
+    expect(factory).toHaveBeenCalledTimes(1)
   })
 })

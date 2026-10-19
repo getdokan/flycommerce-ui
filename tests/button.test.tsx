@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { Button, ButtonArrow } from "@/index"
 
@@ -65,5 +65,26 @@ describe("Button shape", () => {
     const button = screen.getByRole("button", { name: "Checking with PayPal" })
     expect(button.getAttribute("aria-busy")).toBe("true")
     expect((button as HTMLButtonElement).disabled).toBe(true)
+  })
+})
+
+describe("Button module", () => {
+  afterEach(() => {
+    vi.doUnmock("react-icons/fi")
+    vi.resetModules()
+  })
+
+  it("leaves the arrow glyph to ButtonArrow", async () => {
+    const factory = vi.fn(async (importOriginal: () => Promise<unknown>) =>
+      importOriginal()
+    )
+    vi.doMock("react-icons/fi", factory)
+    vi.resetModules()
+
+    await import("@/components/ui/button")
+    expect(factory).not.toHaveBeenCalled()
+
+    await import("@/components/ui/button-arrow")
+    expect(factory).toHaveBeenCalledTimes(1)
   })
 })
