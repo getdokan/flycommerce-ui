@@ -4,6 +4,12 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+**Visual changes:**
+
+- Sidebar colours: the rail takes the dashboard design's P3 colours, so text is slightly dimmer, lines slightly brighter and group headings reach 4.5:1, and its edge line is the rail's own dark border instead of the page border.
+- Tooltip and toast colours: `#09090b` in both page themes, was `#0a0a10` (`#05050a` on a dark page).
+- Cmd/Ctrl+B no longer toggles the sidebar while focus is in a field.
+
 ### Added
 
 - `ComboboxChip` `removeLabel` (default "Remove") names the chip's remove button, which had no accessible name. Pass a translation, or a label per chip such as `` `Remove ${value}` ``.
@@ -20,7 +26,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - Chip pickers: `ComboboxChips` has 6px gaps and 6px × 8px padding, with or without chips. `ComboboxChip` is 26px tall with 13px/18px text and 8px padding (2px beside the remove button). `ComboboxChipsInput` is 26px tall and at least 7rem wide. `TagInput` chips are 26px tall with 6px corners and brand text on a brand tint (13px/18px, medium), and its input is 26px tall. Both inputs use 14px/20px text and the muted text colour for their placeholder.
 - `SaveBar` matches the dashboard's unsaved-changes bar (`BottomActionBar`): a `gray-900` bar (new `inverse` token) with 8px corners, as wide as the dashboard's (`max-w-lg` up to `max-w-4xl`), `px-6 py-4`, a white message, an outlined Discard and a normal-size Save. The default `saveLabel` is now "Save changes". New `saveMenu` adds a chevron joined to Save for extra save options, like the dashboard's split button.
 - **Breaking:** `sonner` is now a peer dependency (`^2`) instead of a dependency, so `toast()` from this package and an app's own `<Toaster>` share one copy of sonner. With the library's own copy, an app that already had sonner rendered its `<Toaster>` from one copy while `toast()` called the other, so those toasts never appeared. Apps must have `sonner@^2` installed: npm and pnpm add peer dependencies automatically, but Yarn doesn't, so a Yarn app fails to build with "Could not resolve 'sonner'" until it runs `yarn add sonner@^2`.
-- The sidebar takes the redesigned dashboard's rail colours, dark in both page themes: background `#09090b`, text `#cdcdd6`, muted `#8f8fa3`, group headings `#7a7a91`, hover `#18181d`, lines `#24242b`. They were `#0a0a10`, `#dbdee7`, `#8a90a1`, `#666c7c` and `#15151e` on a light page, `#05050a`, `#e9eaf0`, `#8a90a1`, `#6b7183` and `#101018` on a dark page, with lines in white at 7% on both, so text is slightly dimmer and separators and sub-menu lines slightly brighter.
+- The sidebar takes the redesigned dashboard's rail colours, dark in both page themes: background `#09090b`, text `#cdcdd6`, muted `#8f8fa3`, group headings `#7a7a91`, hover `#18181d`, lines `#24242b`. They were `#0a0a10`, `#dbdee7`, `#8a90a1`, `#666c7c` and `#15151e` on a light page, `#05050a`, `#e9eaf0`, `#8a90a1`, `#6b7183` and `#101018` on a dark page, with lines in white at 7% on both, so text is slightly dimmer and separators and sub-menu lines slightly brighter. To keep the old colours, set the light-page values on `:root` and the dark-page ones on `[data-theme="dark"], .dark`, in CSS that loads after `theme.css`. The dark block sets the sidebar colours too, so dark mode needs its own override.
 - `Tooltip` and `Toaster` use `--tooltip` and `--tooltip-foreground` instead of the sidebar's colours: `#09090b` with white text in both page themes, the P3 rail colour the dashboard design draws them in. They were `#0a0a10`, and `#05050a` on a dark page. An app that restyled them by overriding `--sidebar` now overrides `--tooltip`.
 
 ### Fixed
