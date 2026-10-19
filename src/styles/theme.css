@@ -52,6 +52,8 @@
     --elevation-card: 0 1px 2px -1px rgb(0 0 0 / 0.1), 0 1px 3px rgb(0 0 0 / 0.1);
     --elevation-2: 0 4px 14px rgb(16 23 41 / 0.08), 0 2px 4px rgb(16 23 41 / 0.04);
     --elevation-pop: 0 12px 34px rgb(16 23 41 / 0.16), 0 4px 10px rgb(16 23 41 / 0.08);
+    --inverse: #101828; /* dashboard save bar (gray-900) */
+    --inverse-foreground: #ffffff;
     --sidebar: #0a0a10; /* side */
     --sidebar-foreground: #dbdee7; /* side-ink */
     --sidebar-muted: #8a90a1; /* side-ink-2 */
@@ -114,6 +116,8 @@
     --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.3);
     --elevation-2: 0 4px 14px rgb(0 0 0 / 0.45), 0 2px 4px rgb(0 0 0 / 0.3);
     --elevation-pop: 0 12px 34px rgb(0 0 0 / 0.6), 0 4px 10px rgb(0 0 0 / 0.4);
+    --inverse: #262632;
+    --inverse-foreground: #ffffff;
     --sidebar: #05050a;
     --sidebar-foreground: #e9eaf0;
     --sidebar-muted: #8a90a1;

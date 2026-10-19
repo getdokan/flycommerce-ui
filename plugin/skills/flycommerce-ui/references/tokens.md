@@ -57,6 +57,8 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--elevation-card`             | `0 1px 2px -1px rgb(0 0 0 / 0.1), 0 1px 3px rgb(0 0 0 / 0.1)`       |                                                    |
 | `--elevation-2`                | `0 4px 14px rgb(16 23 41 / 0.08), 0 2px 4px rgb(16 23 41 / 0.04)`   |                                                    |
 | `--elevation-pop`              | `0 12px 34px rgb(16 23 41 / 0.16), 0 4px 10px rgb(16 23 41 / 0.08)` |                                                    |
+| `--inverse`                    | `#101828`                                                           | dashboard save bar (gray-900)                      |
+| `--inverse-foreground`         | `#ffffff`                                                           |                                                    |
 | `--sidebar`                    | `#0a0a10`                                                           | side                                               |
 | `--sidebar-foreground`         | `#dbdee7`                                                           | side-ink                                           |
 | `--sidebar-muted`              | `#8a90a1`                                                           | side-ink-2                                         |
