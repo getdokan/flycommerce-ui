@@ -9,6 +9,12 @@ updates:
       minor-and-patch:
         update-types: [minor, patch]
     open-pull-requests-limit: 10
+    ignore:
+      # The dev pins test CodeMirror at the lowest versions the optional peers accept (the dashboard's); raise them by hand with the peer ranges.
+      - dependency-name: "@codemirror/*"
+      # Types follow the Node that CI and releases run on (22), not the newest Node.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
