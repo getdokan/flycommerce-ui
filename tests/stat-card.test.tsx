@@ -102,6 +102,24 @@ describe("StatCard", () => {
     ).toBeTruthy()
   })
 
+  it("sets the label-first value size, which value-first ignores", () => {
+    render(
+      <>
+        <StatCard layout="label-first" label="Extra orders" value="12" />
+        <StatCard
+          layout="label-first"
+          valueSize="sm"
+          label="Next payment"
+          value="$49.00 on 15 November"
+        />
+        <StatCard valueSize="sm" label="Orders" value="280" />
+      </>
+    )
+    expect(card("Extra orders").getAttribute("data-value-size")).toBe("default")
+    expect(card("Next payment").getAttribute("data-value-size")).toBe("sm")
+    expect(card("Orders").hasAttribute("data-value-size")).toBe(false)
+  })
+
   it("is not a list item outside a group", () => {
     render(<StatCard label="Orders" value="280" />)
     expect(card("Orders").getAttribute("role")).toBeNull()
@@ -128,6 +146,7 @@ describe("StatGroup", () => {
 
     const items = within(list).getAllByRole("listitem")
     expect(items).toHaveLength(3)
+    expect(items.every((item) => item.parentElement === list)).toBe(true)
     expect(items.map((item) => item.getAttribute("data-slot"))).toEqual([
       "stat-card",
       "stat-card",

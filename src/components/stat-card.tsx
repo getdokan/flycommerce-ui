@@ -21,6 +21,7 @@ type StatCardProps = Omit<React.ComponentProps<"div">, "title"> & {
   /** The one figure a screen exists to answer; at most one per view. */
   hero?: boolean
   layout?: "value-first" | "label-first"
+  valueSize?: "default" | "sm"
   foot?: React.ReactNode
 }
 
@@ -36,6 +37,7 @@ function StatCard({
   foot,
   hero = false,
   layout = "value-first",
+  valueSize = "default",
   className,
   ...props
 }: StatCardProps) {
@@ -49,7 +51,10 @@ function StatCard({
       className={cn(
         "min-w-0 [overflow-wrap:anywhere] text-foreground tabular-nums",
         labelFirst
-          ? "mt-1.5 type-stat-value"
+          ? cn(
+              "mt-1.5",
+              valueSize === "sm" ? "type-stat-value-sm" : "type-stat-value"
+            )
           : isHero
             ? "text-[34px] leading-none font-bold tracking-[-0.02em]"
             : "type-overview-value"
@@ -81,6 +86,7 @@ function StatCard({
     <div
       data-slot="stat-card"
       data-layout={layout}
+      data-value-size={labelFirst ? valueSize : undefined}
       data-hero={isHero || undefined}
       role={grouped ? "listitem" : undefined}
       className={cn(
@@ -150,7 +156,7 @@ type StatGroupProps = React.ComponentProps<"div"> & {
   flush?: boolean
 }
 
-/** Stat cards joined into one band, divided by hairlines: one row when there's room, then two columns, then one. */
+/** Stat cards joined into one band on hairline gaps; pass the columns in `className`, e.g. `grid-cols-2 lg:grid-cols-4`. */
 function StatGroup({
   flush = false,
   className,
@@ -163,18 +169,15 @@ function StatGroup({
       data-slot="stat-group"
       data-flush={flush || undefined}
       className={cn(
-        "@container/stat-group w-full",
-        !flush &&
-          "overflow-hidden rounded-xl bg-card text-card-foreground shadow-card",
+        "grid gap-px bg-border-subtle",
+        !flush && "overflow-hidden rounded-xl shadow-card",
         className
       )}
       {...props}
     >
-      <div className="grid grid-cols-1 *:border-border-subtle *:only:col-span-full @max-sm/stat-group:*:not-first:border-t @sm/stat-group:grid-cols-2 @sm/stat-group:@max-3xl/stat-group:*:odd:not-only:border-e @sm/stat-group:@max-3xl/stat-group:*:nth-[n+3]:border-t @sm/stat-group:@max-3xl/stat-group:*:even:nth-last-2:border-b @3xl/stat-group:auto-cols-fr @3xl/stat-group:grid-flow-col @3xl/stat-group:grid-cols-none @3xl/stat-group:*:not-last:border-e">
-        <StatGroupContext.Provider value={true}>
-          {children}
-        </StatGroupContext.Provider>
-      </div>
+      <StatGroupContext.Provider value={true}>
+        {children}
+      </StatGroupContext.Provider>
     </div>
   )
 }

@@ -7,9 +7,10 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `StatCard layout="label-first"`: the label over the value, as in the Settings and report figure tiles. A 14px medium label in `foreground-secondary`, then the value at 24px semibold in tabular figures; an `action` such as an `InfoTooltip` sits right after the label. `value-first` stays the default and looks exactly as before; `hero` applies to it only.
+- `StatCard valueSize="sm"`: a 16px label-first value (16/24, weight 600, -0.2px, tabular figures) for figures that read as a phrase, such as a payment date or a plan name.
 - `StatCard foot`: a muted 12px line under the value, or a `Progress` meter.
-- `StatGroup`: joins stat cards into one band of equal cells divided by hairlines, with no double borders. It follows its own width, not the window's: one row from 48rem, two columns from 24rem, one column below, and an odd last cell keeps the empty cell beside it outlined. Dividers use logical sides, so they mirror in RTL. It is a list for screen readers (name it with `aria-label` or `aria-labelledby`), with each card a list item. `flush` drops its own card surface for use inside a `Card`: `<CardContent flush><StatGroup flush>`.
-- `type-stat-value` utility: 24/32, weight 600, -0.3px tracking, tabular figures (P3 H6 semibold), used by label-first stat cards.
+- `StatGroup`: joins stat cards into one band. The cards sit on a 1px gap over `border-subtle`, so hairlines divide them at any column count. Pass the columns per band in `className`, such as `sm:grid-cols-2`, `grid-cols-2 lg:grid-cols-4` or `sm:grid-cols-3`; without one the band is a single column. It is a list for screen readers (name it with `aria-label` or `aria-labelledby`), and each card in it is a list item without its own corners or shadow. The band is a card of its own; `flush` drops that surface for use inside a `Card`, where `className="border-t border-border-subtle"` divides it from the content above.
+- `type-stat-value` and `type-stat-value-sm` utilities: P3 H6 and Body S, semibold, in tabular figures, used by label-first stat cards.
 
 ## [0.3.1] - 2026-10-06
 

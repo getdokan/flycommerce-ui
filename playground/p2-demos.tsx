@@ -275,13 +275,16 @@ export function StatCardDemo() {
         />
         <StatCard
           layout="label-first"
-          label="Vendors"
-          value="64 of 100"
-          foot={<Progress value={64} aria-label="Vendors used" />}
+          label="Credits used"
+          value="640 of 1,000"
+          foot={<Progress value={64} aria-label="Credits used" />}
         />
       </div>
 
-      <StatGroup aria-label="Orders this period">
+      <StatGroup
+        aria-label="Orders this period"
+        className="grid-cols-2 lg:grid-cols-4"
+      >
         <StatCard
           layout="label-first"
           label="Extra orders"
@@ -315,12 +318,43 @@ export function StatCardDemo() {
       </StatGroup>
 
       <Card>
+        <CardHeader>
+          <CardTitle id="plan-figures">Growth plan</CardTitle>
+          <CardDescription>$49.00 a month, billed monthly</CardDescription>
+        </CardHeader>
+        <StatGroup
+          flush
+          aria-labelledby="plan-figures"
+          className="border-t border-border-subtle sm:grid-cols-2"
+        >
+          <StatCard
+            layout="label-first"
+            valueSize="sm"
+            label="Next payment"
+            value="$49.00 on 15 November"
+            foot="Plus extra orders, $12.00 projected"
+          />
+          <StatCard
+            layout="label-first"
+            valueSize="sm"
+            label="Vendors"
+            value="64 of 100"
+            foot={<Progress value={64} aria-label="Vendors used" />}
+          />
+        </StatGroup>
+      </Card>
+
+      <Card>
         <CardHeader className="border-b">
           <CardTitle id="cart-figures">Key figures</CardTitle>
           <CardDescription>1 to 19 October</CardDescription>
         </CardHeader>
         <CardContent flush>
-          <StatGroup flush aria-labelledby="cart-figures">
+          <StatGroup
+            flush
+            aria-labelledby="cart-figures"
+            className="sm:grid-cols-3"
+          >
             <StatCard
               layout="label-first"
               label="Recovered revenue"
