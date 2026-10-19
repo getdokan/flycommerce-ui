@@ -494,6 +494,16 @@ export function SaveBarDemo() {
           setDirty(false)
           toast.success("Settings saved")
         }}
+        saveMenu={
+          <DropdownMenuItem
+            onSelect={() => {
+              setDirty(false)
+              toast.success("Saved and published")
+            }}
+          >
+            Save and publish
+          </DropdownMenuItem>
+        }
       />
     </div>
   )
