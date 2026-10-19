@@ -81,7 +81,7 @@ const textVariants = cva("", {
   },
 })
 
-const TEXT_ELEMENTS: Record<TextVariant, React.ElementType> = {
+const TEXT_ELEMENTS = {
   display: "p",
   h1: "h1",
   h2: "h2",
@@ -95,30 +95,40 @@ const TEXT_ELEMENTS: Record<TextVariant, React.ElementType> = {
   "caption-l": "span",
   "caption-m": "span",
   "caption-s": "span",
-}
+} as const satisfies Record<TextVariant, React.ElementType>
 
-type TextProps = React.HTMLAttributes<HTMLElement> & {
-  ref?: React.Ref<HTMLElement>
-  variant?: TextVariant
+type TextOwnProps<V extends TextVariant, T extends React.ElementType> = {
+  variant?: V
   weight?: TextWeight
   tone?: TextTone
   /** Tabular figures, so numbers in columns and counters line up. */
   numeric?: boolean
-  /** The element to render; by default h1–h6 for the headings, p for display and body sizes, span for captions. */
-  as?: React.ElementType
+  /** The element to render, whose own props Text then takes; by default h1–h6 for the headings, p for display and body sizes, span for captions. */
+  as?: T
+  className?: string
 }
 
+type TextProps<
+  V extends TextVariant = "body-s",
+  T extends React.ElementType = (typeof TEXT_ELEMENTS)[V],
+> = TextOwnProps<V, T> &
+  Omit<React.ComponentPropsWithRef<T>, keyof TextOwnProps<V, T>>
+
 /** Text on the P3 type scale: `variant` (13 sizes), `weight` and `tone`; renders h1–h6, p or span. */
-function Text({
-  variant = "body-s",
+function Text<
+  V extends TextVariant = "body-s",
+  T extends React.ElementType = (typeof TEXT_ELEMENTS)[V],
+>({
+  variant: variantProp,
   weight = "regular",
   tone = "default",
   numeric,
   as,
   className,
   ...props
-}: TextProps) {
-  const Comp = as ?? TEXT_ELEMENTS[variant]
+}: TextProps<V, T>) {
+  const variant = variantProp ?? "body-s"
+  const Comp: React.ElementType = as ?? TEXT_ELEMENTS[variant]
 
   return (
     <Comp

@@ -66,6 +66,31 @@ describe("Text", () => {
     expect(ref.current).toBe(text)
   })
 
+  it("passes the props of the element given in `as`", () => {
+    render(
+      <>
+        <Text as="label" htmlFor="store-name">
+          Store name
+        </Text>
+        <Text as="a" href="/settings/billing">
+          Billing
+        </Text>
+        <Text as="time" dateTime="2026-10-20">
+          20 Oct
+        </Text>
+      </>
+    )
+    expect(screen.getByText("Store name").getAttribute("for")).toBe(
+      "store-name"
+    )
+    expect(screen.getByText("Billing").getAttribute("href")).toBe(
+      "/settings/billing"
+    )
+    expect(screen.getByText("20 Oct").getAttribute("datetime")).toBe(
+      "2026-10-20"
+    )
+  })
+
   it("keeps its size when the tone or className sets a colour", () => {
     render(
       <>
