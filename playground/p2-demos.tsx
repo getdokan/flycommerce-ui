@@ -17,12 +17,14 @@ import {
   DateRangePicker,
   Dropzone,
   Field,
+  FieldCount,
   FieldDescription,
   FieldLabel,
   Icon,
   IconChip,
   ImageWithFallback,
   InfoTooltip,
+  Input,
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -108,6 +110,34 @@ export function TagInputDemo() {
       <FieldDescription>
         Enter or comma adds a tag; Backspace removes the last one.
       </FieldDescription>
+    </Field>
+  )
+}
+
+export function TitleField({
+  id,
+  label,
+  limit,
+  defaultValue,
+}: {
+  id: string
+  label: string
+  limit: number
+  defaultValue: string
+}) {
+  const [title, setTitle] = React.useState(defaultValue)
+  return (
+    <Field>
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <FieldCount count={title.length} limit={limit} />
+      </div>
+      <Input
+        id={id}
+        value={title}
+        maxLength={100}
+        onChange={(event) => setTitle(event.target.value)}
+      />
     </Field>
   )
 }

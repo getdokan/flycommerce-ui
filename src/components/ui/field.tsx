@@ -191,6 +191,43 @@ function FieldDescription({
   )
 }
 
+/** "52 / 60" at the end of a field's label row: a character count that turns to the warning tone past `limit`. */
+function FieldCount({
+  count,
+  limit,
+  unitLabel = "characters",
+  className,
+  ...props
+}: Omit<React.ComponentProps<"span">, "children"> & {
+  count: number
+  /** The number after the slash; past it the count turns to the warning tone. */
+  limit: number
+  /** Read after the numbers by screen readers, hidden on screen. */
+  unitLabel?: React.ReactNode
+}) {
+  const over = count > limit
+  return (
+    <span
+      data-slot="field-count"
+      data-over={over || undefined}
+      aria-live="polite"
+      className={cn(
+        "text-[12px] leading-[16px] font-normal text-muted-foreground tabular-nums data-over:text-warning-strong",
+        className
+      )}
+      {...props}
+    >
+      {count} / {limit}
+      {unitLabel && (
+        <span data-slot="field-count-unit" className="sr-only">
+          {" "}
+          {unitLabel}
+        </span>
+      )}
+    </span>
+  )
+}
+
 function FieldSeparator({
   children,
   className,
@@ -276,6 +313,7 @@ export {
   Field,
   FieldLabel,
   FieldDescription,
+  FieldCount,
   FieldError,
   FieldGroup,
   FieldLegend,

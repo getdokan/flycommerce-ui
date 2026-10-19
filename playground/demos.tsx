@@ -81,6 +81,7 @@ import {
   IconChipDemo,
   SwitchFieldDemo,
   TagInputDemo,
+  TitleField,
 } from "./p2-demos"
 
 import {
@@ -1332,6 +1333,18 @@ export const demos: Demo[] = [
             Customers reply to this address from order emails.
           </FieldDescription>
         </Field>
+        <TitleField
+          id="share-title"
+          label="Share title"
+          limit={60}
+          defaultValue="Maison Oriel: tailored outerwear"
+        />
+        <TitleField
+          id="page-title"
+          label="Page title"
+          limit={60}
+          defaultValue="Maison Oriel: tailored outerwear, knitwear and leather goods from Lisbon"
+        />
       </div>
     ),
   },
