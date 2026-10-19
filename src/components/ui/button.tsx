@@ -1,12 +1,13 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
+import { FiArrowRight as ArrowRightIcon } from "react-icons/fi"
 import { Slot } from "radix-ui"
 
 import { Spinner } from "@/components/ui/spinner"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center gap-2 rounded-control border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center gap-2 border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -35,6 +36,10 @@ const buttonVariants = cva(
         "icon-sm": "size-8",
         "icon-lg": "size-10",
       },
+      shape: {
+        default: "rounded-control",
+        pill: "relative rounded-full transition-[color,background-color,border-color,box-shadow,scale] duration-200 ease-fluid active:scale-98",
+      },
     },
     compoundVariants: [
       {
@@ -42,10 +47,17 @@ const buttonVariants = cva(
         className:
           "h-auto px-0 has-data-[icon=inline-end]:pe-0 has-data-[icon=inline-start]:ps-0",
       },
+      {
+        shape: "pill",
+        size: "default",
+        className:
+          "h-11 gap-3 px-5 has-[[data-slot=button-arrow]:not([data-pinned])]:pe-1.5 has-[[data-slot=button-arrow][data-pinned]]:w-full has-[[data-slot=button-arrow][data-pinned]]:px-12",
+      },
     ],
     defaultVariants: {
       variant: "default",
       size: "default",
+      shape: "default",
     },
   }
 )
@@ -61,6 +73,7 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  shape = "default",
   asChild = false,
   loading = false,
   disabled,
@@ -75,7 +88,8 @@ function Button({
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
+      data-shape={shape === "pill" ? shape : undefined}
+      className={cn(buttonVariants({ variant, size, shape, className }))}
       disabled={asChild ? undefined : disabled || isLoading}
       aria-busy={isLoading || undefined}
       {...props}
@@ -92,4 +106,38 @@ function Button({
   )
 }
 
-export { Button, buttonVariants, type ButtonProps }
+type ButtonArrowProps = React.ComponentProps<"span"> & {
+  /** Holds the arrow at the end of a full-width pill whose label centres across it. */
+  pinned?: boolean
+}
+
+/** The forward arrow of a pill call to action, in its own circle tinted for the button's variant. */
+function ButtonArrow({
+  pinned = false,
+  className,
+  ...props
+}: ButtonArrowProps) {
+  return (
+    <span
+      aria-hidden="true"
+      data-slot="button-arrow"
+      data-pinned={pinned || undefined}
+      className={cn(
+        "grid size-8 shrink-0 place-items-center rounded-full bg-muted transition-transform duration-300 ease-fluid group-hover/button:translate-x-0.5 group-data-[variant=default]/button:bg-primary-foreground/15 group-data-[variant=destructive-solid]/button:bg-primary-foreground/15 rtl:group-hover/button:-translate-x-0.5",
+        pinned && "absolute end-1.5 top-1/2 -translate-y-1/2",
+        className
+      )}
+      {...props}
+    >
+      <ArrowRightIcon className="size-4 rtl:rotate-180" />
+    </span>
+  )
+}
+
+export {
+  Button,
+  ButtonArrow,
+  buttonVariants,
+  type ButtonArrowProps,
+  type ButtonProps,
+}

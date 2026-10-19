@@ -53,6 +53,7 @@ import {
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
+import { BrandMarkDemo, PillButtonDemo, TrayDemo } from "./display-demos"
 import { ColorsDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
@@ -335,7 +336,11 @@ const KEYWORDS: Record<string, string> = {
   sidebar: "navigation nav rail",
   icons: "icon glyph feather react-icons svg",
   "card-brand-icon":
-    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
+    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing colour color full colour",
+  "brand-mark":
+    "logo brand mark tile third party provider gateway carrier app icon simple icons white",
+  "pill-button": "pill cta call to action arrow rounded full width primary",
+  tray: "lead shell double bezel hero highlight notice warning plate",
   typography: "type font text heading size scale inter",
   colors: "color colour palette token swatch theme",
   "page-header": "title heading back link actions",
@@ -414,6 +419,9 @@ const SOURCES: Record<string, Source> = {
   sidebar: "prototype",
   icons: "prototype",
   "card-brand-icon": "composite",
+  "brand-mark": "prototype",
+  "pill-button": "prototype",
+  tray: "prototype",
   typography: "prototype",
   colors: "prototype",
   "page-header": "prototype",
@@ -732,6 +740,12 @@ export const demos: Demo[] = [
     group: "Foundations",
     render: () => <CardBrandIconDemo />,
   },
+  {
+    id: "brand-mark",
+    title: "Brand mark",
+    group: "Foundations",
+    render: () => <BrandMarkDemo />,
+  },
 
   // Patterns
   {
@@ -739,6 +753,12 @@ export const demos: Demo[] = [
     title: "Page header",
     group: "Patterns",
     render: () => <PageHeaderDemo />,
+  },
+  {
+    id: "tray",
+    title: "Tray (lead)",
+    group: "Patterns",
+    render: () => <TrayDemo />,
   },
   {
     id: "data-table",
@@ -1020,6 +1040,12 @@ export const demos: Demo[] = [
         </p>
       </Stack>
     ),
+  },
+  {
+    id: "pill-button",
+    title: "Pill call to action",
+    group: "Actions",
+    render: () => <PillButtonDemo />,
   },
   {
     id: "button-group",
