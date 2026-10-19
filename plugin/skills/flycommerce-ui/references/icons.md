@@ -6,7 +6,7 @@ Use `<Icon name="…" />` with one of these names. Never import from react-icons
 
 ## Navigation & objects
 
-`dashboard` (House), `orders` (ShoppingCart), `products` (ShoppingBag), `categories` (FolderTree), `brands` (Tag), `collections` (Layers), `attributes` (SlidersHorizontal), `reviews` (Star), `questions` (MessageCircleQuestion), `customers` (Users), `customer` (UserCircle), `vendors` (UserCircle), `invoices` (FileText), `preorders` (CalendarClock), `refunds` (RotateCcw), `returns` (PackageX), `abandonedCart` (TbShoppingCartX), `coupons` (Ticket), `marketing` (Megaphone), `blogs` (Newspaper), `pages` (File), `spreadsheet` (FileSpreadsheet), `themes` (SlidersHorizontal), `media` (Image), `abuse` (Flag), `barChart` (BarChart2)
+`dashboard` (House), `orders` (ShoppingCart), `products` (ShoppingBag), `categories` (FolderTree), `brands` (Tag), `collections` (Layers), `attributes` (SlidersHorizontal), `reviews` (Star), `questions` (MessageCircleQuestion), `customers` (Users), `customer` (UserCircle), `vendors` (UserCircle), `invoices` (FileText), `preorders` (CalendarClock), `refunds` (RotateCcw), `returns` (PackageX), `abandonedCart` (TbShoppingCartX), `coupons` (Ticket), `marketing` (Megaphone), `blogs` (Newspaper), `pages` (File), `spreadsheet` (FileSpreadsheet), `list` (List), `themes` (SlidersHorizontal), `media` (Image), `abuse` (Flag), `reports` (BarChart2)
 
 ## Fulfilment
 
@@ -18,7 +18,7 @@ Use `<Icon name="…" />` with one of these names. Never import from react-icons
 
 ## Platform
 
-`settings` (Settings), `users` (Users), `permissions` (ShieldCheck), `integrations` (Layers), `webhooks` (Webhook), `api` (Code), `ai` (Sparkles), `domains` (Globe), `languages` (Languages), `markets` (Map), `seo` (TrendingUp), `redirects` (CornerDownRight), `events` (Activity), `notifications` (Bell), `policies` (Scale), `setupGuide` (PiSlidersHorizontal), `listChecks` (List), `brandAppearance` (Palette), `onboarding` (UserPlus), `resources` (LibraryBig), `support` (MessageCircleQuestion), `lifeBuoy` (LifeBuoy), `supportPin` (KeyRound), `roadmap` (MessageSquare), `docs` (BookOpen), `changelog` (Gift), `scheduleCall` (PhoneCall), `team` (Users), `referral` (Gift), `signOut` (LogOut)
+`settings` (Settings), `users` (Users), `permissions` (ShieldCheck), `integrations` (Layers), `webhooks` (Webhook), `api` (Code), `ai` (Sparkles), `domains` (Globe), `languages` (Languages), `markets` (Map), `seo` (TrendingUp), `redirects` (CornerDownRight), `events` (Activity), `notifications` (Bell), `policies` (Scale), `setupGuide` (PiSlidersHorizontal), `brandAppearance` (Palette), `onboarding` (UserPlus), `resources` (LibraryBig), `support` (MessageCircleQuestion), `supportPin` (KeyRound), `roadmap` (MessageSquare), `docs` (BookOpen), `changelog` (Gift), `scheduleCall` (PhoneCall), `team` (Users), `referral` (Gift), `signOut` (LogOut)
 
 ## Account & security
 
@@ -30,7 +30,7 @@ Use `<Icon name="…" />` with one of these names. Never import from react-icons
 
 ## Feedback
 
-`info` (Info), `warning` (TriangleAlert), `error` (CircleAlert), `success` (CircleCheck), `circleDashed` (Circle), `empty` (Inbox), `loading` (LoaderCircle)
+`info` (Info), `warning` (TriangleAlert), `error` (CircleAlert), `success` (CircleCheck), `todo` (Circle), `empty` (Inbox), `loading` (LoaderCircle)
 
 ## Onboarding & appearance
 
