@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+
+- `sonner` is now a peer dependency (`^2`) instead of a dependency, so `toast()` from this package and an app's own `<Toaster>` share one copy of sonner. With the library's own copy, an app that already had sonner rendered its `<Toaster>` from one copy while `toast()` called the other, so those toasts never appeared. Install `sonner@^2` yourself if your package manager doesn't add peer dependencies.
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed
