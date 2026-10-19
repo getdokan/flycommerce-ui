@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest"
 import { Text, TEXT_VARIANTS, TEXT_WEIGHTS } from "@/index"
 
 const ELEMENTS = {
-  display: "H1",
+  display: "P",
   h1: "H1",
   h2: "H2",
   h3: "H3",

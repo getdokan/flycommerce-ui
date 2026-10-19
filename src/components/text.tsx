@@ -33,7 +33,7 @@ type TextVariant = (typeof TEXT_VARIANTS)[number]
 type TextWeight = (typeof TEXT_WEIGHTS)[number]
 
 type TextTone =
-  "primary" | "secondary" | "muted" | "brand" | "success" | "danger" | "inherit"
+  "default" | "secondary" | "muted" | "brand" | "success" | "danger" | "inherit"
 
 const textVariants = cva("", {
   variants: {
@@ -62,7 +62,7 @@ const textVariants = cva("", {
       black: "font-black",
     },
     tone: {
-      primary: "text-foreground",
+      default: "text-foreground",
       secondary: "text-foreground-secondary",
       muted: "text-muted-foreground",
       brand: "text-primary-ink",
@@ -77,12 +77,12 @@ const textVariants = cva("", {
   defaultVariants: {
     variant: "body-s",
     weight: "regular",
-    tone: "primary",
+    tone: "default",
   },
 })
 
 const TEXT_ELEMENTS: Record<TextVariant, React.ElementType> = {
-  display: "h1",
+  display: "p",
   h1: "h1",
   h2: "h2",
   h3: "h3",
@@ -104,7 +104,7 @@ type TextProps = React.HTMLAttributes<HTMLElement> & {
   tone?: TextTone
   /** Tabular figures, so numbers in columns and counters line up. */
   numeric?: boolean
-  /** The element to render; by default h1–h6 for display and headings, p for body text, span for captions. */
+  /** The element to render; by default h1–h6 for the headings, p for display and body sizes, span for captions. */
   as?: React.ElementType
 }
 
@@ -112,7 +112,7 @@ type TextProps = React.HTMLAttributes<HTMLElement> & {
 function Text({
   variant = "body-s",
   weight = "regular",
-  tone = "primary",
+  tone = "default",
   numeric,
   as,
   className,

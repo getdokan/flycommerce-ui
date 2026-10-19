@@ -80,7 +80,7 @@ export function TypographyDemo() {
 }
 
 const SCALE_SPECS: [TextVariant, string, string, string][] = [
-  ["display", "Display", "96 / 100 · -3.6", "h1"],
+  ["display", "Display", "96 / 100 · -3.6", "p"],
   ["h1", "H1", "64 / 72 · -1.7", "h1"],
   ["h2", "H2", "56 / 64 · -1.7", "h2"],
   ["h3", "H3", "48 / 56 · -1", "h3"],
@@ -106,7 +106,7 @@ const WEIGHT_VALUES: Record<TextWeight, number> = {
 }
 
 const TONE_NOTES: [TextTone, string][] = [
-  ["primary", "text-foreground"],
+  ["default", "text-foreground"],
   ["secondary", "text-foreground-secondary"],
   ["muted", "text-muted-foreground"],
   ["brand", "text-primary-ink"],
