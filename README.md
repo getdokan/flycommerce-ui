@@ -391,12 +391,31 @@ The gallery's [Icons page](https://ui.flycommerce.com/#icons) lists all 157 name
 To draw the FlyCommerce P3 Figma icon set, wrap the app (or one area of it) in `IconProvider`. Every name `P3_GLYPHS` lists then draws its P3 glyph, and the other names stay as they are:
 
 ```tsx
-import { IconProvider, P3_GLYPHS } from "@flycommerce/ui"
+import { IconProvider } from "@flycommerce/ui"
 
 export function Root() {
   return (
-    <IconProvider glyphs={P3_GLYPHS}>
+    <IconProvider set="p3">
       <App />
+    </IconProvider>
+  )
+}
+```
+
+`set` is a string, so a Next.js server layout can render this provider. To swap in glyphs of your own, pass `glyphs`, a map from name to a react-icons component, which wins over the set. A server component can't pass components to a client one, so in Next.js build the map in a `"use client"` file:
+
+```tsx
+"use client"
+
+import { IconProvider } from "@flycommerce/ui"
+import { FiShoppingBag } from "react-icons/fi"
+
+const GLYPHS = { orders: FiShoppingBag }
+
+export function AppIcons({ children }: { children: React.ReactNode }) {
+  return (
+    <IconProvider set="p3" glyphs={GLYPHS}>
+      {children}
     </IconProvider>
   )
 }

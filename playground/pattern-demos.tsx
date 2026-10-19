@@ -883,11 +883,11 @@ export function IconsDemo() {
           <code className="rounded bg-muted px-1">{`<Icon name="orders" />`}</code>
           , never a react-icons component directly. For the P3 Figma set, wrap
           the app in{" "}
-          <code className="rounded bg-muted px-1">{`<IconProvider glyphs={P3_GLYPHS}>`}</code>
+          <code className="rounded bg-muted px-1">{`<IconProvider set="p3">`}</code>
           .
         </span>
       </div>
-      <IconProvider glyphs={set === "p3" ? P3_GLYPHS : undefined}>
+      <IconProvider set={set === "p3" ? "p3" : undefined}>
         {Object.entries(ICON_GROUPS).map(([group, icons]) => {
           const names = (Object.keys(icons) as IconName[]).filter(
             (name) =>

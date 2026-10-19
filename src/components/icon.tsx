@@ -401,16 +401,20 @@ function Icon({
 }
 
 type IconProviderProps = {
+  set?: "p3"
   glyphs?: Partial<Record<IconName, IconType>>
   children?: React.ReactNode
 }
 
-/** Swaps the glyph every `Icon` below it draws for the names in `glyphs` (e.g. `P3_GLYPHS`), on top of any outer provider's. */
-function IconProvider({ glyphs, children }: IconProviderProps) {
+/** Swaps the glyph every `Icon` below it draws: a named `set` such as `"p3"`, then the names in `glyphs`, on top of any outer provider's. */
+function IconProvider({ set, glyphs, children }: IconProviderProps) {
   const outer = React.useContext(IconGlyphsContext)
   const value = React.useMemo(
-    () => (outer && glyphs ? { ...outer, ...glyphs } : (glyphs ?? outer)),
-    [outer, glyphs]
+    () =>
+      set || glyphs
+        ? { ...outer, ...(set && ICON_SETS[set]), ...glyphs }
+        : outer,
+    [outer, set, glyphs]
   )
   return (
     <IconGlyphsContext.Provider value={value}>
@@ -497,6 +501,8 @@ const P3_GLYPHS: Partial<Record<IconName, IconType>> = {
   goodsPod: ImageIcon,
   visitors: FlySessions,
 }
+
+const ICON_SETS = { p3: P3_GLYPHS }
 
 export {
   Icon,

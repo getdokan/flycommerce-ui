@@ -223,6 +223,38 @@ describe("IconProvider", () => {
     }
   })
 
+  it("takes the P3 set by name, a string a server component can pass", () => {
+    for (const name of NAMES) {
+      expect(
+        html(
+          <IconProvider set="p3">
+            <Icon name={name} />
+          </IconProvider>
+        )
+      ).toBe(
+        html(
+          <IconProvider glyphs={P3_GLYPHS}>
+            <Icon name={name} />
+          </IconProvider>
+        )
+      )
+    }
+  })
+
+  it("lays glyphs over the named set", () => {
+    const Cart = ICONS.abandonedCart
+    render(
+      <IconProvider set="p3" glyphs={{ products: Cart }}>
+        <Icon name="products" />
+        <Icon name="customers" />
+        <Icon name="dashboard" />
+      </IconProvider>
+    )
+    expect(icon("products")).toBe(drawn(Cart, "products"))
+    expect(icon("customers")).toBe(drawn(P3_GLYPHS.customers!, "customers"))
+    expect(icon("dashboard")).toBe(drawn(ICONS.dashboard, "dashboard", 2))
+  })
+
   it("stacks on an outer provider, the inner one winning", () => {
     const Cart = ICONS.abandonedCart
     render(
