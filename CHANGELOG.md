@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- Screen-reader-only text no longer stretches the page in apps whose content scrolls inside a container (an app shell with a scrolling `main`). `sr-only` text is absolutely positioned. In `DataTable` (its loading status and the "More pages" label of its page numbers), `PaginationEllipsis`, `CopyButton` and `SidebarTrigger` it had no positioned ancestor inside the component, so it was placed against the page instead, at its unscrolled position far below the window. That made the document taller than the window, and scrolling past the end of the content moved the whole layout up. Each now has a positioned parent of its own.
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed

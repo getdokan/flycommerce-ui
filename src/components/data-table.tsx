@@ -512,7 +512,7 @@ function DataTable<TData>({
     <div
       data-slot="data-table"
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-xl bg-card text-card-foreground shadow-card",
+        "relative w-full min-w-0 overflow-hidden rounded-xl bg-card text-card-foreground shadow-card",
         className
       )}
     >
@@ -904,7 +904,7 @@ function DataTablePagination(
               item === "ellipsis" ? (
                 <span
                   key={`ellipsis-${index}`}
-                  className="flex size-8 items-center justify-center text-muted-foreground"
+                  className="relative flex size-8 items-center justify-center text-muted-foreground"
                 >
                   <MoreHorizontalIcon aria-hidden="true" className="size-4" />
                   <span className="sr-only">{labels.morePages}</span>
