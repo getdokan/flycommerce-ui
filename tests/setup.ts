@@ -41,4 +41,3 @@ Element.prototype.releasePointerCapture ??= () => {}
 URL.createObjectURL ??= () => "blob:test"
 Range.prototype.getClientRects ??= () => [] as unknown as DOMRectList
 Range.prototype.getBoundingClientRect ??= () => new DOMRect()
-document.elementFromPoint ??= () => null

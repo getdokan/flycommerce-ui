@@ -12,6 +12,8 @@ import {
   type RichTextEditorAiAction,
 } from "@/index"
 
+document.elementFromPoint ??= () => null
+
 type Run = RichTextEditorAiAction["run"]
 
 async function writingArea(container: HTMLElement) {
