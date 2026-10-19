@@ -13,11 +13,6 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - `DescriptionList` and `DescriptionItem`: read-only facts as divided label and value rows (`dl`, `dt`, `dd`), the muted label on the left and the value on the right, stacking when the row is too narrow. Pass the label as `label` and the value as children.
 - `ConfirmDialog acknowledgeLabel`: a checkbox with this label that must be ticked before the confirm button enables, e.g. "I am sure I want to remove them". It clears when the dialog closes and works together with `confirmText`.
 
-### Fixed
-
-- `Progress` passes `value` to the progress bar, so screen readers announce it: `aria-valuenow` and `aria-valuetext` ("62%", or your `getValueLabel`) are set, and `data-state` is `loading` or `complete` instead of always `indeterminate`.
-- `Progress` fills from the right in right-to-left layouts.
-
 ### Changed
 
 - `SaveBar` matches the dashboard's unsaved-changes bar (`BottomActionBar`): a `gray-900` bar (new `inverse` token) with 8px corners, as wide as the dashboard's (`max-w-lg` up to `max-w-4xl`), `px-6 py-4`, a white message, an outlined Discard and a normal-size Save. The default `saveLabel` is now "Save changes". New `saveMenu` adds a chevron joined to Save for extra save options, like the dashboard's split button.
@@ -25,6 +20,8 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Fixed
 
+- `Progress` passes `value` to the progress bar, so screen readers announce it: `aria-valuenow` and `aria-valuetext` ("62%", or your `getValueLabel`) are set, and `data-state` is `loading` or `complete` instead of always `indeterminate`.
+- `Progress` fills from the right in right-to-left layouts.
 - `ConfirmDialog`: the typed-confirmation label reads as one sentence again. It had gaps around the name, because the label lays out its children as a flex row with a gap. Only the text to type is bold now, so it stands out from the regular-weight "Type … to confirm".
 - Claude plugin: `references/tokens.md` lists every light-theme token. It left out 20 of the 61, among them `--muted-foreground`, `--primary-subtle`, `--ring` and `--radius`, because the generator skipped the line after any token without a comment.
 - Screen-reader-only text no longer stretches the page in apps whose content scrolls inside a container (an app shell with a scrolling `main`). `sr-only` text is absolutely positioned. In `DataTable` (its loading status and the "More pages" label of its page numbers), `PaginationEllipsis`, `CopyButton` and `SidebarTrigger` it had no positioned ancestor inside the component, so it was placed against the page instead, at its unscrolled position far below the window. That made the document taller than the window, and scrolling past the end of the content moved the whole layout up. Each now has a positioned parent of its own.
