@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
 const brandMarkVariants = cva(
-  "inline-grid shrink-0 place-items-center overflow-hidden rounded-brand-mark bg-brand-mark shadow-brand-mark ring-1 ring-brand-mark-ring [&_svg]:size-full",
+  "grid shrink-0 place-items-center overflow-hidden rounded-brand-mark bg-brand-mark shadow-brand-mark ring-1 ring-brand-mark-ring [&_svg]:size-full",
   {
     variants: {
       size: {

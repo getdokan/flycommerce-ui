@@ -84,6 +84,13 @@ describe("CardBrandIcon variant", () => {
     expect(mark.getAttribute("width")).toBe("41")
   })
 
+  it("keeps its size when a parent sizes every svg inside it", () => {
+    render(<CardBrandIcon brand="visa" variant="color" size={20} />)
+    const mark = screen.getByRole("img", { name: "Visa" })
+    expect(mark.style.height).toBe("20px")
+    expect(mark.style.width).toBe("31px")
+  })
+
   it("falls back to the generic card for an unknown brand", () => {
     render(<CardBrandIcon brand="eftpos_au" variant="color" />)
     const icon = screen.getByRole("img", { name: "Card" })

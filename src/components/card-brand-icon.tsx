@@ -58,7 +58,8 @@ function CardBrandIcon({
   const ColorMark = known && variant === "color" ? COLOR_CARD_MARKS[id] : null
 
   if (ColorMark) {
-    const { title, children, ...svgProps } = props
+    const { title, children, style, ...svgProps } = props
+    const width = typeof size === "number" ? Math.round(size * 1.56) : undefined
     return (
       <ColorMark
         {...a11y}
@@ -66,12 +67,13 @@ function CardBrandIcon({
         data-brand={id}
         data-variant="color"
         height={size}
-        width={typeof size === "number" ? Math.round(size * 1.56) : undefined}
+        width={width}
         className={cn(
           "shrink-0 rounded-sm ring-1 ring-card-brand-ring",
           className
         )}
         {...svgProps}
+        style={{ height: size, width: width ?? "auto", ...style }}
       >
         {title && <title>{title}</title>}
         {children}
