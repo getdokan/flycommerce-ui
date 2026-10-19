@@ -79,7 +79,8 @@ const COLOR_GROUPS: [string, [string, string][]][] = [
       ["background", "Cards, inputs"],
       ["card-header", "Card and table header"],
       ["muted", "Quiet fill"],
-      ["sidebar", "Dark chrome"],
+      ["sidebar", "Navigation rail"],
+      ["tooltip", "Tooltips, toasts"],
     ],
   ],
   [

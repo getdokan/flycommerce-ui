@@ -659,6 +659,8 @@
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-inverse: var(--inverse);
     --color-inverse-foreground: var(--inverse-foreground);
+    --color-tooltip: var(--tooltip);
+    --color-tooltip-foreground: var(--tooltip-foreground);
     --color-sidebar: var(--sidebar);
     --color-chart-5: var(--chart-5);
     --color-chart-4: var(--chart-4);
