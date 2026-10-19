@@ -212,7 +212,7 @@ function FieldCount({
       data-over={over || undefined}
       aria-live="polite"
       className={cn(
-        "text-[12px] leading-[16px] font-normal text-muted-foreground tabular-nums data-over:text-warning-strong",
+        "relative text-[12px] leading-[16px] font-normal text-muted-foreground tabular-nums data-over:text-warning-strong",
         className
       )}
       {...props}
