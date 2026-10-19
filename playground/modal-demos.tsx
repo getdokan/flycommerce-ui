@@ -35,6 +35,7 @@ import {
   RadioCard,
   RadioCardGroup,
   RichTextEditor,
+  type RichTextEditorAiAction,
   Select,
   SelectContent,
   SelectItem,
@@ -768,10 +769,65 @@ export function ModalUseCasesDemo() {
   )
 }
 
+function wait(ms: number, signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, ms)
+    signal.addEventListener("abort", () => {
+      clearTimeout(timer)
+      reject(signal.reason)
+    })
+  })
+}
+
+const REWORDINGS: [RegExp, string][] = [
+  [/Soft, breathable/g, "Light, airy"],
+  [/tee/g, "T-shirt"],
+  [/Relaxed fit/g, "Easy, loose cut"],
+  [/Machine washable/g, "Goes straight in the wash"],
+]
+
+const AI_ACTIONS: RichTextEditorAiAction[] = [
+  {
+    id: "paraphrase",
+    label: "Paraphrase",
+    run: async (html, selection, { signal }) => {
+      await wait(1000, signal)
+      return REWORDINGS.reduce(
+        (text, [pattern, wording]) => text.replace(pattern, wording),
+        selection ?? html
+      )
+    },
+  },
+  {
+    id: "simplify",
+    label: "Simplify",
+    run: async (html, selection, { signal }) => {
+      await wait(1000, signal)
+      const text = (selection ?? html)
+        .replace(/<\/(p|li|h[1-6])>/g, ". ")
+        .replace(/<[^>]+>/g, "")
+        .replace(/\.\s*\./g, ".")
+      return `<p>${text.trim()}</p>`
+    },
+  },
+  {
+    id: "extend",
+    label: "Extend",
+    run: async (html, selection, { signal }) => {
+      await wait(1000, signal)
+      return `${selection ?? html}<p>Pairs well with our linen shorts for easy summer days.</p>`
+    },
+  },
+]
+
 export function RichTextEditorDemo() {
   const [html, setHtml] = React.useState(
     "<p>Soft, breathable <strong>organic cotton</strong> tee.</p><ul><li>Relaxed fit</li><li>Machine washable</li></ul>"
   )
+  const [policy, setPolicy] = React.useState(
+    "<h1>Returns policy</h1><p>Return anything within <strong>30 days</strong> of delivery.</p><h2>Exchanges</h2><p>Swap sizes for free.</p><h3>Damaged items</h3><p>Send us a photo first.</p><h4>Outside the EU</h4><p>We cover return shipping.</p>"
+  )
+  const [aiHtml, setAiHtml] = React.useState(html)
   return (
     <div className="flex w-full flex-col gap-4">
       <Field>
@@ -783,6 +839,20 @@ export function RichTextEditorDemo() {
           placeholder="Describe your product"
         />
         <FieldDescription>Emits HTML through onChange.</FieldDescription>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="rte-headings">Page with H1 to H6</FieldLabel>
+        <RichTextEditor
+          id="rte-headings"
+          value={policy}
+          onChange={setPolicy}
+          headingLevels={[1, 2, 3, 4, 5, 6]}
+          minHeight={260}
+        />
+        <FieldDescription>
+          headingLevels keeps stored H1 and H4 to H6, which load as paragraphs
+          with the default [2, 3].
+        </FieldDescription>
       </Field>
       <Field>
         <FieldLabel htmlFor="rte-ai">With Generate with AI</FieldLabel>
@@ -799,6 +869,44 @@ export function RichTextEditorDemo() {
         <FieldDescription>
           onGenerate gets the current HTML and resolves to the new HTML. The
           editor locks while it runs; Cmd/Ctrl+Z undoes the result.
+        </FieldDescription>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="rte-ai-actions">
+          With AI rewrite actions
+        </FieldLabel>
+        <RichTextEditor
+          id="rte-ai-actions"
+          value={aiHtml}
+          onChange={setAiHtml}
+          aiActions={AI_ACTIONS}
+        />
+        <FieldDescription>
+          Each action gets the HTML, plus the selected HTML when text is
+          selected. Its suggestion shows beside the original until you replace
+          it, insert it below or discard it; Esc cancels.
+        </FieldDescription>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="rte-ai-failure">When the AI call fails</FieldLabel>
+        <RichTextEditor
+          id="rte-ai-failure"
+          value="<p>Soft, breathable organic cotton tee.</p>"
+          aiActions={[
+            {
+              id: "paraphrase",
+              label: "Paraphrase",
+              run: async (_html, _selection, { signal }) => {
+                await wait(1000, signal)
+                throw new Error(
+                  "The AI service didn't respond. Try again in a minute."
+                )
+              },
+            },
+          ]}
+        />
+        <FieldDescription>
+          A rejected run shows its message inline, with Try again.
         </FieldDescription>
       </Field>
       <Field>

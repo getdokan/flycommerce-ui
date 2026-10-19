@@ -2,6 +2,13 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `RichTextEditor` `headingLevels`: the heading levels the toolbar offers and loaded HTML keeps, so `headingLevels={[1, 2, 3, 4, 5, 6]}` loads stored H1 and H4 to H6 as they are instead of turning them into paragraphs. Read once, on mount. The default stays `[2, 3]`. New labels: `heading1`, `heading4`, `heading5`, `heading6`.
+- `RichTextEditor` `aiActions`: rewrite actions such as Paraphrase, Extend and Simplify in an "AI Assistant" toolbar menu. `run(html, selection, { signal })` gets the document HTML, plus the selected HTML when text is selected, and resolves to the suggested HTML. While it runs, the editor locks and a panel under the toolbar shows a busy state with Cancel; then it shows the original beside the suggestion with Replace, Insert below, Try again and Discard, acting on the selection when there was one and on the whole document otherwise. A rejected run shows its message inline with Try again. Esc cancels or discards without closing a dialog or sheet around the editor, and editing the text or a new `value` closes the panel. Suggestions pass through the editor's schema before they are shown, so the preview is what gets inserted. `onGenerate` is unchanged. New labels: `aiAssistant`, `aiSuggestion`, `original`, `suggestion`, `writing`, `cancel`, `discard`, `tryAgain`, `insertBelow`, `replace`, `aiError`.
+
 ## [0.3.1] - 2026-10-06
 
 ### Fixed

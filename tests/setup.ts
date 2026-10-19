@@ -3,7 +3,7 @@ import { afterEach } from "vitest"
 
 afterEach(cleanup)
 
-// Browser APIs jsdom doesn't implement but Radix, cmdk, vaul, embla and recharts expect.
+// Browser APIs jsdom doesn't implement but Radix, cmdk, vaul, embla, recharts and ProseMirror expect.
 class ResizeObserverStub {
   observe() {}
   unobserve() {}
@@ -39,3 +39,6 @@ Element.prototype.scrollIntoView ??= () => {}
 Element.prototype.hasPointerCapture ??= () => false
 Element.prototype.releasePointerCapture ??= () => {}
 URL.createObjectURL ??= () => "blob:test"
+Range.prototype.getClientRects ??= () => [] as unknown as DOMRectList
+Range.prototype.getBoundingClientRect ??= () => new DOMRect()
+document.elementFromPoint ??= () => null

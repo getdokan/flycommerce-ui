@@ -354,7 +354,7 @@ const KEYWORDS: Record<string, string> = {
   "option-list-editor":
     "attribute values choices sortable list reorder drag enter to add",
   "rich-text-editor":
-    "wysiwyg tiptap description textarea formatting bold html",
+    "wysiwyg tiptap description textarea formatting bold html heading h1 h4 ai assistant rewrite paraphrase simplify extend suggestion",
   "modal-figma": "dialog popup new category form",
   "modal-use-cases":
     "dialog popup import export csv bulk edit invite details terms reject success wizard",
