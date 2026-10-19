@@ -402,6 +402,8 @@ export function Root() {
 }
 ```
 
+A glyph that `IconProvider` swaps in keeps its own stroke width, such as 0.8 for the P3 `bank` glyph, unless the `Icon` passes `strokeWidth`.
+
 ## Accessibility and localisation
 
 - Built on Radix primitives: correct roles, focus management and keyboard support.

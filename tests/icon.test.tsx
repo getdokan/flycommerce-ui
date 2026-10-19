@@ -15,29 +15,31 @@ import {
 
 const NAMES = Object.keys(ICONS) as IconName[]
 const html = (node: React.ReactNode) => renderToStaticMarkup(node)
-const drawn = (Glyph: IconType, name: IconName) =>
+const drawn = (Glyph: IconType, name: IconName, strokeWidth?: number) =>
   html(
     <Glyph
       data-slot="icon"
       data-icon-name={name}
       size={16}
-      strokeWidth={2}
+      {...(strokeWidth === undefined ? {} : { strokeWidth })}
       className="shrink-0"
       aria-hidden
     />
   )
+const icon = (name: IconName) =>
+  document.querySelector(`[data-icon-name="${name}"]`)?.outerHTML
 
 describe("Icon without an IconProvider", () => {
   it("draws every name with its built-in glyph and the props it always passed", () => {
     for (const name of NAMES) {
-      expect(html(<Icon name={name} />)).toBe(drawn(ICONS[name], name))
+      expect(html(<Icon name={name} />)).toBe(drawn(ICONS[name], name, 2))
       expect(
         html(
           <IconProvider>
             <Icon name={name} />
           </IconProvider>
         )
-      ).toBe(drawn(ICONS[name], name))
+      ).toBe(drawn(ICONS[name], name, 2))
     }
   })
 
@@ -210,13 +212,14 @@ describe("Icon without an IconProvider", () => {
 describe("IconProvider", () => {
   it("draws the names in glyphs with their override and every other name as before", () => {
     for (const name of NAMES) {
+      const glyph = P3_GLYPHS[name]
       expect(
         html(
           <IconProvider glyphs={P3_GLYPHS}>
             <Icon name={name} />
           </IconProvider>
         )
-      ).toBe(drawn(P3_GLYPHS[name] ?? ICONS[name], name))
+      ).toBe(glyph ? drawn(glyph, name) : drawn(ICONS[name], name, 2))
     }
   })
 
@@ -231,11 +234,9 @@ describe("IconProvider", () => {
         </IconProvider>
       </IconProvider>
     )
-    const icon = (name: IconName) =>
-      document.querySelector(`[data-icon-name="${name}"]`)?.outerHTML
     expect(icon("orders")).toBe(drawn(Cart, "orders"))
     expect(icon("products")).toBe(drawn(P3_GLYPHS.products!, "products"))
-    expect(icon("dashboard")).toBe(drawn(ICONS.dashboard, "dashboard"))
+    expect(icon("dashboard")).toBe(drawn(ICONS.dashboard, "dashboard", 2))
   })
 
   it("reaches the icons the library draws inside its own parts", () => {
@@ -289,7 +290,7 @@ describe("P3_GLYPHS", () => {
     expect(bank.getAttribute("class")).toBe("shrink-0 text-primary")
     expect(bank.getAttribute("width")).toBe("16")
     expect(bank.getAttribute("stroke")).toBe("none")
-    expect(bank.getAttribute("stroke-width")).toBe("2")
+    expect(bank.getAttribute("stroke-width")).toBe("0.8")
 
     const customers = screen.getByRole("img", { name: "Customers" })
     expect(customers.getAttribute("data-icon-name")).toBe("customers")
@@ -300,6 +301,30 @@ describe("P3_GLYPHS", () => {
     const products = document.querySelector('[data-icon-name="products"]')!
     expect(products.getAttribute("height")).toBe("1.25rem")
     expect(products.querySelector("title")?.textContent).toBe("Products")
+  })
+
+  it("draws each FlyCommerce glyph at its own stroke width and a Feather glyph at 2, unless the app passes one", () => {
+    const root = (node: React.ReactNode) =>
+      html(<IconProvider glyphs={P3_GLYPHS}>{node}</IconProvider>).match(
+        /^<svg[^>]*>/
+      )![0]
+    for (const [name, width] of [
+      ["collections", "0.5909"],
+      ["customers", "0.969"],
+      ["delivery", "1.7778"],
+      ["bank", "0.8"],
+      ["products", "1.8012"],
+    ] as const) {
+      expect(root(<Icon name={name} />)).toContain(`stroke-width="${width}"`)
+      expect(root(<Icon name={name} strokeWidth={1.5} />)).toContain(
+        'stroke-width="1.5"'
+      )
+    }
+    expect(root(<Icon name="categories" />)).toContain('stroke-width="2"')
+    expect(root(<Icon name="orders" />)).toContain('stroke-width="2"')
+    expect(root(<Icon name="payments" strokeWidth={1.5} />)).toContain(
+      'stroke="none"'
+    )
   })
 
   it("passes axe with every name labelled", async () => {

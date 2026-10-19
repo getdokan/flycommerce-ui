@@ -378,17 +378,19 @@ function Icon({
   name,
   label,
   size = 16,
-  strokeWidth = 2,
+  strokeWidth,
   className,
   ...props
 }: IconProps) {
-  const Glyph = React.useContext(IconGlyphsContext)?.[name] ?? ICONS[name]
+  const glyph = React.useContext(IconGlyphsContext)?.[name]
+  const Glyph = glyph ?? ICONS[name]
+  const stroke = strokeWidth ?? (glyph ? undefined : 2)
   return (
     <Glyph
       data-slot="icon"
       data-icon-name={name}
       size={size}
-      strokeWidth={strokeWidth}
+      {...(stroke === undefined ? {} : { strokeWidth: stroke })}
       className={cn("shrink-0", className)}
       aria-hidden={label ? undefined : true}
       aria-label={label}
