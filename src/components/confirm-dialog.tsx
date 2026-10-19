@@ -95,10 +95,13 @@ function ConfirmDialog({
           <Field>
             <FieldLabel htmlFor={inputId}>
               {confirmTextLabel ?? (
-                <>
-                  Type <strong className="font-semibold">{confirmText}</strong>{" "}
+                <span className="font-normal text-foreground-secondary">
+                  Type{" "}
+                  <strong className="font-bold text-foreground">
+                    {confirmText}
+                  </strong>{" "}
                   to confirm
-                </>
+                </span>
               )}
             </FieldLabel>
             <Input
