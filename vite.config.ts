@@ -27,8 +27,12 @@ export default defineConfig({
   publicDir: false,
   build: {
     lib: {
-      // Chart ships only as @flycommerce/ui/chart so apps without recharts never resolve it.
-      entry: ["src/index.ts", "src/components/ui/chart.tsx"],
+      // Chart and the code editor ship only as @flycommerce/ui/chart and @flycommerce/ui/code-editor so apps without recharts or CodeMirror never resolve them.
+      entry: [
+        "src/index.ts",
+        "src/components/ui/chart.tsx",
+        "src/components/ui/code-editor.tsx",
+      ],
       formats: ["es"],
     },
     minify: false,
