@@ -32,6 +32,10 @@ type BrandMarkProps = React.ComponentProps<"span"> &
     src?: string
     /** Accessible name, usually the brand; without it the mark is decorative. */
     label?: string
+    /** The brand's own colour for its glyph, which the SVG child takes as `currentColor`. */
+    color?: string
+    /** The brand's own tile colour, for a mark drawn on a coloured tile. */
+    background?: string
   }
 
 /** A third-party logo on a white tile that stays white in dark mode; `fill` for an app icon. */
@@ -40,7 +44,10 @@ function BrandMark({
   label,
   size = "md",
   fill = false,
+  color,
+  background,
   className,
+  style,
   children,
   ...props
 }: BrandMarkProps) {
@@ -53,6 +60,7 @@ function BrandMark({
       aria-label={label || undefined}
       aria-hidden={label ? undefined : true}
       className={cn(brandMarkVariants({ size, fill }), className)}
+      style={{ color, backgroundColor: background, ...style }}
       {...props}
     >
       {src ? (

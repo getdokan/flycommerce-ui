@@ -80,32 +80,33 @@ export function BrandMarkDemo() {
         ))}
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <BrandMark label="Stripe">
-          <SiStripe color="#635BFF" />
+        <BrandMark label="Stripe" color="#635BFF">
+          <SiStripe />
         </BrandMark>
-        <BrandMark label="PayPal">
-          <SiPaypal color="#002991" />
+        <BrandMark label="PayPal" color="#002991">
+          <SiPaypal />
         </BrandMark>
-        <BrandMark label="Shopify">
-          <SiShopify color="#7AB55C" />
+        <BrandMark label="Shopify" color="#7AB55C">
+          <SiShopify />
         </BrandMark>
-        <BrandMark label="FedEx" className="p-1.5">
-          <SiFedex color="#4D148C" />
+        <BrandMark label="FedEx" color="#4D148C" className="p-1.5">
+          <SiFedex />
         </BrandMark>
-        <BrandMark label="UPS">
-          <SiUps color="#5C3D2E" />
+        <BrandMark label="UPS" color="#5C3D2E">
+          <SiUps />
         </BrandMark>
         <BrandMark
           label="DHL"
+          color="#D40511"
+          background="#FFCC00"
           className="p-1.5"
-          style={{ backgroundColor: "#FFCC00" }}
         >
-          <SiDhl color="#D40511" />
+          <SiDhl />
         </BrandMark>
       </div>
       <div className="flex max-w-md items-center gap-4 rounded-xl bg-card p-5 shadow-card">
-        <BrandMark size="lg" className="p-2.5">
-          <SiPaypal color="#002991" />
+        <BrandMark size="lg" color="#002991" className="p-2.5">
+          <SiPaypal />
         </BrandMark>
         <div className="min-w-0 flex-1">
           <p className="type-row-title text-foreground">PayPal</p>
@@ -194,10 +195,11 @@ export function TrayDemo() {
         <div className="flex items-start gap-4">
           <BrandMark
             size="lg"
+            color="#FFFFFF"
+            background="#635BFF"
             className="p-2.5"
-            style={{ backgroundColor: "#635BFF" }}
           >
-            <SiStripe color="#FFFFFF" />
+            <SiStripe />
           </BrandMark>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
