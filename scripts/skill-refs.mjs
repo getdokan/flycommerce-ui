@@ -61,7 +61,7 @@ const theme = readFileSync(path.join(root, "src/styles/theme.css"), "utf8")
 const light = theme.slice(theme.indexOf(":root {"), theme.indexOf("}", theme.indexOf(":root {")))
 let tokensMd = header("Design tokens")
 tokensMd += "Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`bg-primary`, `text-muted-foreground`, `border-border`, `shadow-1`, `rounded-control`), never the value.\n\n| Token | Light value | Note |\n|---|---|---|\n"
-for (const m of light.matchAll(/^\s*--([\w-]+):\s*([^;]+);\s*(?:\/\*\s*(.*?)\s*\*\/)?/gm)) {
+for (const m of light.matchAll(/^\s*--([\w-]+):\s*([^;]+);[ \t]*(?:\/\*\s*(.*?)\s*\*\/)?/gm)) {
   tokensMd += `| \`--${m[1]}\` | \`${m[2].trim()}\` | ${m[3] ?? ""} |\n`
 }
 writeFileSync(path.join(out, "tokens.md"), tokensMd)
