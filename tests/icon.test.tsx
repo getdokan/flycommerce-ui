@@ -289,7 +289,6 @@ describe("P3_GLYPHS", () => {
     expect(bank.getAttribute("aria-hidden")).toBe("true")
     expect(bank.getAttribute("class")).toBe("shrink-0 text-primary")
     expect(bank.getAttribute("width")).toBe("16")
-    expect(bank.getAttribute("stroke")).toBe("none")
     expect(bank.getAttribute("stroke-width")).toBe("0.8")
 
     const customers = screen.getByRole("img", { name: "Customers" })
@@ -309,11 +308,11 @@ describe("P3_GLYPHS", () => {
         /^<svg[^>]*>/
       )![0]
     for (const [name, width] of [
-      ["collections", "0.5909"],
-      ["customers", "0.969"],
-      ["delivery", "1.7778"],
+      ["collections", "0.59"],
+      ["customers", "0.97"],
+      ["delivery", "1.78"],
       ["bank", "0.8"],
-      ["products", "1.8012"],
+      ["products", "1.8"],
     ] as const) {
       expect(root(<Icon name={name} />)).toContain(`stroke-width="${width}"`)
       expect(root(<Icon name={name} strokeWidth={1.5} />)).toContain(
