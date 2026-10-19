@@ -116,7 +116,15 @@ Inter throughout. Use the `type-*` utilities for size, weight and spacing and pa
 
 Components already apply these internally (`PageHeaderTitle`, `CardTitle`, `FieldLabel`, table headers…); reach for the utilities only in custom layout.
 
-The P3 type scale is also available, as `<Text variant weight tone numeric>` or as the `type-display` … `type-caption-s` utilities (size, line height and letter spacing only): `display` 96/100 · `h1` 64/72 · `h2` 56/64 · `h3` 48/56 · `h4` 40/48 · `h5` 32/40 · `h6` 24/32 · `body-l` 20/28 · `body-m` 18/26 · `body-s` 16/24 · `caption-l` 14/20 · `caption-m` 12/16 · `caption-s` 10/14. `Text` defaults to `body-s`, `weight="regular"` and `tone="default"`; weights run from `light` to `black`, and the tones are `default`, `secondary`, `muted`, `brand`, `success`, `danger` and `inherit`. `h1`–`h6` render headings, `display` and the body sizes `p`, captions `span`. `as` changes the element and takes that element's props (`<Text as="label" htmlFor>`, `<Text as="a" href>`, `<Text as="time" dateTime>`); pass `as="span"` for body text inside a `<p>`, `<label>` or button. Numbers take `numeric`.
+**The P3 type scale** is the Settings redesign's type, as `<Text variant weight tone numeric>` or as the `type-display` … `type-caption-s` utilities (size, line height and letter spacing only): `display` 96/100 · `h1` 64/72 · `h2` 56/64 · `h3` 48/56 · `h4` 40/48 · `h5` 32/40 · `h6` 24/32 · `body-l` 20/28 · `body-m` 18/26 · `body-s` 16/24 · `caption-l` 14/20 · `caption-m` 12/16 · `caption-s` 10/14. `Text` defaults to `body-s` (16/24), `weight="regular"` and `tone="default"`, as the Settings prototype's `Text` does; most body copy there passes `variant="caption-l"` (14/20). Weights run from `light` to `black`, and the tones are `default`, `secondary`, `muted`, `brand`, `success`, `danger` and `inherit`. `h1`–`h6` render headings, `display` and the body sizes `p`, captions `span`. `as` changes the element and takes that element's props (`<Text as="label" htmlFor>`, `<Text as="a" href>`, `<Text as="time" dateTime>`); pass `as="span"` for body text inside a `<p>`, `<label>` or button. Numbers take `numeric`.
+
+**Which scale.** Use `Text`, or the P3 utilities in plain markup, in the Settings redesign and on new screens. Keep the `type-*` utilities above on current dashboard pages, so each page stays on one scale. Where the two scales meet:
+
+- `type-h6` and `type-page-title`: both 24/32. `type-page-title` also sets bold (700) and no letter spacing; `type-h6` sets -0.3px and leaves the weight to `Text` (regular unless set).
+- `type-caption-l` and `type-body`: both 14px with no letter spacing. `type-body` also sets weight 400 and a 1.5 line height (21px); `type-caption-l` sets 20px and leaves the weight to `Text`.
+- `type-caption-m` and `type-kpi-label`: both 12/16 with no letter spacing. `type-kpi-label` also sets weight 400; `type-caption-m` leaves it to `Text`.
+
+**Size through `variant`, not `className`** (hard rule 3). `cn` doesn't treat a `type-*` utility and a `text-<size>` class as conflicting, so `<Text className="text-sm">` keeps both and the size depends on CSS order. Pick the `variant` with the size you need. `leading-*`, `tracking-*` and `font-*` in `className` still adjust a variant.
 
 ## Screen recipes
 

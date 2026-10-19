@@ -98,6 +98,7 @@ const TEXT_ELEMENTS = {
 } as const satisfies Record<TextVariant, React.ElementType>
 
 type TextOwnProps<V extends TextVariant, T extends React.ElementType> = {
+  /** One of the 13 P3 sizes; `body-s` (16/24) by default, as in the Settings prototype. Dashboard body copy is `caption-l` (14/20). */
   variant?: V
   weight?: TextWeight
   tone?: TextTone
