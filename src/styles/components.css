@@ -734,6 +734,20 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+@utility type-stat-value {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+@utility type-stat-value-sm {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+}
 @utility type-card-title {
   font-size: 16px;
   line-height: 28px;

@@ -341,7 +341,8 @@ const KEYWORDS: Record<string, string> = {
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
-  "stat-card": "kpi metric statistic number dashboard",
+  "stat-card":
+    "kpi metric statistic number dashboard figure label first band group joined",
   "icon-chip": "icon tile badge avatar tinted background circle square",
   "radio-card": "option card choice",
   "switch-field": "toggle row setting",
