@@ -33,11 +33,12 @@ export function CopyFieldDemo() {
         <FieldLabel htmlFor="cname-target">CNAME target</FieldLabel>
         <CopyField
           id="cname-target"
+          aria-describedby="cname-target-hint"
           value="cname.flycom.shop"
           mono
           copyLabel="Copy CNAME target"
         />
-        <FieldDescription>
+        <FieldDescription id="cname-target-hint">
           Add it as the value of a CNAME record for maisonoriel.com.
         </FieldDescription>
       </Field>
@@ -45,12 +46,15 @@ export function CopyFieldDemo() {
         <FieldLabel htmlFor="signing-secret">Signing secret</FieldLabel>
         <CopyField
           id="signing-secret"
+          aria-describedby="signing-secret-hint"
           value="whsec_8Kq2Vd0rXw7NcT4mLp9sZe1H"
           mono
           disabled
           copyLabel="Copy signing secret"
         />
-        <FieldDescription>Save the webhook to get its secret.</FieldDescription>
+        <FieldDescription id="signing-secret-hint">
+          Save the webhook to get its secret.
+        </FieldDescription>
       </Field>
       <CopyField
         aria-label="Sitemap URL"
@@ -80,21 +84,31 @@ export function ColorInputDemo() {
         <FieldLabel htmlFor="brand-colour">Brand colour</FieldLabel>
         <ColorInput
           id="brand-colour"
+          aria-describedby={
+            isHexColor(brand) ? undefined : "brand-colour-error"
+          }
           value={brand}
           onValueChange={setBrand}
           labels={{ picker: "Pick the brand colour" }}
         />
-        {!isHexColor(brand) && <FieldError>{HEX_ERROR}</FieldError>}
+        {!isHexColor(brand) && (
+          <FieldError id="brand-colour-error">{HEX_ERROR}</FieldError>
+        )}
       </Field>
       <Field data-invalid={!isHexColor(accent) || undefined}>
         <FieldLabel htmlFor="accent-colour">Accent colour</FieldLabel>
         <ColorInput
           id="accent-colour"
+          aria-describedby={
+            isHexColor(accent) ? undefined : "accent-colour-error"
+          }
           value={accent}
           onValueChange={setAccent}
           labels={{ picker: "Pick the accent colour" }}
         />
-        {!isHexColor(accent) && <FieldError>{HEX_ERROR}</FieldError>}
+        {!isHexColor(accent) && (
+          <FieldError id="accent-colour-error">{HEX_ERROR}</FieldError>
+        )}
       </Field>
       <Field data-invalid={!invoiceValid || undefined}>
         <FieldLabel htmlFor="invoice-colour" optional>
@@ -102,6 +116,9 @@ export function ColorInputDemo() {
         </FieldLabel>
         <ColorInput
           id="invoice-colour"
+          aria-describedby={
+            invoiceValid ? "invoice-colour-hint" : "invoice-colour-error"
+          }
           value={invoice}
           onValueChange={setInvoice}
           allowClear
@@ -113,24 +130,27 @@ export function ColorInputDemo() {
           }}
         />
         {invoiceValid ? (
-          <FieldDescription>
+          <FieldDescription id="invoice-colour-hint">
             Used for the top rule, the title and the total. Empty uses your
             brand colour.
           </FieldDescription>
         ) : (
-          <FieldError>{HEX_ERROR}</FieldError>
+          <FieldError id="invoice-colour-error">{HEX_ERROR}</FieldError>
         )}
       </Field>
       <Field>
         <FieldLabel htmlFor="email-colour">Email button colour</FieldLabel>
         <ColorInput
           id="email-colour"
+          aria-describedby="email-colour-hint"
           value="#155dfc"
           onValueChange={() => {}}
           disabled
           labels={{ picker: "Pick the email button colour" }}
         />
-        <FieldDescription>Set by your email theme.</FieldDescription>
+        <FieldDescription id="email-colour-hint">
+          Set by your email theme.
+        </FieldDescription>
       </Field>
     </div>
   )
@@ -181,24 +201,7 @@ const LIBRARY: MediaItem[] = [
   size: 240_000 + i * 51_000,
 }))
 
-const BRAND_IMAGES = [
-  {
-    slot: "logo",
-    label: "Logo",
-    hint: "Shown in your storefront header and emails.",
-    labels: { input: "Upload logo", remove: "Remove logo" },
-    pickerTitle: "Choose a logo",
-  },
-  {
-    slot: "icon",
-    label: "Icon",
-    hint: "Used as the browser tab icon and app icon.",
-    labels: { input: "Upload icon", remove: "Remove icon" },
-    pickerTitle: "Choose an icon",
-  },
-] as const
-
-type BrandImage = (typeof BRAND_IMAGES)[number]["slot"]
+const BRAND_COLOUR = "#1f2a44"
 
 type BrandImageValue = ImageUploadFieldValue & { preview?: React.ReactNode }
 
@@ -207,74 +210,119 @@ const rejectionMessage = ([rejection]: FileRejection[]) =>
     ? `${rejection.file.name} is ${(rejection.file.size / 1024 / 1024).toFixed(1)} MB. The limit is 25 MB.`
     : `${rejection.file.name} is not a PNG, JPG, SVG or WebP image.`
 
-export function ImageUploadFieldDemo() {
-  const brandColour = "#1f2a44"
-  const [images, setImages] = React.useState<
-    Record<BrandImage, BrandImageValue | null>
-  >({
-    logo: {
-      name: "maison-oriel-wordmark.svg",
-      size: 48 * 1024,
-      preview: WORDMARK,
-    },
-    icon: null,
-  })
-  const [errors, setErrors] = React.useState<
-    Partial<Record<BrandImage, string>>
-  >({})
-  const [uploading, setUploading] = React.useState<BrandImage | null>(null)
-  const [picking, setPicking] = React.useState<BrandImage | null>(null)
+function BrandImageField({
+  id,
+  label,
+  hint,
+  pickerTitle,
+  initial = null,
+}: {
+  id: string
+  label: string
+  hint: string
+  pickerTitle: string
+  initial?: BrandImageValue | null
+}) {
+  const [image, setImage] = React.useState(initial)
+  const [error, setError] = React.useState<string>()
+  const [uploading, setUploading] = React.useState<File | null>(null)
+  const [picking, setPicking] = React.useState(false)
+  const src = image?.src
 
-  const setImage = (slot: BrandImage, image: BrandImageValue | null) => {
-    setImages((current) => ({ ...current, [slot]: image }))
-    setErrors((current) => ({ ...current, [slot]: undefined }))
-  }
-
-  const upload = (slot: BrandImage, [file]: File[]) => {
-    setUploading(slot)
-    setTimeout(() => {
-      setImage(slot, {
-        src: URL.createObjectURL(file),
-        name: file.name,
-        size: file.size,
+  React.useEffect(() => {
+    if (!uploading) return
+    const timer = setTimeout(() => {
+      setImage({
+        src: URL.createObjectURL(uploading),
+        name: uploading.name,
+        size: uploading.size,
       })
       setUploading(null)
     }, 1200)
+    return () => clearTimeout(timer)
+  }, [uploading])
+
+  React.useEffect(() => {
+    if (!src?.startsWith("blob:")) return
+    return () => URL.revokeObjectURL(src)
+  }, [src])
+
+  const use = (next: BrandImageValue | null) => {
+    setImage(next)
+    setError(undefined)
   }
 
   return (
-    <div className="grid w-full gap-6 sm:grid-cols-2">
-      {BRAND_IMAGES.map(({ slot, label, hint, labels }) => (
-        <Field key={slot} data-invalid={errors[slot] ? true : undefined}>
-          <FieldLabel>{label}</FieldLabel>
-          <ImageUploadField
-            value={images[slot]}
-            preview={images[slot]?.preview}
-            previewBackground={brandColour}
-            maxSize={MAX_SIZE}
-            invalid={Boolean(errors[slot])}
-            loading={uploading === slot}
-            onFiles={(files) => upload(slot, files)}
-            onReject={(rejections) =>
-              setErrors((current) => ({
-                ...current,
-                [slot]: rejectionMessage(rejections),
-              }))
-            }
-            onRemove={() => setImage(slot, null)}
-            onChooseExisting={() => setPicking(slot)}
-            labels={labels}
-          />
-          {errors[slot] ? (
-            <FieldError>{errors[slot]}</FieldError>
-          ) : (
-            <FieldDescription>{hint}</FieldDescription>
-          )}
-        </Field>
-      ))}
-      <Field>
-        <FieldLabel>Open Graph image</FieldLabel>
+    <>
+      <Field data-invalid={error ? true : undefined}>
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
         <ImageUploadField
+          id={id}
+          aria-describedby={error ? `${id}-error` : `${id}-hint`}
+          label={label}
+          value={image}
+          preview={image?.preview}
+          previewBackground={BRAND_COLOUR}
+          maxSize={MAX_SIZE}
+          invalid={Boolean(error)}
+          loading={uploading !== null}
+          onFiles={([file]) => {
+            setError(undefined)
+            setUploading(file)
+          }}
+          onReject={(rejections) => setError(rejectionMessage(rejections))}
+          onRemove={() => use(null)}
+          onChooseExisting={() => setPicking(true)}
+        />
+        {error ? (
+          <FieldError id={`${id}-error`}>{error}</FieldError>
+        ) : (
+          <FieldDescription id={`${id}-hint`}>{hint}</FieldDescription>
+        )}
+      </Field>
+      <MediaPickerDialog
+        open={picking}
+        onOpenChange={setPicking}
+        defaultTab="library"
+        accept="image/*"
+        maxSize={MAX_SIZE}
+        items={LIBRARY}
+        labels={{ title: pickerTitle, select: "Use image" }}
+        onConfirm={([item]) => {
+          if (item) use({ src: item.url, name: item.name, size: item.size })
+          setPicking(false)
+        }}
+      />
+    </>
+  )
+}
+
+export function ImageUploadFieldDemo() {
+  return (
+    <div className="grid w-full gap-6 sm:grid-cols-2">
+      <BrandImageField
+        id="logo-image"
+        label="Logo"
+        hint="Shown in your storefront header and emails."
+        pickerTitle="Choose a logo"
+        initial={{
+          name: "maison-oriel-wordmark.svg",
+          size: 48 * 1024,
+          preview: WORDMARK,
+        }}
+      />
+      <BrandImageField
+        id="icon-image"
+        label="Icon"
+        hint="Used as the browser tab icon and app icon."
+        pickerTitle="Choose an icon"
+      />
+      <Field>
+        <FieldLabel htmlFor="share-image">Open Graph image</FieldLabel>
+        <ImageUploadField
+          id="share-image"
+          aria-describedby="share-image-hint"
+          label="Open Graph image"
           value={{
             src: "https://picsum.photos/seed/fc-brand-0/1200/630",
             name: "atelier-boutique.jpg",
@@ -282,64 +330,47 @@ export function ImageUploadFieldDemo() {
           }}
           loading
           onFiles={() => {}}
-          labels={{ input: "Upload share image" }}
         />
-        <FieldDescription>1200 × 630 px works best.</FieldDescription>
+        <FieldDescription id="share-image-hint">
+          1200 × 630 px works best.
+        </FieldDescription>
       </Field>
       <Field data-invalid>
-        <FieldLabel>Invoice logo</FieldLabel>
+        <FieldLabel htmlFor="invoice-logo">Invoice logo</FieldLabel>
         <ImageUploadField
+          id="invoice-logo"
+          aria-describedby="invoice-logo-error"
+          label="Invoice logo"
           maxSize={2 * 1024 * 1024}
           invalid
           onFiles={() => {}}
-          labels={{ input: "Upload invoice logo" }}
         />
-        <FieldError>
+        <FieldError id="invoice-logo-error">
           maison-oriel-hero-banner.png is 3.4 MB. The limit is 2 MB.
         </FieldError>
       </Field>
       <Field>
-        <FieldLabel>Email header</FieldLabel>
+        <FieldLabel htmlFor="email-header">Email header</FieldLabel>
         <ImageUploadField
+          id="email-header"
+          aria-describedby="email-header-hint"
+          label="Email header"
           value={{
             src: LOGO,
             name: "maison-oriel-wordmark.svg",
             size: 48 * 1024,
           }}
-          previewBackground={brandColour}
+          previewBackground={BRAND_COLOUR}
           previewFit="contain"
           disabled
           onFiles={() => {}}
           onRemove={() => {}}
           onChooseExisting={() => {}}
-          labels={{ remove: "Remove email header" }}
         />
-        <FieldDescription>Set by your email theme.</FieldDescription>
+        <FieldDescription id="email-header-hint">
+          Set by your email theme.
+        </FieldDescription>
       </Field>
-      <MediaPickerDialog
-        open={picking !== null}
-        onOpenChange={(open) => {
-          if (!open) setPicking(null)
-        }}
-        defaultTab="library"
-        accept="image/*"
-        maxSize={MAX_SIZE}
-        items={LIBRARY}
-        labels={{
-          title: BRAND_IMAGES.find((image) => image.slot === picking)
-            ?.pickerTitle,
-          select: "Use image",
-        }}
-        onConfirm={([item]) => {
-          if (item && picking)
-            setImage(picking, {
-              src: item.url,
-              name: item.name,
-              size: item.size,
-            })
-          setPicking(null)
-        }}
-      />
     </div>
   )
 }

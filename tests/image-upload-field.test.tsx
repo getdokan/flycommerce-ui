@@ -64,6 +64,95 @@ describe("ImageUploadField", () => {
     expect(screen.getByRole("button", { name: "Media library" })).toBeTruthy()
   })
 
+  it.each([
+    ["image/png", 25 * 1024 * 1024, "PNG. Max file size: 25 MB"],
+    [".png,.jpg,.jpeg", undefined, "PNG or JPG"],
+    [
+      "image/svg+xml,image/webp,image/gif",
+      2048,
+      "SVG, WebP or GIF. Max file size: 2 KB",
+    ],
+    ["image/*", 25 * 1024 * 1024, "Max file size: 25 MB"],
+  ])("describes accept=%j in the drop zone", (accept, maxSize, text) => {
+    render(
+      <ImageUploadField accept={accept} maxSize={maxSize} onFiles={() => {}} />
+    )
+    expect(screen.getByText(text)).toBeTruthy()
+  })
+
+  it("adds its label to every button's name and keeps the visible text", () => {
+    const { rerender } = render(
+      <ImageUploadField
+        label="Logo"
+        onFiles={() => {}}
+        onChooseExisting={() => {}}
+      />
+    )
+    expect(screen.getByLabelText("Upload image, Logo")).toHaveProperty(
+      "type",
+      "file"
+    )
+    const upload = screen.getByRole("button", { name: "Upload image, Logo" })
+    expect(upload.querySelector("[aria-hidden=true]")?.textContent).toBe(
+      "Upload image"
+    )
+    expect(
+      screen.getByRole("button", { name: "Media library, Logo" }).textContent
+    ).toBe("Media library")
+
+    rerender(
+      <ImageUploadField
+        label="Logo"
+        value={LOGO}
+        onFiles={() => {}}
+        onRemove={() => {}}
+        onChooseExisting={() => {}}
+      />
+    )
+    expect(
+      screen.getByRole("button", { name: "Remove image, Logo" })
+    ).toBeTruthy()
+    expect(screen.getByLabelText("Change image, Logo")).toHaveProperty(
+      "type",
+      "file"
+    )
+    expect(screen.getByText("Change image")).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: "Media library, Logo" }).textContent
+    ).toBe("Media library")
+  })
+
+  it("keeps two fields' buttons apart by their labels", () => {
+    render(
+      <>
+        <ImageUploadField
+          label="Logo"
+          value={LOGO}
+          onFiles={() => {}}
+          onRemove={() => {}}
+        />
+        <ImageUploadField
+          label="Icon"
+          value={LOGO}
+          onFiles={() => {}}
+          onRemove={() => {}}
+        />
+      </>
+    )
+    expect(
+      screen.getAllByRole("button", { name: /^Remove image/ })
+    ).toHaveLength(2)
+    expect(
+      screen.getByRole("button", { name: "Remove image, Logo" })
+    ).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: "Remove image, Icon" })
+    ).toBeTruthy()
+    expect(screen.getByLabelText("Change image, Logo")).not.toBe(
+      screen.getByLabelText("Change image, Icon")
+    )
+  })
+
   it("leaves out Media library without onChooseExisting", () => {
     render(<ImageUploadField onFiles={() => {}} />)
     expect(screen.queryByRole("button", { name: "Media library" })).toBeNull()
@@ -121,6 +210,41 @@ describe("ImageUploadField", () => {
     expect(img.dataset.fit).toBe("cover")
     expect(screen.getByText("maison-oriel-wordmark.svg")).toBeTruthy()
     expect(screen.getByText("48 KB")).toBeTruthy()
+  })
+
+  it.each([
+    ["#1f2a44", "dark"],
+    ["#155dfc", "dark"],
+    ["#f5e6c8", "light"],
+    ["#C9A46A", "light"],
+    ["#fff", "light"],
+    ["var(--brand)", "dark"],
+  ])(
+    "puts dark or white text on a %s tile by its luminance",
+    (colour, tone) => {
+      render(
+        <ImageUploadField
+          value={{ name: "maison-oriel-wordmark.svg" }}
+          preview={<span>Maison Oriel</span>}
+          previewBackground={colour}
+          onFiles={() => {}}
+        />
+      )
+      expect(
+        document.querySelector<HTMLElement>(
+          "[data-slot=image-upload-field-preview]"
+        )?.dataset.background
+      ).toBe(tone)
+    }
+  )
+
+  it("leaves the tile muted without a background", () => {
+    render(<ImageUploadField value={LOGO} onFiles={() => {}} />)
+    expect(
+      document
+        .querySelector("[data-slot=image-upload-field-preview]")
+        ?.hasAttribute("data-background")
+    ).toBe(false)
   })
 
   it("fits the image inside the tile with previewFit=contain", () => {

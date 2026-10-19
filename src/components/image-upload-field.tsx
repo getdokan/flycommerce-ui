@@ -12,7 +12,7 @@ import { Dropzone, type FileRejection } from "@/components/dropzone"
 import { LoadingOverlay } from "@/components/loading-overlay"
 import { formatBytes } from "@/components/media-tile"
 import { Button } from "@/components/ui/button"
-import { sortFiles } from "@/lib/files"
+import { describeAccept, sortFiles } from "@/lib/files"
 
 type ImageUploadFieldValue = {
   src?: string
@@ -37,6 +37,8 @@ type ImageUploadFieldProps = Omit<
   "children" | "onChange"
 > & {
   value?: ImageUploadFieldValue | null
+  /** The field's name for screen readers, e.g. "Logo": its buttons are named "Change image, Logo" and so on, so several fields on a page stay distinct. */
+  label?: string
   onFiles: (files: File[]) => void
   onReject?: (rejections: FileRejection[]) => void
   onRemove?: () => void
@@ -47,7 +49,7 @@ type ImageUploadFieldProps = Omit<
   maxSize?: number
   /** Drawn in the preview tile instead of the image, e.g. a wordmark. */
   preview?: React.ReactNode
-  /** The preview tile's colour, e.g. the brand colour behind a logo; its text turns white. */
+  /** The preview tile's colour, e.g. the brand colour behind a logo. Its text is white, or dark on a light hex colour. */
   previewBackground?: string
   previewFit?: "cover" | "contain"
   loading?: boolean
@@ -71,9 +73,23 @@ const DEFAULT_LABELS = {
   uploading: "Uploading",
 }
 
+function isLightColor(color: string) {
+  const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim())?.[1]
+  if (!hex) return false
+  const full = hex.length === 3 ? hex.replace(/./g, "$&$&") : hex
+  const [r, g, b] = [0, 2, 4].map((at) => {
+    const channel = parseInt(full.slice(at, at + 2), 16) / 255
+    return channel <= 0.04045
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.2174
+}
+
 /** One image: a drop zone while empty, then a preview with change, remove and media library. */
 function ImageUploadField({
   value,
+  label,
   onFiles,
   onReject,
   onRemove,
@@ -93,11 +109,17 @@ function ImageUploadField({
   ...props
 }: ImageUploadFieldProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
+  const named = (text: string) => (label ? `${text}, ${label}` : text)
+  const limit =
+    maxSize === undefined ? "" : `Max file size: ${formatBytes(maxSize)}`
   const description =
     labels.description ??
-    (maxSize === undefined
-      ? "PNG, JPG, SVG or WebP"
-      : `PNG, JPG, SVG or WebP. Max file size: ${formatBytes(maxSize)}`)
+    ([describeAccept(accept), limit].filter(Boolean).join(". ") || undefined)
+  const background = previewBackground
+    ? isLightColor(previewBackground)
+      ? "light"
+      : "dark"
+    : undefined
   const generatedId = React.useId()
   const inputId = id ?? generatedId
   const restoreFocus = React.useRef(false)
@@ -144,14 +166,15 @@ function ImageUploadField({
           <div className="flex items-start gap-3">
             <span
               data-slot="image-upload-field-preview"
+              data-background={background}
               style={
                 previewBackground
                   ? { backgroundColor: previewBackground }
                   : undefined
               }
               className={cn(
-                "grid h-16 w-24 shrink-0 place-items-center overflow-hidden rounded-lg ring-1 ring-border",
-                previewBackground ? "text-white" : "bg-muted"
+                "grid h-16 w-24 shrink-0 place-items-center overflow-hidden rounded-lg ring-1 ring-border data-[background=dark]:text-on-dark data-[background=light]:text-on-light",
+                !background && "bg-muted"
               )}
             >
               {preview ||
@@ -192,7 +215,7 @@ function ImageUploadField({
                 type="button"
                 variant="ghost"
                 size="icon-sm"
-                aria-label={labels.remove}
+                aria-label={named(labels.remove)}
                 disabled={disabled}
                 onClick={() => {
                   restoreFocus.current = true
@@ -209,6 +232,7 @@ function ImageUploadField({
                 type="file"
                 accept={accept}
                 disabled={disabled}
+                aria-label={label ? named(labels.change) : undefined}
                 className="peer sr-only"
                 onChange={(event) => {
                   const { accepted, rejected } = sortFiles(
@@ -229,6 +253,7 @@ function ImageUploadField({
             {onChooseExisting && (
               <button
                 type="button"
+                aria-label={label ? named(labels.library) : undefined}
                 disabled={disabled}
                 className="inline-flex items-center gap-1.5 rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 onClick={onChooseExisting}
@@ -248,8 +273,17 @@ function ImageUploadField({
           icon={null}
           title={labels.dropTitle}
           description={description}
-          browseLabel={labels.upload}
-          inputLabel={labels.input}
+          browseLabel={
+            label ? (
+              <>
+                <span aria-hidden="true">{labels.upload}</span>
+                <span className="sr-only">{named(labels.upload)}</span>
+              </>
+            ) : (
+              labels.upload
+            )
+          }
+          inputLabel={named(labels.input)}
           inputProps={inputProps}
           actions={
             onChooseExisting && (
@@ -257,6 +291,7 @@ function ImageUploadField({
                 type="button"
                 variant="ghost"
                 size="sm"
+                aria-label={label ? named(labels.library) : undefined}
                 disabled={disabled}
                 onClick={onChooseExisting}
               >

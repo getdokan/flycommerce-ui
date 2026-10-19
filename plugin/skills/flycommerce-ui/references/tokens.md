@@ -59,6 +59,8 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--elevation-pop`              | `0 12px 34px rgb(16 23 41 / 0.16), 0 4px 10px rgb(16 23 41 / 0.08)` |                                                    |
 | `--inverse`                    | `#101828`                                                           | dashboard save bar (gray-900)                      |
 | `--inverse-foreground`         | `#ffffff`                                                           |                                                    |
+| `--on-dark`                    | `#ffffff`                                                           | text on a dark custom colour, e.g. a brand colour  |
+| `--on-light`                   | `#24242b`                                                           | text on a light custom colour                      |
 | `--sidebar`                    | `#0a0a10`                                                           | side                                               |
 | `--sidebar-foreground`         | `#dbdee7`                                                           | side-ink                                           |
 | `--sidebar-muted`              | `#8a90a1`                                                           | side-ink-2                                         |

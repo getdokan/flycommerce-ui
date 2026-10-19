@@ -39,5 +39,6 @@ Element.prototype.scrollIntoView ??= () => {}
 Element.prototype.hasPointerCapture ??= () => false
 Element.prototype.releasePointerCapture ??= () => {}
 URL.createObjectURL ??= () => "blob:test"
+URL.revokeObjectURL ??= () => {}
 Range.prototype.getClientRects ??= () => [] as unknown as DOMRectList
 Range.prototype.getBoundingClientRect ??= () => new DOMRect()
