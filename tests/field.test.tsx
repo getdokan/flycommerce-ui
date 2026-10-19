@@ -30,26 +30,33 @@ describe("FieldDescription", () => {
     expect(linkRules(hint)).toContain("[&>a]:underline")
   })
 
-  it("leaves a link in a hint with an icon to its own classes", () => {
-    render(
-      <FieldDescription icon={<Icon name="info" />}>
-        Set by your base currency in{" "}
-        <a
-          href="#currencies"
-          className="text-primary-ink underline-offset-2 hover:underline"
-        >
-          Currencies
-        </a>
-        .
-      </FieldDescription>
+  it("underlines a link in a hint with an icon like one in a plain hint", () => {
+    const { container } = render(
+      <>
+        <FieldDescription>
+          Shown on <a href="#invoices">invoices</a>.
+        </FieldDescription>
+        <FieldDescription icon={<Icon name="info" />}>
+          Set by your base currency in{" "}
+          <a
+            href="#currencies"
+            className="text-primary-ink underline-offset-2 hover:underline"
+          >
+            Currencies
+          </a>
+          .
+        </FieldDescription>
+      </>
+    )
+    const [plain, withIcon] = container.querySelectorAll(
+      "[data-slot=field-description]"
     )
     const link = screen.getByRole("link", { name: "Currencies" })
-    expect(linkRules(link.closest("[data-slot=field-description]")!)).toEqual(
-      []
+    expect(link.parentElement?.closest("[data-slot=field-description]")).toBe(
+      withIcon
     )
-    expect(link.getAttribute("class")).toBe(
-      "text-primary-ink underline-offset-2 hover:underline"
-    )
+    expect(linkRules(link.parentElement!)).toEqual(linkRules(plain))
+    expect(linkRules(plain)).toContain("[&>a]:underline")
   })
 
   it("puts a decorative icon before the text", () => {

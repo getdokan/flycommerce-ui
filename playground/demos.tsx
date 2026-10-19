@@ -1319,7 +1319,8 @@ export const demos: Demo[] = [
             defaultValue="Maison Oriel: tailored outerwear and knitwear"
           />
           <FieldDescription icon={<Icon name="info" />}>
-            Google shows about 60 characters. Leave blank to use the store name.
+            Google shows about 60 characters. Leave blank to use the{" "}
+            <a href="#input">store name</a>.
           </FieldDescription>
         </Field>
         <Field>
