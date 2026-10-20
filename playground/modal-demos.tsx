@@ -786,6 +786,8 @@ const REWORDINGS: [RegExp, string][] = [
   [/Machine washable/g, "Goes straight in the wash"],
 ]
 
+class AiServiceError extends Error {}
+
 const AI_ACTIONS: RichTextEditorAiAction[] = [
   {
     id: "paraphrase",
@@ -898,12 +900,15 @@ export function RichTextEditorDemo() {
               label: "Paraphrase",
               run: async (_html, _selection, { signal }) => {
                 await wait(1000, signal)
-                throw new Error(
+                throw new AiServiceError(
                   "The AI service didn't respond. Try again in a minute."
                 )
               },
             },
           ]}
+          getAiErrorMessage={(error) =>
+            error instanceof AiServiceError ? error.message : null
+          }
         />
         <FieldDescription>
           A rejected run shows its message inline, with Try again.

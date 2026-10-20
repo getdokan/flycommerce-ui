@@ -162,6 +162,8 @@ type RichTextEditorProps = {
   headingLevels?: RichTextEditorHeadingLevel[]
   /** Adds an "AI Assistant" menu; a suggestion shows beside the original until it is replaced, inserted below or discarded. */
   aiActions?: RichTextEditorAiAction[]
+  /** Text for a failed AI action: return your own message for an error you recognise, or null to show `labels.aiError`. */
+  getAiErrorMessage?: (error: unknown) => string | null | undefined
 }
 
 type AiTarget = { selection: Selection | null; original: Fragment | null }
@@ -205,6 +207,7 @@ function RichTextEditor({
   onGenerate,
   headingLevels = DEFAULT_HEADING_LEVELS,
   aiActions,
+  getAiErrorMessage,
 }: RichTextEditorProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
   const [generating, setGenerating] = React.useState(false)
@@ -379,10 +382,7 @@ function RichTextEditor({
         status: "error",
         action,
         target,
-        message:
-          error instanceof Error && error.message
-            ? error.message
-            : labels.aiError,
+        message: getAiErrorMessage?.(error) || labels.aiError,
       }
     }
     if (!controller.signal.aborted) setAi(next)
