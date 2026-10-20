@@ -8,10 +8,6 @@ import {
   indentLess,
   indentMore,
 } from "@codemirror/commands"
-import { css } from "@codemirror/lang-css"
-import { html } from "@codemirror/lang-html"
-import { javascript } from "@codemirror/lang-javascript"
-import { json } from "@codemirror/lang-json"
 import { indentUnit } from "@codemirror/language"
 import {
   Annotation,
@@ -141,23 +137,37 @@ const LANGUAGE_NAMES: Record<CodeEditorLanguage, string> = {
   text: "Plain text",
 }
 
-const LANGUAGES: Record<CodeEditorLanguage, () => Extension> = {
-  html: () => html(),
-  css: () => css(),
-  javascript: () => javascript(),
-  json: () => json(),
-  text: () => [],
+type LanguagePack = Exclude<CodeEditorLanguage, "text">
+
+const LANGUAGE_PACKS: Record<LanguagePack, () => Promise<Extension>> = {
+  html: () => import("@codemirror/lang-html").then((pack) => pack.html()),
+  css: () => import("@codemirror/lang-css").then((pack) => pack.css()),
+  javascript: () =>
+    import("@codemirror/lang-javascript").then((pack) => pack.javascript()),
+  json: () => import("@codemirror/lang-json").then((pack) => pack.json()),
 }
 
-const languageSupport = new Map<CodeEditorLanguage, Extension>()
+const languageSupport = new Map<LanguagePack, Extension>()
+const languageImports = new Map<LanguagePack, Promise<Extension>>()
 
-function getLanguageSupport(language: CodeEditorLanguage) {
-  let support = languageSupport.get(language)
-  if (!support) {
-    support = LANGUAGES[language]()
-    languageSupport.set(language, support)
+function loadLanguageSupport(language: LanguagePack) {
+  let load = languageImports.get(language)
+  if (!load) {
+    load = LANGUAGE_PACKS[language]()
+      .catch((error): Extension => {
+        console.warn(
+          `CodeEditor: ${LANGUAGE_NAMES[language]} support failed to load; the code is edited as plain text.`,
+          error
+        )
+        return []
+      })
+      .then((support) => {
+        languageSupport.set(language, support)
+        return support
+      })
+    languageImports.set(language, load)
   }
-  return support
+  return load
 }
 
 const LINE_HEIGHT = 20
@@ -397,9 +407,24 @@ function CodeEditor({
   }, [compartments])
 
   React.useEffect(() => {
-    viewRef.current?.dispatch({
-      effects: compartments.language.reconfigure(getLanguageSupport(language)),
+    const view = viewRef.current
+    if (!view) return
+    const reconfigure = (support: Extension) =>
+      view.dispatch({ effects: compartments.language.reconfigure(support) })
+    if (language === "text") {
+      reconfigure([])
+      return
+    }
+    const loaded = languageSupport.get(language)
+    reconfigure(loaded ?? [])
+    if (loaded) return
+    let current = true
+    void loadLanguageSupport(language).then((support) => {
+      if (current) reconfigure(support)
     })
+    return () => {
+      current = false
+    }
   }, [compartments, language])
 
   React.useEffect(() => {
