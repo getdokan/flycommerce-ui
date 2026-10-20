@@ -18,15 +18,29 @@ function Checkbox({
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator
-        data-slot="checkbox-indicator"
-        className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
-      >
-        <CheckIcon className="group-data-[state=indeterminate]/checkbox:hidden" />
-        <MinusIcon className="hidden group-data-[state=indeterminate]/checkbox:block" />
-      </CheckboxPrimitive.Indicator>
+      <CheckboxIndicator />
     </CheckboxPrimitive.Root>
   )
 }
 
-export { Checkbox }
+/** The checkbox's 14px check, or dash while indeterminate; draws `Checkbox`'s mark inside a custom checkbox. */
+function CheckboxIndicator({
+  className,
+  ...props
+}: React.ComponentProps<typeof CheckboxPrimitive.Indicator>) {
+  return (
+    <CheckboxPrimitive.Indicator
+      data-slot="checkbox-indicator"
+      className={cn(
+        "group/checkbox-indicator grid place-content-center text-current transition-none [&>svg]:size-3.5",
+        className
+      )}
+      {...props}
+    >
+      <CheckIcon className="group-data-[state=indeterminate]/checkbox-indicator:hidden" />
+      <MinusIcon className="hidden group-data-[state=indeterminate]/checkbox-indicator:block" />
+    </CheckboxPrimitive.Indicator>
+  )
+}
+
+export { Checkbox, CheckboxIndicator }

@@ -3,6 +3,7 @@ import type { IconType } from "react-icons"
 import {
   FiCircle as CircleIcon,
   FiAlignLeft as AlignLeftIcon,
+  FiArrowRightCircle as ArrowRightCircleIcon,
   FiBell as BellIcon,
   FiCalendar as CalendarIcon,
   FiCalendar as CalendarDaysIcon,
@@ -45,11 +46,13 @@ import {
   FiUpload as UploadIcon,
 } from "react-icons/fi"
 import {
+  LuALargeSmall as ALargeSmallIcon,
   LuBot as BotIcon,
   LuAppWindow as AppWindowIcon,
   LuAppWindowMac as AppWindowMacIcon,
   LuAsterisk as AsteriskIcon,
   LuBadge as BadgeIcon,
+  LuBadgeCheck as BadgeCheckIcon,
   LuChartColumn as ChartColumnIcon,
   LuChevronsDownUp as ChevronsDownUpIcon,
   LuChevronsUpDown as ChevronsUpDownIcon,
@@ -82,12 +85,14 @@ import {
   LuScroll as ScrollIcon,
   LuShapes as ShapesIcon,
   LuSquareSplitHorizontal as SquareSplitHorizontalIcon,
+  LuSquareStack as SquareStackIcon,
   LuSquareCheck as SquareCheckIcon,
   LuTable2 as Table2Icon,
   LuTableProperties as TablePropertiesIcon,
   LuTags as TagsIcon,
   LuTextCursorInput as TextCursorInputIcon,
   LuTextSearch as TextSearchIcon,
+  LuWalletCards as WalletCardsIcon,
 } from "react-icons/lu"
 
 // Sidebar icons, most visible when the sidebar is collapsed.
@@ -96,9 +101,14 @@ const ICONS: Record<string, IconType> = {
   installation: PackageIcon,
   "claude-code": BotIcon,
   typography: TypeIcon,
+  text: ALargeSmallIcon,
   colors: PaletteIcon,
   icons: ShapesIcon,
   "card-brand-icon": CreditCardIcon,
+  "card-brand-mark": WalletCardsIcon,
+  "brand-mark": BadgeCheckIcon,
+  tray: SquareStackIcon,
+  "pill-button": ArrowRightCircleIcon,
   "page-header": PanelTopIcon,
   "data-table": TableIcon,
   "data-table-reorder": GripVerticalIcon,

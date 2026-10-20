@@ -30,14 +30,25 @@ function RadioGroupItem({
       )}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator
-        data-slot="radio-group-indicator"
-        className="flex size-full items-center justify-center"
-      >
-        <span className="absolute start-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary rtl:translate-x-1/2" />
-      </RadioGroupPrimitive.Indicator>
+      <RadioGroupIndicator />
     </RadioGroupPrimitive.Item>
   )
 }
 
-export { RadioGroup, RadioGroupItem }
+/** The radio's 8px dot, shown while its item is checked; draws `RadioGroupItem`'s mark inside a custom radio item. */
+function RadioGroupIndicator({
+  className,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Indicator>) {
+  return (
+    <RadioGroupPrimitive.Indicator
+      data-slot="radio-group-indicator"
+      className={cn("flex size-full items-center justify-center", className)}
+      {...props}
+    >
+      <span className="absolute start-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary rtl:translate-x-1/2" />
+    </RadioGroupPrimitive.Indicator>
+  )
+}
+
+export { RadioGroup, RadioGroupItem, RadioGroupIndicator }

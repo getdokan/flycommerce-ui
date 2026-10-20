@@ -23,7 +23,8 @@
     --muted: #f7f7f8;
     --muted-foreground: #68687e; /* text-tertiary */
     --placeholder: #6b6b80; /* darker than the dashboard's #8f8fa3 for 4.5:1 */
-    --accent: var(--primary-subtle);
+    --accent: initial; /* menu rows use --primary-subtle unless it is set */
+    --accent-mix: 0%; /* share of --primary in the menu row tint */
     --accent-foreground: #24242b;
     --destructive: #cc2d36; /* danger, darkened for 4.5:1 on grey surfaces */
     --destructive-subtle: #fcecec;
@@ -36,6 +37,9 @@
     --warning-strong: #8a5b06;
     --soon: #6d3be4;
     --soon-subtle: #f1ecff;
+    --brand-mark: #ffffff; /* logo tile, white in both themes */
+    --brand-mark-ring: rgb(0 0 0 / 0.06); /* logo tile hairline */
+    --card-brand-ring: rgb(16 24 40 / 0.06); /* card network mark hairline */
     --border: #e2e2e7; /* border/primary */
     --border-subtle: #f1f1f3; /* border/secondary */
     --input: #e2e2e7;
@@ -47,25 +51,39 @@
     --chart-5: #68687e;
     --radius: 8px; /* radius-control */
     --radius-panel: 12px; /* cards, toasts */
+    --tray-radius: 18px; /* lead tray */
+    --brand-mark-radius: 25%; /* logo tile corners, at every size */
     --font: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
     --elevation-1: 0 1px 2px rgb(0 0 0 / 0.05);
     --elevation-card: 0 1px 2px -1px rgb(0 0 0 / 0.1), 0 1px 3px rgb(0 0 0 / 0.1);
     --elevation-2: 0 4px 14px rgb(16 23 41 / 0.08), 0 2px 4px rgb(16 23 41 / 0.04);
     --elevation-pop: 0 12px 34px rgb(16 23 41 / 0.16), 0 4px 10px rgb(16 23 41 / 0.08);
+    --elevation-brand-mark: 0 1px 2px rgb(16 24 40 / 0.06); /* logo tile */
+    --elevation-lead: 0 1px 1px rgb(0 0 0 / 0.04), 0 12px 32px -16px rgb(21 93 252 / 0.28); /* lead plate, blue glow */
+    --elevation-notice: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 28px -18px rgb(16 24 40 / 0.25); /* warning and danger plate */
+    --motion-fluid: cubic-bezier(0.32, 0.72, 0, 1); /* the prototype's motion curve */
     --inverse: #101828; /* dashboard save bar (gray-900) */
     --inverse-foreground: #ffffff;
     --on-dark: #ffffff; /* text on a dark custom colour, e.g. a brand colour */
     --on-light: #24242b; /* text on a light custom colour */
-    --sidebar: #0a0a10; /* side */
-    --sidebar-foreground: #dbdee7; /* side-ink */
-    --sidebar-muted: #8a90a1; /* side-ink-2 */
-    --sidebar-heading: #666c7c; /* side-head */
+    --code-gutter: color-mix(in srgb, var(--muted) 30%, var(--card)); /* code editor gutter: muted/30 on card, opaque */
+    --tooltip: #09090b; /* tooltips and toasts */
+    --tooltip-foreground: #ffffff;
+    --sidebar: #09090b; /* side */
+    --sidebar-foreground: #cdcdd6; /* side-ink */
+    --sidebar-muted: #8f8fa3; /* side-ink-2 */
+    --sidebar-heading: #7a7a91; /* side-head; lighter than the design for 4.5:1 */
     --sidebar-primary: #155dfc;
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #15151e; /* side-2 */
+    --sidebar-primary-ink: #2b7fff; /* brand blue as text on the rail */
+    --sidebar-accent: #18181d; /* side-2 */
     --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: rgb(255 255 255 / 0.07);
+    --sidebar-border: #24242b;
     --sidebar-ring: rgb(21 93 252 / 0.45);
+    --sidebar-elevate: #24242b; /* raised tile or button on the rail */
+    --sidebar-strong: #ffffff; /* emphasised text: hover, store name */
+    --sidebar-alt: #131317; /* selected segment of a rail switch */
+    --sidebar-tabs: #09090b; /* track of a rail switch */
 }
 
 [data-theme="dark"],
@@ -92,7 +110,7 @@
     --muted: #1b1b26;
     --muted-foreground: #8a90a1;
     --placeholder: #80869a;
-    --accent: var(--primary-subtle);
+    --accent-mix: 30%;
     --accent-foreground: #e9eaf0;
     --destructive: #e5776a;
     --destructive-subtle: #2a1917;
@@ -105,6 +123,9 @@
     --warning-strong: #e8b95c;
     --soon: #b79bff;
     --soon-subtle: #221a3a;
+    --brand-mark: #ffffff;
+    --brand-mark-ring: rgb(255 255 255 / 0.1);
+    --card-brand-ring: rgb(255 255 255 / 0.1);
     --border: #262632;
     --border-subtle: #1f1f2a;
     --input: #262632;
@@ -118,14 +139,43 @@
     --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.3);
     --elevation-2: 0 4px 14px rgb(0 0 0 / 0.45), 0 2px 4px rgb(0 0 0 / 0.3);
     --elevation-pop: 0 12px 34px rgb(0 0 0 / 0.6), 0 4px 10px rgb(0 0 0 / 0.4);
+    --elevation-lead: 0 1px 1px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(21 93 252 / 0.14);
+    --elevation-notice: 0 1px 1px rgb(0 0 0 / 0.3), 0 10px 28px -18px rgb(0 0 0 / 0.6);
     --inverse: #262632;
     --inverse-foreground: #ffffff;
     --on-dark: #ffffff;
     --on-light: #24242b;
-    --sidebar: #05050a;
-    --sidebar-foreground: #e9eaf0;
-    --sidebar-muted: #8a90a1;
-    --sidebar-heading: #6b7183;
-    --sidebar-accent: #101018;
-    --sidebar-border: rgb(255 255 255 / 0.07);
+    --code-gutter: color-mix(in srgb, var(--muted) 30%, var(--card));
+    --tooltip: #09090b;
+    --tooltip-foreground: #ffffff;
+    --sidebar: #09090b;
+    --sidebar-foreground: #cdcdd6;
+    --sidebar-muted: #8f8fa3;
+    --sidebar-heading: #7a7a91;
+    --sidebar-primary: #155dfc;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-primary-ink: #2b7fff;
+    --sidebar-accent: #18181d;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #24242b;
+    --sidebar-elevate: #24242b;
+    --sidebar-strong: #ffffff;
+    --sidebar-alt: #131317;
+    --sidebar-tabs: #09090b;
+}
+
+[data-slot="sidebar"][data-sidebar-theme="light"],
+[data-sidebar-theme="light"] [data-slot="sidebar"]:not([data-sidebar-theme="dark"]) {
+    --sidebar: #ffffff;
+    --sidebar-foreground: #464654;
+    --sidebar-muted: #68687e;
+    --sidebar-heading: #68687e;
+    --sidebar-primary-ink: #155dfc;
+    --sidebar-accent: #f1f1f3;
+    --sidebar-accent-foreground: #24242b;
+    --sidebar-border: #e2e2e7;
+    --sidebar-elevate: #f7f7f8;
+    --sidebar-strong: #24242b;
+    --sidebar-alt: #ffffff;
+    --sidebar-tabs: #f1f1f3;
 }

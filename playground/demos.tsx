@@ -8,18 +8,24 @@ import {
   FiCheckCircle as CheckCircle2Icon,
   FiChevronDown as ChevronDownIcon,
   FiAlertCircle as CircleAlertIcon,
+  FiBox as BoxIcon,
   FiDownload as DownloadIcon,
+  FiHome as HomeIcon,
   FiInbox as InboxIcon,
   FiInfo as InfoIcon,
   FiItalic as ItalicIcon,
+  FiMoon as MoonIcon,
   FiPlus as PlusIcon,
   FiSearch as SearchIcon,
   FiSettings as SettingsIcon,
+  FiShoppingCart as ShoppingCartIcon,
   FiSliders as SlidersHorizontalIcon,
+  FiSun as SunIcon,
   FiTrash2 as Trash2Icon,
   FiUnderline as UnderlineIcon,
   FiUpload as UploadIcon,
   FiUser as UserIcon,
+  FiUsers as UsersIcon,
 } from "react-icons/fi"
 import {
   LuCalculator as CalculatorIcon,
@@ -53,7 +59,13 @@ import {
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
-import { ColorsDemo, TypographyDemo } from "./foundation-demos"
+import {
+  BrandMarkDemo,
+  CardBrandMarkDemo,
+  PillButtonDemo,
+  TrayDemo,
+} from "./display-demos"
+import { ColorsDemo, TextDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
   NewCategoryModalDemo,
@@ -86,6 +98,7 @@ import {
   IconChipDemo,
   SwitchFieldDemo,
   TagInputDemo,
+  TitleField,
 } from "./p2-demos"
 
 import {
@@ -197,6 +210,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
+  Icon,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -262,6 +276,16 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
   Skeleton,
   Slider,
   Spinner,
@@ -309,8 +333,10 @@ const KEYWORDS: Record<string, string> = {
   progress:
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
   empty: "no data blank zero state",
-  input: "text field form label error hint required optional",
+  input:
+    "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
+  textarea: "multiline text area description character count limit",
   select: "dropdown picker options",
   combobox: "autocomplete searchable select typeahead multiple chips",
   checkbox: "radio switch toggle tick indeterminate",
@@ -337,11 +363,18 @@ const KEYWORDS: Record<string, string> = {
   breadcrumb: "path trail",
   pagination: "pages next previous",
   "navigation-menu": "menubar nav mega menu",
-  sidebar: "navigation nav rail",
+  sidebar: "navigation nav rail light dark theme shortcut",
   icons: "icon glyph feather react-icons svg",
   "card-brand-icon":
     "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
+  "card-brand-mark":
+    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing colour color full colour accepted cards",
+  "brand-mark":
+    "logo brand mark tile third party provider gateway carrier app icon simple icons white",
+  "pill-button": "pill cta call to action arrow rounded full width primary",
+  tray: "lead shell double bezel hero highlight notice warning plate",
   typography: "type font text heading size scale inter",
+  text: "typography type scale p3 font heading title display paragraph body caption size weight bold semibold tone colour numeric tabular figures",
   colors: "color colour palette token swatch theme",
   "page-header": "title heading back link actions",
   "data-table":
@@ -358,14 +391,16 @@ const KEYWORDS: Record<string, string> = {
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
   "icon-chip": "icon tile badge avatar tinted background circle square",
-  "radio-card": "option card choice",
-  "switch-field": "toggle row setting",
+  "radio-card":
+    "option card choice row rows checkbox multi select radio group settings details",
+  "switch-field":
+    "toggle row setting enabled disabled state label badge nested settings",
   "nav-tabs": "tabs links route navigation",
   "segmented-control":
     "radio toggle switch choice option unit metric imperial pill button group",
   "async-combobox": "remote search autocomplete lookup api",
   "tag-input": "chips tags multi value creatable",
-  "password-input": "password show hide eye",
+  "password-input": "password show hide eye secret api key saved masked",
   "color-input": "colour color picker hex swatch brand accent theme",
   "date-picker": "date time range calendar presets",
   dropzone: "upload file drag drop",
@@ -424,7 +459,12 @@ const SOURCES: Record<string, Source> = {
   sidebar: "prototype",
   icons: "prototype",
   "card-brand-icon": "composite",
+  "card-brand-mark": "prototype",
+  "brand-mark": "prototype",
+  "pill-button": "prototype",
+  tray: "prototype",
   typography: "prototype",
+  text: "prototype",
   colors: "prototype",
   "page-header": "prototype",
   "save-bar": "prototype",
@@ -692,6 +732,97 @@ function CalendarDemo() {
   )
 }
 
+const RAIL_ITEMS = [
+  { title: "Dashboard", icon: HomeIcon },
+  { title: "Products", icon: BoxIcon },
+  { title: "Orders", icon: ShoppingCartIcon },
+  { title: "Customers", icon: UsersIcon },
+]
+
+function SidebarDemo() {
+  const [railTheme, setRailTheme] = React.useState("dark")
+  React.useEffect(() => {
+    const root = document.documentElement
+    root.dataset.sidebarTheme = railTheme
+    return () => {
+      delete root.dataset.sidebarTheme
+    }
+  }, [railTheme])
+
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <p className="text-sm text-muted-foreground">
+        This page’s navigation is the Sidebar component: collapsible to icons
+        with the button in the top bar or <Kbd>⌘</Kbd>
+        <Kbd>B</Kbd>, a sheet below 768px. The switch sets{" "}
+        <code className="rounded bg-muted px-1">data-sidebar-theme</code> on{" "}
+        <code className="rounded bg-muted px-1">&lt;html&gt;</code>: every
+        sidebar follows it, mobile sheets included. A single sidebar takes{" "}
+        <code className="rounded bg-muted px-1">theme</code> instead, like the
+        two below (each in its own provider, with the shortcut off).
+      </p>
+      <SegmentedControl
+        aria-label="Sidebar theme"
+        value={railTheme}
+        onValueChange={setRailTheme}
+      >
+        <SegmentedControlItem value="dark">
+          <MoonIcon aria-hidden="true" />
+          Dark
+        </SegmentedControlItem>
+        <SegmentedControlItem value="light">
+          <SunIcon aria-hidden="true" />
+          Light
+        </SegmentedControlItem>
+      </SegmentedControl>
+      <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] gap-4">
+        {(["dark", "light"] as const).map((theme) => (
+          <SidebarProvider
+            key={theme}
+            shortcutKey={false}
+            className="min-h-0 overflow-hidden rounded-lg border"
+          >
+            <Sidebar collapsible="none" theme={theme}>
+              <SidebarHeader>
+                <div className="flex items-center gap-2 px-2 py-1.5">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground">
+                    T
+                  </span>
+                  <span className="truncate text-sm font-semibold text-sidebar-strong">
+                    Trendy Store
+                  </span>
+                </div>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarGroup>
+                  <SidebarGroupLabel>Catalog</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {RAIL_ITEMS.map(({ title, icon: Icon }, index) => (
+                        <SidebarMenuItem key={title}>
+                          <SidebarMenuButton asChild isActive={index === 0}>
+                            <a href="#sidebar">
+                              <Icon />
+                              <span>{title}</span>
+                            </a>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+            </Sidebar>
+            <div className="hidden flex-1 border-s bg-page p-3 text-xs text-muted-foreground sm:block">
+              <code dir="ltr">theme="{theme}"</code>
+            </div>
+          </SidebarProvider>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const demos: Demo[] = [
   // Getting started
   {
@@ -728,6 +859,12 @@ export const demos: Demo[] = [
     render: () => <TypographyDemo />,
   },
   {
+    id: "text",
+    title: "Text",
+    group: "Foundations",
+    render: () => <TextDemo />,
+  },
+  {
     id: "colors",
     title: "Colors",
     group: "Foundations",
@@ -745,6 +882,18 @@ export const demos: Demo[] = [
     group: "Foundations",
     render: () => <CardBrandIconDemo />,
   },
+  {
+    id: "card-brand-mark",
+    title: "Card brand mark",
+    group: "Foundations",
+    render: () => <CardBrandMarkDemo />,
+  },
+  {
+    id: "brand-mark",
+    title: "Brand mark",
+    group: "Foundations",
+    render: () => <BrandMarkDemo />,
+  },
 
   // Patterns
   {
@@ -752,6 +901,12 @@ export const demos: Demo[] = [
     title: "Page header",
     group: "Patterns",
     render: () => <PageHeaderDemo />,
+  },
+  {
+    id: "tray",
+    title: "Tray (lead)",
+    group: "Patterns",
+    render: () => <TrayDemo />,
   },
   {
     id: "data-table",
@@ -809,7 +964,7 @@ export const demos: Demo[] = [
   },
   {
     id: "radio-card",
-    title: "Radio cards",
+    title: "Option cards & rows",
     group: "Patterns",
     render: () => <RadioCardDemo />,
   },
@@ -1051,6 +1206,12 @@ export const demos: Demo[] = [
         </p>
       </Stack>
     ),
+  },
+  {
+    id: "pill-button",
+    title: "Pill call to action",
+    group: "Actions",
+    render: () => <PillButtonDemo />,
   },
   {
     id: "button-group",
@@ -1335,6 +1496,42 @@ export const demos: Demo[] = [
           <FieldLabel htmlFor="file">Logo</FieldLabel>
           <Input id="file" type="file" />
         </Field>
+        <Field>
+          <FieldLabel htmlFor="seo-title">Homepage title</FieldLabel>
+          <Input
+            id="seo-title"
+            maxLength={100}
+            softLimit={60}
+            defaultValue="Maison Oriel: tailored outerwear and knitwear"
+          />
+          <FieldDescription icon={<Icon name="info" />}>
+            Google shows about 60 characters. Leave blank to use the{" "}
+            <a href="#input">store name</a>.
+          </FieldDescription>
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="support-email">Support email</FieldLabel>
+          <Input
+            id="support-email"
+            type="email"
+            defaultValue="help@maisonoriel.com"
+          />
+          <FieldDescription icon={<Icon name="info" />}>
+            Customers reply to this address from order emails.
+          </FieldDescription>
+        </Field>
+        <TitleField
+          id="share-title"
+          label="Share title"
+          limit={60}
+          defaultValue="Maison Oriel: tailored outerwear"
+        />
+        <TitleField
+          id="page-title"
+          label="Page title"
+          limit={60}
+          defaultValue="Maison Oriel: tailored outerwear, knitwear and leather goods from Lisbon"
+        />
       </div>
     ),
   },
@@ -1377,6 +1574,18 @@ export const demos: Demo[] = [
             maxLength={500}
             showCount
           />
+        </Field>
+        <Field className="sm:col-span-2">
+          <FieldLabel htmlFor="meta-description">Meta description</FieldLabel>
+          <Textarea
+            id="meta-description"
+            softLimit={160}
+            defaultValue="Maison Oriel makes tailored outerwear, knitwear and leather goods in small runs, cut in our Lisbon studio from wool, cashmere and vegetable-tanned leather that softens with every wear."
+          />
+          <FieldDescription icon={<Icon name="info" />}>
+            Google shows about 160 characters. Longer text is cut off in search
+            results.
+          </FieldDescription>
         </Field>
       </div>
     ),
@@ -2336,13 +2545,7 @@ export const demos: Demo[] = [
     id: "sidebar",
     title: "Sidebar",
     group: "Navigation",
-    render: () => (
-      <p className="text-sm text-muted-foreground">
-        The navigation on the left of this page is the Sidebar component (dark,
-        collapsible to icons with the button in the top bar or <Kbd>⌘</Kbd>
-        <Kbd>B</Kbd>).
-      </p>
-    ),
+    render: () => <SidebarDemo />,
   },
 ]
 
