@@ -316,7 +316,7 @@ function minimalChange(from: string, to: string): ChangeSpec {
   return { from: start, to: endFrom, insert: to.slice(start, endTo) }
 }
 
-/** Code field on CodeMirror (opt-in entry `@flycommerce/ui/code-editor`): file tab, line numbers, syntax colours, Ln/Col, counts and your problems. */
+/** Code field on CodeMirror (opt-in entry `@flycommerce/ui/code-editor`): file tab, line numbers, monochrome code with the language's indentation and closing tags, Ln/Col, counts and your problems. */
 function CodeEditor({
   value,
   defaultValue = "",
