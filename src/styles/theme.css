@@ -23,7 +23,7 @@
     --muted: #f7f7f8;
     --muted-foreground: #68687e; /* text-tertiary */
     --placeholder: #6b6b80; /* darker than the dashboard's #8f8fa3 for 4.5:1 */
-    --accent: var(--primary-subtle);
+    --accent: initial; /* menu rows use --primary-subtle unless it is set */
     --accent-foreground: #24242b;
     --destructive: #cc2d36; /* danger, darkened for 4.5:1 on grey surfaces */
     --destructive-subtle: #fcecec;
@@ -90,7 +90,6 @@
     --muted: #1b1b26;
     --muted-foreground: #8a90a1;
     --placeholder: #80869a;
-    --accent: var(--primary-subtle);
     --accent-foreground: #e9eaf0;
     --destructive: #e5776a;
     --destructive-subtle: #2a1917;
