@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import axe from "axe-core"
-import { describe, expect, it, vi } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import {
   Dialog,
@@ -14,6 +14,8 @@ import {
 
 document.elementFromPoint ??= () => null
 
+beforeAll(() => import("@/components/rich-text-editor/ai-assistant"))
+
 type Run = RichTextEditorAiAction["run"]
 
 async function writingArea(container: HTMLElement) {
@@ -24,7 +26,9 @@ async function writingArea(container: HTMLElement) {
 }
 
 async function pick(user: ReturnType<typeof userEvent.setup>, label: string) {
-  await user.click(screen.getByRole("button", { name: "AI Assistant" }))
+  const menu = screen.getByRole("button", { name: "AI Assistant" })
+  await waitFor(() => expect(menu).toHaveProperty("disabled", false))
+  await user.click(menu)
   await user.click(await screen.findByRole("menuitem", { name: label }))
 }
 
