@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import axe from "axe-core"
-import { describe, expect, it, vi } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import {
   Dialog,
@@ -14,6 +14,8 @@ import {
 
 document.elementFromPoint ??= () => null
 
+beforeAll(() => import("@/components/rich-text-editor/ai-assistant"))
+
 type Run = RichTextEditorAiAction["run"]
 
 async function writingArea(container: HTMLElement) {
@@ -24,7 +26,9 @@ async function writingArea(container: HTMLElement) {
 }
 
 async function pick(user: ReturnType<typeof userEvent.setup>, label: string) {
-  await user.click(screen.getByRole("button", { name: "AI Assistant" }))
+  const menu = screen.getByRole("button", { name: "AI Assistant" })
+  await waitFor(() => expect(menu).toHaveProperty("disabled", false))
+  await user.click(menu)
   await user.click(await screen.findByRole("menuitem", { name: label }))
 }
 
@@ -111,10 +115,12 @@ describe("RichTextEditor AI actions", () => {
     run,
     onChange,
     value = "<p>Soft cotton tee.</p><p>Machine washable.</p>",
+    getAiErrorMessage,
   }: {
     run: Run
     onChange?: (html: string) => void
     value?: string
+    getAiErrorMessage?: (error: unknown) => string | null
   }) {
     return (
       <RichTextEditor
@@ -125,6 +131,7 @@ describe("RichTextEditor AI actions", () => {
           { id: "paraphrase", label: "Paraphrase", run },
           { id: "simplify", label: "Simplify", run },
         ]}
+        getAiErrorMessage={getAiErrorMessage}
       />
     )
   }
@@ -281,29 +288,30 @@ describe("RichTextEditor AI actions", () => {
     expect(onChange.mock.calls.length).toBe(calls)
   })
 
-  it("shows a failure inline and runs the action again on Try again", async () => {
+  it("shows labels.aiError instead of the raw error text, and runs the action again on Try again", async () => {
     const user = userEvent.setup()
     const run = vi
       .fn<Run>()
       .mockRejectedValueOnce("timeout")
-      .mockRejectedValueOnce(new Error("The AI service didn't respond."))
+      .mockRejectedValueOnce(new TypeError("Failed to fetch"))
       .mockResolvedValueOnce("<p>Gentle cotton tee.</p>")
     const { container } = render(<Editor run={run} />)
     await writingArea(container)
 
     await pick(user, "Paraphrase")
     let alert = await screen.findByRole("alert")
-    expect(alert.textContent).toContain("We couldn't get a suggestion.")
+    expect(alert.textContent).toBe(
+      "We couldn't get a suggestion.Try againDiscard"
+    )
     const tryAgain = within(alert).getByRole("button", { name: "Try again" })
     expect(document.activeElement).toBe(tryAgain)
 
     await user.click(tryAgain)
-    await waitFor(() =>
-      expect(screen.getByRole("alert").textContent).toContain(
-        "The AI service didn't respond."
-      )
+    await waitFor(() => expect(run).toHaveBeenCalledTimes(2))
+    alert = await screen.findByRole("alert")
+    expect(alert.textContent).toBe(
+      "We couldn't get a suggestion.Try againDiscard"
     )
-    alert = screen.getByRole("alert")
     await user.click(within(alert).getByRole("button", { name: "Try again" }))
 
     const panel = await review()
@@ -313,6 +321,39 @@ describe("RichTextEditor AI actions", () => {
       panel.querySelector("[data-slot=rich-text-editor-ai-suggestion]")
         ?.textContent
     ).toBe("SuggestionGentle cotton tee.")
+  })
+
+  it("shows the app's own text for an error getAiErrorMessage recognises, and labels.aiError for the rest", async () => {
+    class QuotaError extends Error {}
+    const user = userEvent.setup()
+    const quota = new QuotaError("You've used today's AI credits.")
+    const offline = new TypeError("Failed to fetch")
+    const getAiErrorMessage = vi.fn((error: unknown) =>
+      error instanceof QuotaError ? error.message : null
+    )
+    const run = vi
+      .fn<Run>()
+      .mockRejectedValueOnce(quota)
+      .mockRejectedValueOnce(offline)
+    const { container } = render(
+      <Editor run={run} getAiErrorMessage={getAiErrorMessage} />
+    )
+    await writingArea(container)
+
+    await pick(user, "Paraphrase")
+    let alert = await screen.findByRole("alert")
+    expect(alert.textContent).toBe(
+      "You've used today's AI credits.Try againDiscard"
+    )
+    expect(getAiErrorMessage).toHaveBeenLastCalledWith(quota)
+
+    await user.click(within(alert).getByRole("button", { name: "Try again" }))
+    await waitFor(() => expect(getAiErrorMessage).toHaveBeenCalledTimes(2))
+    expect(getAiErrorMessage).toHaveBeenLastCalledWith(offline)
+    alert = await screen.findByRole("alert")
+    expect(alert.textContent).toBe(
+      "We couldn't get a suggestion.Try againDiscard"
+    )
   })
 
   it("Esc discards a suggestion without closing the dialog around the editor", async () => {
@@ -416,6 +457,27 @@ describe("RichTextEditor AI actions", () => {
     await waitFor(() =>
       expect(onChange).toHaveBeenLastCalledWith("<p>Generated copy.</p>")
     )
+    expect(onChange).toHaveBeenCalledTimes(1)
     expect(suggestionPanel()).toBeNull()
+  })
+})
+
+describe("RichTextEditor disabled", () => {
+  it("locks and unlocks the writing area without calling onChange", async () => {
+    const onChange = vi.fn()
+    const props = {
+      "aria-label": "Description",
+      value: "<p>Soft <b>cotton</b> tee.</p>",
+      onChange,
+    }
+    const { container, rerender } = render(<RichTextEditor {...props} />)
+    const area = await writingArea(container)
+    expect(area.getAttribute("contenteditable")).toBe("true")
+
+    rerender(<RichTextEditor {...props} disabled />)
+    expect(area.getAttribute("contenteditable")).toBe("false")
+    rerender(<RichTextEditor {...props} />)
+    expect(area.getAttribute("contenteditable")).toBe("true")
+    expect(onChange).not.toHaveBeenCalled()
   })
 })
