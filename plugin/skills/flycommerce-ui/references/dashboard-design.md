@@ -107,6 +107,14 @@ Status filters above a table (`MultitabFilters`, dokan-ui `AppTab`): grey `#e2e2
 
 Inter. Page title 24/700, modal title 18/700, card title 16/700, row title 14/600, body 14/400, label 14/500, helper 12/400, table header 12/600 uppercase. These are the `type-*` utilities in `SKILL.md`; components apply them already.
 
+The Settings redesign and new screens use the P3 scale instead: `Text` (`variant`, `weight`, `tone`), or the `type-display` … `type-caption-s` utilities in plain markup. Pages already built on the utilities above keep them, so each page stays on one scale. Where the two scales meet:
+
+- Page title: `type-page-title` and `type-h6` are both 24/32. The page title also sets bold (700) and no letter spacing; `type-h6` sets -0.3px and leaves the weight to `Text`.
+- Body: `type-body` and `type-caption-l` are both 14px with no letter spacing. `type-body` also sets weight 400 and a 1.5 line height (21px); `type-caption-l` sets 20px and leaves the weight to `Text`.
+- Helper and KPI label: `type-kpi-label` and `type-caption-m` are both 12/16 with no letter spacing. `type-kpi-label` also sets weight 400; `type-caption-m` leaves it to `Text`.
+
+`Text` defaults to `body-s` (16/24), as the Settings prototype's `Text` does; body copy is `caption-l` (14/20). Set the size with `variant`, not `className`.
+
 ## Accessibility deviations
 
 The library is a little darker than the dashboard in three places, so text meets WCAG AA (4.5:1). Keep the library's values; don't "fix" them back:

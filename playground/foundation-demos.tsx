@@ -1,3 +1,11 @@
+import {
+  Text,
+  TEXT_WEIGHTS,
+  type TextTone,
+  type TextVariant,
+  type TextWeight,
+} from "@/index"
+
 const TYPE_SCALE = [
   ["type-page-title", "Page title", "24 / 700", "One per screen"],
   ["type-overview-value", "$12,480.00", "24 / 600", "Report overview figure"],
@@ -71,6 +79,151 @@ export function TypographyDemo() {
   )
 }
 
+const SCALE_SPECS: [TextVariant, string, string, string][] = [
+  ["display", "Display", "96 / 100 · -3.6", "p"],
+  ["h1", "H1", "64 / 72 · -1.7", "h1"],
+  ["h2", "H2", "56 / 64 · -1.7", "h2"],
+  ["h3", "H3", "48 / 56 · -1", "h3"],
+  ["h4", "H4", "40 / 48 · -0.7", "h4"],
+  ["h5", "H5", "32 / 40 · -0.5", "h5"],
+  ["h6", "H6", "24 / 32 · -0.3", "h6"],
+  ["body-l", "Body L", "20 / 28 · -0.2", "p"],
+  ["body-m", "Body M", "18 / 26 · -0.2", "p"],
+  ["body-s", "Body S", "16 / 24 · -0.2", "p"],
+  ["caption-l", "Caption L", "14 / 20 · 0", "span"],
+  ["caption-m", "Caption M", "12 / 16 · 0", "span"],
+  ["caption-s", "Caption S", "10 / 14 · 0", "span"],
+]
+
+const WEIGHT_VALUES: Record<TextWeight, number> = {
+  light: 300,
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+  extrabold: 800,
+  black: 900,
+}
+
+const TONE_NOTES: [TextTone, string][] = [
+  ["default", "text-foreground"],
+  ["secondary", "text-foreground-secondary"],
+  ["muted", "text-muted-foreground"],
+  ["brand", "text-primary-ink"],
+  ["success", "text-success-strong"],
+  ["danger", "text-destructive"],
+  ["inherit", "No colour: takes the parent's"],
+]
+
+export function TextDemo() {
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-8">
+      <Text as="p" variant="caption-l" tone="muted">
+        The P3 type scale in Inter. Pick a size with{" "}
+        <code className="rounded bg-muted px-1">variant</code>, then{" "}
+        <code className="rounded bg-muted px-1">weight</code> and{" "}
+        <code className="rounded bg-muted px-1">tone</code>; numbers take{" "}
+        <code className="rounded bg-muted px-1">numeric</code>. Sizes are listed
+        as size / line height · letter spacing, in px. Plain markup uses the
+        same sizes as{" "}
+        <code className="rounded bg-muted px-1">type-display</code> …{" "}
+        <code className="rounded bg-muted px-1">type-caption-s</code>.
+      </Text>
+
+      <div className="flex flex-col">
+        {SCALE_SPECS.map(([variant, name, spec, element]) => (
+          <div
+            key={variant}
+            className="grid gap-1 border-b border-border-subtle py-4 first:pt-0 last:border-b-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-baseline sm:gap-4"
+          >
+            <Text variant={variant} className="min-w-0 break-words">
+              {name}
+            </Text>
+            <Text
+              variant="caption-m"
+              tone="muted"
+              numeric
+              dir="ltr"
+              className="flex flex-col"
+            >
+              <code className="text-foreground-secondary">{variant}</code>
+              <span>
+                {spec} · {element}
+              </span>
+            </Text>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <Text as="h3" variant="caption-m" weight="semibold" tone="muted">
+          Weights
+        </Text>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
+          {TEXT_WEIGHTS.map((weight) => (
+            <div key={weight} className="flex flex-col">
+              <Text variant="body-l" weight={weight}>
+                {weight}
+              </Text>
+              <Text variant="caption-m" tone="muted" numeric>
+                {WEIGHT_VALUES[weight]}
+              </Text>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <Text as="h3" variant="caption-m" weight="semibold" tone="muted">
+          Tones
+        </Text>
+        <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+          {TONE_NOTES.map(([tone, note]) => (
+            <div key={tone} className="flex flex-col">
+              <Text tone={tone} weight="medium">
+                {tone}
+              </Text>
+              <Text variant="caption-m" tone="muted">
+                {note}
+              </Text>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <Text as="h3" variant="caption-m" weight="semibold" tone="muted">
+          Numbers
+        </Text>
+        <div className="flex flex-wrap gap-x-12 gap-y-4">
+          <div className="flex flex-col items-end">
+            <Text variant="caption-m" tone="muted">
+              Default
+            </Text>
+            <Text variant="body-l" weight="semibold">
+              $1,111.11
+            </Text>
+            <Text variant="body-l" weight="semibold">
+              $8,480.50
+            </Text>
+          </div>
+          <div className="flex flex-col items-end">
+            <Text variant="caption-m" tone="muted">
+              numeric
+            </Text>
+            <Text variant="body-l" weight="semibold" numeric>
+              $1,111.11
+            </Text>
+            <Text variant="body-l" weight="semibold" numeric>
+              $8,480.50
+            </Text>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const COLOR_GROUPS: [string, [string, string][]][] = [
   [
     "Surfaces",
@@ -79,7 +232,8 @@ const COLOR_GROUPS: [string, [string, string][]][] = [
       ["background", "Cards, inputs"],
       ["card-header", "Card and table header"],
       ["muted", "Quiet fill"],
-      ["sidebar", "Dark chrome"],
+      ["sidebar", "Navigation rail"],
+      ["tooltip", "Tooltips, toasts"],
     ],
   ],
   [

@@ -8,18 +8,24 @@ import {
   FiCheckCircle as CheckCircle2Icon,
   FiChevronDown as ChevronDownIcon,
   FiAlertCircle as CircleAlertIcon,
+  FiBox as BoxIcon,
   FiDownload as DownloadIcon,
+  FiHome as HomeIcon,
   FiInbox as InboxIcon,
   FiInfo as InfoIcon,
   FiItalic as ItalicIcon,
+  FiMoon as MoonIcon,
   FiPlus as PlusIcon,
   FiSearch as SearchIcon,
   FiSettings as SettingsIcon,
+  FiShoppingCart as ShoppingCartIcon,
   FiSliders as SlidersHorizontalIcon,
+  FiSun as SunIcon,
   FiTrash2 as Trash2Icon,
   FiUnderline as UnderlineIcon,
   FiUpload as UploadIcon,
   FiUser as UserIcon,
+  FiUsers as UsersIcon,
 } from "react-icons/fi"
 import {
   LuCalculator as CalculatorIcon,
@@ -53,7 +59,7 @@ import {
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
-import { ColorsDemo, TypographyDemo } from "./foundation-demos"
+import { ColorsDemo, TextDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
   NewCategoryModalDemo,
@@ -259,6 +265,16 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
   Skeleton,
   Slider,
   Spinner,
@@ -336,11 +352,12 @@ const KEYWORDS: Record<string, string> = {
   breadcrumb: "path trail",
   pagination: "pages next previous",
   "navigation-menu": "menubar nav mega menu",
-  sidebar: "navigation nav rail",
+  sidebar: "navigation nav rail light dark theme shortcut",
   icons: "icon glyph feather react-icons svg",
   "card-brand-icon":
     "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
   typography: "type font text heading size scale inter",
+  text: "typography type scale p3 font heading title display paragraph body caption size weight bold semibold tone colour numeric tabular figures",
   colors: "color colour palette token swatch theme",
   "page-header": "title heading back link actions",
   "data-table":
@@ -421,6 +438,7 @@ const SOURCES: Record<string, Source> = {
   icons: "prototype",
   "card-brand-icon": "composite",
   typography: "prototype",
+  text: "prototype",
   colors: "prototype",
   "page-header": "prototype",
   "save-bar": "prototype",
@@ -685,6 +703,97 @@ function CalendarDemo() {
   )
 }
 
+const RAIL_ITEMS = [
+  { title: "Dashboard", icon: HomeIcon },
+  { title: "Products", icon: BoxIcon },
+  { title: "Orders", icon: ShoppingCartIcon },
+  { title: "Customers", icon: UsersIcon },
+]
+
+function SidebarDemo() {
+  const [railTheme, setRailTheme] = React.useState("dark")
+  React.useEffect(() => {
+    const root = document.documentElement
+    root.dataset.sidebarTheme = railTheme
+    return () => {
+      delete root.dataset.sidebarTheme
+    }
+  }, [railTheme])
+
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <p className="text-sm text-muted-foreground">
+        This page’s navigation is the Sidebar component: collapsible to icons
+        with the button in the top bar or <Kbd>⌘</Kbd>
+        <Kbd>B</Kbd>, a sheet below 768px. The switch sets{" "}
+        <code className="rounded bg-muted px-1">data-sidebar-theme</code> on{" "}
+        <code className="rounded bg-muted px-1">&lt;html&gt;</code>: every
+        sidebar follows it, mobile sheets included. A single sidebar takes{" "}
+        <code className="rounded bg-muted px-1">theme</code> instead, like the
+        two below (each in its own provider, with the shortcut off).
+      </p>
+      <SegmentedControl
+        aria-label="Sidebar theme"
+        value={railTheme}
+        onValueChange={setRailTheme}
+      >
+        <SegmentedControlItem value="dark">
+          <MoonIcon aria-hidden="true" />
+          Dark
+        </SegmentedControlItem>
+        <SegmentedControlItem value="light">
+          <SunIcon aria-hidden="true" />
+          Light
+        </SegmentedControlItem>
+      </SegmentedControl>
+      <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] gap-4">
+        {(["dark", "light"] as const).map((theme) => (
+          <SidebarProvider
+            key={theme}
+            shortcutKey={false}
+            className="min-h-0 overflow-hidden rounded-lg border"
+          >
+            <Sidebar collapsible="none" theme={theme}>
+              <SidebarHeader>
+                <div className="flex items-center gap-2 px-2 py-1.5">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground">
+                    T
+                  </span>
+                  <span className="truncate text-sm font-semibold text-sidebar-strong">
+                    Trendy Store
+                  </span>
+                </div>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarGroup>
+                  <SidebarGroupLabel>Catalog</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {RAIL_ITEMS.map(({ title, icon: Icon }, index) => (
+                        <SidebarMenuItem key={title}>
+                          <SidebarMenuButton asChild isActive={index === 0}>
+                            <a href="#sidebar">
+                              <Icon />
+                              <span>{title}</span>
+                            </a>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+            </Sidebar>
+            <div className="hidden flex-1 border-s bg-page p-3 text-xs text-muted-foreground sm:block">
+              <code dir="ltr">theme="{theme}"</code>
+            </div>
+          </SidebarProvider>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const demos: Demo[] = [
   // Getting started
   {
@@ -719,6 +828,12 @@ export const demos: Demo[] = [
     title: "Typography",
     group: "Foundations",
     render: () => <TypographyDemo />,
+  },
+  {
+    id: "text",
+    title: "Text",
+    group: "Foundations",
+    render: () => <TextDemo />,
   },
   {
     id: "colors",
@@ -2359,13 +2474,7 @@ export const demos: Demo[] = [
     id: "sidebar",
     title: "Sidebar",
     group: "Navigation",
-    render: () => (
-      <p className="text-sm text-muted-foreground">
-        The navigation on the left of this page is the Sidebar component (dark,
-        collapsible to icons with the button in the top bar or <Kbd>⌘</Kbd>
-        <Kbd>B</Kbd>).
-      </p>
-    ),
+    render: () => <SidebarDemo />,
   },
 ]
 

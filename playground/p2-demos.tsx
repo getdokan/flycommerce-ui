@@ -704,6 +704,30 @@ export function StatCardDemo() {
           </StatGroup>
         </CardContent>
       </Card>
+
+      <StatGroup
+        aria-label="Growth plan from 1 November"
+        className="grid-cols-2 after:bg-card"
+      >
+        <StatCard
+          layout="label-first"
+          label="Share of sales"
+          value="0%"
+          foot="From 1 November"
+        />
+        <StatCard
+          layout="label-first"
+          label="Orders included"
+          value="1,000"
+          foot="Per month"
+        />
+        <StatCard
+          layout="label-first"
+          label="Your orders last month"
+          value="842"
+          foot="1 to 30 September"
+        />
+      </StatGroup>
     </div>
   )
 }

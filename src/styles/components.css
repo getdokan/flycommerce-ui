@@ -659,6 +659,9 @@
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-inverse: var(--inverse);
     --color-inverse-foreground: var(--inverse-foreground);
+    --color-code-gutter: var(--code-gutter);
+    --color-tooltip: var(--tooltip);
+    --color-tooltip-foreground: var(--tooltip-foreground);
     --color-sidebar: var(--sidebar);
     --color-chart-5: var(--chart-5);
     --color-chart-4: var(--chart-4);
@@ -670,7 +673,7 @@
     --color-border: var(--border);
     --color-destructive: var(--destructive);
     --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
+    --color-accent: var(--accent, color-mix(in srgb, var(--primary-subtle), var(--primary) var(--accent-mix)));
     --color-muted-foreground: var(--muted-foreground);
     --color-muted: var(--muted);
     --color-secondary-foreground: var(--secondary-foreground);
@@ -706,6 +709,11 @@
     --color-border-subtle: var(--border-subtle);
     --color-sidebar-muted: var(--sidebar-muted);
     --color-sidebar-heading: var(--sidebar-heading);
+    --color-sidebar-primary-ink: var(--sidebar-primary-ink);
+    --color-sidebar-elevate: var(--sidebar-elevate);
+    --color-sidebar-strong: var(--sidebar-strong);
+    --color-sidebar-alt: var(--sidebar-alt);
+    --color-sidebar-tabs: var(--sidebar-tabs);
     /* Stock Tailwind radius and shadow scales stay untouched: host apps rely on them. */
     --radius-control: var(--radius);
     --radius-card: var(--radius-panel);
@@ -800,6 +808,71 @@
   font-weight: 650;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+@utility type-display {
+  font-size: 96px;
+  line-height: 100px;
+  letter-spacing: -3.6px;
+}
+@utility type-h1 {
+  font-size: 64px;
+  line-height: 72px;
+  letter-spacing: -1.7px;
+}
+@utility type-h2 {
+  font-size: 56px;
+  line-height: 64px;
+  letter-spacing: -1.7px;
+}
+@utility type-h3 {
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: -1px;
+}
+@utility type-h4 {
+  font-size: 40px;
+  line-height: 48px;
+  letter-spacing: -0.7px;
+}
+@utility type-h5 {
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.5px;
+}
+@utility type-h6 {
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.3px;
+}
+@utility type-body-l {
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: -0.2px;
+}
+@utility type-body-m {
+  font-size: 18px;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+@utility type-body-s {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.2px;
+}
+@utility type-caption-l {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+@utility type-caption-m {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+}
+@utility type-caption-s {
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 0;
 }
 
 /* Inside the dashboard the frame is only as tall as the page, so "the space left" squeezes a popup into a scroll box: popups capped at it get a fixed height instead, and @flycommerce/app-bridge grows the frame to fit. */
