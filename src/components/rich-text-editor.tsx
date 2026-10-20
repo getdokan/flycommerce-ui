@@ -286,10 +286,6 @@ function RichTextEditor({
   const aiBusy = aiStatus === "busy"
 
   React.useEffect(() => {
-    editor?.setEditable(!disabled && !generating)
-  }, [editor, disabled, generating])
-
-  React.useEffect(() => {
     editor?.setEditable(!disabled && !generating && !aiBusy, false)
   }, [editor, disabled, generating, aiBusy])
 
@@ -439,7 +435,7 @@ function RichTextEditor({
 
   const state = useEditorState({
     editor,
-    selector: ({ editor }) =>
+    selector: () =>
       editor
         ? {
             block:

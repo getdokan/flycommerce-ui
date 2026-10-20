@@ -416,6 +416,27 @@ describe("RichTextEditor AI actions", () => {
     await waitFor(() =>
       expect(onChange).toHaveBeenLastCalledWith("<p>Generated copy.</p>")
     )
+    expect(onChange).toHaveBeenCalledTimes(1)
     expect(suggestionPanel()).toBeNull()
+  })
+})
+
+describe("RichTextEditor disabled", () => {
+  it("locks and unlocks the writing area without calling onChange", async () => {
+    const onChange = vi.fn()
+    const props = {
+      "aria-label": "Description",
+      value: "<p>Soft <b>cotton</b> tee.</p>",
+      onChange,
+    }
+    const { container, rerender } = render(<RichTextEditor {...props} />)
+    const area = await writingArea(container)
+    expect(area.getAttribute("contenteditable")).toBe("true")
+
+    rerender(<RichTextEditor {...props} disabled />)
+    expect(area.getAttribute("contenteditable")).toBe("false")
+    rerender(<RichTextEditor {...props} />)
+    expect(area.getAttribute("contenteditable")).toBe("true")
+    expect(onChange).not.toHaveBeenCalled()
   })
 })
