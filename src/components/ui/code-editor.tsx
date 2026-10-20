@@ -170,11 +170,11 @@ function loadLanguageSupport(language: LanguagePack) {
   return load
 }
 
-const LINE_HEIGHT = 20
-const VERTICAL_PADDING = 24
+const LINE_HEIGHT = 5
+const VERTICAL_PADDING = 6
 
 const rowsHeight = (rows: number) =>
-  `${rows * LINE_HEIGHT + VERTICAL_PADDING}px`
+  `calc(var(--spacing) * ${rows * LINE_HEIGHT + VERTICAL_PADDING})`
 
 const External = Annotation.define<boolean>()
 
@@ -212,25 +212,25 @@ const editorTheme = EditorView.theme({
   },
   ".cm-content": {
     minHeight: "var(--code-editor-min-height)",
-    padding: "12px 0",
+    padding: "calc(var(--spacing) * 3) 0",
     caretColor: "var(--foreground)",
   },
-  ".cm-line": { padding: "0 12px" },
+  ".cm-line": { padding: "0 calc(var(--spacing) * 3)" },
   ".cm-gutters": {
-    backgroundColor: "color-mix(in srgb, var(--muted) 30%, var(--card))",
+    backgroundColor: "var(--code-gutter)",
     borderColor: "var(--border)",
     color: "var(--muted-foreground)",
-    fontSize: "12px",
+    fontSize: "var(--text-xs)",
     fontVariantNumeric: "tabular-nums",
   },
   ".cm-gutter": { minHeight: "var(--code-editor-min-height)" },
   ".cm-lineNumbers .cm-gutterElement": {
-    minWidth: "43px",
-    padding: "0 8px 0 0",
+    minWidth: "calc(var(--spacing) * 11 - 1px)",
+    padding: "0 calc(var(--spacing) * 2) 0 0",
   },
   ".cm-lineNumbers::after": {
     content: "var(--code-editor-phantom-lines)",
-    padding: "0 8px 0 0",
+    padding: "0 calc(var(--spacing) * 2) 0 0",
     textAlign: "right",
     whiteSpace: "pre",
   },
@@ -240,7 +240,7 @@ const editorTheme = EditorView.theme({
   },
   ".cm-gutterElement.cm-problemLine": {
     color: "var(--destructive)",
-    fontWeight: "600",
+    fontWeight: "var(--font-weight-semibold)",
   },
   ".cm-placeholder": { color: "var(--muted-foreground)" },
 })
