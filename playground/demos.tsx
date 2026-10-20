@@ -56,6 +56,8 @@ import {
   SegmentedControlDemo,
   SettingsNavDemo,
   StatusBadgeDemo,
+  TimelineDemo,
+  ActivityFeedDemo,
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
@@ -388,6 +390,8 @@ const KEYWORDS: Record<string, string> = {
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
+  timeline: "timeline activity history events log steps feed",
+  "activity-feed": "activity log history notes order timeline comments",
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
   "icon-chip": "icon tile badge avatar tinted background circle square",
@@ -472,6 +476,8 @@ const SOURCES: Record<string, Source> = {
   "confirm-dialog": "prototype",
   "search-input": "prototype",
   "status-badge": "prototype",
+  timeline: "prototype",
+  "activity-feed": "prototype",
   "data-table": "prototype",
   "data-table-tree": "figma",
   "data-table-reorder": "figma",
@@ -1117,6 +1123,18 @@ export const demos: Demo[] = [
     title: "Status badge",
     group: "Patterns",
     render: () => <StatusBadgeDemo />,
+  },
+  {
+    id: "timeline",
+    title: "Timeline",
+    group: "Patterns",
+    render: () => <TimelineDemo />,
+  },
+  {
+    id: "activity-feed",
+    title: "Activity feed",
+    group: "Patterns",
+    render: () => <ActivityFeedDemo />,
   },
 
   // Actions
