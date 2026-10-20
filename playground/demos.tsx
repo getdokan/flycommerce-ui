@@ -53,7 +53,7 @@ import {
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
-import { ColorsDemo, TypographyDemo } from "./foundation-demos"
+import { ColorsDemo, TextDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
   NewCategoryModalDemo,
@@ -337,6 +337,7 @@ const KEYWORDS: Record<string, string> = {
   "card-brand-icon":
     "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
   typography: "type font text heading size scale inter",
+  text: "typography type scale p3 font heading title display paragraph body caption size weight bold semibold tone colour numeric tabular figures",
   colors: "color colour palette token swatch theme",
   "page-header": "title heading back link actions",
   "data-table":
@@ -415,6 +416,7 @@ const SOURCES: Record<string, Source> = {
   icons: "prototype",
   "card-brand-icon": "composite",
   typography: "prototype",
+  text: "prototype",
   colors: "prototype",
   "page-header": "prototype",
   "save-bar": "prototype",
@@ -713,6 +715,12 @@ export const demos: Demo[] = [
     title: "Typography",
     group: "Foundations",
     render: () => <TypographyDemo />,
+  },
+  {
+    id: "text",
+    title: "Text",
+    group: "Foundations",
+    render: () => <TextDemo />,
   },
   {
     id: "colors",
