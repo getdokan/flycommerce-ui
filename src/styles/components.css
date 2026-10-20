@@ -659,6 +659,7 @@
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-inverse: var(--inverse);
     --color-inverse-foreground: var(--inverse-foreground);
+    --color-code-gutter: var(--code-gutter);
     --color-sidebar: var(--sidebar);
     --color-chart-5: var(--chart-5);
     --color-chart-4: var(--chart-4);
@@ -670,7 +671,7 @@
     --color-border: var(--border);
     --color-destructive: var(--destructive);
     --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
+    --color-accent: var(--accent, color-mix(in srgb, var(--primary-subtle), var(--primary) var(--accent-mix)));
     --color-muted-foreground: var(--muted-foreground);
     --color-muted: var(--muted);
     --color-secondary-foreground: var(--secondary-foreground);

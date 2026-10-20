@@ -28,7 +28,8 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--muted`                      | `#f7f7f8`                                                           |                                                    |
 | `--muted-foreground`           | `#68687e`                                                           | text-tertiary                                      |
 | `--placeholder`                | `#6b6b80`                                                           | darker than the dashboard's #8f8fa3 for 4.5:1      |
-| `--accent`                     | `var(--primary-subtle)`                                             |                                                    |
+| `--accent`                     | `initial`                                                           | menu rows use --primary-subtle unless it is set    |
+| `--accent-mix`                 | `0%`                                                                | share of --primary in the menu row tint            |
 | `--accent-foreground`          | `#24242b`                                                           |                                                    |
 | `--destructive`                | `#cc2d36`                                                           | danger, darkened for 4.5:1 on grey surfaces        |
 | `--destructive-subtle`         | `#fcecec`                                                           |                                                    |
@@ -59,6 +60,7 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--elevation-pop`              | `0 12px 34px rgb(16 23 41 / 0.16), 0 4px 10px rgb(16 23 41 / 0.08)` |                                                    |
 | `--inverse`                    | `#101828`                                                           | dashboard save bar (gray-900)                      |
 | `--inverse-foreground`         | `#ffffff`                                                           |                                                    |
+| `--code-gutter`                | `color-mix(in srgb, var(--muted) 30%, var(--card))`                 | code editor gutter: muted/30 on card, opaque       |
 | `--sidebar`                    | `#0a0a10`                                                           | side                                               |
 | `--sidebar-foreground`         | `#dbdee7`                                                           | side-ink                                           |
 | `--sidebar-muted`              | `#8a90a1`                                                           | side-ink-2                                         |

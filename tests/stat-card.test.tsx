@@ -1,7 +1,16 @@
 import { render, screen, within } from "@testing-library/react"
+import axe from "axe-core"
 import { describe, expect, it } from "vitest"
 
-import { Progress, StatCard, StatGroup } from "@/index"
+import {
+  Progress,
+  StatCard,
+  StatGroup,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/index"
 
 const card = (label: string) => {
   const element = screen.getByText(label).closest("[data-slot=stat-card]")
@@ -127,16 +136,21 @@ describe("StatCard", () => {
   })
 })
 
+const items = (list: HTMLElement) => {
+  const found = within(list).getAllByRole("listitem")
+  expect(found.every((item) => item.parentElement === list)).toBe(true)
+  expect(
+    found.every((item) => item.getAttribute("data-slot") === "stat-group-item")
+  ).toBe(true)
+  return found
+}
+
 describe("StatGroup", () => {
-  it("is a named list whose rendered stat cards are its items, in order", () => {
-    const showProjected = false
+  it("is a named list with one item per stat card, in order", () => {
     render(
       <StatGroup aria-label="Orders this period">
         <StatCard layout="label-first" label="Extra orders" value="12" />
         <StatCard layout="label-first" label="Charge so far" value="$24.00" />
-        {showProjected && (
-          <StatCard layout="label-first" label="Projected" value="$58.00" />
-        )}
         <StatCard label="Upgrade point" value="1,200" />
       </StatGroup>
     )
@@ -144,24 +158,92 @@ describe("StatGroup", () => {
     expect(list.getAttribute("data-slot")).toBe("stat-group")
     expect(list.hasAttribute("data-flush")).toBe(false)
 
-    const items = within(list).getAllByRole("listitem")
-    expect(items).toHaveLength(3)
-    expect(items.every((item) => item.parentElement === list)).toBe(true)
-    expect(items.map((item) => item.getAttribute("data-slot"))).toEqual([
-      "stat-card",
-      "stat-card",
-      "stat-card",
+    const cards = items(list).map((item) => {
+      expect(item.children).toHaveLength(1)
+      return item.firstElementChild as HTMLElement
+    })
+    expect(cards.map((element) => element.getAttribute("data-slot"))).toEqual(
+      ["stat-card", "stat-card", "stat-card"]
+    )
+    expect(cards.map((element) => element.getAttribute("role"))).toEqual([
+      null,
+      null,
+      null,
     ])
-    expect(items.map((item) => part(item, "label")?.textContent)).toEqual([
-      "Extra orders",
-      "Charge so far",
-      "Upgrade point",
+    expect(cards.map((element) => part(element, "label")?.textContent)).toEqual(
+      ["Extra orders", "Charge so far", "Upgrade point"]
+    )
+    expect(cards.map((element) => element.getAttribute("data-layout"))).toEqual(
+      ["label-first", "label-first", "value-first"]
+    )
+  })
+
+  it("keeps a card wrapped in a link or a tooltip trigger a list item", async () => {
+    render(
+      <TooltipProvider>
+        <StatGroup aria-label="Orders this period">
+          <a href="#orders">
+            <StatCard layout="label-first" label="Extra orders" value="12" />
+          </a>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div tabIndex={0}>
+                <StatCard
+                  layout="label-first"
+                  label="Charge so far"
+                  value="$24.00"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>12 extra orders at $2.00</TooltipContent>
+          </Tooltip>
+        </StatGroup>
+      </TooltipProvider>
+    )
+    const list = screen.getByRole("list", { name: "Orders this period" })
+    const [linked, tooltipped] = items(list)
+    expect(
+      within(linked).getByRole("link").contains(card("Extra orders"))
+    ).toBe(true)
+    expect(tooltipped.contains(card("Charge so far"))).toBe(true)
+    expect(card("Extra orders").getAttribute("role")).toBeNull()
+    expect(card("Charge so far").getAttribute("role")).toBeNull()
+
+    const results = await axe.run(list)
+    expect(results.violations.map((violation) => violation.id)).toEqual([])
+  })
+
+  it("makes a child that is not a stat card a list item too", () => {
+    render(
+      <StatGroup aria-label="Orders this period">
+        <StatCard layout="label-first" label="Extra orders" value="12" />
+        <p>Counts refresh every hour</p>
+      </StatGroup>
+    )
+    const list = screen.getByRole("list", { name: "Orders this period" })
+    expect(items(list).map((item) => item.textContent)).toEqual([
+      "Extra orders12",
+      "Counts refresh every hour",
     ])
-    expect(items.map((item) => item.getAttribute("data-layout"))).toEqual([
-      "label-first",
-      "label-first",
-      "value-first",
-    ])
+  })
+
+  it("adds no item for a child that renders nothing", () => {
+    const showProjected = false
+    render(
+      <StatGroup aria-label="Orders this period">
+        <StatCard layout="label-first" label="Extra orders" value="12" />
+        {showProjected && (
+          <StatCard layout="label-first" label="Projected" value="$58.00" />
+        )}
+        {null}
+        <StatCard layout="label-first" label="Charge so far" value="$24.00" />
+      </StatGroup>
+    )
+    const list = screen.getByRole("list", { name: "Orders this period" })
+    expect(list.children).toHaveLength(2)
+    expect(items(list).map((item) => part(item, "label")?.textContent)).toEqual(
+      ["Extra orders", "Charge so far"]
+    )
   })
 
   it("can be named by a visible title", () => {
@@ -175,6 +257,8 @@ describe("StatGroup", () => {
     )
     const list = screen.getByRole("list", { name: "Key figures" })
     expect(list.getAttribute("data-flush")).toBe("true")
-    expect(within(list).getByRole("listitem")).toBe(card("Recovery rate"))
+    expect(within(list).getByRole("listitem")).toBe(
+      card("Recovery rate").parentElement
+    )
   })
 })
