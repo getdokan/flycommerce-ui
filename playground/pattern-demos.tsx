@@ -1207,6 +1207,7 @@ const ORDER_LOG: ActivityFeedEntry[] = [
   },
   {
     id: "shipped",
+    icon: <Icon name="shipping" />,
     title: "Shipped",
     time: "Oct 15, 3:18 PM",
     dateTime: "2026-10-15T15:18",
@@ -1215,6 +1216,7 @@ const ORDER_LOG: ActivityFeedEntry[] = [
   },
   {
     id: "paid",
+    icon: <Icon name="payments" />,
     title: "Payment captured",
     time: "Oct 14, 10:02 AM",
     dateTime: "2026-10-14T10:02",
@@ -1223,6 +1225,7 @@ const ORDER_LOG: ActivityFeedEntry[] = [
   },
   {
     id: "placed",
+    icon: <Icon name="orders" />,
     title: "Order placed",
     time: "Oct 14, 10:02 AM",
     dateTime: "2026-10-14T10:02",

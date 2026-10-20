@@ -230,4 +230,47 @@ describe("Timeline", () => {
       expect(screen.getByText(text).className).toMatch(/\bbreak-words\b/)
     }
   })
+
+  it("widens only its own markers, and only for its own items' icons", () => {
+    // The rule the list carries, as the selector it compiles to.
+    const widened =
+      "[data-slot=timeline]:has(> li > [data-slot=timeline-marker] > [data-slot=icon-chip]) > li > [data-slot=timeline-marker]"
+    render(
+      <div>
+        <Timeline data-testid="mixed">
+          <TimelineItem icon={<svg />}>
+            <TimelineTitle>Shipped</TimelineTitle>
+            <Timeline data-testid="nested">
+              <TimelineItem>
+                <TimelineTitle>Picked up</TimelineTitle>
+              </TimelineItem>
+            </Timeline>
+          </TimelineItem>
+          <TimelineItem>
+            <TimelineTitle>Note</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+        <Timeline data-testid="dots">
+          <TimelineItem>
+            <TimelineTitle>Dot only</TimelineTitle>
+            <TimelineDescription>
+              <span data-slot="icon-chip" />
+            </TimelineDescription>
+          </TimelineItem>
+        </Timeline>
+      </div>
+    )
+    const markerOf = (title: string) =>
+      screen
+        .getByText(title)
+        .closest("li")
+        ?.querySelector(":scope > [data-slot=timeline-marker]") as Element
+    expect(screen.getByTestId("mixed").className).toContain(
+      "has-[>li>[data-slot=timeline-marker]>[data-slot=icon-chip]]:[&>li>[data-slot=timeline-marker]]:w-7"
+    )
+    expect(markerOf("Shipped").matches(widened)).toBe(true)
+    expect(markerOf("Note").matches(widened)).toBe(true)
+    expect(markerOf("Picked up").matches(widened)).toBe(false)
+    expect(markerOf("Dot only").matches(widened)).toBe(false)
+  })
 })

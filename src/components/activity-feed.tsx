@@ -175,22 +175,28 @@ function NoteComposer({
 }) {
   const id = React.useId()
   const [text, setText] = React.useState("")
-  const [error, setError] = React.useState<string>()
+  // `invalid` is for problems with the text; a failed save is not one.
+  const [error, setError] = React.useState<{
+    message: string
+    invalid: boolean
+  }>()
   const [busy, setBusy] = React.useState(false)
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
     const note = text.trim()
-    if (!note) return setError(labels.noteRequired)
+    if (!note) return setError({ message: labels.noteRequired, invalid: true })
     // Measured like the count under the field, so the two never disagree.
-    if (text.length > maxLength) return setError(labels.noteTooLong(maxLength))
+    if (text.length > maxLength)
+      return setError({ message: labels.noteTooLong(maxLength), invalid: true })
+    setError(undefined)
     setBusy(true)
     try {
       await onAddNote(note)
       // Anything typed while it was sending stays.
       setText((current) => (current.trim() === note ? "" : current))
     } catch {
-      setError(labels.addNoteError)
+      setError({ message: labels.addNoteError, invalid: false })
     } finally {
       setBusy(false)
     }
@@ -199,7 +205,7 @@ function NoteComposer({
   return (
     <form onSubmit={submit}>
       {/* relative: keeps the sr-only label positioned inside the component. */}
-      <Field data-invalid={error ? true : undefined} className="relative">
+      <Field data-invalid={error?.invalid || undefined} className="relative">
         <FieldLabel htmlFor={id} className="sr-only">
           {labels.noteLabel}
         </FieldLabel>
@@ -219,7 +225,7 @@ function NoteComposer({
             )
           }
           overLimitLabel={labels.noteTooLong}
-          aria-invalid={error ? true : undefined}
+          aria-invalid={error?.invalid || undefined}
           aria-describedby={`${id}-status`}
           onChange={(event) => {
             setText(event.target.value)
@@ -228,7 +234,7 @@ function NoteComposer({
         />
         <div className="flex items-center justify-between gap-3">
           <div id={`${id}-status`} className="min-w-0">
-            {error && <FieldError>{error}</FieldError>}
+            {error && <FieldError>{error.message}</FieldError>}
           </div>
           <Button
             type="submit"

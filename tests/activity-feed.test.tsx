@@ -238,4 +238,50 @@ describe("ActivityFeed", () => {
     ).toBe("0")
     expect(viewed.querySelector("[data-slot=timeline-description]")).toBeNull()
   })
+
+  it("clears a failed save's error once a retry succeeds", async () => {
+    const onAddNote = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce(undefined)
+    render(<ActivityFeed entries={ENTRIES} onAddNote={onAddNote} />)
+
+    await userEvent.type(textbox(), "Hi")
+    await userEvent.click(button("Add note"))
+    await waitFor(() => expect(screen.queryByRole("alert")).toBeTruthy())
+    await userEvent.click(button("Add note"))
+
+    await waitFor(() => expect(textbox().value).toBe(""))
+    expect(screen.queryByRole("alert")).toBeNull()
+    expect(textbox().getAttribute("aria-invalid")).toBeNull()
+  })
+
+  it("doesn't call the text invalid when only the save failed", async () => {
+    const onAddNote = vi.fn().mockRejectedValue(new Error("offline"))
+    render(<ActivityFeed entries={ENTRIES} onAddNote={onAddNote} />)
+
+    await userEvent.type(textbox(), "Refund approved")
+    await userEvent.click(button("Add note"))
+
+    await waitFor(() => expect(screen.queryByRole("alert")).toBeTruthy())
+    expect(textbox().getAttribute("aria-invalid")).toBeNull()
+    expect(
+      textbox().closest("[data-slot=field]")?.getAttribute("data-invalid")
+    ).toBeNull()
+  })
+
+  it("marks the text invalid again for a validation error after a failed save", async () => {
+    const onAddNote = vi.fn().mockRejectedValue(new Error("offline"))
+    render(<ActivityFeed entries={ENTRIES} onAddNote={onAddNote} />)
+
+    await userEvent.type(textbox(), "Hi")
+    await userEvent.click(button("Add note"))
+    await waitFor(() => expect(screen.queryByRole("alert")).toBeTruthy())
+    expect(textbox().getAttribute("aria-invalid")).toBeNull()
+
+    await userEvent.clear(textbox())
+    await userEvent.click(button("Add note"))
+    expect(screen.getByRole("alert").textContent).toBe("Write a note first.")
+    expect(textbox().getAttribute("aria-invalid")).toBe("true")
+  })
 })

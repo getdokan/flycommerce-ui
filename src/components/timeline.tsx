@@ -50,7 +50,11 @@ function Timeline({ className, ...props }: React.ComponentProps<"ol">) {
       data-slot="timeline"
       // Safari drops list semantics from a list without markers unless the role is explicit.
       role="list"
-      className={cn("flex list-none flex-col p-0", className)}
+      className={cn(
+        // Once any of its own items has an icon, all its own markers take the icon's width, so the line stays straight.
+        "flex list-none flex-col p-0 has-[>li>[data-slot=timeline-marker]>[data-slot=icon-chip]]:[&>li>[data-slot=timeline-marker]]:w-7",
+        className
+      )}
       {...props}
     />
   )
