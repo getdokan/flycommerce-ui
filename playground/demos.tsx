@@ -78,6 +78,11 @@ import {
 } from "./product-demos"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import {
+  ColorInputDemo,
+  CopyFieldDemo,
+  ImageUploadFieldDemo,
+} from "./input-demos"
+import {
   AsyncComboboxDemo,
   CopyButtonDemo,
   DatePickerDemo,
@@ -396,8 +401,11 @@ const KEYWORDS: Record<string, string> = {
   "async-combobox": "remote search autocomplete lookup api",
   "tag-input": "chips tags multi value creatable",
   "password-input": "password show hide eye secret api key saved masked",
+  "color-input": "colour color picker hex swatch brand accent theme",
   "date-picker": "date time range calendar presets",
   dropzone: "upload file drag drop",
+  "image-upload-field":
+    "image upload logo icon favicon preview replace remove media library drag drop",
   "media-picker":
     "gallery image upload library choose existing video url attachment details",
   "media-page": "admin media library gallery bulk delete files",
@@ -415,6 +423,8 @@ const KEYWORDS: Record<string, string> = {
   "modal-use-cases":
     "dialog popup import export csv bulk edit invite details terms reject success wizard",
   "copy-button": "clipboard copy",
+  "copy-field":
+    "clipboard copy read only value url key secret token dns record callback webhook",
   "info-tooltip": "help hint info icon",
   "loading-overlay": "spinner busy loading",
   rating: "stars review score",
@@ -474,8 +484,10 @@ const SOURCES: Record<string, Source> = {
   "async-combobox": "composite",
   "tag-input": "composite",
   "password-input": "composite",
+  "color-input": "prototype",
   "date-picker": "composite",
   dropzone: "composite",
+  "image-upload-field": "prototype",
   "rich-text-editor": "figma",
   "code-editor": "prototype",
   "media-picker": "figma",
@@ -487,6 +499,7 @@ const SOURCES: Record<string, Source> = {
   "modal-figma": "figma",
   "modal-use-cases": "composite",
   "copy-button": "composite",
+  "copy-field": "prototype",
   "info-tooltip": "composite",
   "loading-overlay": "composite",
   rating: "composite",
@@ -986,6 +999,12 @@ export const demos: Demo[] = [
     render: () => <PasswordInputDemo />,
   },
   {
+    id: "color-input",
+    title: "Colour input",
+    group: "Patterns",
+    render: () => <ColorInputDemo />,
+  },
+  {
     id: "date-picker",
     title: "Date & range pickers",
     group: "Patterns",
@@ -1052,10 +1071,22 @@ export const demos: Demo[] = [
     render: () => <DropzoneDemo />,
   },
   {
+    id: "image-upload-field",
+    title: "Image upload field",
+    group: "Patterns",
+    render: () => <ImageUploadFieldDemo />,
+  },
+  {
     id: "copy-button",
     title: "Copy button",
     group: "Patterns",
     render: () => <CopyButtonDemo />,
+  },
+  {
+    id: "copy-field",
+    title: "Copy field",
+    group: "Patterns",
+    render: () => <CopyFieldDemo />,
   },
   {
     id: "info-tooltip",

@@ -662,6 +662,8 @@
     --color-code-gutter: var(--code-gutter);
     --color-tooltip: var(--tooltip);
     --color-tooltip-foreground: var(--tooltip-foreground);
+    --color-on-dark: var(--on-dark);
+    --color-on-light: var(--on-light);
     --color-sidebar: var(--sidebar);
     --color-chart-5: var(--chart-5);
     --color-chart-4: var(--chart-4);
