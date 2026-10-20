@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useId, useMemo } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
@@ -150,18 +150,94 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
+const linkStyles =
+  "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-ink"
+
+/** Hint under a field; `icon` puts a decorative glyph before the text, aligned to its first line. */
+function FieldDescription({
+  className,
+  icon,
+  children,
+  ...props
+}: React.ComponentProps<"p"> & {
+  /** A decorative glyph before the text, such as `<Icon name="info" />`, sized to 14px. */
+  icon?: React.ReactNode
+}) {
   return (
     <p
       data-slot="field-description"
       className={cn(
         "text-start text-[11.5px] leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
         "last:mt-0 nth-last-2:-mt-1",
-        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-ink",
+        icon ? "flex items-start gap-1" : linkStyles,
         className
       )}
       {...props}
-    />
+    >
+      {icon ? (
+        <>
+          <span
+            aria-hidden="true"
+            data-slot="field-description-icon"
+            className="flex h-lh shrink-0 items-center [&>svg]:pointer-events-none [&>svg:not([class*='size-'])]:size-3.5"
+          >
+            {icon}
+          </span>
+          <span className={cn("min-w-0", linkStyles)}>{children}</span>
+        </>
+      ) : (
+        children
+      )}
+    </p>
+  )
+}
+
+/** "52 / 60" at the end of a field's label row: a character count that turns to the warning tone past `limit`; point the control's `aria-describedby` at its `id`. */
+function FieldCount({
+  count,
+  limit,
+  unitLabel = "characters",
+  overLimitLabel = (limit) => `Over the ${limit} character limit`,
+  id,
+  className,
+  ...props
+}: Omit<React.ComponentProps<"span">, "children"> & {
+  count: number
+  /** The number after the slash; past it the count turns to the warning tone. */
+  limit: number
+  /** Read after the numbers by screen readers, hidden on screen. */
+  unitLabel?: React.ReactNode
+  /** Announced once when the count goes past `limit`. */
+  overLimitLabel?: (limit: number) => React.ReactNode
+}) {
+  const generatedId = useId()
+  const over = count > limit
+  return (
+    <span
+      id={id ?? generatedId}
+      data-slot="field-count"
+      data-over={over || undefined}
+      className={cn(
+        "relative text-xs font-normal text-muted-foreground tabular-nums data-over:text-warning-strong",
+        className
+      )}
+      {...props}
+    >
+      {count} / {limit}
+      {unitLabel && (
+        <span data-slot="field-count-unit" className="sr-only">
+          {" "}
+          {unitLabel}
+        </span>
+      )}
+      <span
+        data-slot="field-count-status"
+        aria-live="polite"
+        className="sr-only"
+      >
+        {over && <> {overLimitLabel(limit)}</>}
+      </span>
+    </span>
   )
 }
 
@@ -250,6 +326,7 @@ export {
   Field,
   FieldLabel,
   FieldDescription,
+  FieldCount,
   FieldError,
   FieldGroup,
   FieldLegend,

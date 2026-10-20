@@ -87,6 +87,7 @@ import {
   IconChipDemo,
   SwitchFieldDemo,
   TagInputDemo,
+  TitleField,
 } from "./p2-demos"
 
 import {
@@ -198,6 +199,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
+  Icon,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -320,8 +322,10 @@ const KEYWORDS: Record<string, string> = {
   progress:
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
   empty: "no data blank zero state",
-  input: "text field form label error hint required optional",
+  input:
+    "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
+  textarea: "multiline text area description character count limit",
   select: "dropdown picker options",
   combobox: "autocomplete searchable select typeahead multiple chips",
   checkbox: "radio switch toggle tick indeterminate",
@@ -370,14 +374,16 @@ const KEYWORDS: Record<string, string> = {
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
   "icon-chip": "icon tile badge avatar tinted background circle square",
-  "radio-card": "option card choice",
-  "switch-field": "toggle row setting",
+  "radio-card":
+    "option card choice row rows checkbox multi select radio group settings details",
+  "switch-field":
+    "toggle row setting enabled disabled state label badge nested settings",
   "nav-tabs": "tabs links route navigation",
   "segmented-control":
     "radio toggle switch choice option unit metric imperial pill button group",
   "async-combobox": "remote search autocomplete lookup api",
   "tag-input": "chips tags multi value creatable",
-  "password-input": "password show hide eye",
+  "password-input": "password show hide eye secret api key saved masked",
   "date-picker": "date time range calendar presets",
   dropzone: "upload file drag drop",
   "media-picker":
@@ -911,7 +917,7 @@ export const demos: Demo[] = [
   },
   {
     id: "radio-card",
-    title: "Radio cards",
+    title: "Option cards & rows",
     group: "Patterns",
     render: () => <RadioCardDemo />,
   },
@@ -1419,6 +1425,42 @@ export const demos: Demo[] = [
           <FieldLabel htmlFor="file">Logo</FieldLabel>
           <Input id="file" type="file" />
         </Field>
+        <Field>
+          <FieldLabel htmlFor="seo-title">Homepage title</FieldLabel>
+          <Input
+            id="seo-title"
+            maxLength={100}
+            softLimit={60}
+            defaultValue="Maison Oriel: tailored outerwear and knitwear"
+          />
+          <FieldDescription icon={<Icon name="info" />}>
+            Google shows about 60 characters. Leave blank to use the{" "}
+            <a href="#input">store name</a>.
+          </FieldDescription>
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="support-email">Support email</FieldLabel>
+          <Input
+            id="support-email"
+            type="email"
+            defaultValue="help@maisonoriel.com"
+          />
+          <FieldDescription icon={<Icon name="info" />}>
+            Customers reply to this address from order emails.
+          </FieldDescription>
+        </Field>
+        <TitleField
+          id="share-title"
+          label="Share title"
+          limit={60}
+          defaultValue="Maison Oriel: tailored outerwear"
+        />
+        <TitleField
+          id="page-title"
+          label="Page title"
+          limit={60}
+          defaultValue="Maison Oriel: tailored outerwear, knitwear and leather goods from Lisbon"
+        />
       </div>
     ),
   },
@@ -1461,6 +1503,18 @@ export const demos: Demo[] = [
             maxLength={500}
             showCount
           />
+        </Field>
+        <Field className="sm:col-span-2">
+          <FieldLabel htmlFor="meta-description">Meta description</FieldLabel>
+          <Textarea
+            id="meta-description"
+            softLimit={160}
+            defaultValue="Maison Oriel makes tailored outerwear, knitwear and leather goods in small runs, cut in our Lisbon studio from wool, cashmere and vegetable-tanned leather that softens with every wear."
+          />
+          <FieldDescription icon={<Icon name="info" />}>
+            Google shows about 160 characters. Longer text is cut off in search
+            results.
+          </FieldDescription>
         </Field>
       </div>
     ),
