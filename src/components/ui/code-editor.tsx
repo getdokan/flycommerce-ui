@@ -520,7 +520,7 @@ function CodeEditor({
       annotations: [External.of(true), Transaction.addToHistory.of(false)],
       filter: false,
     })
-  }, [value])
+  }, [value, text])
 
   React.useImperativeHandle(
     ref,
