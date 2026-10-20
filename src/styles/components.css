@@ -659,6 +659,7 @@
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-inverse: var(--inverse);
     --color-inverse-foreground: var(--inverse-foreground);
+    --color-code-gutter: var(--code-gutter);
     --color-sidebar: var(--sidebar);
     --color-chart-5: var(--chart-5);
     --color-chart-4: var(--chart-4);

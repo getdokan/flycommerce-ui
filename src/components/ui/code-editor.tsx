@@ -8,10 +8,6 @@ import {
   indentLess,
   indentMore,
 } from "@codemirror/commands"
-import { css } from "@codemirror/lang-css"
-import { html } from "@codemirror/lang-html"
-import { javascript } from "@codemirror/lang-javascript"
-import { json } from "@codemirror/lang-json"
 import { indentUnit } from "@codemirror/language"
 import {
   Annotation,
@@ -141,30 +137,44 @@ const LANGUAGE_NAMES: Record<CodeEditorLanguage, string> = {
   text: "Plain text",
 }
 
-const LANGUAGES: Record<CodeEditorLanguage, () => Extension> = {
-  html: () => html(),
-  css: () => css(),
-  javascript: () => javascript(),
-  json: () => json(),
-  text: () => [],
+type LanguagePack = Exclude<CodeEditorLanguage, "text">
+
+const LANGUAGE_PACKS: Record<LanguagePack, () => Promise<Extension>> = {
+  html: () => import("@codemirror/lang-html").then((pack) => pack.html()),
+  css: () => import("@codemirror/lang-css").then((pack) => pack.css()),
+  javascript: () =>
+    import("@codemirror/lang-javascript").then((pack) => pack.javascript()),
+  json: () => import("@codemirror/lang-json").then((pack) => pack.json()),
 }
 
-const languageSupport = new Map<CodeEditorLanguage, Extension>()
+const languageSupport = new Map<LanguagePack, Extension>()
+const languageImports = new Map<LanguagePack, Promise<Extension>>()
 
-function getLanguageSupport(language: CodeEditorLanguage) {
-  let support = languageSupport.get(language)
-  if (!support) {
-    support = LANGUAGES[language]()
-    languageSupport.set(language, support)
+function loadLanguageSupport(language: LanguagePack) {
+  let load = languageImports.get(language)
+  if (!load) {
+    load = LANGUAGE_PACKS[language]()
+      .catch((error): Extension => {
+        console.warn(
+          `CodeEditor: ${LANGUAGE_NAMES[language]} support failed to load; the code is edited as plain text.`,
+          error
+        )
+        return []
+      })
+      .then((support) => {
+        languageSupport.set(language, support)
+        return support
+      })
+    languageImports.set(language, load)
   }
-  return support
+  return load
 }
 
-const LINE_HEIGHT = 20
-const VERTICAL_PADDING = 24
+const LINE_HEIGHT = 5
+const VERTICAL_PADDING = 6
 
 const rowsHeight = (rows: number) =>
-  `${rows * LINE_HEIGHT + VERTICAL_PADDING}px`
+  `calc(var(--spacing) * ${rows * LINE_HEIGHT + VERTICAL_PADDING})`
 
 const External = Annotation.define<boolean>()
 
@@ -202,25 +212,25 @@ const editorTheme = EditorView.theme({
   },
   ".cm-content": {
     minHeight: "var(--code-editor-min-height)",
-    padding: "12px 0",
+    padding: "calc(var(--spacing) * 3) 0",
     caretColor: "var(--foreground)",
   },
-  ".cm-line": { padding: "0 12px" },
+  ".cm-line": { padding: "0 calc(var(--spacing) * 3)" },
   ".cm-gutters": {
-    backgroundColor: "color-mix(in srgb, var(--muted) 30%, var(--card))",
+    backgroundColor: "var(--code-gutter)",
     borderColor: "var(--border)",
     color: "var(--muted-foreground)",
-    fontSize: "12px",
+    fontSize: "var(--text-xs)",
     fontVariantNumeric: "tabular-nums",
   },
   ".cm-gutter": { minHeight: "var(--code-editor-min-height)" },
   ".cm-lineNumbers .cm-gutterElement": {
-    minWidth: "43px",
-    padding: "0 8px 0 0",
+    minWidth: "calc(var(--spacing) * 11 - 1px)",
+    padding: "0 calc(var(--spacing) * 2) 0 0",
   },
   ".cm-lineNumbers::after": {
     content: "var(--code-editor-phantom-lines)",
-    padding: "0 8px 0 0",
+    padding: "0 calc(var(--spacing) * 2) 0 0",
     textAlign: "right",
     whiteSpace: "pre",
   },
@@ -230,7 +240,7 @@ const editorTheme = EditorView.theme({
   },
   ".cm-gutterElement.cm-problemLine": {
     color: "var(--destructive)",
-    fontWeight: "600",
+    fontWeight: "var(--font-weight-semibold)",
   },
   ".cm-placeholder": { color: "var(--muted-foreground)" },
 })
@@ -306,7 +316,7 @@ function minimalChange(from: string, to: string): ChangeSpec {
   return { from: start, to: endFrom, insert: to.slice(start, endTo) }
 }
 
-/** Code field on CodeMirror (opt-in entry `@flycommerce/ui/code-editor`): file tab, line numbers, syntax colours, Ln/Col, counts and your problems. */
+/** Code field on CodeMirror (opt-in entry `@flycommerce/ui/code-editor`): file tab, line numbers, monochrome code with the language's indentation and closing tags, Ln/Col, counts and your problems. */
 function CodeEditor({
   value,
   defaultValue = "",
@@ -397,9 +407,24 @@ function CodeEditor({
   }, [compartments])
 
   React.useEffect(() => {
-    viewRef.current?.dispatch({
-      effects: compartments.language.reconfigure(getLanguageSupport(language)),
+    const view = viewRef.current
+    if (!view) return
+    const reconfigure = (support: Extension) =>
+      view.dispatch({ effects: compartments.language.reconfigure(support) })
+    if (language === "text") {
+      reconfigure([])
+      return
+    }
+    const loaded = languageSupport.get(language)
+    reconfigure(loaded ?? [])
+    if (loaded) return
+    let current = true
+    void loadLanguageSupport(language).then((support) => {
+      if (current) reconfigure(support)
     })
+    return () => {
+      current = false
+    }
   }, [compartments, language])
 
   React.useEffect(() => {
@@ -495,7 +520,7 @@ function CodeEditor({
       annotations: [External.of(true), Transaction.addToHistory.of(false)],
       filter: false,
     })
-  }, [value])
+  }, [value, text])
 
   React.useImperativeHandle(
     ref,

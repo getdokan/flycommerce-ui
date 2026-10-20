@@ -55,6 +55,7 @@
     --elevation-pop: 0 12px 34px rgb(16 23 41 / 0.16), 0 4px 10px rgb(16 23 41 / 0.08);
     --inverse: #101828; /* dashboard save bar (gray-900) */
     --inverse-foreground: #ffffff;
+    --code-gutter: color-mix(in srgb, var(--muted) 30%, var(--card)); /* code editor gutter: muted/30 on card, opaque */
     --sidebar: #0a0a10; /* side */
     --sidebar-foreground: #dbdee7; /* side-ink */
     --sidebar-muted: #8a90a1; /* side-ink-2 */
@@ -119,6 +120,7 @@
     --elevation-pop: 0 12px 34px rgb(0 0 0 / 0.6), 0 4px 10px rgb(0 0 0 / 0.4);
     --inverse: #262632;
     --inverse-foreground: #ffffff;
+    --code-gutter: color-mix(in srgb, var(--muted) 30%, var(--card));
     --sidebar: #05050a;
     --sidebar-foreground: #e9eaf0;
     --sidebar-muted: #8a90a1;
