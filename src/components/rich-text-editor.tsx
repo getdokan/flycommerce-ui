@@ -4,24 +4,10 @@ import * as React from "react"
 import { cn } from "cn"
 import { Placeholder } from "@tiptap/extension-placeholder"
 import { TextAlign } from "@tiptap/extension-text-align"
-import {
-  DOMParser as ProseMirrorDOMParser,
-  DOMSerializer,
-  Slice,
-  type Fragment,
-} from "@tiptap/pm/model"
-import type { Selection, Transaction } from "@tiptap/pm/state"
-import {
-  EditorContent,
-  elementFromString,
-  getHTMLFromFragment,
-  useEditor,
-  useEditorState,
-  type Editor,
-} from "@tiptap/react"
+import type { Transaction } from "@tiptap/pm/state"
+import { EditorContent, useEditor, useEditorState } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import {
-  FiAlertTriangle as AlertTriangleIcon,
   FiAlignCenter as AlignCenterIcon,
   FiAlignLeft as AlignLeftIcon,
   FiBold as BoldIcon,
@@ -29,19 +15,15 @@ import {
   FiItalic as ItalicIcon,
   FiLink as LinkIcon,
   FiList as ListIcon,
-  FiRefreshCw as RefreshIcon,
   FiUnderline as UnderlineIcon,
 } from "react-icons/fi"
 import { LuSparkles as SparklesIcon } from "react-icons/lu"
 
-import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
+import type {
+  AiState,
+  AiTarget,
+} from "@/components/rich-text-editor/ai-assistant"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   Popover,
@@ -56,7 +38,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { Spinner } from "@/components/ui/spinner"
 import { Toggle } from "@/components/ui/toggle"
 
 type RichTextEditorLabels = {
@@ -162,24 +143,9 @@ type RichTextEditorProps = {
   headingLevels?: RichTextEditorHeadingLevel[]
   /** Adds an "AI Assistant" menu; a suggestion shows beside the original until it is replaced, inserted below or discarded. */
   aiActions?: RichTextEditorAiAction[]
+  /** Text for a failed AI action: return your own message for an error you recognise, or null to show `labels.aiError`. */
+  getAiErrorMessage?: (error: unknown) => string | null | undefined
 }
-
-type AiTarget = { selection: Selection | null; original: Fragment | null }
-
-type AiState =
-  | { status: "busy"; action: RichTextEditorAiAction; target: AiTarget }
-  | {
-      status: "review"
-      action: RichTextEditorAiAction
-      target: AiTarget
-      suggestion: Fragment
-    }
-  | {
-      status: "error"
-      action: RichTextEditorAiAction
-      target: AiTarget
-      message: string
-    }
 
 const DEFAULT_HEADING_LEVELS: RichTextEditorHeadingLevel[] = [2, 3]
 
@@ -188,6 +154,26 @@ const CONTENT_CLASSES = cn(
   "[&_h1]:mt-3 [&_h1]:mb-1 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-foreground [&_h2]:mt-3 [&_h2]:mb-1 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:mt-2 [&_h3]:mb-1 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_h4]:mt-2 [&_h4]:mb-1 [&_h4]:text-sm [&_h4]:font-semibold [&_h4]:text-foreground [&_h5]:mt-2 [&_h5]:mb-1 [&_h5]:text-xs [&_h5]:font-semibold [&_h5]:text-foreground [&_h6]:mt-2 [&_h6]:mb-1 [&_h6]:text-xs [&_h6]:font-semibold [&_h6]:text-muted-foreground [&_p]:my-0 [&_p+p]:mt-2",
   "[&_a]:text-primary-ink [&_a]:underline [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:ps-5 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:ps-5"
 )
+
+type AiAssistant = typeof import("@/components/rich-text-editor/ai-assistant")
+
+let loadedAiAssistant: AiAssistant | null | undefined
+let aiAssistantImport: Promise<AiAssistant | null> | undefined
+
+function loadAiAssistant() {
+  aiAssistantImport ??=
+    import("@/components/rich-text-editor/ai-assistant").then(
+      (module) => (loadedAiAssistant = module),
+      (error: unknown) => {
+        console.warn(
+          "RichTextEditor: the AI Assistant failed to load; the editor works without it.",
+          error
+        )
+        return (loadedAiAssistant = null)
+      }
+    )
+  return aiAssistantImport
+}
 
 /** Figma "Description" field: formatting toolbar over a resizable writing area. Emits HTML. */
 function RichTextEditor({
@@ -205,6 +191,7 @@ function RichTextEditor({
   onGenerate,
   headingLevels = DEFAULT_HEADING_LEVELS,
   aiActions,
+  getAiErrorMessage,
 }: RichTextEditorProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
   const [generating, setGenerating] = React.useState(false)
@@ -212,10 +199,10 @@ function RichTextEditor({
     [...new Set(headingLevels)].sort((a, b) => a - b)
   )
   const [ai, setAi] = React.useState<AiState | null>(null)
+  const [aiAssistant, setAiAssistant] = React.useState(() => loadedAiAssistant)
   const rootRef = React.useRef<HTMLDivElement>(null)
   const aiFocus = React.useRef<HTMLElement | null>(null)
   const aiController = React.useRef<AbortController | null>(null)
-  const aiPicked = React.useRef(false)
   const onChangeRef = React.useRef(onChange)
 
   React.useEffect(() => {
@@ -284,14 +271,15 @@ function RichTextEditor({
   const aiOpen = hasAi && !disabled
   const aiStatus = aiOpen ? ai.status : "idle"
   const aiBusy = aiStatus === "busy"
-
-  React.useEffect(() => {
-    editor?.setEditable(!disabled && !generating)
-  }, [editor, disabled, generating])
+  const showAiMenu = Boolean(aiActions?.length) && aiAssistant !== null
 
   React.useEffect(() => {
     editor?.setEditable(!disabled && !generating && !aiBusy, false)
   }, [editor, disabled, generating, aiBusy])
+
+  React.useEffect(() => {
+    if (showAiMenu && !aiAssistant) void loadAiAssistant().then(setAiAssistant)
+  }, [showAiMenu, aiAssistant])
 
   const stopAi = React.useCallback(() => {
     aiController.current?.abort()
@@ -355,55 +343,35 @@ function RichTextEditor({
   }
 
   const runAi = async (action: RichTextEditorAiAction, target: AiTarget) => {
-    if (!editor) return
+    if (!editor || !aiAssistant) return
     aiController.current?.abort()
     const controller = new AbortController()
     aiController.current = controller
     setAi({ status: "busy", action, target })
     let next: AiState
     try {
-      const html = await action.run(
-        editor.isEmpty ? "" : editor.getHTML(),
-        target.selection
-          ? getHTMLFromFragment(
-              target.selection.content().content,
-              editor.schema
-            )
-          : undefined,
-        { signal: controller.signal }
+      const suggestion = await aiAssistant.getAiSuggestion(
+        editor,
+        action,
+        target,
+        controller.signal
       )
-      const doc = ProseMirrorDOMParser.fromSchema(editor.schema).parse(
-        elementFromString(html)
-      )
-      next = doc.textContent.trim()
-        ? { status: "review", action, target, suggestion: doc.content }
+      next = suggestion
+        ? { status: "review", action, target, suggestion }
         : { status: "error", action, target, message: labels.aiError }
     } catch (error) {
       next = {
         status: "error",
         action,
         target,
-        message:
-          error instanceof Error && error.message
-            ? error.message
-            : labels.aiError,
+        message: getAiErrorMessage?.(error) || labels.aiError,
       }
     }
     if (!controller.signal.aborted) setAi(next)
   }
 
   const askAi = (action: RichTextEditorAiAction) => {
-    if (!editor) return
-    const { selection } = editor.state
-    runAi(
-      action,
-      selection.empty
-        ? {
-            selection: null,
-            original: editor.isEmpty ? null : editor.state.doc.content,
-          }
-        : { selection, original: selection.content().content }
-    )
+    if (editor && aiAssistant) runAi(action, aiAssistant.getAiTarget(editor))
   }
 
   const retryAi = () => {
@@ -415,31 +383,14 @@ function RichTextEditor({
   }
 
   const applyAi = (mode: "replace" | "insert") => {
-    if (!editor || ai?.status !== "review") return
-    const { selection } = ai.target
-    const content = ai.suggestion
-    const chain = editor.chain().focus()
-    if (!selection && (mode === "replace" || editor.isEmpty))
-      chain.setContent(content)
-    else if (!selection)
-      chain.insertContentAt(editor.state.doc.content.size, content)
-    else if (mode === "replace")
-      chain.command(({ tr }) => {
-        tr.setSelection(selection).replaceSelection(Slice.maxOpen(content))
-        return true
-      })
-    else
-      chain.insertContentAt(
-        selection.$to.depth ? selection.$to.after(1) : selection.$to.pos,
-        content
-      )
-    chain.run()
+    if (!editor || !aiAssistant || ai?.status !== "review") return
+    aiAssistant.applyAiSuggestion(editor, ai.target, ai.suggestion, mode)
     stopAi()
   }
 
   const state = useEditorState({
     editor,
-    selector: ({ editor }) =>
+    selector: () =>
       editor
         ? {
             block:
@@ -465,6 +416,20 @@ function RichTextEditor({
   }
 
   const locked = disabled || aiBusy
+
+  const aiTrigger = (
+    <Button
+      type="button"
+      variant="secondary"
+      size="xs"
+      className="ms-auto h-7 px-2.5"
+      disabled={disabled || !editor || generating || aiBusy || !aiAssistant}
+    >
+      <SparklesIcon />
+      {labels.aiAssistant}
+      <ChevronDownIcon />
+    </Button>
+  )
 
   return (
     <div
@@ -591,44 +556,18 @@ function RichTextEditor({
           }
         />
 
-        {aiActions?.length ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="secondary"
-                size="xs"
-                className="ms-auto h-7 px-2.5"
-                disabled={disabled || !editor || generating || aiBusy}
-              >
-                <SparklesIcon />
-                {labels.aiAssistant}
-                <ChevronDownIcon />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-auto"
-              onCloseAutoFocus={(event) => {
-                if (!aiPicked.current) return
-                aiPicked.current = false
-                event.preventDefault()
-                aiFocus.current?.focus()
-              }}
+        {showAiMenu && aiActions ? (
+          aiAssistant ? (
+            <aiAssistant.AiMenu
+              actions={aiActions}
+              focusRef={aiFocus}
+              onPick={askAi}
             >
-              {aiActions.map((action) => (
-                <DropdownMenuItem
-                  key={action.id}
-                  onSelect={() => {
-                    aiPicked.current = true
-                    askAi(action)
-                  }}
-                >
-                  {action.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              {aiTrigger}
+            </aiAssistant.AiMenu>
+          ) : (
+            aiTrigger
+          )
         ) : null}
 
         {onGenerate && (
@@ -636,7 +575,7 @@ function RichTextEditor({
             type="button"
             variant="secondary"
             size="xs"
-            className={cn("h-7 px-2.5", !aiActions?.length && "ms-auto")}
+            className={cn("h-7 px-2.5", !showAiMenu && "ms-auto")}
             loading={generating}
             disabled={disabled || !editor || aiOpen}
             onMouseDown={(event) => event.preventDefault()}
@@ -647,11 +586,12 @@ function RichTextEditor({
           </Button>
         )}
       </div>
-      {aiOpen && editor && (
-        <AiPanel
+      {aiOpen && editor && aiAssistant && (
+        <aiAssistant.AiPanel
           editor={editor}
           ai={ai}
           labels={labels}
+          contentClassName={CONTENT_CLASSES}
           focusRef={setAiFocus}
           onRetry={retryAi}
           onApply={applyAi}
@@ -670,184 +610,6 @@ function RichTextEditor({
       </div>
     </div>
   )
-}
-
-function AiPanel({
-  editor,
-  ai,
-  labels,
-  focusRef,
-  onRetry,
-  onApply,
-  onDiscard,
-}: {
-  editor: Editor
-  ai: AiState
-  labels: Required<RichTextEditorLabels>
-  focusRef: (node: HTMLElement | null) => void
-  onRetry: () => void
-  onApply: (mode: "replace" | "insert") => void
-  onDiscard: () => void
-}) {
-  const titleId = React.useId()
-
-  return (
-    <div
-      ref={ai.status === "review" ? focusRef : undefined}
-      role="region"
-      aria-labelledby={titleId}
-      aria-busy={ai.status === "busy" || undefined}
-      tabIndex={-1}
-      data-slot="rich-text-editor-ai"
-      data-state={ai.status}
-      className="@container/ai flex flex-col gap-3 border-b border-primary/20 bg-primary-subtle p-3 outline-none"
-    >
-      <p
-        id={titleId}
-        className="flex items-center gap-1.5 text-xs font-semibold text-primary-strong"
-      >
-        <SparklesIcon aria-hidden="true" className="size-3.5 shrink-0" />
-        <span>{labels.aiSuggestion}</span> <span aria-hidden="true">·</span>{" "}
-        <span className="font-medium">{ai.action.label}</span>
-      </p>
-      {ai.status === "error" ? (
-        <Alert variant="destructive">
-          <AlertTriangleIcon />
-          <AlertTitle>{ai.message}</AlertTitle>
-          <AlertAction className="flex flex-wrap gap-2">
-            <Button
-              ref={focusRef}
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onRetry}
-            >
-              <RefreshIcon data-icon="inline-start" />
-              {labels.tryAgain}
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={onDiscard}>
-              {labels.discard}
-            </Button>
-          </AlertAction>
-        </Alert>
-      ) : (
-        <>
-          <div className="grid gap-3 @xl/ai:grid-cols-2">
-            {ai.target.original && (
-              <AiVersion slot="original" label={labels.original}>
-                <AiContent editor={editor} content={ai.target.original} />
-              </AiVersion>
-            )}
-            <AiVersion
-              slot="suggestion"
-              label={labels.suggestion}
-              className={cn(!ai.target.original && "@xl/ai:col-span-2")}
-            >
-              {ai.status === "review" ? (
-                <AiContent editor={editor} content={ai.suggestion} />
-              ) : (
-                <span
-                  role="status"
-                  className="flex items-center gap-2 text-sm text-muted-foreground"
-                >
-                  <Spinner
-                    aria-hidden="true"
-                    role={undefined}
-                    aria-label={undefined}
-                  />
-                  {labels.writing}
-                </span>
-              )}
-            </AiVersion>
-          </div>
-          <div className="flex flex-wrap justify-end gap-2">
-            {ai.status === "busy" ? (
-              <Button
-                ref={focusRef}
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={onDiscard}
-              >
-                {labels.cancel}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={onDiscard}
-                >
-                  {labels.discard}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={onRetry}
-                >
-                  <RefreshIcon data-icon="inline-start" />
-                  {labels.tryAgain}
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => onApply("insert")}
-                >
-                  {labels.insertBelow}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => onApply("replace")}
-                >
-                  {labels.replace}
-                </Button>
-              </>
-            )}
-          </div>
-        </>
-      )}
-    </div>
-  )
-}
-
-function AiVersion({
-  slot,
-  label,
-  className,
-  children,
-}: {
-  slot: "original" | "suggestion"
-  label: string
-  className?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div
-      data-slot={`rich-text-editor-ai-${slot}`}
-      className={cn("flex min-w-0 flex-col gap-1.5", className)}
-    >
-      <p className="type-group-heading text-muted-foreground">{label}</p>
-      <div className="rounded-control border border-border bg-background px-3 py-2.5">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function AiContent({ editor, content }: { editor: Editor; content: Fragment }) {
-  const ref = React.useRef<HTMLDivElement>(null)
-
-  React.useLayoutEffect(() => {
-    ref.current?.replaceChildren(
-      DOMSerializer.fromSchema(editor.schema).serializeFragment(content)
-    )
-  }, [editor, content])
-
-  return <div ref={ref} className={CONTENT_CLASSES} />
 }
 
 function ToolbarToggle({
