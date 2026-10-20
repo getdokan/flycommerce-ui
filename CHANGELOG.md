@@ -2,7 +2,17 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [0.4.0] - 2026-10-20
+
+New: `Text` and the P3 type scale, `P3IconProvider` and the P3 icon set, `CodeEditor` (opt-in entry), `Timeline` and `ActivityFeed`, `CopyField`, `ColorInput`, `ImageUploadField`, pill buttons, `BrandMark` and `CardBrandMark`, settings field patterns (`FieldCount`, `SwitchField variant="row"`, option rows, `CheckboxCard`, saved secrets), a light sidebar, and AI rewrite actions in `RichTextEditor`.
+
+**Check when upgrading:**
+
+- **Breaking:** install `sonner@^2` alongside the library. It is a peer dependency now; Yarn doesn't add it for you.
+- Every `Select` opens below its field instead of over it, and highlighted rows in menus, selects and comboboxes take a soft brand tint (see Changed).
+- `SaveBar` looks like the dashboard's unsaved-changes bar: a wide `gray-900` bar with white text, an outlined Discard and "Save changes".
+- `Icon` and `Input` are client components (`"use client"`).
+- `RichTextEditor` no longer calls `onChange` on mount, when `disabled` changes or around Generate; an app that marked its form dirty from that first call stops doing so.
 
 **Visual changes:**
 
