@@ -9,6 +9,7 @@ import { LuEllipsis as EllipsisIcon } from "react-icons/lu"
 import { toast } from "sonner"
 
 import {
+  ActivityFeed,
   Button,
   Card,
   CardBrandIcon,
@@ -52,6 +53,13 @@ import {
   TabsList,
   TabsTrigger,
   TableFilters,
+  Timeline,
+  TimelineDescription,
+  TimelineHeader,
+  TimelineItem,
+  TimelineTime,
+  TimelineTitle,
+  type ActivityFeedEntry,
   type ColumnDef,
   type FilterField,
   type FilterValues,
@@ -1076,5 +1084,203 @@ export function DataTableReorderDemo() {
         }}
       />
     </div>
+  )
+}
+
+const CART_EVENTS = [
+  {
+    id: "started",
+    title: "Cart started",
+    time: "Oct 9, 4:20 PM",
+    at: "2026-10-09T16:20",
+  },
+  {
+    id: "abandoned",
+    title: "Abandoned",
+    time: "Oct 10, 4:20 PM",
+    at: "2026-10-10T16:20",
+    description: "2 items, $128.00",
+  },
+  {
+    id: "sent",
+    title: "Reminder sent",
+    time: "Oct 11, 9:00 AM",
+    at: "2026-10-11T09:00",
+    description: "keira@example.com",
+    tone: "primary",
+  },
+  {
+    id: "recovered",
+    title: "Recovered with order #48215",
+    time: "Oct 11, 2:41 PM",
+    at: "2026-10-11T14:41",
+    description: "Ordered through the recovery link",
+    tone: "success",
+  },
+] as const
+
+const ORDER_ACTIVITY: {
+  id: string
+  icon: IconName
+  title: string
+  time: string
+  at: string
+  description?: string
+  tone?: "primary" | "success" | "warning"
+}[] = [
+  {
+    id: "placed",
+    icon: "orders",
+    title: "Order placed",
+    time: "Oct 14, 10:02 AM",
+    at: "2026-10-14T10:02",
+  },
+  {
+    id: "paid",
+    icon: "payments",
+    title: "Payment captured",
+    time: "Oct 14, 10:02 AM",
+    at: "2026-10-14T10:02",
+    description: "$244.00 by Visa ending 4242",
+    tone: "success",
+  },
+  {
+    id: "shipped",
+    icon: "shipping",
+    title: "Shipped",
+    time: "Oct 15, 3:18 PM",
+    at: "2026-10-15T15:18",
+    description: "DHL Express, 1Z999AA10123456784",
+    tone: "primary",
+  },
+]
+
+export function TimelineDemo() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Cart timeline</CardTitle>
+          <CardDescription>
+            Dots by tone, and a step still to come.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Timeline>
+            {CART_EVENTS.map((event) => (
+              <TimelineItem
+                key={event.id}
+                tone={"tone" in event ? event.tone : "default"}
+              >
+                <TimelineHeader>
+                  <TimelineTitle>{event.title}</TimelineTitle>
+                  <TimelineTime dateTime={event.at}>{event.time}</TimelineTime>
+                </TimelineHeader>
+                {"description" in event && (
+                  <TimelineDescription>{event.description}</TimelineDescription>
+                )}
+              </TimelineItem>
+            ))}
+            <TimelineItem upcoming>
+              <TimelineTitle>Second reminder due</TimelineTitle>
+              <TimelineDescription>
+                In the daily run at 9:00 AM UTC
+              </TimelineDescription>
+            </TimelineItem>
+          </Timeline>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Order activity</CardTitle>
+          <CardDescription>
+            Icons in place of dots, and a step still to come.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Timeline>
+            {ORDER_ACTIVITY.map((event) => (
+              <TimelineItem
+                key={event.id}
+                tone={event.tone}
+                icon={<Icon name={event.icon} />}
+              >
+                <TimelineHeader>
+                  <TimelineTitle>{event.title}</TimelineTitle>
+                  <TimelineTime dateTime={event.at}>{event.time}</TimelineTime>
+                </TimelineHeader>
+                {event.description && (
+                  <TimelineDescription>{event.description}</TimelineDescription>
+                )}
+              </TimelineItem>
+            ))}
+            <TimelineItem upcoming icon={<Icon name="delivery" />}>
+              <TimelineTitle>Delivery expected</TimelineTitle>
+              <TimelineDescription>Thursday, Oct 17</TimelineDescription>
+            </TimelineItem>
+          </Timeline>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+const ORDER_LOG: ActivityFeedEntry[] = [
+  {
+    id: "note-1",
+    title: "Note from Dana",
+    time: "Oct 15, 4:02 PM",
+    dateTime: "2026-10-15T16:02",
+    description: "Customer asked us to leave the parcel with the concierge.",
+    note: true,
+  },
+  {
+    id: "shipped",
+    icon: <Icon name="shipping" />,
+    title: "Shipped",
+    time: "Oct 15, 3:18 PM",
+    dateTime: "2026-10-15T15:18",
+    description: "DHL Express, 1Z999AA10123456784",
+    tone: "primary",
+  },
+  {
+    id: "paid",
+    icon: <Icon name="payments" />,
+    title: "Payment captured",
+    time: "Oct 14, 10:02 AM",
+    dateTime: "2026-10-14T10:02",
+    description: "$244.00 by Visa ending 4242",
+    tone: "success",
+  },
+  {
+    id: "placed",
+    icon: <Icon name="orders" />,
+    title: "Order placed",
+    time: "Oct 14, 10:02 AM",
+    dateTime: "2026-10-14T10:02",
+  },
+]
+
+export function ActivityFeedDemo() {
+  const [entries, setEntries] = React.useState(ORDER_LOG)
+  return (
+    <ActivityFeed
+      className="max-w-xl"
+      description="Newest first. Notes are for your team only."
+      entries={entries}
+      onAddNote={async (text) => {
+        await new Promise((resolve) => setTimeout(resolve, 600))
+        setEntries((current) => [
+          {
+            id: `note-${current.length + 1}`,
+            title: "Note from you",
+            time: "Just now",
+            description: text,
+            note: true,
+          },
+          ...current,
+        ])
+      }}
+    />
   )
 }
