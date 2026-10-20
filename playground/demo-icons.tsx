@@ -44,6 +44,7 @@ import {
   FiUpload as UploadIcon,
 } from "react-icons/fi"
 import {
+  LuALargeSmall as ALargeSmallIcon,
   LuBot as BotIcon,
   LuAppWindow as AppWindowIcon,
   LuAppWindowMac as AppWindowMacIcon,
@@ -97,6 +98,7 @@ const ICONS: Record<string, IconType> = {
   installation: PackageIcon,
   "claude-code": BotIcon,
   typography: TypeIcon,
+  text: ALargeSmallIcon,
   colors: PaletteIcon,
   icons: ShapesIcon,
   "card-brand-icon": CreditCardIcon,
