@@ -54,6 +54,14 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--chart-3`                    | `#b4770b`                                                              |                                                    |
 | `--chart-4`                    | `#6d3be4`                                                              |                                                    |
 | `--chart-5`                    | `#68687e`                                                              |                                                    |
+| `--person-1`                   | `#3b5bdb`                                                              | person colour (avatars only)                       |
+| `--person-2`                   | `#2f6f5e`                                                              | person colour (avatars only)                       |
+| `--person-3`                   | `#8a4b2f`                                                              | person colour (avatars only)                       |
+| `--person-4`                   | `#5b4b8a`                                                              | person colour (avatars only)                       |
+| `--person-5`                   | `#1f2a44`                                                              | person colour (avatars only)                       |
+| `--person-6`                   | `#7a3e5c`                                                              | person colour (avatars only)                       |
+| `--person-7`                   | `#2e6a8e`                                                              | person colour (avatars only)                       |
+| `--person-8`                   | `#6b5b2e`                                                              | person colour (avatars only)                       |
 | `--radius`                     | `8px`                                                                  | radius-control                                     |
 | `--radius-panel`               | `12px`                                                                 | cards, toasts                                      |
 | `--tray-radius`                | `18px`                                                                 | lead tray                                          |

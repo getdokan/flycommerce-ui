@@ -40,15 +40,44 @@ function AvatarImage({
   )
 }
 
+const PERSON_COLORS = [
+  "bg-person-1",
+  "bg-person-2",
+  "bg-person-3",
+  "bg-person-4",
+  "bg-person-5",
+  "bg-person-6",
+  "bg-person-7",
+  "bg-person-8",
+] as const
+
+/** One of the eight person colours, always the same for the same key. */
+function personColor(key: string) {
+  // FNV-1a, then a final mix, so similar keys (reversed, a digit apart) still spread.
+  let hash = 0x811c9dc5
+  for (const char of key)
+    hash = Math.imul(hash ^ char.codePointAt(0)!, 0x01000193)
+  hash ^= hash >>> 16
+  hash = Math.imul(hash, 0x85ebca6b)
+  hash ^= hash >>> 13
+  return PERSON_COLORS[(hash >>> 0) % PERSON_COLORS.length]
+}
+
 function AvatarFallback({
   className,
+  colorFrom,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+}: React.ComponentProps<typeof AvatarPrimitive.Fallback> & {
+  /** The person's stable id (email only when there is none): one of eight person colours, the same every time. Empty stays grey. */
+  colorFrom?: string | number
+}) {
+  const key = colorFrom === undefined ? "" : String(colorFrom)
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
         "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
+        key && [personColor(key), "text-on-dark"],
         className
       )}
       {...props}
