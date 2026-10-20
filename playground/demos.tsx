@@ -366,7 +366,7 @@ const KEYWORDS: Record<string, string> = {
   pagination: "pages next previous",
   "navigation-menu": "menubar nav mega menu",
   sidebar: "navigation nav rail light dark theme shortcut",
-  icons: "icon glyph feather react-icons svg",
+  icons: "icon glyph feather react-icons svg p3 figma provider swap set",
   "card-brand-icon":
     "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
   "card-brand-mark":
