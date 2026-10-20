@@ -2,6 +2,20 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## Unreleased
+
+**Check when upgrading:** an empty or failed `DataTable` no longer shows its column names: the empty or error state now stands in for the whole table, below the toolbar. Pass `showHeaderWhenEmpty` to keep them.
+
+### Added
+
+- `EmptyState`: a ready-made empty or failed list (`icon` by name or element, `media` for an illustration, `title`, `description`, `actions`, `tone="destructive"`), built from the `Empty` parts. `DataTable`'s own empty and error states use it.
+- `DataTable` `showHeaderWhenEmpty` keeps the column names above the empty or error state.
+- `EmptyMedia` `tone="destructive"` tints the icon tile red, the look `DataTable` used for its error state.
+
+### Changed
+
+- `DataTable` hides its table, header row included, while it shows the empty or error state. Loading still shows the header and skeleton rows.
+
 ## [0.4.0] - 2026-10-20
 
 New: `Text` and the P3 type scale, `P3IconProvider` and the P3 icon set, `CodeEditor` (opt-in entry), `Timeline` and `ActivityFeed`, `CopyField`, `ColorInput`, `ImageUploadField`, pill buttons, `BrandMark` and `CardBrandMark`, settings field patterns (`FieldCount`, `SwitchField variant="row"`, option rows, `CheckboxCard`, saved secrets), a light sidebar, and AI rewrite actions in `RichTextEditor`.

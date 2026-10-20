@@ -71,16 +71,16 @@ The dashboard imports `react-icons`, overwhelmingly Feather (`react-icons/fi`), 
 
 The dashboard hand-builds these in many places with different sizes and colours. Use `IconChip` for all of them:
 
-| Dashboard pattern                                                      | `IconChip`                                                           |
-| ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Stat tile: `h-9 w-9 rounded-lg bg-surface-faded`, grey icon            | `<IconChip>` (square, md, neutral)                                   |
-| Card title: `h-9 w-9 rounded-full bg-surface-faded` + chart icon       | `<IconChip shape="round">`                                           |
-| Settings row: `rounded-lg bg-[#F1F1F3] p-1.5`, `size-5 text-[#464654]` | `<IconChip tone="grey">`                                             |
-| Customer stats: round, mint / blue / pink tints                        | `<IconChip shape="round" tone="success\|primary\|destructive">`      |
-| Driver / checkout: `h-10 w-10 rounded-md/lg bg-gray-100`               | `<IconChip size="lg" tone="grey">`                                   |
-| Step number, initials: `bg-primary-50 text-primary-600 rounded-full`   | `<IconChip shape="round" tone="primary">` (or `Avatar` for initials) |
-| Warning in a modal: `h-12 w-12 rounded-full bg-amber-100`              | `<IconChip size="xl" shape="round" tone="warning">`                  |
-| Empty state: 128px `bg-primary-50` circle                              | `Empty` + `EmptyMedia variant="icon"`                                |
+| Dashboard pattern                                                      | `IconChip`                                                                                              |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Stat tile: `h-9 w-9 rounded-lg bg-surface-faded`, grey icon            | `<IconChip>` (square, md, neutral)                                                                      |
+| Card title: `h-9 w-9 rounded-full bg-surface-faded` + chart icon       | `<IconChip shape="round">`                                                                              |
+| Settings row: `rounded-lg bg-[#F1F1F3] p-1.5`, `size-5 text-[#464654]` | `<IconChip tone="grey">`                                                                                |
+| Customer stats: round, mint / blue / pink tints                        | `<IconChip shape="round" tone="success\|primary\|destructive">`                                         |
+| Driver / checkout: `h-10 w-10 rounded-md/lg bg-gray-100`               | `<IconChip size="lg" tone="grey">`                                                                      |
+| Step number, initials: `bg-primary-50 text-primary-600 rounded-full`   | `<IconChip shape="round" tone="primary">` (or `Avatar` for initials)                                    |
+| Warning in a modal: `h-12 w-12 rounded-full bg-amber-100`              | `<IconChip size="xl" shape="round" tone="warning">`                                                     |
+| Empty state: 128px `bg-primary-50` circle                              | `EmptyState icon="…"` (its tile); `Empty` + `EmptyMedia variant="icon"` only for a layout it can't make |
 
 ## Tables
 

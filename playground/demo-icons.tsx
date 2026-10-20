@@ -151,6 +151,7 @@ const ICONS: Record<string, IconType> = {
   toast: BellIcon,
   progress: GaugeIcon,
   empty: InboxIcon,
+  "empty-state": InboxIcon,
   input: TextCursorInputIcon,
   "input-group": RectangleEllipsisIcon,
   textarea: AlignLeftIcon,

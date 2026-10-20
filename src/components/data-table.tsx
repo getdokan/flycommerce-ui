@@ -22,9 +22,7 @@ import {
   FiChevronDown as ChevronDownIcon,
   FiChevronLeft as ChevronLeftIcon,
   FiChevronRight as ChevronRightIcon,
-  FiInbox as InboxIcon,
   FiMoreHorizontal as MoreHorizontalIcon,
-  FiAlertTriangle as TriangleAlertIcon,
 } from "react-icons/fi"
 import {
   LuChevronsUpDown as ChevronsUpDownIcon,
@@ -33,13 +31,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
+import { EmptyState } from "@/components/empty-state"
 import {
   Select,
   SelectContent,
@@ -210,8 +202,10 @@ type DataTableProps<TData> = {
   skeletonRows?: number
   /** Shown instead of rows, e.g. an error message with a retry button. */
   error?: React.ReactNode
-  /** Replaces the default empty state. */
+  /** Replaces the default empty state, e.g. an `<EmptyState />` with the screen's own words and actions. */
   empty?: React.ReactNode
+  /** Keeps the column names above the empty or error state; by default the state replaces the whole table. */
+  showHeaderWhenEmpty?: boolean
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean)
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
@@ -252,6 +246,7 @@ function DataTable<TData>({
   skeletonRows = 5,
   error,
   empty,
+  showHeaderWhenEmpty = false,
   enableRowSelection = false,
   rowSelection: rowSelectionProp,
   onRowSelectionChange,
@@ -474,31 +469,23 @@ function DataTable<TData>({
   )
 
   const state = error ? (
-    <Empty>
-      <EmptyHeader>
-        <EmptyMedia
-          variant="icon"
-          className="bg-destructive-subtle text-destructive"
-        >
-          <TriangleAlertIcon />
-        </EmptyMedia>
-        <EmptyTitle>{labels.errorTitle}</EmptyTitle>
-        <EmptyDescription>{error}</EmptyDescription>
-      </EmptyHeader>
-    </Empty>
+    <EmptyState
+      tone="destructive"
+      icon="warning"
+      title={labels.errorTitle}
+      description={error}
+    />
   ) : !loading && rows.length === 0 ? (
     (empty ?? (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <InboxIcon />
-          </EmptyMedia>
-          <EmptyTitle>{labels.emptyTitle}</EmptyTitle>
-          <EmptyDescription>{labels.emptyDescription}</EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <EmptyState
+        icon="empty"
+        title={labels.emptyTitle}
+        description={labels.emptyDescription}
+      />
     ))
   ) : null
+  // Column names over no rows read as a broken table, so the message stands in for the whole table.
+  const showTable = !state || showHeaderWhenEmpty
   // Cursor pages keep "Previous" so an emptied later page isn't a dead end.
   const hidePagination =
     Boolean(error) ||
@@ -575,69 +562,71 @@ function DataTable<TData>({
           </div>
         </div>
       )}
-      <Table aria-busy={busy || showProgress || undefined}>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                const meta = header.column.columnDef.meta
-                const content = header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )
-                return (
-                  <TableHead
-                    key={header.id}
-                    aria-sort={ariaSort(header.column)}
-                    className={cn(
-                      alignClass(meta?.align),
-                      meta?.headerClassName
-                    )}
-                  >
-                    {header.column.getCanSort() && content ? (
-                      <SortButton column={header.column} align={meta?.align}>
-                        {content}
-                      </SortButton>
-                    ) : (
-                      content
-                    )}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody
-          className={cn("transition-opacity", showProgress && "opacity-50")}
-        >
-          {busy ? (
-            Array.from({ length: skeletonRows }).map((_, rowIndex) => (
-              <TableRow key={rowIndex} className="hover:bg-transparent">
-                {Array.from({ length: columnCount }).map((_, cellIndex) => (
-                  <TableCell key={cellIndex}>
-                    <Skeleton className="h-4 w-full max-w-40" />
-                  </TableCell>
-                ))}
+      {showTable && (
+        <Table aria-busy={busy || showProgress || undefined}>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  const meta = header.column.columnDef.meta
+                  const content = header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )
+                  return (
+                    <TableHead
+                      key={header.id}
+                      aria-sort={ariaSort(header.column)}
+                      className={cn(
+                        alignClass(meta?.align),
+                        meta?.headerClassName
+                      )}
+                    >
+                      {header.column.getCanSort() && content ? (
+                        <SortButton column={header.column} align={meta?.align}>
+                          {content}
+                        </SortButton>
+                      ) : (
+                        content
+                      )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
-            ))
-          ) : state ? null : reorderable ? (
-            <React.Suspense fallback={rows.map((row) => renderRow(row))}>
-              <SortableRows
-                ids={rows.map((row) => row.id)}
-                disabled={!reorderEnabled}
-                labels={labels}
-                getLabel={rowLabel}
-                onMove={moveRow}
-                renderRow={(index, drag) => renderRow(rows[index], drag)}
-              />
-            </React.Suspense>
-          ) : (
-            rows.map((row) => renderRow(row))
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody
+            className={cn("transition-opacity", showProgress && "opacity-50")}
+          >
+            {busy ? (
+              Array.from({ length: skeletonRows }).map((_, rowIndex) => (
+                <TableRow key={rowIndex} className="hover:bg-transparent">
+                  {Array.from({ length: columnCount }).map((_, cellIndex) => (
+                    <TableCell key={cellIndex}>
+                      <Skeleton className="h-4 w-full max-w-40" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : state ? null : reorderable ? (
+              <React.Suspense fallback={rows.map((row) => renderRow(row))}>
+                <SortableRows
+                  ids={rows.map((row) => row.id)}
+                  disabled={!reorderEnabled}
+                  labels={labels}
+                  getLabel={rowLabel}
+                  onMove={moveRow}
+                  renderRow={(index, drag) => renderRow(rows[index], drag)}
+                />
+              </React.Suspense>
+            ) : (
+              rows.map((row) => renderRow(row))
+            )}
+          </TableBody>
+        </Table>
+      )}
       <div role="status" className="sr-only">
         {busy || showProgress ? labels.loading : null}
       </div>
@@ -646,6 +635,8 @@ function DataTable<TData>({
         <div
           data-slot="data-table-state"
           role="status"
+          // Stands in for the table, so it takes the table's busy mark while a refetch runs.
+          aria-busy={(!showTable && showProgress) || undefined}
           className={cn(
             "px-5 py-3.5 transition-opacity",
             showProgress && "opacity-50"

@@ -204,6 +204,7 @@ import {
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
+  EmptyState,
   EmptyTitle,
   Field,
   FieldDescription,
@@ -335,6 +336,8 @@ const KEYWORDS: Record<string, string> = {
   progress:
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
   empty: "no data blank zero state",
+  "empty-state":
+    "empty state no results nothing found first run zero list error failed",
   input:
     "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
@@ -443,6 +446,7 @@ const SOURCES: Record<string, Source> = {
   toast: "prototype",
   progress: "figma",
   empty: "prototype",
+  "empty-state": "prototype",
   input: "prototype",
   "input-group": "prototype",
   textarea: "prototype",
@@ -1478,6 +1482,44 @@ export const demos: Demo[] = [
           </div>
         </EmptyContent>
       </Empty>
+    ),
+  },
+  {
+    id: "empty-state",
+    title: "Empty state: ready-made",
+    group: "Feedback",
+    render: () => (
+      <div className="grid w-full gap-4 lg:grid-cols-3">
+        <EmptyState
+          className="border"
+          icon="orders"
+          title="No orders yet"
+          description="Orders show here as soon as a shopper checks out."
+          actions={<Button>Share your store</Button>}
+        />
+        <EmptyState
+          className="border"
+          title="No orders match"
+          description="Nothing fits this search and these filters."
+          actions={
+            <Button size="sm" variant="outline">
+              Clear filters
+            </Button>
+          }
+        />
+        <EmptyState
+          className="border"
+          tone="destructive"
+          icon="warning"
+          title="Orders could not be loaded"
+          description="The orders service did not answer. No orders were lost."
+          actions={
+            <Button size="sm" variant="outline">
+              Try again
+            </Button>
+          }
+        />
+      </div>
     ),
   },
 

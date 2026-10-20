@@ -53,7 +53,8 @@ describe("DataTable loading", () => {
     render(
       <DataTable columns={columns} data={data} loading error="Server error" />
     )
-    expect(screen.getByRole("table").hasAttribute("aria-busy")).toBe(false)
+    // The error stands in for the table, so there is no busy table to announce.
+    expect(screen.queryByRole("table")).toBeNull()
     expect(screen.queryByText("Loading…")).toBeNull()
   })
 })
