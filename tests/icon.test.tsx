@@ -2,13 +2,14 @@ import { render, screen } from "@testing-library/react"
 import axe from "axe-core"
 import type { IconType } from "react-icons"
 import { renderToStaticMarkup } from "react-dom/server"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {
   Icon,
   IconProvider,
   ICONS,
   P3_GLYPHS,
+  P3IconProvider,
   SettingsNav,
   type IconName,
 } from "@/index"
@@ -222,13 +223,13 @@ describe("IconProvider", () => {
     }
   })
 
-  it("takes the P3 set by name, a string a server component can pass", () => {
+  it("draws the P3 set through P3IconProvider, which takes no props", () => {
     for (const name of NAMES) {
       expect(
         html(
-          <IconProvider set="p3">
+          <P3IconProvider>
             <Icon name={name} />
-          </IconProvider>
+          </P3IconProvider>
         )
       ).toBe(
         html(
@@ -240,14 +241,16 @@ describe("IconProvider", () => {
     }
   })
 
-  it("lays glyphs over the named set", () => {
+  it("lays an inner provider's glyphs over the P3 set", () => {
     const Cart = ICONS.abandonedCart
     render(
-      <IconProvider set="p3" glyphs={{ products: Cart }}>
-        <Icon name="products" />
-        <Icon name="customers" />
-        <Icon name="dashboard" />
-      </IconProvider>
+      <P3IconProvider>
+        <IconProvider glyphs={{ products: Cart }}>
+          <Icon name="products" />
+          <Icon name="customers" />
+          <Icon name="dashboard" />
+        </IconProvider>
+      </P3IconProvider>
     )
     expect(icon("products")).toBe(drawn(Cart, "products"))
     expect(icon("customers")).toBe(drawn(P3_GLYPHS.customers!, "customers"))
@@ -368,5 +371,28 @@ describe("P3_GLYPHS", () => {
     expect(screen.getAllByRole("img")).toHaveLength(NAMES.length)
     const { violations } = await axe.run(container)
     expect(violations.map((v) => v.id)).toEqual([])
+  })
+})
+
+describe("FlyCommerce glyphs", () => {
+  const GLYPHS = "@/components/icon/fly-glyphs"
+
+  afterEach(() => {
+    vi.doUnmock(GLYPHS)
+    vi.resetModules()
+  })
+
+  it("load with P3IconProvider and never with Icon or IconProvider", async () => {
+    const factory = vi.fn(async (importOriginal: () => Promise<unknown>) =>
+      importOriginal()
+    )
+    vi.doMock(GLYPHS, factory)
+    vi.resetModules()
+
+    await import("@/components/icon")
+    expect(factory).not.toHaveBeenCalled()
+
+    await import("@/components/p3-icon-provider")
+    expect(factory).toHaveBeenCalledTimes(1)
   })
 })

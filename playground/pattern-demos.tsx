@@ -28,7 +28,6 @@ import {
   FieldLabel,
   Icon,
   ICON_GROUPS,
-  IconProvider,
   ActiveFilters,
   Label,
   MediaCell,
@@ -39,6 +38,7 @@ import {
   PageHeaderDescription,
   PageHeaderTitle,
   P3_GLYPHS,
+  P3IconProvider,
   SaveBar,
   SearchInput,
   SegmentedControl,
@@ -849,6 +849,7 @@ export function IconsDemo() {
   const [set, setSet] = React.useState("default")
   const [p3Only, setP3Only] = React.useState(false)
   const q = query.trim().toLowerCase()
+  const IconSet = set === "p3" ? P3IconProvider : React.Fragment
 
   return (
     <div className="flex w-full flex-col gap-5">
@@ -883,11 +884,10 @@ export function IconsDemo() {
           <code className="rounded bg-muted px-1">{`<Icon name="orders" />`}</code>
           , never a react-icons component directly. For the P3 Figma set, wrap
           the app in{" "}
-          <code className="rounded bg-muted px-1">{`<IconProvider set="p3">`}</code>
-          .
+          <code className="rounded bg-muted px-1">{`<P3IconProvider>`}</code>.
         </span>
       </div>
-      <IconProvider set={set === "p3" ? "p3" : undefined}>
+      <IconSet>
         {Object.entries(ICON_GROUPS).map(([group, icons]) => {
           const names = (Object.keys(icons) as IconName[]).filter(
             (name) =>
@@ -923,7 +923,7 @@ export function IconsDemo() {
             </div>
           )
         })}
-      </IconProvider>
+      </IconSet>
     </div>
   )
 }

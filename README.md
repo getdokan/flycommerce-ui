@@ -388,21 +388,21 @@ export function AddOrder() {
 
 The gallery's [Icons page](https://ui.flycommerce.com/#icons) lists all 156 names.
 
-To draw the FlyCommerce P3 Figma icon set, wrap the app (or one area of it) in `IconProvider`. Every name `P3_GLYPHS` lists then draws its P3 glyph, and the other names stay as they are:
+To draw the FlyCommerce P3 Figma icon set, wrap the app (or one area of it) in `P3IconProvider`. Every name `P3_GLYPHS` lists then draws its P3 glyph, and the other names stay as they are:
 
 ```tsx
-import { IconProvider } from "@flycommerce/ui"
+import { P3IconProvider } from "@flycommerce/ui"
 
 export function Root() {
   return (
-    <IconProvider set="p3">
+    <P3IconProvider>
       <App />
-    </IconProvider>
+    </P3IconProvider>
   )
 }
 ```
 
-`set` is a string, so a Next.js server layout can render this provider. To swap in glyphs of your own, pass `glyphs`, a map from name to a react-icons component, which wins over the set. A server component can't pass components to a client one, so in Next.js build the map in a `"use client"` file:
+`P3IconProvider` takes no props, so a Next.js server layout can render it. To swap in glyphs of your own, wrap an area in `IconProvider` with `glyphs`, a map from name to a react-icons component; inside `P3IconProvider` it wins over the P3 set. A server component can't pass components to a client one, so in Next.js build the map in a `"use client"` file:
 
 ```tsx
 "use client"
@@ -413,11 +413,7 @@ import { FiShoppingBag } from "react-icons/fi"
 const GLYPHS = { orders: FiShoppingBag }
 
 export function AppIcons({ children }: { children: React.ReactNode }) {
-  return (
-    <IconProvider set="p3" glyphs={GLYPHS}>
-      {children}
-    </IconProvider>
-  )
+  return <IconProvider glyphs={GLYPHS}>{children}</IconProvider>
 }
 ```
 
