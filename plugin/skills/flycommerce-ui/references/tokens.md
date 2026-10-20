@@ -61,13 +61,20 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--inverse`                    | `#101828`                                                           | dashboard save bar (gray-900)                      |
 | `--inverse-foreground`         | `#ffffff`                                                           |                                                    |
 | `--code-gutter`                | `color-mix(in srgb, var(--muted) 30%, var(--card))`                 | code editor gutter: muted/30 on card, opaque       |
-| `--sidebar`                    | `#0a0a10`                                                           | side                                               |
-| `--sidebar-foreground`         | `#dbdee7`                                                           | side-ink                                           |
-| `--sidebar-muted`              | `#8a90a1`                                                           | side-ink-2                                         |
-| `--sidebar-heading`            | `#666c7c`                                                           | side-head                                          |
+| `--tooltip`                    | `#09090b`                                                           | tooltips and toasts                                |
+| `--tooltip-foreground`         | `#ffffff`                                                           |                                                    |
+| `--sidebar`                    | `#09090b`                                                           | side                                               |
+| `--sidebar-foreground`         | `#cdcdd6`                                                           | side-ink                                           |
+| `--sidebar-muted`              | `#8f8fa3`                                                           | side-ink-2                                         |
+| `--sidebar-heading`            | `#7a7a91`                                                           | side-head; lighter than the design for 4.5:1       |
 | `--sidebar-primary`            | `#155dfc`                                                           |                                                    |
 | `--sidebar-primary-foreground` | `#ffffff`                                                           |                                                    |
-| `--sidebar-accent`             | `#15151e`                                                           | side-2                                             |
+| `--sidebar-primary-ink`        | `#2b7fff`                                                           | brand blue as text on the rail                     |
+| `--sidebar-accent`             | `#18181d`                                                           | side-2                                             |
 | `--sidebar-accent-foreground`  | `#ffffff`                                                           |                                                    |
-| `--sidebar-border`             | `rgb(255 255 255 / 0.07)`                                           |                                                    |
+| `--sidebar-border`             | `#24242b`                                                           |                                                    |
 | `--sidebar-ring`               | `rgb(21 93 252 / 0.45)`                                             |                                                    |
+| `--sidebar-elevate`            | `#24242b`                                                           | raised tile or button on the rail                  |
+| `--sidebar-strong`             | `#ffffff`                                                           | emphasised text: hover, store name                 |
+| `--sidebar-alt`                | `#131317`                                                           | selected segment of a rail switch                  |
+| `--sidebar-tabs`               | `#09090b`                                                           | track of a rail switch                             |
