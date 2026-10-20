@@ -23,8 +23,8 @@ const Toaster = ({ theme = "light", ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--sidebar)",
-          "--normal-text": "#ffffff",
+          "--normal-bg": "var(--tooltip)",
+          "--normal-text": "var(--tooltip-foreground)",
           "--normal-border": "transparent",
           "--border-radius": "var(--radius-panel)",
         } as React.CSSProperties
