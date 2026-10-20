@@ -60,3 +60,31 @@ describe("AvatarFallback colorFrom", () => {
     expect(fallback("dana@example.com").className).not.toContain("font-medium")
   })
 })
+
+describe("Avatar sizes", () => {
+  it("adds xl (48px) and 2xl (64px) for profile headers, with initials to match", () => {
+    for (const [size, box, text] of [
+      ["xl", "data-[size=xl]:size-12", "group-data-[size=xl]/avatar:text-base"],
+      [
+        "2xl",
+        "data-[size=2xl]:size-16",
+        "group-data-[size=2xl]/avatar:text-xl",
+      ],
+    ] as const) {
+      const { container, unmount } = render(
+        <Avatar size={size}>
+          <AvatarFallback>DW</AvatarFallback>
+        </Avatar>
+      )
+      const avatar = container.querySelector(
+        "[data-slot=avatar]"
+      ) as HTMLElement
+      expect(avatar.dataset.size).toBe(size)
+      expect(avatar.className).toContain(box)
+      expect(
+        container.querySelector("[data-slot=avatar-fallback]")?.className
+      ).toContain(text)
+      unmount()
+    }
+  })
+})

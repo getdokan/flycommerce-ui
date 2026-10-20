@@ -1796,6 +1796,15 @@ export const demos: Demo[] = [
             <AvatarFallback>AH</AvatarFallback>
           </Avatar>
         </Row>
+        <Row label="Sizes">
+          {(["sm", "default", "lg", "xl", "2xl"] as const).map((size) => (
+            <Avatar key={size} size={size}>
+              <AvatarFallback colorFrom="dana.whitfield@example.com">
+                DW
+              </AvatarFallback>
+            </Avatar>
+          ))}
+        </Row>
         <Row label="Person colours (colorFrom)">
           {[
             ["DW", "dana.whitfield@example.com"],
