@@ -25,16 +25,25 @@ const progressIndicatorVariants = cva(
 function Progress({
   className,
   value,
+  max = 100,
   tone = "default",
   ...props
 }: React.ComponentProps<typeof ProgressPrimitive.Root> & {
   tone?: NonNullable<VariantProps<typeof progressIndicatorVariants>["tone"]>
 }) {
+  const limit = max > 0 ? max : 100
+  const current =
+    value == null
+      ? null
+      : Number.isFinite(value)
+        ? Math.min(Math.max(value, 0), limit)
+        : 0
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
       data-tone={tone}
-      value={value}
+      value={current}
+      max={max}
       className={cn(
         "relative flex h-2 w-full items-center overflow-x-hidden rounded-full bg-border",
         className
@@ -44,7 +53,9 @@ function Progress({
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
         className={progressIndicatorVariants({ tone })}
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+        style={{
+          transform: `translateX(-${100 - ((current ?? 0) * 100) / limit}%)`,
+        }}
       />
     </ProgressPrimitive.Root>
   )
