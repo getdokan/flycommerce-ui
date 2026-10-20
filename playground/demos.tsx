@@ -59,6 +59,12 @@ import {
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
+import {
+  BrandMarkDemo,
+  CardBrandMarkDemo,
+  PillButtonDemo,
+  TrayDemo,
+} from "./display-demos"
 import { ColorsDemo, TextDemo, TypographyDemo } from "./foundation-demos"
 import {
   ModalUseCasesDemo,
@@ -356,6 +362,12 @@ const KEYWORDS: Record<string, string> = {
   icons: "icon glyph feather react-icons svg",
   "card-brand-icon":
     "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing",
+  "card-brand-mark":
+    "payment credit card brand logo visa mastercard amex american express discover diners jcb unionpay billing colour color full colour accepted cards",
+  "brand-mark":
+    "logo brand mark tile third party provider gateway carrier app icon simple icons white",
+  "pill-button": "pill cta call to action arrow rounded full width primary",
+  tray: "lead shell double bezel hero highlight notice warning plate",
   typography: "type font text heading size scale inter",
   text: "typography type scale p3 font heading title display paragraph body caption size weight bold semibold tone colour numeric tabular figures",
   colors: "color colour palette token swatch theme",
@@ -437,6 +449,10 @@ const SOURCES: Record<string, Source> = {
   sidebar: "prototype",
   icons: "prototype",
   "card-brand-icon": "composite",
+  "card-brand-mark": "prototype",
+  "brand-mark": "prototype",
+  "pill-button": "prototype",
+  tray: "prototype",
   typography: "prototype",
   text: "prototype",
   colors: "prototype",
@@ -853,6 +869,18 @@ export const demos: Demo[] = [
     group: "Foundations",
     render: () => <CardBrandIconDemo />,
   },
+  {
+    id: "card-brand-mark",
+    title: "Card brand mark",
+    group: "Foundations",
+    render: () => <CardBrandMarkDemo />,
+  },
+  {
+    id: "brand-mark",
+    title: "Brand mark",
+    group: "Foundations",
+    render: () => <BrandMarkDemo />,
+  },
 
   // Patterns
   {
@@ -860,6 +888,12 @@ export const demos: Demo[] = [
     title: "Page header",
     group: "Patterns",
     render: () => <PageHeaderDemo />,
+  },
+  {
+    id: "tray",
+    title: "Tray (lead)",
+    group: "Patterns",
+    render: () => <TrayDemo />,
   },
   {
     id: "data-table",
@@ -1141,6 +1175,12 @@ export const demos: Demo[] = [
         </p>
       </Stack>
     ),
+  },
+  {
+    id: "pill-button",
+    title: "Pill call to action",
+    group: "Actions",
+    render: () => <PillButtonDemo />,
   },
   {
     id: "button-group",
