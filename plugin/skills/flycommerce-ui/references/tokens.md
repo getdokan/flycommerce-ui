@@ -69,6 +69,8 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--motion-fluid`               | `cubic-bezier(0.32, 0.72, 0, 1)`                                       | the prototype's motion curve                       |
 | `--inverse`                    | `#101828`                                                              | dashboard save bar (gray-900)                      |
 | `--inverse-foreground`         | `#ffffff`                                                              |                                                    |
+| `--on-dark`                    | `#ffffff`                                                              | text on a dark custom colour, e.g. a brand colour  |
+| `--on-light`                   | `#24242b`                                                              | text on a light custom colour                      |
 | `--code-gutter`                | `color-mix(in srgb, var(--muted) 30%, var(--card))`                    | code editor gutter: muted/30 on card, opaque       |
 | `--tooltip`                    | `#09090b`                                                              | tooltips and toasts                                |
 | `--tooltip-foreground`         | `#ffffff`                                                              |                                                    |
