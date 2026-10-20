@@ -99,6 +99,7 @@ function parseFile(file: string): ParsedFile {
       }
     } else if (
       (ts.isFunctionDeclaration(stmt) ||
+        ts.isClassDeclaration(stmt) ||
         ts.isTypeAliasDeclaration(stmt) ||
         ts.isInterfaceDeclaration(stmt)) &&
       stmt.name

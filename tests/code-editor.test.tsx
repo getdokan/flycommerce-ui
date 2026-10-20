@@ -89,6 +89,42 @@ describe("CodeEditor", () => {
     expect(status().textContent).toContain("1 line · 7 characters")
   })
 
+  it("snaps back to value when the parent ignores the change, like a controlled textarea", () => {
+    const onValueChange = vi.fn()
+    render(<Editor value="one" onValueChange={onValueChange} />)
+
+    moveCursor(3)
+    typeText(" two")
+    expect(onValueChange).toHaveBeenLastCalledWith("one two")
+    expect(lines()).toEqual(["one"])
+    expect(status().textContent).toContain("1 line · 3 characters")
+    expect(viewOf().state.selection.main.head).toBe(3)
+
+    onValueChange.mockClear()
+    key("z", 90, { ctrlKey: true })
+    expect(lines()).toEqual(["one"])
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it("keeps the cursor and undo history when the parent passes the value back", () => {
+    function Echo() {
+      const [code, setCode] = React.useState("one")
+      return <Editor value={code} onValueChange={setCode} />
+    }
+    render(<Echo />)
+
+    moveCursor(3)
+    typeText(" two")
+    expect(lines()).toEqual(["one two"])
+    expect(viewOf().state.selection.main.head).toBe(7)
+    expect(status().textContent).toContain("Ln 1, Col 8")
+
+    key("z", 90, { ctrlKey: true })
+    expect(lines()).toEqual(["one"])
+    key("y", 89, { ctrlKey: true })
+    expect(lines()).toEqual(["one two"])
+  })
+
   it("keeps its own value when uncontrolled", () => {
     const onValueChange = vi.fn()
     render(<Editor defaultValue="a" onValueChange={onValueChange} />)

@@ -63,6 +63,14 @@ function ConfirmDialog({
   const inputId = React.useId()
 
   const open = openProp ?? openState
+  const [prevOpen, setPrevOpen] = React.useState(open)
+  if (open !== prevOpen) {
+    setPrevOpen(open)
+    if (!open) {
+      setTyped("")
+      setAcknowledged(false)
+    }
+  }
   const busy = loading ?? pending
   const blocked =
     (confirmText !== undefined && typed !== confirmText) ||
@@ -70,10 +78,6 @@ function ConfirmDialog({
 
   const setOpen = (next: boolean) => {
     if (busy && !next) return
-    if (!next) {
-      setTyped("")
-      setAcknowledged(false)
-    }
     if (openProp === undefined) setOpenState(next)
     onOpenChange?.(next)
   }
