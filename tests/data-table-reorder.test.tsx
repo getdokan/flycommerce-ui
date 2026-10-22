@@ -1,4 +1,5 @@
-import { act, render, screen } from "@testing-library/react"
+import { defaultScreenReaderInstructions } from "@dnd-kit/core"
+import { act, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import axe from "axe-core"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -18,6 +19,15 @@ const brands: Brand[] = [
 
 const handles = () =>
   screen.queryAllByRole("button", { name: /^Drag to reorder row/ })
+
+const description = (element: Element) =>
+  document
+    .getElementById(element.getAttribute("aria-describedby")!)
+    ?.textContent?.replace(/\s+/g, " ")
+    .trim()
+
+const announced = (text: string) =>
+  screen.getAllByRole("status").some((region) => region.textContent === text)
 
 // dnd-kit's keyboard sensor moves between measured rects; jsdom measures every box as 0×0.
 beforeEach(() => {
@@ -116,5 +126,70 @@ describe("DataTable reorder", () => {
       from: 0,
       to: 1,
     })
+  })
+
+  it("keeps dnd-kit's English role and instructions, and names unlabelled rows Row n", async () => {
+    const user = userEvent.setup()
+    render(
+      <DataTable
+        columns={columns}
+        data={brands}
+        getRowId={(row) => row.id}
+        onReorder={() => {}}
+      />
+    )
+    const [first] = await screen.findAllByRole("button", {
+      name: /^Drag to reorder row/,
+    })
+    expect(first.getAttribute("aria-roledescription")).toBe("sortable")
+    await waitFor(() =>
+      expect(description(first)).toBe(
+        defaultScreenReaderInstructions.draggable.replace(/\s+/g, " ").trim()
+      )
+    )
+    first.focus()
+    await user.keyboard(" ")
+    await user.keyboard("{ArrowDown}")
+    await user.keyboard(" ")
+    await waitFor(() =>
+      expect(announced("Row 1 dropped at position 2 of 3.")).toBe(true)
+    )
+  })
+
+  it("translates the handle's role, the instructions and unlabelled row names", async () => {
+    const user = userEvent.setup()
+    render(
+      <DataTable
+        columns={columns}
+        data={brands}
+        getRowId={(row) => row.id}
+        onReorder={() => {}}
+        labels={{
+          dragHandle: (index) => `${index + 1}. satırı taşı`,
+          dragHandleRole: "sıralanabilir",
+          dragInstructions:
+            "Taşımak için boşluk tuşuna basın, ok tuşlarıyla ilerleyin ve yeniden boşluk tuşuna basın.",
+          row: (index) => `Satır ${index + 1}`,
+          droppedAt: (label, position, total) =>
+            `${label}, ${total} satırın ${position}. sırasına bırakıldı.`,
+        }}
+      />
+    )
+    const [first] = await screen.findAllByRole("button", {
+      name: "1. satırı taşı",
+    })
+    expect(first.getAttribute("aria-roledescription")).toBe("sıralanabilir")
+    await waitFor(() =>
+      expect(description(first)).toBe(
+        "Taşımak için boşluk tuşuna basın, ok tuşlarıyla ilerleyin ve yeniden boşluk tuşuna basın."
+      )
+    )
+    first.focus()
+    await user.keyboard(" ")
+    await user.keyboard("{ArrowDown}")
+    await user.keyboard(" ")
+    await waitFor(() =>
+      expect(announced("Satır 1, 3 satırın 2. sırasına bırakıldı.")).toBe(true)
+    )
   })
 })

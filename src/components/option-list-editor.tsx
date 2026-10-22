@@ -38,6 +38,10 @@ type OptionListEditorLabels = {
   save?: string
   cancel?: string
   reorder?: (value: string) => string
+  /** Announced as the drag handle's role (`aria-roledescription`). */
+  dragHandleRole?: string
+  /** Read when a drag handle is focused: how to move a value with the keyboard. */
+  dragInstructions?: string
   duplicate?: string
   pickedUp?: (value: string, position: number, total: number) => string
   movedTo?: (value: string, position: number, total: number) => string
@@ -66,6 +70,9 @@ const DEFAULT_LABELS: Required<OptionListEditorLabels> = {
   save: "Save",
   cancel: "Cancel",
   reorder: (value) => `Reorder ${value}`,
+  dragHandleRole: "sortable",
+  dragInstructions:
+    "To pick up a draggable item, press the space bar. While dragging, use the arrow keys to move the item. Press space again to drop the item in its new position, or press escape to cancel.",
   duplicate: "That value is already in the list",
   pickedUp: (value, position, total) =>
     `Picked up ${value}, position ${position} of ${total}.`,
@@ -185,6 +192,7 @@ function OptionListEditor({
                   : undefined,
               onDragCancel: ({ active }) => labels.cancelled(String(active.id)),
             },
+            screenReaderInstructions: { draggable: labels.dragInstructions },
             container:
               typeof document === "undefined" ? undefined : document.body,
           }}
@@ -262,7 +270,11 @@ function OptionRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: item, disabled: disabled || editing })
+  } = useSortable({
+    id: item,
+    disabled: disabled || editing,
+    attributes: { roleDescription: labels.dragHandleRole },
+  })
 
   React.useEffect(() => {
     if (!focusEdit) return

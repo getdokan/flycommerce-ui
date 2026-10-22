@@ -80,6 +80,56 @@ describe("ImageUploadField", () => {
     expect(screen.getByText(text)).toBeTruthy()
   })
 
+  it("words the description with labels.fileRules, formatted for locale", () => {
+    render(
+      <ImageUploadField
+        locale="tr"
+        maxSize={1.5 * 1024 * 1024}
+        onFiles={() => {}}
+        labels={{
+          fileRules: (types, maxSize) =>
+            [types, maxSize && `En büyük dosya boyutu: ${maxSize}`]
+              .filter(Boolean)
+              .join(". "),
+        }}
+      />
+    )
+    expect(
+      screen.getByText("PNG, JPG, SVG veya WebP. En büyük dosya boyutu: 1,5 MB")
+    ).toBeTruthy()
+  })
+
+  it.each([
+    ["image/*", 2048, [undefined, "2 KB"]],
+    [".png", undefined, ["PNG", undefined]],
+  ])(
+    "hands fileRules only the parts accept=%j has",
+    (accept, maxSize, args) => {
+      const fileRules = vi.fn(() => "Kurallar")
+      render(
+        <ImageUploadField
+          accept={accept}
+          maxSize={maxSize}
+          onFiles={() => {}}
+          labels={{ fileRules }}
+        />
+      )
+      expect(fileRules).toHaveBeenLastCalledWith(...args)
+      expect(screen.getByText("Kurallar")).toBeTruthy()
+    }
+  )
+
+  it("formats the image's size for locale", () => {
+    render(
+      <ImageUploadField
+        locale="tr"
+        value={{ ...LOGO, size: 1536 }}
+        onFiles={() => {}}
+      />
+    )
+    expect(screen.getByText("1,5 KB")).toBeTruthy()
+  })
+
   it("adds its label to every button's name and keeps the visible text", () => {
     const { rerender } = render(
       <ImageUploadField

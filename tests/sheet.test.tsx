@@ -28,4 +28,15 @@ describe("SheetContent", () => {
     render(<Invite size="2xl" />)
     expect(sheet().getAttribute("data-size")).toBe("2xl")
   })
+
+  it("names its close button Close by default", () => {
+    render(<Invite />)
+    expect(screen.getByRole("button", { name: "Close" })).toBeTruthy()
+  })
+
+  it("takes a translated close label", () => {
+    render(<Invite closeLabel="Kapat" />)
+    expect(screen.getByRole("button", { name: "Kapat" })).toBeTruthy()
+    expect(screen.queryByRole("button", { name: "Close" })).toBeNull()
+  })
 })

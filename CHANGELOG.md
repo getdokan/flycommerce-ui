@@ -2,7 +2,22 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
-## [0.4.0] - 2026-10-20
+## [Unreleased]
+
+### Added
+
+- Translatable built-in labels. Each one is a prop whose default is the English text shown today, so nothing changes until an app passes a translation:
+  - `SheetContent closeLabel` (default "Close") names the close button, like `DialogContent closeLabel`. `DialogFooter closeLabel` (default "Close") is the text of the button `showCloseButton` adds, and `CommandDialog closeLabel` names its dialog's close button.
+  - `Sidebar labels`: `title` (default "Sidebar") and `description` (default "Displays the mobile sidebar.") name the mobile sheet for screen readers; the `SidebarLabels` type is exported. `SidebarTrigger label` (default "Toggle Sidebar") names the trigger.
+  - `BreadcrumbEllipsis label` (default "More"), like `PaginationEllipsis label`; `CarouselPrevious label` and `CarouselNext label` (default "Previous slide" and "Next slide"); `MessageScrollerButton label` (default "Scroll to end", or "Scroll to start" with `direction="start"`).
+  - `DateRangePicker presetsLabel` (default "Presets") names the preset list.
+  - `MediaPickerDialog` labels: `close` (default "Close"), `dropInput`, the drop zone's file input (default "Upload files"), `clearSearch` (default "Clear search") and `queue`, the `UploadQueue` labels of its upload rows ("Uploading…", "Complete", "Failed", "{loaded} of {total}", "Cancel {name}" and "Remove {name}").
+  - `ImageUploadField labels.fileRules(types, maxSize)` words the drop zone's description from the accepted types ("PNG, JPG, SVG or WebP") and the size limit ("5 MB"), either of which can be missing. The default still gives "PNG, JPG, SVG or WebP. Max file size: 5 MB"; `labels.description` still replaces it outright.
+  - `DataTable` labels: `row(index)` names a row in the reorder announcements when `getRowLabel` isn't set (default "Row 1", "Row 2"…). `dragHandleRole` (default "sortable") and `dragInstructions` (default dnd-kit's "To pick up a draggable item, press the space bar. …") are the role and the keyboard instructions screen readers read on a drag handle, which came from dnd-kit in English only. `OptionListEditor` takes the same `dragHandleRole` and `dragInstructions`.
+- `locale` for dates, numbers and file sizes, formatted through `Intl` or date-fns instead of in English:
+  - `DatePicker locale` and `DateRangePicker locale` format the trigger's dates and the calendar. Pass a date-fns locale (`import { tr } from "date-fns/locale"`), or one from `react-day-picker/locale`, which also translates the calendar's buttons ("Go to the Previous Month"). The default `displayFormat` is now date-fns's localized medium date, "PP" ("PPp" with `withTime`), which renders the same "Oct 20, 2026" ("Oct 20, 2026, 9:00 AM") in English as the old "MMM d, yyyy" pattern, and "20 Eki 2026" with `locale={tr}`.
+  - `ImageUploadField locale` formats the image's size, the size limit and the list of accepted types: `locale="tr"` gives "1,5 MB" and "PNG, JPG, SVG veya WebP".
+  - `UploadQueue locale`, and so `MediaPickerDialog locale`, also formats the percent: "%62" in Turkish. Without a locale it stays "62%".
 
 New: `Text` and the P3 type scale, `P3IconProvider` and the P3 icon set, `CodeEditor` (opt-in entry), `Timeline` and `ActivityFeed`, `CopyField`, `ColorInput`, `ImageUploadField`, pill buttons, `BrandMark` and `CardBrandMark`, settings field patterns (`FieldCount`, `SwitchField variant="row"`, option rows, `CheckboxCard`, saved secrets), a light sidebar, and AI rewrite actions in `RichTextEditor`.
 

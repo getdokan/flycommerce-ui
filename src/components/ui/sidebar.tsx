@@ -157,11 +157,17 @@ function SidebarProvider({
   )
 }
 
+type SidebarLabels = {
+  title?: string
+  description?: string
+}
+
 function Sidebar({
   side = "left",
   variant = "sidebar",
   collapsible = "offcanvas",
   theme,
+  labels,
   className,
   children,
   dir,
@@ -172,6 +178,8 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none"
   /** "light" gives this rail and its mobile sheet the light colours; unset, it follows a `data-sidebar-theme` attribute on an ancestor, else dark. */
   theme?: "dark" | "light"
+  /** Title and description of the mobile sheet, read by screen readers. */
+  labels?: SidebarLabels
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
@@ -209,8 +217,10 @@ function Sidebar({
           side={side}
         >
           <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+            <SheetTitle>{labels?.title ?? "Sidebar"}</SheetTitle>
+            <SheetDescription>
+              {labels?.description ?? "Displays the mobile sidebar."}
+            </SheetDescription>
           </SheetHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
@@ -268,8 +278,9 @@ function Sidebar({
 function SidebarTrigger({
   className,
   onClick,
+  label = "Toggle Sidebar",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button> & { label?: string }) {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -286,7 +297,7 @@ function SidebarTrigger({
       {...props}
     >
       <PanelLeftIcon className="rtl:rotate-180" />
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">{label}</span>
     </Button>
   )
 }
@@ -700,6 +711,7 @@ export {
   SidebarHeader,
   SidebarInput,
   SidebarInset,
+  type SidebarLabels,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuBadge,

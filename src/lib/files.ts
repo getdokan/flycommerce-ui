@@ -51,7 +51,7 @@ const FORMAT_NAMES: Record<string, string> = {
   "vnd.microsoft.icon": "ICO",
 }
 
-function describeAccept(accept: string) {
+function describeAccept(accept: string, locale?: string) {
   const rules = rulesOf(accept)
   if (rules.some((rule) => rule.includes("*"))) return ""
   const names = [
@@ -64,6 +64,8 @@ function describeAccept(accept: string) {
       })
     ),
   ]
+  if (locale)
+    return new Intl.ListFormat(locale, { type: "disjunction" }).format(names)
   const last = names.pop()
   return names.length ? `${names.join(", ")} or ${last}` : (last ?? "")
 }
