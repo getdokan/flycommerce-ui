@@ -419,6 +419,14 @@ export function AppIcons({ children }: { children: React.ReactNode }) {
 
 A glyph that `IconProvider` swaps in keeps its own stroke width, such as 0.8 for the P3 `bank` glyph, unless the `Icon` passes `strokeWidth`.
 
+In right-to-left layouts, the directional names mirror themselves: `back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle` and `list` (exported as `MIRRORED_ICONS`). An icon mirrors under `<DirectionProvider dir="rtl">`, or inside an element with `dir="rtl"`, and in server-rendered markup too. Don't flip these names yourself: `rtl:rotate-180` on the icon, or a wrapper that flips, turns them back, and `rtl:-scale-x-100` is redundant. Pass `mirror={false}` to keep one as drawn, for example a chevron you rotate yourself. Every other name, such as `external`, `refresh` or `play`, never mirrors.
+
+```tsx
+<Button variant="link">
+  <Icon name="back" /> All posts
+</Button>
+```
+
 ## Accessibility and localisation
 
 - Built on Radix primitives: correct roles, focus management and keyboard support.

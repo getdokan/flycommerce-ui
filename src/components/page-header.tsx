@@ -28,7 +28,7 @@ function PageHeaderBack({
     <Comp
       data-slot="page-header-back"
       className={cn(
-        "-mb-1 inline-flex w-full items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:rounded-sm focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none [&_svg]:size-4 [&_svg]:rtl:rotate-180",
+        "-mb-1 inline-flex w-full items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:rounded-sm focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none [&_svg]:size-4 [&_svg:not([data-mirror])]:rtl:rotate-180",
         className
       )}
       {...props}

@@ -251,10 +251,7 @@ function SettingsNav({
                               )}
                               <span className="truncate">{item.label}</span>
                               {active && (
-                                <Icon
-                                  name="next"
-                                  className="ms-auto rtl:rotate-180"
-                                />
+                                <Icon name="next" className="ms-auto" />
                               )}
                             </>
                           ),

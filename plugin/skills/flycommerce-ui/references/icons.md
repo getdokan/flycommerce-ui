@@ -35,3 +35,7 @@ Use `<Icon name="…" />` with one of these names. Never import from react-icons
 ## Onboarding & appearance
 
 `taskEmail` (MailCheck), `taskProduct` (PackagePlus), `taskPayment` (CreditCard), `taskDelivery` (Truck), `taskFiles` (FileDown), `taskAvailability` (CalendarCheck), `taskVendor` (UserRoundPlus), `taskStore` (Store), `storefront` (Store), `share` (Share2), `reveal` (Eye), `conceal` (EyeOff), `themeLight` (Sun), `themeDark` (Moon), `themeSystem` (Monitor), `sellNotYet` (Sparkles), `sellOwnSite` (Globe), `sellMarketplace` (Store), `sellInPerson` (Building2), `goodsPhysical` (Package), `goodsDigital` (CloudDownload), `goodsServices` (CalendarDays), `goodsPod` (Shirt), `grow` (TrendingUp), `domain` (Globe), `visitors` (Eye)
+
+## Mirrored in right-to-left layouts
+
+`back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle`, `list` mirror themselves in RTL. Don't flip them again: `rtl:rotate-180` or a flipping wrapper turns them back, and `rtl:-scale-x-100` is redundant. `mirror={false}` keeps one as drawn. No other name mirrors.

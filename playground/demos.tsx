@@ -1,8 +1,6 @@
 import * as React from "react"
 import {
   FiAlertTriangle as AlertTriangleIcon,
-  FiArrowLeft as ArrowLeftIcon,
-  FiArrowRight as ArrowRightIcon,
   FiBold as BoldIcon,
   FiCalendar as CalendarIcon,
   FiCheckCircle as CheckCircle2Icon,
@@ -310,6 +308,7 @@ import {
   TooltipContent,
   TooltipTrigger,
   useComboboxAnchor,
+  useDirection,
   cn,
 } from "@/index"
 
@@ -746,6 +745,7 @@ const RAIL_ITEMS = [
 ]
 
 function SidebarDemo() {
+  const direction = useDirection()
   const [railTheme, setRailTheme] = React.useState("dark")
   React.useEffect(() => {
     const root = document.documentElement
@@ -825,6 +825,47 @@ function SidebarDemo() {
           </SidebarProvider>
         ))}
       </div>
+      <p className="text-sm text-muted-foreground">
+        Collapsed, a rail names its items in tooltips that open away from it: to
+        the right of a left rail, and to the left of a right one, as in RTL,
+        where the rail takes{" "}
+        <code className="rounded bg-muted px-1">side="right"</code>. Hover or
+        focus an icon below.
+      </p>
+      <SidebarProvider
+        open={false}
+        shortcutKey={false}
+        className="min-h-0 overflow-hidden rounded-lg border"
+      >
+        <Sidebar
+          collapsible="none"
+          side={direction === "rtl" ? "right" : "left"}
+          className="w-(--sidebar-width-icon)"
+        >
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarMenu>
+                {RAIL_ITEMS.map(({ title, icon: Icon }, index) => (
+                  <SidebarMenuItem key={title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={index === 0}
+                      tooltip={title}
+                    >
+                      <a href="#sidebar" aria-label={title}>
+                        <Icon />
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <div className="flex-1 border-s bg-page p-3 text-xs text-muted-foreground">
+          <code dir="ltr">side="{direction === "rtl" ? "right" : "left"}"</code>
+        </div>
+      </SidebarProvider>
     </div>
   )
 }
@@ -1171,15 +1212,12 @@ export const demos: Demo[] = [
         </Row>
         <Row label="Link with icon">
           <Button variant="link">
-            <ArrowLeftIcon
-              data-icon="inline-start"
-              className="rtl:rotate-180"
-            />
+            <Icon name="back" data-icon="inline-start" />
             All posts
           </Button>
           <Button variant="link">
             View report
-            <ArrowRightIcon data-icon="inline-end" className="rtl:rotate-180" />
+            <Icon name="forward" data-icon="inline-end" />
           </Button>
         </Row>
         <Row label="Small (32px)">

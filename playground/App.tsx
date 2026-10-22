@@ -50,6 +50,9 @@ const SOURCE_BADGE: Record<
 export default function App() {
   const { theme, setTheme } = useTheme()
   const [dir, setDir] = React.useState<"ltr" | "rtl">("ltr")
+  React.useEffect(() => {
+    document.documentElement.dir = dir
+  }, [dir])
   const [pendingOnly, setPendingOnly] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const searchRef = React.useRef<HTMLInputElement>(null)

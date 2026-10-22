@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { DirectionProvider as BaseDirectionProvider } from "@base-ui/react/direction-provider"
 import { Direction } from "radix-ui"
 
 function DirectionProvider({
@@ -12,7 +13,9 @@ function DirectionProvider({
 }) {
   return (
     <Direction.DirectionProvider dir={direction ?? dir}>
-      {children}
+      <BaseDirectionProvider direction={direction ?? dir}>
+        {children}
+      </BaseDirectionProvider>
     </Direction.DirectionProvider>
   )
 }

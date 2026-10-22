@@ -5,28 +5,34 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {
+  DirectionProvider,
   Icon,
   IconProvider,
   ICONS,
+  MIRRORED_ICONS,
   P3_GLYPHS,
   P3IconProvider,
   SettingsNav,
   type IconName,
 } from "@/index"
+import { applyTailwind, isMirrored } from "./tailwind"
 
 const NAMES = Object.keys(ICONS) as IconName[]
 const html = (node: React.ReactNode) => renderToStaticMarkup(node)
-const drawn = (Glyph: IconType, name: IconName, strokeWidth?: number) =>
-  html(
+const drawn = (Glyph: IconType, name: IconName, strokeWidth?: number) => {
+  const mirrored = MIRRORED_ICONS.includes(name)
+  return html(
     <Glyph
       data-slot="icon"
       data-icon-name={name}
+      {...(mirrored ? { "data-mirror": "" } : {})}
       size={16}
       {...(strokeWidth === undefined ? {} : { strokeWidth })}
-      className="shrink-0"
+      className={mirrored ? "shrink-0 rtl:-scale-x-100" : "shrink-0"}
       aria-hidden
     />
   )
+}
 const icon = (name: IconName) =>
   document.querySelector(`[data-icon-name="${name}"]`)?.outerHTML
 
@@ -206,6 +212,142 @@ describe("Icon without an IconProvider", () => {
         "yours": "LuCoins",
       }
     `)
+  })
+})
+
+describe("Icon in right-to-left layouts", () => {
+  const icons = () => [...document.querySelectorAll('[data-slot="icon"]')]
+
+  it("mirrors the directional names", () => {
+    expect(MIRRORED_ICONS).toEqual([
+      "back",
+      "forward",
+      "prev",
+      "next",
+      "redirects",
+      "impersonate",
+      "signOut",
+      "sidebarToggle",
+      "list",
+    ])
+  })
+
+  it("mirrors a directional icon under dir=rtl and not in LTR", async () => {
+    render(
+      <>
+        <div dir="rtl">
+          {MIRRORED_ICONS.map((name) => (
+            <Icon key={name} name={name} />
+          ))}
+        </div>
+        <div dir="ltr">
+          <Icon name="back" />
+        </div>
+        <Icon name="next" />
+      </>
+    )
+    await applyTailwind()
+    expect(icons().map(isMirrored)).toEqual([
+      ...MIRRORED_ICONS.map(() => true),
+      false,
+      false,
+    ])
+  })
+
+  it("mirrors under DirectionProvider dir=rtl where no ancestor sets dir, as in a portal", async () => {
+    render(
+      <DirectionProvider dir="rtl">
+        <Icon name="back" />
+      </DirectionProvider>
+    )
+    await applyTailwind()
+    expect(isMirrored(icons()[0])).toBe(true)
+  })
+
+  it("mirrors in server-rendered markup, with no effect to run", async () => {
+    const markup = [
+      html(
+        <DirectionProvider dir="rtl">
+          <Icon name="forward" />
+        </DirectionProvider>
+      ),
+      html(<Icon name="forward" />),
+    ]
+    render(
+      <>
+        <div dangerouslySetInnerHTML={{ __html: markup[0] }} />
+        <div dir="rtl" dangerouslySetInnerHTML={{ __html: markup[1] }} />
+        <div dangerouslySetInnerHTML={{ __html: markup[1] }} />
+      </>
+    )
+    await applyTailwind()
+    expect(icons().map(isMirrored)).toEqual([true, true, false])
+  })
+
+  it("never mirrors a non-directional icon", async () => {
+    const names = NAMES.filter((name) => !MIRRORED_ICONS.includes(name))
+    render(
+      <DirectionProvider dir="rtl">
+        <div dir="rtl">
+          {names.map((name) => (
+            <Icon key={name} name={name} />
+          ))}
+        </div>
+      </DirectionProvider>
+    )
+    await applyTailwind()
+    expect(icons()).toHaveLength(names.length)
+    for (const icon of icons()) {
+      expect(isMirrored(icon)).toBe(false)
+      expect(icon.hasAttribute("data-mirror")).toBe(false)
+    }
+  })
+
+  it("keeps a directional icon as drawn, with the markup it always had, when mirror={false}", async () => {
+    render(
+      <DirectionProvider dir="rtl">
+        <div dir="rtl">
+          {MIRRORED_ICONS.map((name) => (
+            <Icon key={name} name={name} mirror={false} />
+          ))}
+        </div>
+      </DirectionProvider>
+    )
+    await applyTailwind()
+    expect(icons().map(isMirrored)).toEqual(MIRRORED_ICONS.map(() => false))
+    for (const name of MIRRORED_ICONS) {
+      const Glyph = ICONS[name]
+      expect(html(<Icon name={name} mirror={false} />)).toBe(
+        html(
+          <Glyph
+            data-slot="icon"
+            data-icon-name={name}
+            size={16}
+            strokeWidth={2}
+            className="shrink-0"
+            aria-hidden
+          />
+        )
+      )
+    }
+  })
+
+  it("mirrors once when an app still flips it with rtl:-scale-x-100, and keeps mirroring a swapped glyph", async () => {
+    render(
+      <IconProvider glyphs={{ forward: ICONS.next }}>
+        <DirectionProvider dir="rtl">
+          <div dir="rtl">
+            <Icon name="back" className="rtl:-scale-x-100" />
+            <Icon name="forward" />
+          </div>
+        </DirectionProvider>
+        <div dir="rtl">
+          <Icon name="prev" className="rtl:-scale-x-100" />
+        </div>
+      </IconProvider>
+    )
+    await applyTailwind()
+    expect(icons().map(isMirrored)).toEqual([true, true, true])
   })
 })
 

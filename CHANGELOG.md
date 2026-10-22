@@ -2,6 +2,18 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- `Icon` mirrors the directional names in right-to-left layouts, which changes the default there: `back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle` and `list` flip horizontally under `<DirectionProvider dir="rtl">` or inside an element with `dir="rtl"`, server-rendered markup included. No other name mirrors (clocks, checkmarks, `external`, `refresh`, media and brand glyphs keep their direction), and left-to-right layouts look exactly as before. If your app already flips one of these icons, remove the flip: `rtl:-scale-x-100` on the icon itself is harmless, since it still mirrors once, but `rtl:rotate-180` on it, or a wrapper that flips it, now turns it back. To keep an icon as drawn, for example a chevron you rotate yourself, pass `mirror={false}`. `MIRRORED_ICONS` lists the names, and a mirroring icon carries `data-mirror`.
+- `SidebarMenuButton` tooltips open on the side away from the rail: to the right of a left rail, as before, and to the left of `Sidebar side="right"`, the rail of an RTL layout, where they opened over the page edge. A `side` in `tooltip={{ side }}` still wins.
+- In RTL, edges keyed to a physical side stay on that side. The `Sidebar` rail and `SheetContent side="left"` or `"right"` drew their border on the screen edge instead of the edge facing the page, and `Drawer direction="left"` or `"right"` was pinned to the opposite edge from the one it slides in from. `SidebarRail` showed resize cursors pointing the wrong way, and on a hidden off-canvas right rail its handle sat off screen. `SelectContent side="left"` or `"right"` moved its 4px gap toward the trigger.
+- `Carousel` follows `DirectionProvider`: in RTL, Next scrolled into empty space because Embla wasn't told the direction, the arrow keys went the wrong way, and a vertical carousel's buttons pointed down and up. `opts.direction` still wins.
+- `Calendar` follows `DirectionProvider`: in RTL, the left and right arrow keys moved focus to the day on the other side. Without a provider it still inherits the page's `dir`.
+- `DirectionProvider` sets the direction of the Base UI parts too. In RTL, the arrow keys moved focus between a `Combobox`'s chips and its input the wrong way: Left jumped to the chip drawn to the input's right.
+- `TableFilters` opens its sheet at the end edge: on the left in RTL, and on the right as before.
+
 ## [0.4.0] - 2026-10-20
 
 New: `Text` and the P3 type scale, `P3IconProvider` and the P3 icon set, `CodeEditor` (opt-in entry), `Timeline` and `ActivityFeed`, `CopyField`, `ColorInput`, `ImageUploadField`, pill buttons, `BrandMark` and `CardBrandMark`, settings field patterns (`FieldCount`, `SwitchField variant="row"`, option rows, `CheckboxCard`, saved secrets), a light sidebar, and AI rewrite actions in `RichTextEditor`.

@@ -1,7 +1,4 @@
-import {
-  FiArrowRight as ArrowRightIcon,
-  FiFeather as FeatherIcon,
-} from "react-icons/fi"
+import { FiFeather as FeatherIcon } from "react-icons/fi"
 import {
   LuAccessibility as AccessibilityIcon,
   LuBoxes as BoxesIcon,
@@ -11,6 +8,7 @@ import {
 import {
   Badge,
   Button,
+  Icon,
   Tabs,
   TabsContent,
   TabsList,
@@ -87,7 +85,7 @@ export function WelcomeDoc() {
         <div className="flex flex-wrap gap-2">
           <Button asChild>
             <a href="#installation">
-              Get started <ArrowRightIcon data-icon="inline-end" />
+              Get started <Icon name="forward" data-icon="inline-end" />
             </a>
           </Button>
           <Button asChild variant="outline">

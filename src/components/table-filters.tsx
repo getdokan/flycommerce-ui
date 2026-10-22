@@ -11,6 +11,7 @@ import {
 import { DateRangePicker, type DateRange } from "@/components/date-picker"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useDirection } from "@/components/ui/direction"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -100,7 +101,7 @@ type TableFiltersProps = {
   className?: string
 }
 
-/** Filter icon button that opens a right-side sheet; changes apply together on "Apply". */
+/** Filter icon button that opens a sheet at the end edge (right, or left in RTL); changes apply together on "Apply". */
 function TableFilters({
   fields,
   value,
@@ -110,6 +111,7 @@ function TableFilters({
   className,
 }: TableFiltersProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
+  const direction = useDirection()
   const [open, setOpen] = React.useState(false)
   const [draft, setDraft] = React.useState<FilterValues>(value)
   const applied = countApplied(fields, value)
@@ -142,8 +144,8 @@ function TableFilters({
         </Button>
       </SheetTrigger>
       <SheetContent
-        side="right"
-        className="gap-0 data-[side=right]:w-full data-[side=right]:sm:max-w-[400px]"
+        side={direction === "rtl" ? "left" : "right"}
+        className="gap-0 data-[side=left]:w-full data-[side=right]:w-full data-[side=left]:sm:max-w-[400px] data-[side=right]:sm:max-w-[400px]"
       >
         <SheetHeader>
           <SheetTitle>{labels.title}</SheetTitle>
