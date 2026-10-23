@@ -32,9 +32,21 @@ const emptyMediaVariants = cva(
         default: "bg-transparent",
         icon: "flex size-[46px] shrink-0 items-center justify-center rounded-xl bg-primary-subtle text-primary-ink [&_svg:not([class*='size-'])]:size-5",
       },
+      tone: {
+        default: "",
+        destructive: "",
+      },
     },
+    compoundVariants: [
+      {
+        variant: "icon",
+        tone: "destructive",
+        className: "bg-destructive-subtle text-destructive",
+      },
+    ],
     defaultVariants: {
       variant: "default",
+      tone: "default",
     },
   }
 )
@@ -42,13 +54,15 @@ const emptyMediaVariants = cva(
 function EmptyMedia({
   className,
   variant = "default",
+  tone = "default",
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) {
   return (
     <div
       data-slot="empty-icon"
       data-variant={variant}
-      className={cn(emptyMediaVariants({ variant, className }))}
+      data-tone={tone}
+      className={cn(emptyMediaVariants({ variant, tone, className }))}
       {...props}
     />
   )
