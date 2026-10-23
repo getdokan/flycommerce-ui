@@ -2,13 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [0.5.0] - 2026-10-23
+
+New: `EmptyState` (a one-line empty or failed list), translatable built-in labels and a `locale` for dates, numbers and file sizes across sheets, sidebar, date pickers, the media picker and table filters, person colours for avatars without a picture, and right-to-left fixes.
 
 **Check when upgrading (right-to-left apps):**
 
 - Directional icons now mirror in RTL by themselves: `back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle` and `list`. Remove any flip your app adds to these (`rtl:-scale-x-100`, `rtl:rotate-180`, or a flipped wrapper), or they turn back to their LTR direction. Pass `mirror={false}` to keep one as drawn.
 - An LTR block inside an RTL page (a code sample, an English address) still mirrors these icons, because the RTL rule follows the page; pass `mirror={false}` there.
 - Drop per-item tooltip sides on a right-hand `Sidebar`: its tooltips now open toward the page by themselves.
+- Apps that already pass `locale` to `UploadQueue` or `MediaPickerDialog` now see the upload percent in that locale ("%62" in Turkish).
 
 Left-to-right layouts look the same as before.
 
