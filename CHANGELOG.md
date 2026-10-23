@@ -14,6 +14,8 @@ Left-to-right layouts look the same as before.
 
 ### Added
 
+- `EmptyState`: an empty or failed list in one line, `<EmptyState icon={<Icon name="products" />} title description actions />`, built from the `Empty` parts. `tone="destructive"` tints the icon tile red for a list that failed to load, `media` shows an illustration without the tile, and a missing `description` or `actions` (including `false` from `cond && …`) leaves its row out. The icon is an element, so `EmptyState` adds no icons to an app's bundle beyond the one it passes. `DataTable` is unchanged.
+- `EmptyMedia tone="destructive"` (with `variant="icon"`): the red tile on its own, for apps that compose the `Empty` parts.
 - Translatable built-in labels. Each one is a prop whose default is the English text shown today, so nothing changes until an app passes a translation:
   - `SheetContent closeLabel` (default "Close") names the close button, like `DialogContent closeLabel`. `DialogFooter closeLabel` (default "Close") is the text of the button `showCloseButton` adds, and `CommandDialog closeLabel` names its dialog's close button.
   - `Sidebar labels`: `title` (default "Sidebar") and `description` (default "Displays the mobile sidebar.") name the mobile sheet for screen readers; the `SidebarLabels` type is exported. `SidebarTrigger label` (default "Toggle Sidebar") names the trigger.

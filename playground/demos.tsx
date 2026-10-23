@@ -199,10 +199,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
+  EmptyState,
   EmptyTitle,
   Field,
   FieldDescription,
@@ -336,7 +336,8 @@ const KEYWORDS: Record<string, string> = {
   toast: "snackbar notification sonner flash",
   progress:
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
-  empty: "no data blank zero state",
+  empty:
+    "no data blank zero state emptystate nothing yet failed load error retry",
   input:
     "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
@@ -1505,27 +1506,53 @@ export const demos: Demo[] = [
     title: "Empty state",
     group: "Feedback",
     render: () => (
-      <Empty className="w-full border">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <InboxIcon />
-          </EmptyMedia>
-          <EmptyTitle>Upload your first product</EmptyTitle>
-          <EmptyDescription>
-            Add products and start selling right away.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <div className="flex gap-2">
-            <Button variant="outline">
-              <DownloadIcon /> Import
-            </Button>
-            <Button>
-              <PlusIcon /> Add product
-            </Button>
-          </div>
-        </EmptyContent>
-      </Empty>
+      <Stack>
+        <Row label="EmptyState">
+          <EmptyState
+            className="w-full border"
+            icon={<Icon name="products" />}
+            title="Upload your first product"
+            description="Add products and start selling right away."
+            actions={
+              <>
+                <Button variant="outline">
+                  <Icon name="import" /> Import
+                </Button>
+                <Button>
+                  <Icon name="add" /> Add product
+                </Button>
+              </>
+            }
+          />
+        </Row>
+        <Row label="Failed to load">
+          <EmptyState
+            className="w-full border"
+            tone="destructive"
+            icon={<Icon name="error" />}
+            title="Orders didn't load"
+            description="Check your connection and try again."
+            actions={
+              <Button variant="outline">
+                <Icon name="refresh" /> Retry
+              </Button>
+            }
+          />
+        </Row>
+        <Row label="From parts">
+          <Empty className="w-full border">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <InboxIcon />
+              </EmptyMedia>
+              <EmptyTitle>No messages</EmptyTitle>
+              <EmptyDescription>
+                Compose the parts yourself for a custom layout.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </Row>
+      </Stack>
     ),
   },
 
