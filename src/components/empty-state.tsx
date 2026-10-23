@@ -14,7 +14,7 @@ type EmptyStateProps = Omit<React.ComponentProps<"div">, "title"> & {
   icon?: React.ReactNode
   /** An illustration or image shown as it is, without the tile; used instead of `icon`. */
   media?: React.ReactNode
-  /** `destructive` tints the tile red, for a list that failed to load. */
+  /** `destructive` tints the icon tile red, for a list that failed to load; it has no effect on `media`. */
   tone?: "default" | "destructive"
   title: React.ReactNode
   description?: React.ReactNode
@@ -22,9 +22,15 @@ type EmptyStateProps = Omit<React.ComponentProps<"div">, "title"> & {
   actions?: React.ReactNode
 }
 
-// A count of 0 is something to show; nothing, false (from `cond && …`) and "" are not.
-const given = (node: React.ReactNode) =>
-  node !== undefined && node !== null && node !== false && node !== ""
+// A count of 0 is something to show; nothing, false (from `cond && …`), "" and an empty fragment or list are not.
+function given(node: React.ReactNode): boolean {
+  if (node === undefined || node === null || node === false || node === "")
+    return false
+  if (Array.isArray(node)) return node.some(given)
+  if (React.isValidElement(node) && node.type === React.Fragment)
+    return given((node.props as { children?: React.ReactNode }).children)
+  return true
+}
 
 /** An empty or failed list in one line: icon, title, description and the way forward. */
 function EmptyState({
@@ -34,11 +40,10 @@ function EmptyState({
   title,
   description,
   actions,
-  className,
   ...props
 }: EmptyStateProps) {
   return (
-    <Empty data-tone={tone} className={className} {...props}>
+    <Empty {...props}>
       <EmptyHeader>
         {given(media) ? (
           <EmptyMedia>{media}</EmptyMedia>

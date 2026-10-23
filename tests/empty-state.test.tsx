@@ -34,6 +34,14 @@ describe("EmptyState", () => {
     expect(container.querySelector('[data-slot="empty-content"]')).toBeNull()
   })
 
+  it("treats an empty fragment or list as not given", () => {
+    const { container } = render(
+      <EmptyState icon={<></>} title="Nothing here" actions={[]} />
+    )
+    expect(container.querySelector('[data-slot="empty-icon"]')).toBeNull()
+    expect(container.querySelector('[data-slot="empty-content"]')).toBeNull()
+  })
+
   it("keeps a count of 0 as the description", () => {
     render(<EmptyState title="Orders" description={0} />)
     expect(screen.getByText("0")).toBeTruthy()
