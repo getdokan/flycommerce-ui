@@ -66,6 +66,7 @@ import {
   TrayDemo,
 } from "./display-demos"
 import { ColorsDemo, TextDemo, TypographyDemo } from "./foundation-demos"
+import { TranslatedLabelsDemo } from "./translation-demos"
 import {
   ModalUseCasesDemo,
   NewCategoryModalDemo,
@@ -327,6 +328,8 @@ export type Demo = {
 }
 
 const KEYWORDS: Record<string, string> = {
+  "translating-labels":
+    "i18n l10n translate translation localize locale language labels aria-label screen reader turkish arabic rtl intl date number bytes",
   button: "cta action submit link back arrow loading",
   toggle: "pressed bold formatting",
   alert: "notice banner warning info error callout message",
@@ -344,7 +347,7 @@ const KEYWORDS: Record<string, string> = {
   "input-otp": "otp pin verification code",
   calendar: "date",
   badge: "pill tag chip label status",
-  avatar: "user profile photo",
+  avatar: "user profile photo initials person colour customer",
   card: "panel box container tile",
   table: "grid rows columns list density compact roomy",
   "description-list":
@@ -435,6 +438,7 @@ const KEYWORDS: Record<string, string> = {
 }
 
 const SOURCES: Record<string, Source> = {
+  "translating-labels": "composite",
   button: "prototype",
   "button-group": "prototype",
   toggle: "prototype",
@@ -897,6 +901,12 @@ export const demos: Demo[] = [
     keywords:
       "claude code plugin ai assistant skill prompts install marketplace agent",
     render: () => <ClaudeCodeDoc />,
+  },
+  {
+    id: "translating-labels",
+    title: "Translating built-in labels",
+    group: "Getting started",
+    render: () => <TranslatedLabelsDemo />,
   },
   // Foundations
   {
@@ -1824,15 +1834,41 @@ export const demos: Demo[] = [
     title: "Avatar",
     group: "Data display",
     render: () => (
-      <Row label="Avatar">
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="" />
-          <AvatarFallback>SC</AvatarFallback>
-        </Avatar>
-        <Avatar>
-          <AvatarFallback>AH</AvatarFallback>
-        </Avatar>
-      </Row>
+      <Stack>
+        <Row label="Avatar">
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="" />
+            <AvatarFallback>SC</AvatarFallback>
+          </Avatar>
+          <Avatar>
+            <AvatarFallback>AH</AvatarFallback>
+          </Avatar>
+        </Row>
+        <Row label="Sizes">
+          {(["sm", "default", "lg", "xl", "2xl"] as const).map((size) => (
+            <Avatar key={size} size={size}>
+              <AvatarFallback colorFrom="dana.whitfield@example.com">
+                DW
+              </AvatarFallback>
+            </Avatar>
+          ))}
+        </Row>
+        <Row label="Person colours (colorFrom)">
+          {[
+            ["DW", "dana.whitfield@example.com"],
+            ["KW", "keira@example.com"],
+            ["AO", "amara.okafor@example.com"],
+            ["DK", "daniel.kwon@example.com"],
+            ["MK", "milak@example.com"],
+            ["RS", "rafael.souza@example.com"],
+            ["G", "cart-48200"],
+          ].map(([initials, key]) => (
+            <Avatar key={key}>
+              <AvatarFallback colorFrom={key}>{initials}</AvatarFallback>
+            </Avatar>
+          ))}
+        </Row>
+      </Stack>
     ),
   },
   {

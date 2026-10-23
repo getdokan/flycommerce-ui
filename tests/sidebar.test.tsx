@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import themeCss from "@/styles/theme.css?raw"
 import {
@@ -210,5 +210,62 @@ describe("Sidebar theme", () => {
     expect(
       document.querySelector('[data-slot="sheet-overlay"]')!.matches(LIGHT_RAIL)
     ).toBe(false)
+  })
+})
+
+describe("Sidebar labels", () => {
+  beforeEach(() => {
+    vi.spyOn(window, "matchMedia").mockImplementation(
+      (query) =>
+        ({
+          matches: query.includes("max-width"),
+          media: query,
+          onchange: null,
+          addListener() {},
+          removeListener() {},
+          addEventListener() {},
+          removeEventListener() {},
+          dispatchEvent: () => false,
+        }) as MediaQueryList
+    )
+  })
+
+  const description = (dialog: HTMLElement) =>
+    document.getElementById(dialog.getAttribute("aria-describedby")!)
+      ?.textContent
+
+  it("names the trigger and the mobile sheet in English by default", async () => {
+    const user = userEvent.setup()
+    render(
+      <SidebarProvider>
+        <Sidebar>Navigation</Sidebar>
+        <SidebarTrigger />
+      </SidebarProvider>
+    )
+    await user.click(screen.getByRole("button", { name: "Toggle Sidebar" }))
+    const sheet = screen.getByRole("dialog", { name: "Sidebar" })
+    expect(description(sheet)).toBe("Displays the mobile sidebar.")
+  })
+
+  it("takes a translated trigger label and sheet title and description", async () => {
+    const user = userEvent.setup()
+    render(
+      <SidebarProvider>
+        <Sidebar
+          labels={{
+            title: "Kenar çubuğu",
+            description: "Mobil kenar çubuğunu gösterir.",
+          }}
+        >
+          Navigation
+        </Sidebar>
+        <SidebarTrigger label="Kenar çubuğunu aç veya kapat" />
+      </SidebarProvider>
+    )
+    await user.click(
+      screen.getByRole("button", { name: "Kenar çubuğunu aç veya kapat" })
+    )
+    const sheet = screen.getByRole("dialog", { name: "Kenar çubuğu" })
+    expect(description(sheet)).toBe("Mobil kenar çubuğunu gösterir.")
   })
 })

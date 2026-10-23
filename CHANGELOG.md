@@ -4,6 +4,32 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+**Check when upgrading (right-to-left apps):**
+
+- Directional icons now mirror in RTL by themselves: `back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle` and `list`. Remove any flip your app adds to these (`rtl:-scale-x-100`, `rtl:rotate-180`, or a flipped wrapper), or they turn back to their LTR direction. Pass `mirror={false}` to keep one as drawn.
+- An LTR block inside an RTL page (a code sample, an English address) still mirrors these icons, because the RTL rule follows the page; pass `mirror={false}` there.
+- Drop per-item tooltip sides on a right-hand `Sidebar`: its tooltips now open toward the page by themselves.
+
+Left-to-right layouts look the same as before.
+
+### Added
+
+- Translatable built-in labels. Each one is a prop whose default is the English text shown today, so nothing changes until an app passes a translation:
+  - `SheetContent closeLabel` (default "Close") names the close button, like `DialogContent closeLabel`. `DialogFooter closeLabel` (default "Close") is the text of the button `showCloseButton` adds, and `CommandDialog closeLabel` names its dialog's close button.
+  - `Sidebar labels`: `title` (default "Sidebar") and `description` (default "Displays the mobile sidebar.") name the mobile sheet for screen readers; the `SidebarLabels` type is exported. `SidebarTrigger label` (default "Toggle Sidebar") names the trigger.
+  - `BreadcrumbEllipsis label` (default "More"), like `PaginationEllipsis label`; `CarouselPrevious label` and `CarouselNext label` (default "Previous slide" and "Next slide"); `MessageScrollerButton label` (default "Scroll to end", or "Scroll to start" with `direction="start"`).
+  - `DateRangePicker presetsLabel` (default "Presets") names the preset list.
+  - `MediaPickerDialog` labels: `close` (default "Close"), `dropInput`, the drop zone's file input (default "Upload files"), `clearSearch` (default "Clear search") and `queue`, the `UploadQueue` labels of its upload rows ("Uploading…", "Complete", "Failed", "{loaded} of {total}", "Cancel {name}" and "Remove {name}").
+  - `ImageUploadField labels.fileRules(types, maxSize)` words the drop zone's description from the accepted types ("PNG, JPG, SVG or WebP") and the size limit ("5 MB"), either of which can be missing. The default still gives "PNG, JPG, SVG or WebP. Max file size: 5 MB"; `labels.description` still replaces it outright.
+  - `DataTable` labels: `row(index)` names a row in the reorder announcements when `getRowLabel` isn't set (default "Row 1", "Row 2"…). `dragHandleRole` (default "sortable") and `dragInstructions` (default dnd-kit's "To pick up a draggable item, press the space bar. …") are the role and the keyboard instructions screen readers read on a drag handle, which came from dnd-kit in English only. `OptionListEditor` takes the same `dragHandleRole` and `dragInstructions`.
+- `locale` for dates, numbers and file sizes, formatted through `Intl` or date-fns instead of in English:
+  - `DatePicker locale` and `DateRangePicker locale` format the trigger's dates and the calendar. Pass a date-fns locale (`import { tr } from "date-fns/locale"`), or one from `react-day-picker/locale`, which also translates the calendar's buttons ("Go to the Previous Month"). The default `displayFormat` is now date-fns's localized medium date, "PP" ("PPp" with `withTime`), which renders the same "Oct 20, 2026" ("Oct 20, 2026, 9:00 AM") in English as the old "MMM d, yyyy" pattern, and "20 Eki 2026" with `locale={tr}`.
+  - `ImageUploadField locale` formats the image's size, the size limit and the list of accepted types: `locale="tr"` gives "1,5 MB" and "PNG, JPG, SVG veya WebP".
+  - `TableFilters` and `ActiveFilters` labels: `close` (default "Close") names the sheet's close button, `dateRangePlaceholder` ("Pick a date range") and `datePresets` ("Presets") go to the date-range fields, `selected(count)` ("3 selected") and `on` ("On") word the chips. `TableFilters locale` and `datePresets` pass through to its date-range fields, and `ActiveFilters locale` formats date-range chips in the locale's own order ("20 Eki – 25 Eki" with `tr`); without it they stay "Oct 20 – Oct 25".
+  - `UploadQueue locale`, and so `MediaPickerDialog locale`, also formats the percent: "%62" in Turkish. Without a locale it stays "62%".
+- `AvatarFallback colorFrom`: a person without a picture takes one of eight person colours, always the same for the same key, with white initials. Pass the person's id (a string or a number; the email only for a guest with no id), the same on every screen. Without a key, or with an empty one, the fallback stays grey. The colours are new `--person-1` to `--person-8` tokens (`bg-person-*`), for people only: muted and deep, with white text at 5.6:1 or more on each. In dark mode person-4, -5 and -6 are lighter so every circle keeps 2.5:1 or more against the dark card.
+- `Avatar size="xl"` (48px) and `size="2xl"` (64px), for profile and detail headers, with initials and `AvatarBadge` scaled to match.
+
 ### Fixed
 
 - `Icon` mirrors the directional names in right-to-left layouts, which changes the default there: `back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle` and `list` flip horizontally under `<DirectionProvider dir="rtl">` or inside an element with `dir="rtl"`, server-rendered markup included. No other name mirrors (clocks, checkmarks, `external`, `refresh`, media and brand glyphs keep their direction), and left-to-right layouts look exactly as before. If your app already flips one of these icons, remove the flip: `rtl:-scale-x-100` on the icon itself is harmless, since it still mirrors once, but `rtl:rotate-180` on it, or a wrapper that flips it, now turns it back. To keep an icon as drawn, for example a chevron you rotate yourself, pass `mirror={false}`. `MIRRORED_ICONS` lists the names, and a mirroring icon carries `data-mirror`.

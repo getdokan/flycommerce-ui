@@ -13,7 +13,7 @@ import {
   subMonths,
 } from "date-fns"
 import { FiCalendar as CalendarIcon } from "react-icons/fi"
-import type { DateRange } from "react-day-picker"
+import type { DateRange, Locale } from "react-day-picker"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
@@ -29,7 +29,7 @@ type DatePickerProps = {
   value?: Date
   onValueChange: (value: Date | undefined) => void
   placeholder?: string
-  /** date-fns format string for the trigger. */
+  /** date-fns format string for the trigger; by default the locale's medium date, "PP" ("PPp" with `withTime`): "Oct 20, 2026" in English. */
   displayFormat?: string
   /** Adds a time input; the returned Date carries the chosen time. */
   withTime?: boolean
@@ -40,6 +40,8 @@ type DatePickerProps = {
   className?: string
   /** Disable days, e.g. `{ before: new Date() }`. */
   disabledDays?: React.ComponentProps<typeof Calendar>["disabled"]
+  /** Formats the trigger's date and the calendar: a date-fns locale, or one from `react-day-picker/locale`, which also translates the calendar's buttons. */
+  locale?: Locale
 }
 
 function DatePicker({
@@ -54,10 +56,10 @@ function DatePicker({
   id,
   className,
   disabledDays,
+  locale,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
-  const pattern =
-    displayFormat ?? (withTime ? "MMM d, yyyy, h:mm a" : "MMM d, yyyy")
+  const pattern = displayFormat ?? (withTime ? "PPp" : "PP")
   const time = value ? formatDate(value, "HH:mm") : "09:00"
 
   const pickDay = (day: Date | undefined) => {
@@ -85,7 +87,7 @@ function DatePicker({
         >
           <CalendarIcon className="text-muted-foreground" />
           <span className="truncate">
-            {value ? formatDate(value, pattern) : placeholder}
+            {value ? formatDate(value, pattern, { locale }) : placeholder}
           </span>
         </Button>
       </PopoverTrigger>
@@ -96,6 +98,7 @@ function DatePicker({
           onSelect={pickDay}
           defaultMonth={value}
           disabled={disabledDays}
+          locale={locale}
           autoFocus
         />
         {withTime && (
@@ -172,11 +175,16 @@ type DateRangePickerProps = {
   /** Pass `[]` to hide the preset list. */
   presets?: DateRangePreset[]
   placeholder?: string
+  /** date-fns format string for each date; by default the locale's medium date, "PP": "Oct 20, 2026" in English. */
   displayFormat?: string
   disabled?: boolean
   id?: string
   className?: string
   align?: "start" | "center" | "end"
+  /** Formats the dates and the calendar: a date-fns locale, or one from `react-day-picker/locale`, which also translates the calendar's buttons. */
+  locale?: Locale
+  /** Accessible name of the preset list. */
+  presetsLabel?: string
 }
 
 function DateRangePicker({
@@ -184,19 +192,21 @@ function DateRangePicker({
   onValueChange,
   presets = DEFAULT_PRESETS,
   placeholder = "Pick a date range",
-  displayFormat = "MMM d, yyyy",
+  displayFormat = "PP",
   disabled,
   id,
   className,
   align = "start",
+  locale,
+  presetsLabel = "Presets",
 }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false)
   const isMobile = useIsMobile()
 
   const label = value?.from
     ? value.to && !isSameDay(value.from, value.to)
-      ? `${formatDate(value.from, displayFormat)} – ${formatDate(value.to, displayFormat)}`
-      : formatDate(value.from, displayFormat)
+      ? `${formatDate(value.from, displayFormat, { locale })} – ${formatDate(value.to, displayFormat, { locale })}`
+      : formatDate(value.from, displayFormat, { locale })
     : placeholder
 
   const activePreset = presets.find((preset) => {
@@ -238,7 +248,7 @@ function DateRangePicker({
         {presets.length > 0 && (
           <div
             role="listbox"
-            aria-label="Presets"
+            aria-label={presetsLabel}
             className="flex gap-1 overflow-x-auto border-b border-border-subtle p-1.5 sm:w-40 sm:flex-col sm:border-e sm:border-b-0"
           >
             {presets.map((preset) => (
@@ -266,6 +276,7 @@ function DateRangePicker({
             value?.from ?? (isMobile ? new Date() : subMonths(new Date(), 1))
           }
           numberOfMonths={isMobile ? 1 : 2}
+          locale={locale}
           autoFocus
         />
       </PopoverContent>

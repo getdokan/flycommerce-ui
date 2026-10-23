@@ -36,6 +36,8 @@ type SortableRowsProps = {
   ids: string[]
   disabled: boolean
   labels: {
+    dragHandleRole: string
+    dragInstructions: string
     pickedUp: (label: string, position: number, total: number) => string
     movedTo: (label: string, position: number, total: number) => string
     droppedAt: (label: string, position: number, total: number) => string
@@ -90,6 +92,7 @@ function SortableRows({
       // Announcer divs are invalid inside <tbody>; dnd-kit only renders them after mount.
       accessibility={{
         announcements,
+        screenReaderInstructions: { draggable: labels.dragInstructions },
         container: typeof document === "undefined" ? undefined : document.body,
       }}
       onDragEnd={handleDragEnd}
@@ -100,7 +103,13 @@ function SortableRows({
         disabled={disabled}
       >
         {ids.map((id, index) => (
-          <SortableRow key={id} id={id} index={index} renderRow={renderRow} />
+          <SortableRow
+            key={id}
+            id={id}
+            index={index}
+            roleDescription={labels.dragHandleRole}
+            renderRow={renderRow}
+          />
         ))}
       </SortableContext>
     </DndContext>
@@ -110,10 +119,12 @@ function SortableRows({
 function SortableRow({
   id,
   index,
+  roleDescription,
   renderRow,
 }: {
   id: string
   index: number
+  roleDescription: string
   renderRow: SortableRowsProps["renderRow"]
 }) {
   const {
@@ -124,7 +135,7 @@ function SortableRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id })
+  } = useSortable({ id, attributes: { roleDescription } })
 
   return renderRow(index, {
     ref: setNodeRef,

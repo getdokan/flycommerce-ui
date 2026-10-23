@@ -8,7 +8,12 @@ import {
   FiX as XIcon,
 } from "react-icons/fi"
 
-import { DateRangePicker, type DateRange } from "@/components/date-picker"
+import {
+  DateRangePicker,
+  type DateRange,
+  type DateRangePreset,
+} from "@/components/date-picker"
+import type { Locale } from "react-day-picker"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useDirection } from "@/components/ui/direction"
@@ -59,6 +64,15 @@ type FilterLabels = {
   max?: string
   any?: string
   remove?: (label: string) => string
+  /** Accessible name of the sheet's close button. */
+  close?: string
+  dateRangePlaceholder?: string
+  /** Accessible name of a date-range field's preset list. */
+  datePresets?: string
+  /** A multi-select chip that holds more than two values. */
+  selected?: (count: number) => string
+  /** A boolean chip whose field has no description. */
+  on?: string
 }
 
 const ANY = "__any__"
@@ -74,6 +88,11 @@ const DEFAULT_LABELS: Required<FilterLabels> = {
   max: "Max",
   any: "Any",
   remove: (label) => `Remove ${label} filter`,
+  close: "Close",
+  dateRangePlaceholder: "Pick a date range",
+  datePresets: "Presets",
+  selected: (count) => `${count} selected`,
+  on: "On",
 }
 
 function isApplied(value: unknown) {
@@ -98,6 +117,10 @@ type TableFiltersProps = {
   labels?: FilterLabels
   /** Trigger style; "icon" matches the Figma toolbar button. */
   triggerVariant?: "icon" | "button"
+  /** Formats date-range fields and their calendar: a date-fns locale, or one from `react-day-picker/locale`. */
+  locale?: Locale
+  /** Presets of the date-range fields; pass `[]` to hide them. */
+  datePresets?: DateRangePreset[]
   className?: string
 }
 
@@ -108,6 +131,8 @@ function TableFilters({
   onValueChange,
   labels: labelsProp,
   triggerVariant = "icon",
+  locale,
+  datePresets,
   className,
 }: TableFiltersProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
@@ -145,6 +170,7 @@ function TableFilters({
       </SheetTrigger>
       <SheetContent
         side={direction === "rtl" ? "left" : "right"}
+        closeLabel={labels.close}
         className="gap-0 data-[side=left]:w-full data-[side=right]:w-full data-[side=left]:sm:max-w-[400px] data-[side=right]:sm:max-w-[400px]"
       >
         <SheetHeader>
@@ -158,6 +184,8 @@ function TableFilters({
               field={field}
               value={draft[field.key]}
               labels={labels}
+              locale={locale}
+              datePresets={datePresets}
               onChange={(next) => setField(field.key, next)}
             />
           ))}
@@ -188,11 +216,15 @@ function FilterSection({
   field,
   value,
   labels,
+  locale,
+  datePresets,
   onChange,
 }: {
   field: FilterField
   value: unknown
   labels: Required<FilterLabels>
+  locale?: Locale
+  datePresets?: DateRangePreset[]
   onChange: (value: unknown) => void
 }) {
   const id = React.useId()
@@ -298,6 +330,10 @@ function FilterSection({
             align="end"
             value={value as DateRange | undefined}
             onValueChange={onChange}
+            locale={locale}
+            presets={datePresets}
+            placeholder={labels.dateRangePlaceholder}
+            presetsLabel={labels.datePresets}
           />
         </div>
       )}
@@ -315,19 +351,24 @@ function FilterSection({
   )
 }
 
-function describe(field: FilterField, value: unknown): React.ReactNode {
+function describe(
+  field: FilterField,
+  value: unknown,
+  labels: Required<FilterLabels>,
+  locale?: Locale
+): React.ReactNode {
   switch (field.type) {
     case "select":
       return (
         field.options.find((o) => o.value === value)?.label ?? String(value)
       )
     case "multi": {
-      const labels = (value as string[]).map(
+      const names = (value as string[]).map(
         (v) => field.options.find((o) => o.value === v)?.label ?? v
       )
-      return labels.length > 2
-        ? `${labels.length} selected`
-        : labels.map((l, i) => (
+      return names.length > 2
+        ? labels.selected(names.length)
+        : names.map((l, i) => (
             <React.Fragment key={i}>
               {i > 0 && ", "}
               {l}
@@ -344,12 +385,18 @@ function describe(field: FilterField, value: unknown): React.ReactNode {
     case "date-range": {
       const { from, to } = value as DateRange
       if (!from) return ""
-      return to
-        ? `${formatDate(from, "MMM d")} – ${formatDate(to, "MMM d")}`
-        : formatDate(from, "MMM d")
+      // "MMM d" puts the month first in every language, so a locale gets its own day/month order.
+      const day = (date: Date) =>
+        locale
+          ? new Intl.DateTimeFormat(locale.code, {
+              month: "short",
+              day: "numeric",
+            }).format(date)
+          : formatDate(date, "MMM d")
+      return to ? `${day(from)} – ${day(to)}` : day(from)
     }
     case "boolean":
-      return field.description ?? "On"
+      return field.description ?? labels.on
   }
 }
 
@@ -358,6 +405,8 @@ type ActiveFiltersProps = {
   value: FilterValues
   onValueChange: (value: FilterValues) => void
   labels?: FilterLabels
+  /** Formats date-range chips: a date-fns locale, or one from `react-day-picker/locale`. */
+  locale?: Locale
   className?: string
 }
 
@@ -367,6 +416,7 @@ function ActiveFilters({
   value,
   onValueChange,
   labels: labelsProp,
+  locale,
   className,
 }: ActiveFiltersProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
@@ -385,7 +435,7 @@ function ActiveFilters({
         >
           <span className="text-muted-foreground">{field.label}</span>
           <b className="font-semibold text-primary-strong">
-            {describe(field, value[field.key])}
+            {describe(field, value[field.key], labels, locale)}
           </b>
           <button
             type="button"
