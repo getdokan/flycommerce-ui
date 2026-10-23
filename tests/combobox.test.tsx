@@ -7,6 +7,7 @@ import {
   ComboboxChip,
   ComboboxChips,
   ComboboxChipsInput,
+  ComboboxInput,
   ComboboxValue,
 } from "@/index"
 
@@ -50,5 +51,33 @@ describe("ComboboxChip", () => {
     await user.click(screen.getByRole("button", { name: "Quitar Apparel" }))
     expect(screen.queryByRole("button", { name: "Quitar Apparel" })).toBeNull()
     expect(screen.getByRole("button", { name: "Quitar Toys" })).toBeTruthy()
+  })
+})
+
+describe("ComboboxInput", () => {
+  it("names its buttons in English by default and takes translations", () => {
+    const { unmount } = render(
+      <Combobox items={["Türkiye"]} defaultValue="Türkiye">
+        <ComboboxInput aria-label="Country" showClear />
+      </Combobox>
+    )
+    expect(screen.getByRole("button", { name: "Show options" })).toBeTruthy()
+    expect(screen.getByRole("button", { name: "Clear" })).toBeTruthy()
+    unmount()
+
+    render(
+      <Combobox items={["Türkiye"]} defaultValue="Türkiye">
+        <ComboboxInput
+          aria-label="Ülke"
+          showClear
+          triggerLabel="Seçenekleri göster"
+          clearLabel="Temizle"
+        />
+      </Combobox>
+    )
+    expect(
+      screen.getByRole("button", { name: "Seçenekleri göster" })
+    ).toBeTruthy()
+    expect(screen.getByRole("button", { name: "Temizle" })).toBeTruthy()
   })
 })

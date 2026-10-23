@@ -37,6 +37,7 @@ type UploadQueueProps = {
   items: UploadQueueItem[]
   onCancel?: (id: string) => void
   onRemove?: (id: string) => void
+  /** Formats the sizes and the percent: "tr" gives "1,5 MB" and "%62". */
   locale?: string
   labels?: UploadQueueLabels
   className?: string
@@ -50,6 +51,13 @@ const DEFAULT_LABELS: Required<UploadQueueLabels> = {
   cancel: (name) => `Cancel ${name}`,
   remove: (name) => `Remove ${name}`,
 }
+
+const formatPercent = (value: number, locale?: string) =>
+  locale === undefined
+    ? `${Math.round(value)}%`
+    : new Intl.NumberFormat(locale, { style: "percent" }).format(
+        Math.round(value) / 100
+      )
 
 /** Figma upload rows: file, bytes sent, status and a progress bar. */
 function UploadQueue({
@@ -144,7 +152,7 @@ function UploadQueue({
                     className="h-1.5"
                   />
                   <span className="w-9 text-end text-xs text-foreground-secondary tabular-nums">
-                    {Math.round(item.progress)}%
+                    {formatPercent(item.progress, locale)}
                   </span>
                 </div>
               )}

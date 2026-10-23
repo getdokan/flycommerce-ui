@@ -68,6 +68,7 @@ import {
   TrayDemo,
 } from "./display-demos"
 import { ColorsDemo, TextDemo, TypographyDemo } from "./foundation-demos"
+import { TranslatedLabelsDemo } from "./translation-demos"
 import {
   ModalUseCasesDemo,
   NewCategoryModalDemo,
@@ -328,6 +329,8 @@ export type Demo = {
 }
 
 const KEYWORDS: Record<string, string> = {
+  "translating-labels":
+    "i18n l10n translate translation localize locale language labels aria-label screen reader turkish arabic rtl intl date number bytes",
   button: "cta action submit link back arrow loading",
   toggle: "pressed bold formatting",
   alert: "notice banner warning info error callout message",
@@ -436,6 +439,7 @@ const KEYWORDS: Record<string, string> = {
 }
 
 const SOURCES: Record<string, Source> = {
+  "translating-labels": "composite",
   button: "prototype",
   "button-group": "prototype",
   toggle: "prototype",
@@ -856,6 +860,12 @@ export const demos: Demo[] = [
     keywords:
       "claude code plugin ai assistant skill prompts install marketplace agent",
     render: () => <ClaudeCodeDoc />,
+  },
+  {
+    id: "translating-labels",
+    title: "Translating built-in labels",
+    group: "Getting started",
+    render: () => <TranslatedLabelsDemo />,
   },
   // Foundations
   {

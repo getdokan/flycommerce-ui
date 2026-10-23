@@ -11,7 +11,11 @@ import {
 import { MediaGrid, type MediaGridLabels } from "@/components/media-grid"
 import { MediaTile, type MediaItem } from "@/components/media-tile"
 import { SearchInput } from "@/components/search-input"
-import { UploadQueue, type UploadQueueItem } from "@/components/upload-queue"
+import {
+  UploadQueue,
+  type UploadQueueItem,
+  type UploadQueueLabels,
+} from "@/components/upload-queue"
 import {
   VideoUrlList,
   type VideoUrlListLabels,
@@ -43,18 +47,23 @@ type UploadFn = (
 
 type MediaPickerLabels = {
   title?: string
+  close?: string
   uploadTab?: string
   libraryTab?: string
   dropTitle?: React.ReactNode
   dropDescription?: React.ReactNode
+  /** Accessible name of the drop zone's file input. */
+  dropInput?: string
   chooseExisting?: string
   chooseFile?: string
   search?: string
+  clearSearch?: string
   allDates?: string
   cancel?: string
   save?: string
   select?: string
   uploadFailed?: string
+  queue?: UploadQueueLabels
   grid?: MediaGridLabels
   details?: MediaDetailsPanelLabels
   video?: VideoUrlListLabels
@@ -103,6 +112,7 @@ type MediaPickerDialogProps = {
 
 const DEFAULT_LABELS = {
   title: "Add Media",
+  close: "Close",
   uploadTab: "Upload File",
   libraryTab: "Media Library",
   dropTitle: (
@@ -112,9 +122,11 @@ const DEFAULT_LABELS = {
     </>
   ),
   dropDescription: "JPG, PNG or WebP (Max 5MB Each)",
+  dropInput: "Upload files",
   chooseExisting: "Choose Existing",
   chooseFile: "Choose Image",
   search: "Search",
+  clearSearch: "Clear search",
   allDates: "All Dates",
   cancel: "Cancel",
   save: "Save Now",
@@ -285,6 +297,7 @@ function PickerContent({
     <DialogContent
       size={tab === "library" ? "2xl" : "lg"}
       className="gap-0 p-0"
+      closeLabel={labels.close}
     >
       <DialogHeader className="px-6 pt-6 pb-4">
         <DialogTitle>{labels.title}</DialogTitle>
@@ -362,6 +375,7 @@ function PickerContent({
               disabled={!upload}
               title={labels.dropTitle}
               description={labels.dropDescription}
+              inputLabel={labels.dropInput}
               browseLabel={upload ? labels.chooseFile : undefined}
               actions={
                 <Button
@@ -379,6 +393,7 @@ function PickerContent({
           <UploadQueue
             items={queue}
             locale={locale}
+            labels={labels.queue}
             onCancel={(id) => {
               controllers.current.get(id)?.abort()
               setQueue((q) => q.filter((row) => row.id !== id))
@@ -403,6 +418,7 @@ function PickerContent({
               containerClassName="min-w-0 flex-1"
               placeholder={labels.search}
               aria-label={labels.search}
+              clearLabel={labels.clearSearch}
               onSearch={onSearch}
             />
             {dateOptions && onDateChange && (

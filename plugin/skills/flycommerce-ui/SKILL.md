@@ -43,9 +43,18 @@ At the app root: wrap in `<TooltipProvider>` (and `<DirectionProvider dir>` for 
 2. **No raw colours or arbitrary values in screens.** No `#hex`, `rgb()`, `bg-[#…]`, `text-gray-500`, `border-gray-200`. Use tokens: `bg-page` (app canvas), `bg-card`/`bg-background` (surfaces), `text-foreground`, `text-foreground-secondary`, `text-muted-foreground`, `border-border`, `border-border-subtle`, `bg-muted`, `bg-primary` (blue fills), `text-primary-ink` (blue text and links; `text-primary` is too dark in dark mode), `text-destructive`, `text-success-strong`, `text-warning-strong`, `shadow-1`, `shadow-card` (cards), `rounded-control` (8px controls), `rounded-xl` (12px cards). See `references/tokens.md`.
 3. **Don't restyle components with `className`.** `className` is for layout (width, margin, grid placement). A different look is a `variant` or `size`; if none fits, the variant belongs in the library.
 4. **Icons go through `<Icon name="…" />`** using a meaning from `references/icons.md` (e.g. `orders`, `vendors`, `payouts`). Inside `Button`, place the icon as the first child; it sizes itself. An app on the P3 Figma icon set wraps its tree once in `<P3IconProvider>`; screens keep the same names and never swap a glyph with a `react-icons` import.
-5. **Every user-visible string is translatable.** Components expose label props (`labels`, `confirmLabel`, `placeholder`, `clearLabel`, `closeLabel`…); pass the app's `t()` output. Never leave the English defaults in a localized screen.
+5. **Every user-visible string is translatable.** Components expose label props (`labels`, `confirmLabel`, `placeholder`, `clearLabel`, `closeLabel`…); pass the app's `t()` output. Never leave the English defaults in a localized screen. See **Translating labels** below.
 6. **Keep accessibility intact.** Icon-only buttons need `aria-label`. Inputs need a `FieldLabel htmlFor`. Don't remove focus rings: they only show for keyboard users.
 7. **Mobile first.** Every screen must work at 375px: no horizontal page scroll, toolbars wrap, tables scroll inside their card (DataTable does this).
+
+## Translating labels
+
+Every built-in string has an English default you replace with `t()` output:
+
+- One string is one prop: `closeLabel` (`DialogContent`, `SheetContent`, `CommandDialog`, `DialogFooter`), `label` (`SidebarTrigger`, `CarouselPrevious`, `CarouselNext`, `PaginationEllipsis`, `BreadcrumbEllipsis`), `placeholder`, `clearLabel`, `presetsLabel`.
+- Several strings are a `labels` object (`DataTable`, `MediaPickerDialog` with nested `queue`, `grid`, `details` and `video`, `ImageUploadField`, `Sidebar` for its mobile sheet…). Text with a value in it is a function, so the translation decides the word order: `showing: (from, to, total) => t("Showing {{from}} to {{to}} of {{total}}", { from, to, total })`. Don't join translated pieces yourself.
+- `locale` formats numbers and file sizes through `Intl` (`ImageUploadField`, `UploadQueue`, `MediaPickerDialog`, `MediaDetailsPanel`: pass the app's language, e.g. `"tr"`). `DatePicker`, `DateRangePicker`, `TableFilters` and `ActiveFilters` take a date-fns locale object instead (`import { tr } from "date-fns/locale"`); one from `react-day-picker/locale` also translates the calendar's buttons, after adding `react-day-picker` to the app's `package.json`.
+- Parts whose only text is an accessible name take the attribute itself: `aria-label` on `Spinner`, `Pagination`, `PaginationPrevious` and `PaginationNext` (with `text` for the visible word) and `Breadcrumb`; `aria-label` and `title` on `SidebarRail`; `aria-roledescription` on `Carousel` and `CarouselItem`. `Toaster` takes sonner's `containerAriaLabel` and `toastOptions={{ closeButtonAriaLabel }}`.
 
 ## Which component
 

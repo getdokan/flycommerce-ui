@@ -147,6 +147,12 @@ type DataTableLabels = {
   collapseRow?: string
   reorder?: string
   dragHandle?: (index: number) => string
+  /** Announced as the drag handle's role (`aria-roledescription`). */
+  dragHandleRole?: string
+  /** Read when a drag handle is focused: how to move a row with the keyboard. */
+  dragInstructions?: string
+  /** A row's name in reorder announcements when `getRowLabel` isn't set. */
+  row?: (index: number) => string
   pickedUp?: (label: string, position: number, total: number) => string
   movedTo?: (label: string, position: number, total: number) => string
   droppedAt?: (label: string, position: number, total: number) => string
@@ -174,6 +180,10 @@ const DEFAULT_LABELS: Required<DataTableLabels> = {
   collapseRow: "Collapse row",
   reorder: "Reorder",
   dragHandle: (index) => `Drag to reorder row ${index + 1}`,
+  dragHandleRole: "sortable",
+  dragInstructions:
+    "To pick up a draggable item, press the space bar. While dragging, use the arrow keys to move the item. Press space again to drop the item in its new position, or press escape to cancel.",
+  row: (index) => `Row ${index + 1}`,
   pickedUp: (label, position, total) =>
     `Picked up ${label}, position ${position} of ${total}.`,
   movedTo: (label, position, total) =>
@@ -378,7 +388,7 @@ function DataTable<TData>({
   const rowLabel = (id: string) => {
     const index = rows.findIndex((row) => row.id === id)
     if (index < 0) return ""
-    return getRowLabel?.(rows[index].original) ?? `Row ${index + 1}`
+    return getRowLabel?.(rows[index].original) ?? labels.row(index)
   }
   const moveRow = (from: number, to: number) => {
     const next = [...data]

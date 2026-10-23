@@ -23,7 +23,13 @@ type ImageUploadFieldValue = {
 
 type ImageUploadFieldLabels = {
   dropTitle?: React.ReactNode
+  /** Replaces the description that `fileRules` builds. */
   description?: React.ReactNode
+  /** The drop zone's description, from the accepted types ("PNG, JPG, SVG or WebP") and the size limit ("5 MB"); either can be missing. */
+  fileRules?: (
+    types: string | undefined,
+    maxSize: string | undefined
+  ) => React.ReactNode
   upload?: string
   input?: string
   change?: string
@@ -55,6 +61,8 @@ type ImageUploadFieldProps = Omit<
   loading?: boolean
   invalid?: boolean
   disabled?: boolean
+  /** Formats the sizes and the list of accepted types: "tr" gives "1,5 MB" and "PNG, JPG, SVG veya WebP". */
+  locale?: string
   labels?: ImageUploadFieldLabels
 }
 
@@ -65,6 +73,8 @@ const DEFAULT_LABELS = {
       image here
     </>
   ),
+  fileRules: (types: string | undefined, maxSize: string | undefined) =>
+    [types, maxSize && `Max file size: ${maxSize}`].filter(Boolean).join(". "),
   upload: "Upload image",
   input: "Upload image",
   change: "Change image",
@@ -102,6 +112,7 @@ function ImageUploadField({
   loading = false,
   invalid = false,
   disabled = false,
+  locale,
   labels: labelsProp,
   id,
   "aria-describedby": describedBy,
@@ -110,11 +121,11 @@ function ImageUploadField({
 }: ImageUploadFieldProps) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
   const named = (text: string) => (label ? `${text}, ${label}` : text)
-  const limit =
-    maxSize === undefined ? "" : `Max file size: ${formatBytes(maxSize)}`
+  const types = describeAccept(accept, locale) || undefined
+  const limit = maxSize === undefined ? undefined : formatBytes(maxSize, locale)
   const description =
     labels.description ??
-    ([describeAccept(accept), limit].filter(Boolean).join(". ") || undefined)
+    (types || limit ? labels.fileRules(types, limit) : undefined)
   const background = previewBackground
     ? isLightColor(previewBackground)
       ? "light"
@@ -206,7 +217,7 @@ function ImageUploadField({
               )}
               {value.size !== undefined && (
                 <p className="text-xs text-muted-foreground tabular-nums">
-                  <bdi>{formatBytes(value.size)}</bdi>
+                  <bdi>{formatBytes(value.size, locale)}</bdi>
                 </p>
               )}
             </div>
