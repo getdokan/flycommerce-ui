@@ -7,6 +7,7 @@ import useEmblaCarousel, {
 } from "embla-carousel-react"
 
 import { Button } from "@/components/ui/button"
+import { useDirection } from "@/components/ui/direction"
 import {
   FiChevronLeft as ChevronLeftIcon,
   FiChevronRight as ChevronRightIcon,
@@ -54,13 +55,17 @@ function Carousel({
   children,
   ...props
 }: React.ComponentProps<"div"> & CarouselProps) {
+  const direction = useDirection()
   const [carouselRef, api] = useEmblaCarousel(
     {
+      direction,
       ...opts,
       axis: orientation === "horizontal" ? "x" : "y",
     },
     plugins
   )
+  const reversed =
+    orientation === "horizontal" && (opts?.direction ?? direction) === "rtl"
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
 
@@ -80,15 +85,15 @@ function Carousel({
 
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "ArrowLeft") {
+      if (event.key === (reversed ? "ArrowRight" : "ArrowLeft")) {
         event.preventDefault()
         scrollPrev()
-      } else if (event.key === "ArrowRight") {
+      } else if (event.key === (reversed ? "ArrowLeft" : "ArrowRight")) {
         event.preventDefault()
         scrollNext()
       }
     },
-    [scrollPrev, scrollNext]
+    [reversed, scrollPrev, scrollNext]
   )
 
   React.useEffect(() => {
@@ -194,7 +199,7 @@ function CarouselPrevious({
         "absolute touch-manipulation rounded-full",
         orientation === "horizontal"
           ? "inset-y-0 -start-12 my-auto"
-          : "start-1/2 -top-12 -translate-x-1/2 rotate-90 rtl:translate-x-1/2",
+          : "start-1/2 -top-12 -translate-x-1/2 rotate-90 rtl:translate-x-1/2 rtl:-rotate-90",
         className
       )}
       disabled={!canScrollPrev}
@@ -225,7 +230,7 @@ function CarouselNext({
         "absolute touch-manipulation rounded-full",
         orientation === "horizontal"
           ? "inset-y-0 -end-12 my-auto"
-          : "start-1/2 -bottom-12 -translate-x-1/2 rotate-90 rtl:translate-x-1/2",
+          : "start-1/2 -bottom-12 -translate-x-1/2 rotate-90 rtl:translate-x-1/2 rtl:-rotate-90",
         className
       )}
       disabled={!canScrollNext}

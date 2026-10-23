@@ -4,6 +4,14 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+**Check when upgrading (right-to-left apps):**
+
+- Directional icons now mirror in RTL by themselves: `back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle` and `list`. Remove any flip your app adds to these (`rtl:-scale-x-100`, `rtl:rotate-180`, or a flipped wrapper), or they turn back to their LTR direction. Pass `mirror={false}` to keep one as drawn.
+- An LTR block inside an RTL page (a code sample, an English address) still mirrors these icons, because the RTL rule follows the page; pass `mirror={false}` there.
+- Drop per-item tooltip sides on a right-hand `Sidebar`: its tooltips now open toward the page by themselves.
+
+Left-to-right layouts look the same as before.
+
 ### Added
 
 - Translatable built-in labels. Each one is a prop whose default is the English text shown today, so nothing changes until an app passes a translation:
@@ -21,6 +29,16 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
   - `UploadQueue locale`, and so `MediaPickerDialog locale`, also formats the percent: "%62" in Turkish. Without a locale it stays "62%".
 - `AvatarFallback colorFrom`: a person without a picture takes one of eight person colours, always the same for the same key, with white initials. Pass the person's id (a string or a number; the email only for a guest with no id), the same on every screen. Without a key, or with an empty one, the fallback stays grey. The colours are new `--person-1` to `--person-8` tokens (`bg-person-*`), for people only: muted and deep, with white text at 5.6:1 or more on each. In dark mode person-4, -5 and -6 are lighter so every circle keeps 2.5:1 or more against the dark card.
 - `Avatar size="xl"` (48px) and `size="2xl"` (64px), for profile and detail headers, with initials and `AvatarBadge` scaled to match.
+
+### Fixed
+
+- `Icon` mirrors the directional names in right-to-left layouts, which changes the default there: `back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle` and `list` flip horizontally under `<DirectionProvider dir="rtl">` or inside an element with `dir="rtl"`, server-rendered markup included. No other name mirrors (clocks, checkmarks, `external`, `refresh`, media and brand glyphs keep their direction), and left-to-right layouts look exactly as before. If your app already flips one of these icons, remove the flip: `rtl:-scale-x-100` on the icon itself is harmless, since it still mirrors once, but `rtl:rotate-180` on it, or a wrapper that flips it, now turns it back. To keep an icon as drawn, for example a chevron you rotate yourself, pass `mirror={false}`. `MIRRORED_ICONS` lists the names, and a mirroring icon carries `data-mirror`.
+- `SidebarMenuButton` tooltips open on the side away from the rail: to the right of a left rail, as before, and to the left of `Sidebar side="right"`, the rail of an RTL layout, where they opened over the page edge. A `side` in `tooltip={{ side }}` still wins.
+- In RTL, edges keyed to a physical side stay on that side. The `Sidebar` rail and `SheetContent side="left"` or `"right"` drew their border on the screen edge instead of the edge facing the page, and `Drawer direction="left"` or `"right"` was pinned to the opposite edge from the one it slides in from. `SidebarRail` showed resize cursors pointing the wrong way, and on a hidden off-canvas right rail its handle sat off screen. `SelectContent side="left"` or `"right"` moved its 4px gap toward the trigger.
+- `Carousel` follows `DirectionProvider`: in RTL, Next scrolled into empty space because Embla wasn't told the direction, the arrow keys went the wrong way, and a vertical carousel's buttons pointed down and up. `opts.direction` still wins.
+- `Calendar` follows `DirectionProvider`: in RTL, the left and right arrow keys moved focus to the day on the other side. Without a provider it still inherits the page's `dir`.
+- `DirectionProvider` sets the direction of the Base UI parts too. In RTL, the arrow keys moved focus between a `Combobox`'s chips and its input the wrong way: Left jumped to the chip drawn to the input's right.
+- `TableFilters` opens its sheet at the end edge: on the left in RTL, and on the right as before.
 
 ## [0.4.0] - 2026-10-20
 

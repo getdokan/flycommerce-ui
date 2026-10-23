@@ -32,6 +32,7 @@ import {
   ActiveFilters,
   Label,
   MediaCell,
+  MIRRORED_ICONS,
   PageHeader,
   PageHeaderActions,
   PageHeaderBack,
@@ -856,6 +857,7 @@ export function IconsDemo() {
   const [query, setQuery] = React.useState("")
   const [set, setSet] = React.useState("default")
   const [p3Only, setP3Only] = React.useState(false)
+  const [mirroredOnly, setMirroredOnly] = React.useState(false)
   const q = query.trim().toLowerCase()
   const IconSet = set === "p3" ? P3IconProvider : React.Fragment
 
@@ -887,19 +889,34 @@ export function IconsDemo() {
             Only names P3 changes
           </Label>
         </div>
+        <div className="flex items-center gap-2">
+          <Switch
+            id="icons-mirrored-only"
+            checked={mirroredOnly}
+            onCheckedChange={setMirroredOnly}
+          />
+          <Label htmlFor="icons-mirrored-only" className="text-xs font-normal">
+            Only names that mirror in RTL
+          </Label>
+        </div>
         <span className="text-xs text-muted-foreground">
           Click an icon to copy its usage. Use{" "}
           <code className="rounded bg-muted px-1">{`<Icon name="orders" />`}</code>
           , never a react-icons component directly. For the P3 Figma set, wrap
           the app in{" "}
           <code className="rounded bg-muted px-1">{`<P3IconProvider>`}</code>.
+          In right-to-left layouts the directional names mirror themselves;{" "}
+          <code className="rounded bg-muted px-1">{`mirror={false}`}</code>{" "}
+          keeps one as drawn.
         </span>
       </div>
       <IconSet>
         {Object.entries(ICON_GROUPS).map(([group, icons]) => {
           const names = (Object.keys(icons) as IconName[]).filter(
             (name) =>
-              name.toLowerCase().includes(q) && (!p3Only || name in P3_GLYPHS)
+              name.toLowerCase().includes(q) &&
+              (!p3Only || name in P3_GLYPHS) &&
+              (!mirroredOnly || MIRRORED_ICONS.includes(name))
           )
           if (names.length === 0) return null
           return (

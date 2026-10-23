@@ -10,6 +10,7 @@ import {
 } from "react-day-picker"
 
 import { Button, buttonVariants } from "@/components/ui/button"
+import { useDirection } from "@/components/ui/direction"
 import {
   FiChevronLeft as ChevronLeftIcon,
   FiChevronRight as ChevronRightIcon,
@@ -30,14 +31,17 @@ function Calendar({
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
 }) {
   const defaultClassNames = getDefaultClassNames()
+  const direction = useDirection()
+  const dir = props.dir ?? (direction === "rtl" ? direction : undefined)
+  const flip = props.navLayout !== "around" || dir !== "rtl"
 
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
         "group/calendar bg-background p-2 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
-        String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
-        String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
+        flip && String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
+        flip && String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className
       )}
       captionLayout={captionLayout}
@@ -152,7 +156,7 @@ function Calendar({
           if (orientation === "left") {
             return (
               <ChevronLeftIcon
-                className={cn("size-4 rtl:rotate-180", className)}
+                className={cn("size-4", flip && "rtl:rotate-180", className)}
                 {...props}
               />
             )
@@ -161,7 +165,7 @@ function Calendar({
           if (orientation === "right") {
             return (
               <ChevronRightIcon
-                className={cn("size-4 rtl:rotate-180", className)}
+                className={cn("size-4", flip && "rtl:rotate-180", className)}
                 {...props}
               />
             )
@@ -186,6 +190,7 @@ function Calendar({
         ...components,
       }}
       {...props}
+      dir={dir}
     />
   )
 }

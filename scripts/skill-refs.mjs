@@ -55,6 +55,9 @@ for (const g of groupsBody.matchAll(/^\s{2}(?:"([^"]+)"|(\w+)):\s*\{([^}]*)\}/gm
   const names = [...body.matchAll(/^\s*"?([\w-]+)"?:\s*(\w+)/gm)].map((m) => `\`${m[1]}\` (${m[2].replace(/Icon$/, "")})`)
   iconsMd += `## ${quoted ?? bare}\n\n${names.join(", ")}\n\n`
 }
+const mirroredStart = iconSrc.indexOf("= [", iconSrc.indexOf("const MIRRORED_ICONS"))
+const mirrored = [...iconSrc.slice(mirroredStart, iconSrc.indexOf("]", mirroredStart)).matchAll(/"(\w+)"/g)].map((m) => `\`${m[1]}\``)
+iconsMd += `## Mirrored in right-to-left layouts\n\n${mirrored.join(", ")} mirror themselves in RTL. Don't flip them again: \`rtl:rotate-180\` or a flipping wrapper turns them back, and \`rtl:-scale-x-100\` is redundant. \`mirror={false}\` keeps one as drawn. No other name mirrors.\n`
 writeFileSync(path.join(out, "icons.md"), iconsMd)
 
 const theme = readFileSync(path.join(root, "src/styles/theme.css"), "utf8")

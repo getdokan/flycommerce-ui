@@ -135,6 +135,8 @@ import {
   LuWebhook as WebhookIcon,
 } from "react-icons/lu"
 
+import { useDirection } from "@/components/ui/direction"
+
 /* Semantic icon registry. Glyphs follow the dashboard (Feather via react-icons, its sidebar choices first); Lucide fills gaps Feather lacks. */
 const ICON_GROUPS = {
   "Navigation & objects": {
@@ -322,10 +324,25 @@ const ICONS = Object.assign({}, ...Object.values(ICON_GROUPS)) as Record<
   IconType
 >
 
+/** The directional names, which mirror in right-to-left layouts unless the `Icon` passes `mirror={false}`. */
+const MIRRORED_ICONS: readonly IconName[] = [
+  "back",
+  "forward",
+  "prev",
+  "next",
+  "redirects",
+  "impersonate",
+  "signOut",
+  "sidebarToggle",
+  "list",
+]
+
 type IconProps = Omit<React.ComponentProps<IconType>, "ref"> & {
   name: IconName
   /** Accessible name; without it the icon is decorative. */
   label?: string
+  /** `false` keeps a directional name as drawn in right-to-left layouts, where it mirrors by default. */
+  mirror?: boolean
 }
 
 const IconGlyphsContext = React.createContext<
@@ -338,19 +355,27 @@ function Icon({
   label,
   size = 16,
   strokeWidth,
+  mirror = true,
   className,
   ...props
 }: IconProps) {
   const glyph = React.useContext(IconGlyphsContext)?.[name]
+  const direction = useDirection()
   const Glyph = glyph ?? ICONS[name]
   const stroke = strokeWidth ?? (glyph ? undefined : 2)
+  const mirrored = mirror && MIRRORED_ICONS.includes(name)
   return (
     <Glyph
       data-slot="icon"
       data-icon-name={name}
+      data-mirror={mirrored ? "" : undefined}
       size={size}
       {...(stroke === undefined ? {} : { strokeWidth: stroke })}
-      className={cn("shrink-0", className)}
+      className={cn(
+        "shrink-0",
+        mirrored && (direction === "rtl" ? "-scale-x-100" : "rtl:-scale-x-100"),
+        className
+      )}
       aria-hidden={label ? undefined : true}
       aria-label={label}
       role={label ? "img" : undefined}
@@ -383,6 +408,7 @@ export {
   IconProvider,
   ICONS,
   ICON_GROUPS,
+  MIRRORED_ICONS,
   type IconName,
   type IconProps,
   type IconProviderProps,
