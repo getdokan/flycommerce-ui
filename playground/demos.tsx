@@ -345,7 +345,7 @@ const KEYWORDS: Record<string, string> = {
   "input-otp": "otp pin verification code",
   calendar: "date",
   badge: "pill tag chip label status",
-  avatar: "user profile photo",
+  avatar: "user profile photo initials person colour customer",
   card: "panel box container tile",
   table: "grid rows columns list density compact roomy",
   "description-list":
@@ -1786,15 +1786,41 @@ export const demos: Demo[] = [
     title: "Avatar",
     group: "Data display",
     render: () => (
-      <Row label="Avatar">
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="" />
-          <AvatarFallback>SC</AvatarFallback>
-        </Avatar>
-        <Avatar>
-          <AvatarFallback>AH</AvatarFallback>
-        </Avatar>
-      </Row>
+      <Stack>
+        <Row label="Avatar">
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="" />
+            <AvatarFallback>SC</AvatarFallback>
+          </Avatar>
+          <Avatar>
+            <AvatarFallback>AH</AvatarFallback>
+          </Avatar>
+        </Row>
+        <Row label="Sizes">
+          {(["sm", "default", "lg", "xl", "2xl"] as const).map((size) => (
+            <Avatar key={size} size={size}>
+              <AvatarFallback colorFrom="dana.whitfield@example.com">
+                DW
+              </AvatarFallback>
+            </Avatar>
+          ))}
+        </Row>
+        <Row label="Person colours (colorFrom)">
+          {[
+            ["DW", "dana.whitfield@example.com"],
+            ["KW", "keira@example.com"],
+            ["AO", "amara.okafor@example.com"],
+            ["DK", "daniel.kwon@example.com"],
+            ["MK", "milak@example.com"],
+            ["RS", "rafael.souza@example.com"],
+            ["G", "cart-48200"],
+          ].map(([initials, key]) => (
+            <Avatar key={key}>
+              <AvatarFallback colorFrom={key}>{initials}</AvatarFallback>
+            </Avatar>
+          ))}
+        </Row>
+      </Stack>
     ),
   },
   {

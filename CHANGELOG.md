@@ -2,6 +2,13 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `AvatarFallback colorFrom`: a person without a picture takes one of eight person colours, always the same for the same key, with white initials. Pass the person's id (a string or a number; the email only for a guest with no id), the same on every screen. Without a key, or with an empty one, the fallback stays grey. The colours are new `--person-1` to `--person-8` tokens (`bg-person-*`), for people only: muted and deep, with white text at 5.6:1 or more on each. In dark mode person-4, -5 and -6 are lighter so every circle keeps 2.5:1 or more against the dark card.
+- `Avatar size="xl"` (48px) and `size="2xl"` (64px), for profile and detail headers, with initials and `AvatarBadge` scaled to match.
+
 ## [0.4.0] - 2026-10-20
 
 New: `Text` and the P3 type scale, `P3IconProvider` and the P3 icon set, `CodeEditor` (opt-in entry), `Timeline` and `ActivityFeed`, `CopyField`, `ColorInput`, `ImageUploadField`, pill buttons, `BrandMark` and `CardBrandMark`, settings field patterns (`FieldCount`, `SwitchField variant="row"`, option rows, `CheckboxCard`, saved secrets), a light sidebar, and AI rewrite actions in `RichTextEditor`.

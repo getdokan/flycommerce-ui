@@ -9,14 +9,15 @@ function Avatar({
   size = "default",
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Root> & {
-  size?: "default" | "sm" | "lg"
+  /** sm 24px, default 32px, lg 40px, xl 48px, 2xl 64px (profile headers). */
+  size?: "default" | "sm" | "lg" | "xl" | "2xl"
 }) {
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
       data-size={size}
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=2xl]:size-16 data-[size=lg]:size-10 data-[size=sm]:size-6 data-[size=xl]:size-12 dark:after:mix-blend-lighten",
         className
       )}
       {...props}
@@ -40,15 +41,44 @@ function AvatarImage({
   )
 }
 
+const PERSON_COLORS = [
+  "bg-person-1",
+  "bg-person-2",
+  "bg-person-3",
+  "bg-person-4",
+  "bg-person-5",
+  "bg-person-6",
+  "bg-person-7",
+  "bg-person-8",
+] as const
+
+/** One of the eight person colours, always the same for the same key. */
+function personColor(key: string) {
+  // FNV-1a, then a final mix, so similar keys (reversed, a digit apart) still spread.
+  let hash = 0x811c9dc5
+  for (const char of key)
+    hash = Math.imul(hash ^ char.codePointAt(0)!, 0x01000193)
+  hash ^= hash >>> 16
+  hash = Math.imul(hash, 0x85ebca6b)
+  hash ^= hash >>> 13
+  return PERSON_COLORS[(hash >>> 0) % PERSON_COLORS.length]
+}
+
 function AvatarFallback({
   className,
+  colorFrom,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+}: React.ComponentProps<typeof AvatarPrimitive.Fallback> & {
+  /** The person's stable id (email only when there is none): one of eight person colours, the same every time. Empty stays grey. */
+  colorFrom?: string | number
+}) {
+  const key = colorFrom === undefined ? "" : String(colorFrom)
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
+        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=2xl]/avatar:text-xl group-data-[size=sm]/avatar:text-xs group-data-[size=xl]/avatar:text-base",
+        key && [personColor(key), "text-on-dark"],
         className
       )}
       {...props}
@@ -65,6 +95,8 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
         "group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden",
         "group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2",
         "group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2",
+        "group-data-[size=xl]/avatar:size-3.5 group-data-[size=xl]/avatar:[&>svg]:size-2.5",
+        "group-data-[size=2xl]/avatar:size-4 group-data-[size=2xl]/avatar:[&>svg]:size-3",
         className
       )}
       {...props}
