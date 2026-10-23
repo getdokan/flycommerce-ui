@@ -18,6 +18,8 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
   - `DatePicker locale` and `DateRangePicker locale` format the trigger's dates and the calendar. Pass a date-fns locale (`import { tr } from "date-fns/locale"`), or one from `react-day-picker/locale`, which also translates the calendar's buttons ("Go to the Previous Month"). The default `displayFormat` is now date-fns's localized medium date, "PP" ("PPp" with `withTime`), which renders the same "Oct 20, 2026" ("Oct 20, 2026, 9:00 AM") in English as the old "MMM d, yyyy" pattern, and "20 Eki 2026" with `locale={tr}`.
   - `ImageUploadField locale` formats the image's size, the size limit and the list of accepted types: `locale="tr"` gives "1,5 MB" and "PNG, JPG, SVG veya WebP".
   - `UploadQueue locale`, and so `MediaPickerDialog locale`, also formats the percent: "%62" in Turkish. Without a locale it stays "62%".
+- `AvatarFallback colorFrom`: a person without a picture takes one of eight person colours, always the same for the same key, with white initials. Pass the person's id (a string or a number; the email only for a guest with no id), the same on every screen. Without a key, or with an empty one, the fallback stays grey. The colours are new `--person-1` to `--person-8` tokens (`bg-person-*`), for people only: muted and deep, with white text at 5.6:1 or more on each. In dark mode person-4, -5 and -6 are lighter so every circle keeps 2.5:1 or more against the dark card.
+- `Avatar size="xl"` (48px) and `size="2xl"` (64px), for profile and detail headers, with initials and `AvatarBadge` scaled to match.
 
 ## [0.4.0] - 2026-10-20
 
