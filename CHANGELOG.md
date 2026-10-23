@@ -19,6 +19,8 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
   - `ImageUploadField locale` formats the image's size, the size limit and the list of accepted types: `locale="tr"` gives "1,5 MB" and "PNG, JPG, SVG veya WebP".
   - `UploadQueue locale`, and so `MediaPickerDialog locale`, also formats the percent: "%62" in Turkish. Without a locale it stays "62%".
 
+## [0.4.0] - 2026-10-20
+
 New: `Text` and the P3 type scale, `P3IconProvider` and the P3 icon set, `CodeEditor` (opt-in entry), `Timeline` and `ActivityFeed`, `CopyField`, `ColorInput`, `ImageUploadField`, pill buttons, `BrandMark` and `CardBrandMark`, settings field patterns (`FieldCount`, `SwitchField variant="row"`, option rows, `CheckboxCard`, saved secrets), a light sidebar, and AI rewrite actions in `RichTextEditor`.
 
 **Check when upgrading:**
