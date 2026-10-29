@@ -96,6 +96,12 @@
   }
 }
 
+/* A dot grid behind previews, in the --dot-grid colour. */
+@utility dot-grid {
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
 /* scroll-fade */
 @property --scroll-fade-t {
   syntax: "<length-percentage>";
@@ -739,6 +745,7 @@
     --shadow-brand-mark: var(--elevation-brand-mark);
     --shadow-lead: var(--elevation-lead);
     --shadow-notice: var(--elevation-notice);
+    --shadow-preview: var(--elevation-preview);
     --ease-fluid: var(--motion-fluid);
 }
 
