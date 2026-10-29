@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
+- `PreviewTile`: a picture tile that opens a detail view, such as a theme in the Themes page's grid, `<PreviewTile src alt label openLabel onOpen href highlighted>…footer…</PreviewTile>`. The picture (4:3 by default, `aspectRatio` changes it) is one button, or a link with `href` (a plain click then calls `onOpen` for a client-side router, a modified click opens the URL), named by `openLabel`, with a focus ring; it zooms slightly on hover and keyboard focus, except with reduced motion. `label` is a pill over the bottom of the picture (the look of `MediaTile`'s overlay pill) shown on hover and focus, and always on touch screens, when there is something to open. `highlighted` draws the brand ring of an active `MediaTile`, e.g. on the live theme. `children` render below the picture, outside the click target, so their buttons and links work on their own. A missing or broken image shows `fallback`, as in `ImageWithFallback`.
 
 ### Fixed
 
