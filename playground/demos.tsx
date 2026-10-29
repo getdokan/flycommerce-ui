@@ -49,6 +49,7 @@ import {
   DataTableTreeDemo,
   FacetFilterDemo,
   PeriodMenuDemo,
+  BulkBarDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -343,6 +344,8 @@ const KEYWORDS: Record<string, string> = {
     "no data blank zero state emptystate nothing yet failed load error retry",
   "person-cell":
     "customer vendor staff user avatar initials name guest table row cell",
+  "bulk-bar":
+    "bulk actions selection selected select all page checkbox toolbar clear delete download grid table",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
   "period-menu":
@@ -468,6 +471,7 @@ const SOURCES: Record<string, Source> = {
   "description-list": "prototype",
   "person-cell": "prototype",
   "facet-filter": "prototype",
+  "bulk-bar": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
@@ -1925,6 +1929,12 @@ export const demos: Demo[] = [
     title: "Facet filter",
     group: "Data display",
     render: () => <FacetFilterDemo />,
+  },
+  {
+    id: "bulk-bar",
+    title: "Bulk bar",
+    group: "Data display",
+    render: () => <BulkBarDemo />,
   },
   {
     id: "avatar",
