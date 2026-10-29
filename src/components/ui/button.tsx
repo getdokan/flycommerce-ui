@@ -6,7 +6,7 @@ import { Slot } from "radix-ui"
 import { Spinner } from "@/components/ui/spinner"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center gap-2 border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center gap-2 border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-invalid:border-destructive data-loading:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -64,9 +64,23 @@ const buttonVariants = cva(
 type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
-    /** Shows a spinner and disables the button; ignored with `asChild`. */
+    /**
+     * Shows a spinner and ignores clicks, presses, Enter, Space and the arrow keys until it ends, so it submits no form
+     * and opens no menu it triggers. The button keeps focus and stays in the tab order (`aria-disabled`, `aria-busy`),
+     * so keyboard users don't lose their place. Ignored with `asChild`.
+     */
     loading?: boolean
   }
+
+const ACTIVATION_KEYS = new Set(["Enter", " "])
+// A menu or select trigger also opens on these, so they are swallowed only on one.
+const POPUP_KEYS = new Set(["ArrowDown", "ArrowUp"])
+
+// Enter and Space reach onClick as a click too; preventing it also stops a form submit.
+function swallow(event: React.SyntheticEvent) {
+  event.preventDefault()
+  event.stopPropagation()
+}
 
 function Button({
   className,
@@ -77,6 +91,9 @@ function Button({
   loading = false,
   disabled,
   children,
+  onClick,
+  onKeyDown,
+  onPointerDown,
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot.Root : "button"
@@ -89,9 +106,31 @@ function Button({
       data-size={size}
       data-shape={shape === "pill" ? shape : undefined}
       className={cn(buttonVariants({ variant, size, shape, className }))}
-      disabled={asChild ? undefined : disabled || isLoading}
+      disabled={asChild ? undefined : disabled}
       aria-busy={isLoading || undefined}
+      data-loading={isLoading || undefined}
       {...props}
+      aria-disabled={isLoading || props["aria-disabled"]}
+      onClick={isLoading ? swallow : onClick}
+      // A trigger it is wrapped in (a menu, a select) opens on these keys or a press, not on the click.
+      onKeyDown={
+        isLoading
+          ? (event: React.KeyboardEvent<HTMLButtonElement>) => {
+              const trigger = event.currentTarget
+              // Radix Select's trigger is a combobox without aria-haspopup.
+              const opensPopup =
+                trigger.getAttribute("aria-haspopup") !== null ||
+                trigger.getAttribute("role") === "combobox"
+              if (
+                ACTIVATION_KEYS.has(event.key) ||
+                (opensPopup && POPUP_KEYS.has(event.key))
+              )
+                swallow(event)
+              else onKeyDown?.(event)
+            }
+          : onKeyDown
+      }
+      onPointerDown={isLoading ? swallow : onPointerDown}
     >
       {isLoading ? (
         <>
