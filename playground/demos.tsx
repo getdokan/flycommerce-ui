@@ -8,6 +8,7 @@ import {
   FiAlertCircle as CircleAlertIcon,
   FiBox as BoxIcon,
   FiDownload as DownloadIcon,
+  FiExternalLink as ExternalLinkIcon,
   FiHome as HomeIcon,
   FiInbox as InboxIcon,
   FiInfo as InfoIcon,
@@ -257,6 +258,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  PreviewTile,
   Progress,
   RadioGroup,
   RadioGroupItem,
@@ -343,6 +345,8 @@ const KEYWORDS: Record<string, string> = {
     "no data blank zero state emptystate nothing yet failed load error retry",
   "person-cell":
     "customer vendor staff user avatar initials name guest table row cell",
+  "preview-tile":
+    "theme template picture thumbnail card tile grid look inside highlighted live install",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
   "period-menu":
@@ -467,6 +471,7 @@ const SOURCES: Record<string, Source> = {
   table: "prototype",
   "description-list": "prototype",
   "person-cell": "prototype",
+  "preview-tile": "prototype",
   "facet-filter": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
@@ -1925,6 +1930,85 @@ export const demos: Demo[] = [
     title: "Facet filter",
     group: "Data display",
     render: () => <FacetFilterDemo />,
+  },
+  {
+    id: "preview-tile",
+    title: "Preview tile",
+    group: "Data display",
+    render: () => (
+      <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {[
+          {
+            name: "Lumen",
+            version: "2.4.0",
+            src: "https://picsum.photos/seed/fc-theme-lumen/800/600",
+            live: true,
+            status: "Updated 3 days ago",
+          },
+          {
+            name: "Atlas",
+            version: "1.8.2",
+            src: "https://picsum.photos/seed/fc-theme-atlas/800/600",
+            status: "Free · 1,240 stores",
+            installable: true,
+          },
+          {
+            name: "Meridian",
+            version: "3.0.1",
+            src: "https://example.invalid/meridian.png",
+            status: "Premium · $49",
+          },
+        ].map((theme) => (
+          <PreviewTile
+            key={theme.name}
+            src={theme.src}
+            alt={`${theme.name} home page`}
+            label="Look inside"
+            openLabel={`Look inside ${theme.name}`}
+            onOpen={() => {}}
+            highlighted={theme.live}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="truncate font-semibold">{theme.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  Version {theme.version}
+                </div>
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon-sm" asChild>
+                    <a
+                      href="#preview-tile"
+                      aria-label={`${theme.name} in the theme store`}
+                    >
+                      <ExternalLinkIcon />
+                    </a>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>View in the theme store</TooltipContent>
+              </Tooltip>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground">
+                {theme.status}
+              </span>
+              {theme.live ? (
+                <Badge variant="success" dot>
+                  Live on your store
+                </Badge>
+              ) : (
+                theme.installable && (
+                  <Button size="sm" variant="outline">
+                    Install
+                  </Button>
+                )
+              )}
+            </div>
+          </PreviewTile>
+        ))}
+      </div>
+    ),
   },
   {
     id: "avatar",
