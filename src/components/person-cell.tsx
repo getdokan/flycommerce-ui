@@ -6,8 +6,8 @@ import { cn } from "cn"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 type PersonCellProps = Omit<React.ComponentProps<"div">, "title"> & {
-  /** The person's name: shown truncated, in full on hover, and as the initials. Empty shows `placeholder`. */
-  name: string
+  /** The person's name: shown truncated, in full on hover, and as the initials. Empty or missing shows `placeholder`. */
+  name?: string | null
   /** The person's photo; the initials show until it loads, or when it fails. */
   src?: string
   /** The person's stable id (the email only when there is none): one of eight person colours, the same every time. Empty stays grey. */
@@ -28,13 +28,31 @@ type PersonCellProps = Omit<React.ComponentProps<"div">, "title"> & {
   placeholder?: React.ReactNode
 }
 
-/** The first letters of the first two words, so "Hana Lindqvist" reads "HL" and "dana@example.com" reads "DE". */
+// Grapheme by grapheme, so a flag or family emoji and "é" typed as e + accent stay whole.
+const segmenter =
+  typeof Intl !== "undefined" && "Segmenter" in Intl
+    ? new Intl.Segmenter(undefined, { granularity: "grapheme" })
+    : undefined
+
+function graphemes(text: string): string[] {
+  return segmenter
+    ? Array.from(segmenter.segment(text), (part) => part.segment)
+    : Array.from(text)
+}
+
+const LEADS = /[\p{L}\p{N}\p{Extended_Pictographic}\p{Regional_Indicator}]/u
+
+/**
+ * The first letters of the first two words, so "Hana Lindqvist" reads "HL" and "dana@example.com" reads "DE". Leading
+ * punctuation is skipped: "(Guest) Bob" reads "GB".
+ */
 function personInitials(name: string) {
   return name
     .split(/[\s@]+/)
-    .filter(Boolean)
+    .map((word) => graphemes(word).find((part) => LEADS.test(part)))
+    .filter((first): first is string => Boolean(first))
     .slice(0, 2)
-    .map((part) => Array.from(part)[0]!.toUpperCase())
+    .map((first) => first.toUpperCase())
     .join("")
 }
 
@@ -53,7 +71,7 @@ function PersonCell({
   className,
   ...props
 }: PersonCellProps) {
-  if (!name.trim())
+  if (!name?.trim())
     return (
       <div
         data-slot="person-cell"
@@ -67,6 +85,7 @@ function PersonCell({
   const label = href ? (
     <a
       href={href}
+      title={name}
       className="truncate rounded-sm hover:underline focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
       onClick={(event) => {
         if (
@@ -85,7 +104,9 @@ function PersonCell({
       {name}
     </a>
   ) : (
-    <span className="truncate">{name}</span>
+    <span className="truncate" title={name}>
+      {name}
+    </span>
   )
 
   return (
@@ -101,10 +122,7 @@ function PersonCell({
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
-        <div
-          className="flex min-w-0 items-center gap-2 font-[560] text-foreground"
-          title={name}
-        >
+        <div className="flex min-w-0 items-center gap-2 font-[560] text-foreground">
           {label}
           {badge && <span className="shrink-0">{badge}</span>}
         </div>

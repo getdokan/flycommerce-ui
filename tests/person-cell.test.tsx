@@ -109,3 +109,59 @@ describe("PersonCell", () => {
     ).toBe("lg")
   })
 })
+
+describe("personInitials, beyond plain letters", () => {
+  it("keeps a flag, a family emoji and an accent typed as two characters whole", () => {
+    expect(personInitials("🇧🇩 Deshi Store")).toBe("🇧🇩D")
+    expect(personInitials("👨‍👩‍👧 Family")).toBe("👨‍👩‍👧F")
+    expect(personInitials("émile Zola")).toBe("ÉZ")
+  })
+
+  it("skips leading punctuation, and gives nothing for a name without letters", () => {
+    expect(personInitials("(Guest) Bob")).toBe("GB")
+    expect(personInitials("@")).toBe("")
+  })
+})
+
+describe("PersonCell, more", () => {
+  it("shows the placeholder for a missing name", () => {
+    const { container, rerender } = render(<PersonCell name={null} />)
+    expect(container.textContent).toBe("—")
+    rerender(<PersonCell />)
+    expect(container.textContent).toBe("—")
+  })
+
+  it("puts the full name on the name, not on the badge", () => {
+    render(
+      <PersonCell
+        name="Mateo Rossi"
+        badge={<Badge variant="secondary">Guest</Badge>}
+      />
+    )
+    expect(screen.getByText("Mateo Rossi").getAttribute("title")).toBe(
+      "Mateo Rossi"
+    )
+    expect(screen.getByText("Guest").closest("[title]")).toBeNull()
+  })
+
+  it("leaves ctrl, shift and alt clicks and other buttons to the browser", () => {
+    const onNavigate = vi.fn()
+    render(
+      <PersonCell
+        name="Hana Lindqvist"
+        href="/customers/500"
+        onNavigate={onNavigate}
+      />
+    )
+    const link = screen.getByRole("link", { name: "Hana Lindqvist" })
+    link.addEventListener("click", (event) => event.preventDefault())
+    for (const modifier of [
+      { ctrlKey: true },
+      { shiftKey: true },
+      { altKey: true },
+      { button: 1 },
+    ])
+      fireEvent.click(link, modifier)
+    expect(onNavigate).not.toHaveBeenCalled()
+  })
+})
