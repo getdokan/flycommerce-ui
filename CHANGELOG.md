@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- `MediaGrid` and `MediaTile` for a managed media library: `<MediaGrid items multiple selected onSelectedChange onOpen actions caption aspect="square" columns="responsive" />`. With `onOpen`, clicking a tile's picture opens the file, also while others are selected, and selection moves to a checkbox at the top start of each tile, shown on hover, keyboard focus and touch screens, and on every tile once one is selected (`MediaTile selecting`); a selected tile gets a brand ring and a soft brand tint instead of the corner check. `actions` puts a chip at the top end for a ⋯ menu, shown the same way and while its menu is open. `caption` adds the file name under the picture, truncated with the full name on hover, then "JPG · 1.2 MB" or "Video" (`description` replaces that line, `locale` formats the size, and `labels.fileCaption` and `labels.open` translate it). `aspect="square"` makes square tiles, and `columns="responsive"` lays out 2, 3, 4, 5 and 6 per row by the grid's own width. Without these props both behave as before, so `MediaPickerDialog` is unchanged.
 - `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
 
 ### Fixed

@@ -11,6 +11,8 @@ import {
   FiTrash2 as Trash2Icon,
 } from "react-icons/fi"
 
+import { Checkbox } from "@/components/ui/checkbox"
+
 type MediaItem = {
   id: string
   url: string
@@ -33,19 +35,29 @@ type MediaItem = {
 
 type MediaTileLabels = {
   select?: (name: string) => string
+  /** Names the picture's button with `onOpen`. */
+  open?: (name: string) => string
   preview?: (name: string) => string
   remove?: (name: string) => string
   private?: string
+  /** Also the caption's second line for a video. */
   video?: string
+  /** The caption's second line for a file, e.g. "JPG · 1.2 MB". */
+  fileCaption?: (type: string, size: string) => string
 }
 
 const DEFAULT_TILE_LABELS: Required<MediaTileLabels> = {
   select: (name) => `Select ${name}`,
+  open: (name) => `Open ${name}`,
   preview: (name) => `Preview ${name}`,
   remove: (name) => `Remove ${name}`,
   private: "Private",
   video: "Video",
+  fileCaption: (type, size) => `${type} · ${size}`,
 }
+
+const REVEAL =
+  "opacity-0 transition-opacity group-focus-within/tile:opacity-100 group-hover/tile:opacity-100 pointer-coarse:opacity-100"
 
 function isImage(item: Pick<MediaItem, "mimeType" | "url" | "isPrivate">) {
   if (item.isPrivate) return false
@@ -105,21 +117,56 @@ type MediaTileProps = {
   /** Unselected tiles can't be picked, e.g. the selection limit is reached. */
   disabled?: boolean
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  /** Clicking the picture calls this instead of `onClick`, e.g. to open the file's details; the tile isn't dimmed when `disabled`. */
+  onOpen?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  /** Adds a selection checkbox at the top start, shown on hover, focus, touch and while selected, in place of `onClick`; a selected tile gets a ring and a tint. */
+  onSelectedChange?: (selected: boolean) => void
+  /** Keeps the checkbox shown, e.g. while any file in the grid is selected. */
+  selecting?: boolean
+  /** Top-end chip, e.g. a ⋯ menu on a ghost `icon-xs` button; shown like the checkbox, and while its menu is open. */
+  actions?: React.ReactNode
   onPreview?: () => void
   onRemove?: () => void
+  /** Shows the file name and a second line under the picture. */
+  caption?: boolean
+  /** Replaces the caption's second line ("JPG · 1.2 MB", or "Video"). */
+  description?: React.ReactNode
+  /** `square` for a managed library; `default` is 6:5. */
+  aspect?: "default" | "square"
+  /** Formats the size in the caption. */
+  locale?: string
   labels?: MediaTileLabels
   className?: string
 }
 
-/** Figma media tile: thumbnail or file glyph, selection check, hover Preview / Remove. */
+function captionLine(
+  item: MediaItem,
+  labels: Required<MediaTileLabels>,
+  locale?: string
+) {
+  if (item.videoUrl) return labels.video
+  const type = fileExtension(item.name)
+  const size = item.size === undefined ? "" : formatBytes(item.size, locale)
+  return type && size ? labels.fileCaption(type, size) : type || size
+}
+
+/** Figma media tile: thumbnail or file glyph, selection check or checkbox, hover Preview / Remove or actions, and an optional caption. */
 function MediaTile({
   item,
   selected = false,
   active = false,
   disabled = false,
   onClick,
+  onOpen,
+  onSelectedChange,
+  selecting = false,
+  actions,
   onPreview,
   onRemove,
+  caption = false,
+  description,
+  aspect = "default",
+  locale,
   labels: labelsProp,
   className,
 }: MediaTileProps) {
@@ -127,15 +174,19 @@ function MediaTile({
   const [broken, setBroken] = React.useState(false)
   const showImage = isImage(item) && !broken
   const src = item.thumbnailUrl || item.url
+  const selectable = Boolean(onSelectedChange)
+  const blocked = disabled && !selected
 
-  return (
+  const picture = (
     <div
-      data-slot="media-tile"
+      data-slot={caption ? "media-tile-picture" : "media-tile"}
       data-selected={selected || undefined}
       data-active={active || undefined}
       className={cn(
-        "group/tile relative aspect-[6/5] overflow-hidden rounded-lg border border-border bg-page transition-shadow data-selected:border-primary data-active:ring-2 data-active:ring-primary",
-        className
+        "group/tile relative overflow-hidden rounded-lg border border-border bg-page transition-shadow data-selected:border-primary data-active:ring-2 data-active:ring-primary",
+        aspect === "square" ? "aspect-square" : "aspect-[6/5]",
+        selectable && "data-selected:ring-2 data-selected:ring-primary",
+        !caption && className
       )}
     >
       {showImage ? (
@@ -150,9 +201,11 @@ function MediaTile({
       ) : (
         <span className="flex size-full flex-col items-center justify-center gap-2 p-3">
           <MediaFileGlyph name={item.name} className="size-10" />
-          <span className="w-full truncate text-center text-xs text-muted-foreground">
-            {item.name}
-          </span>
+          {!caption && (
+            <span className="w-full truncate text-center text-xs text-muted-foreground">
+              {item.name}
+            </span>
+          )}
         </span>
       )}
 
@@ -160,9 +213,14 @@ function MediaTile({
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <span className="flex size-10 items-center justify-center rounded-full bg-foreground/60 text-background">
             <PlayIcon className="size-4 fill-current" aria-hidden="true" />
-            <span className="sr-only">{labels.video}</span>
+            {!(caption && description === undefined) && (
+              <span className="sr-only">{labels.video}</span>
+            )}
           </span>
         </span>
+      )}
+      {selectable && selected && (
+        <span className="pointer-events-none absolute inset-0 bg-primary/10" />
       )}
       {item.isPrivate && (
         <span className="pointer-events-none absolute start-2 bottom-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-semibold text-foreground-secondary shadow-1">
@@ -171,31 +229,62 @@ function MediaTile({
         </span>
       )}
 
-      {onClick && (
+      {onOpen ? (
         <button
           type="button"
-          aria-label={labels.select(item.title || item.name)}
-          aria-pressed={selected}
-          aria-disabled={(disabled && !selected) || undefined}
-          onClick={(event) => {
-            if (disabled && !selected) return
-            onClick(event)
-          }}
-          className="absolute inset-0 cursor-pointer rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset aria-disabled:cursor-not-allowed"
+          aria-label={labels.open(item.title || item.name)}
+          onClick={onOpen}
+          className="absolute inset-0 cursor-pointer rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
         />
+      ) : (
+        onClick &&
+        !selectable && (
+          <button
+            type="button"
+            aria-label={labels.select(item.title || item.name)}
+            aria-pressed={selected}
+            aria-disabled={blocked || undefined}
+            onClick={(event) => {
+              if (blocked) return
+              onClick(event)
+            }}
+            className="absolute inset-0 cursor-pointer rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset aria-disabled:cursor-not-allowed"
+          />
+        )
       )}
-      {disabled && !selected && (
+      {blocked && !onOpen && (
         <span className="pointer-events-none absolute inset-0 bg-background/50" />
       )}
 
-      {selected && (
+      {selectable && (
+        <span
+          className={cn(
+            "absolute start-2 top-2 flex size-7 items-center justify-center rounded-md bg-background shadow-1",
+            !(selected || selecting) && REVEAL
+          )}
+        >
+          <Checkbox
+            checked={selected}
+            disabled={blocked}
+            aria-label={labels.select(item.title || item.name)}
+            onCheckedChange={(checked) => onSelectedChange?.(checked === true)}
+          />
+        </span>
+      )}
+
+      {selected && !selectable && (
         <span className="pointer-events-none absolute end-2 top-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-1">
           <CheckIcon className="size-3" strokeWidth={3} aria-hidden="true" />
         </span>
       )}
 
-      {(onPreview || onRemove) && !selected && (
-        <span className="absolute end-2 top-2 flex gap-1.5 opacity-0 transition-opacity group-focus-within/tile:opacity-100 group-hover/tile:opacity-100 pointer-coarse:opacity-100">
+      {(onPreview || onRemove || actions) && !(selected && !selectable) && (
+        <span
+          className={cn(
+            "absolute end-2 top-2 flex gap-1.5 has-data-[state=open]:opacity-100",
+            REVEAL
+          )}
+        >
           {onPreview && (
             <TileAction label={labels.preview(item.name)} onClick={onPreview}>
               <EyeIcon />
@@ -206,8 +295,37 @@ function MediaTile({
               <Trash2Icon />
             </TileAction>
           )}
+          {actions && (
+            <span className="flex size-7 items-center justify-center rounded-md bg-background text-foreground-secondary shadow-1">
+              {actions}
+            </span>
+          )}
         </span>
       )}
+    </div>
+  )
+
+  if (!caption) return picture
+
+  return (
+    <div
+      data-slot="media-tile"
+      data-selected={selected || undefined}
+      data-active={active || undefined}
+      className={cn("group/tile flex min-w-0 flex-col gap-2", className)}
+    >
+      {picture}
+      <div className="min-w-0">
+        <div
+          title={item.name}
+          className="truncate text-sm font-[560] text-foreground"
+        >
+          {item.name}
+        </div>
+        <div className="truncate text-xs text-muted-foreground tabular-nums">
+          {description ?? captionLine(item, labels, locale)}
+        </div>
+      </div>
     </div>
   )
 }
