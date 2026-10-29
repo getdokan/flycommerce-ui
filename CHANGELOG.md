@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- `Icon` names for media screens: `crop` (Feather Crop) and `link` (Feather Link) under Actions; `grid` (Feather Grid), the grid-view twin of `list`; the file-type marks `file` (Feather File), `document` (Feather FileText) and `fileArchive` (Lucide FileArchive); and `video` (Feather Youtube). None mirror in right-to-left layouts, and `P3IconProvider` draws them with these default glyphs.
 - `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
 
 ### Fixed
