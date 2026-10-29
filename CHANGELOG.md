@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
+- `Badge dot="pulse"`: the status dot with a soft ring in the badge's colour that pings outwards behind it, for the one live, current state on a screen, e.g. `<Badge variant="success" dot="pulse">Live on maisonoriel.com</Badge>`. With reduced motion the ring isn't drawn and the solid dot shows as before. It is decorative (`aria-hidden`), so the badge text carries the meaning. `StatusBadge` passes it through, and `dot` and `dot={true}` look the same as before.
 
 ### Fixed
 

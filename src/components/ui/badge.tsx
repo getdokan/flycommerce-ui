@@ -35,8 +35,8 @@ function Badge({
 }: React.ComponentProps<"span"> &
   VariantProps<typeof badgeVariants> & {
     asChild?: boolean
-    /** Leading status dot in the badge's own colour. */
-    dot?: boolean
+    /** Leading status dot in the badge's own colour; `"pulse"` adds a ring that pings outwards (not under reduced motion). */
+    dot?: boolean | "pulse"
   }) {
   const Comp = asChild ? Slot.Root : "span"
 
@@ -47,12 +47,19 @@ function Badge({
       className={cn(badgeVariants({ variant }), className)}
       {...props}
     >
-      {dot && !asChild && (
-        <span
-          aria-hidden="true"
-          className="size-1.5 shrink-0 rounded-full bg-current"
-        />
-      )}
+      {dot &&
+        !asChild &&
+        (dot === "pulse" ? (
+          <span aria-hidden="true" className="relative size-1.5 shrink-0">
+            <span className="absolute inset-0 animate-ping rounded-full bg-current opacity-75 motion-reduce:hidden" />
+            <span className="absolute inset-0 rounded-full bg-current" />
+          </span>
+        ) : (
+          <span
+            aria-hidden="true"
+            className="size-1.5 shrink-0 rounded-full bg-current"
+          />
+        ))}
       {children}
     </Comp>
   )
