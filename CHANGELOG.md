@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- `Button loading` keeps focus. A focused button that started loading was disabled, so focus fell to the page and keyboard and screen-reader users lost their place. While loading, the button now stays focusable and in the tab order with `aria-disabled="true"` and `aria-busy="true"`, shows the spinner as before, and ignores clicks, Enter and Space, which also stops a form submit. It looks the same as before. `disabled` together with `loading` still disables it natively. **Check tests:** a test that asserted `toBeDisabled()` (or `.disabled`) on a loading button now sees `aria-disabled="true"` instead. This applies to every component that uses it, such as `ConfirmDialog`'s confirm button and `SaveBar`'s save button.
+
 ## [0.5.0] - 2026-10-23
 
 New: `EmptyState` (a one-line empty or failed list), translatable built-in labels and a `locale` for dates, numbers and file sizes across sheets, sidebar, date pickers, the media picker and table filters, person colours for avatars without a picture, and right-to-left fixes.

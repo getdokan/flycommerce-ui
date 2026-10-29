@@ -6,7 +6,7 @@ import { Slot } from "radix-ui"
 import { Spinner } from "@/components/ui/spinner"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center gap-2 border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center gap-2 border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-busy:pointer-events-none aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -64,7 +64,11 @@ const buttonVariants = cva(
 type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
-    /** Shows a spinner and disables the button; ignored with `asChild`. */
+    /**
+     * Shows a spinner and ignores clicks, Enter and Space until it ends, including a form submit. The button keeps
+     * focus and stays in the tab order (`aria-disabled`, `aria-busy`), so keyboard users don't lose their place.
+     * Ignored with `asChild`.
+     */
     loading?: boolean
   }
 
@@ -77,6 +81,7 @@ function Button({
   loading = false,
   disabled,
   children,
+  onClick,
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot.Root : "button"
@@ -89,9 +94,19 @@ function Button({
       data-size={size}
       data-shape={shape === "pill" ? shape : undefined}
       className={cn(buttonVariants({ variant, size, shape, className }))}
-      disabled={asChild ? undefined : disabled || isLoading}
+      disabled={asChild ? undefined : disabled}
       aria-busy={isLoading || undefined}
       {...props}
+      aria-disabled={isLoading || props["aria-disabled"]}
+      onClick={
+        isLoading
+          ? (event: React.MouseEvent<HTMLButtonElement>) => {
+              // Enter and Space reach here as a click too; preventing it also stops a form submit.
+              event.preventDefault()
+              event.stopPropagation()
+            }
+          : onClick
+      }
     >
       {isLoading ? (
         <>

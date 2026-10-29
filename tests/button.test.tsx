@@ -1,4 +1,6 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import * as React from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { Button, ButtonArrow } from "@/index"
@@ -55,7 +57,7 @@ describe("Button shape", () => {
     expect(link.querySelector('[data-slot="button-arrow"]')).not.toBeNull()
   })
 
-  it("is busy and disabled while loading", () => {
+  it("is busy and aria-disabled while loading, and stays focusable", () => {
     render(
       <Button shape="pill" loading>
         Checking with PayPal
@@ -64,7 +66,78 @@ describe("Button shape", () => {
     )
     const button = screen.getByRole("button", { name: "Checking with PayPal" })
     expect(button.getAttribute("aria-busy")).toBe("true")
-    expect((button as HTMLButtonElement).disabled).toBe(true)
+    expect(button.getAttribute("aria-disabled")).toBe("true")
+    expect((button as HTMLButtonElement).disabled).toBe(false)
+  })
+})
+
+describe("Button loading", () => {
+  function Retry({ onClick }: { onClick: () => void }) {
+    const [loading, setLoading] = React.useState(false)
+    return (
+      <Button
+        loading={loading}
+        onClick={() => {
+          onClick()
+          setLoading(true)
+        }}
+      >
+        Try again
+      </Button>
+    )
+  }
+
+  it("keeps focus when it starts loading", async () => {
+    const user = userEvent.setup()
+    render(<Retry onClick={() => {}} />)
+    const button = screen.getByRole("button", { name: "Try again" })
+    button.focus()
+    await user.keyboard("{Enter}")
+    expect(button.getAttribute("aria-busy")).toBe("true")
+    expect(document.activeElement).toBe(button)
+  })
+
+  it("ignores clicks, Enter and Space while loading", async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    render(<Retry onClick={onClick} />)
+    const button = screen.getByRole("button", { name: "Try again" })
+    await user.click(button)
+    expect(onClick).toHaveBeenCalledTimes(1)
+
+    button.focus()
+    await user.keyboard("{Enter}")
+    await user.keyboard(" ")
+    fireEvent.click(button)
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it("doesn't submit its form while loading", async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault())
+    render(
+      <form onSubmit={onSubmit}>
+        <input aria-label="Note" />
+        <Button type="submit" loading>
+          Save
+        </Button>
+      </form>
+    )
+    await user.click(screen.getByRole("button", { name: "Save" }))
+    await user.type(screen.getByRole("textbox", { name: "Note" }), "x{Enter}")
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it("stays natively disabled when disabled is set as well", () => {
+    render(
+      <Button loading disabled>
+        Save
+      </Button>
+    )
+    expect(
+      (screen.getByRole("button", { name: "Save" }) as HTMLButtonElement)
+        .disabled
+    ).toBe(true)
   })
 })
 
