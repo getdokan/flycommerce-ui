@@ -80,26 +80,42 @@ function FacetFilter<T extends string>({
 }: FacetFilterProps<T>) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
   const picked = options.filter((option) => value.includes(option.value))
+  const known = new Set(options.map((option) => option.value))
+  // Picked values with no option (e.g. from the address, while the options load) are kept and counted, not dropped.
+  const unknown = value.filter((item) => !known.has(item))
+  const total = picked.length + unknown.length
   const summary =
-    picked.length === 0
+    total === 0
       ? label
-      : picked.length === 1
+      : total === 1 && picked.length === 1
         ? picked[0]!.label
-        : labels.summary(label, picked.length)
-  const announced = picked.length
-    ? picked.map((option) => option.label).join(", ")
-    : labels.all
+        : labels.summary(label, total)
+  const pickedLabels = picked.map((option) => option.label).join(", ")
+  // The accessible name holds the visible text: "Payment: all", "Payment: Paid", or "Payment, 2: Paid, Unpaid".
+  const name =
+    total === 0
+      ? labels.name(label, labels.all)
+      : picked.length === 0
+        ? summary
+        : total === 1
+          ? labels.name(label, pickedLabels)
+          : labels.name(summary, pickedLabels)
+  // Clear leaves picked options that can't be unticked here (disabled), and is offered only when it would change something.
+  const kept = value.filter((item) =>
+    options.some((option) => option.value === item && option.disabled)
+  )
   const format = React.useMemo(() => new Intl.NumberFormat(locale), [locale])
 
-  // The pick keeps the options' order, whichever order they were ticked in.
+  // The pick keeps the options' order, whichever order they were ticked in, then the values with no option.
   const toggle = (option: T, checked: boolean) =>
-    onValueChange(
-      options
+    onValueChange([
+      ...options
         .filter((item) =>
           item.value === option ? checked : value.includes(item.value)
         )
-        .map((item) => item.value)
-    )
+        .map((item) => item.value),
+      ...unknown,
+    ])
 
   return (
     <DropdownMenu
@@ -111,9 +127,9 @@ function FacetFilter<T extends string>({
         <Button
           variant="outline"
           disabled={disabled}
-          aria-label={labels.name(label, announced)}
+          aria-label={name}
           data-slot="facet-filter"
-          data-picked={picked.length || undefined}
+          data-picked={total || undefined}
           className={className}
         >
           {React.isValidElement(icon)
@@ -126,7 +142,7 @@ function FacetFilter<T extends string>({
           <ChevronDownIcon data-icon="inline-end" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="w-56">
+      <DropdownMenuContent align={align} className="w-auto max-w-80 min-w-56">
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
         {options.map((option) => (
           <DropdownMenuCheckboxItem
@@ -151,10 +167,10 @@ function FacetFilter<T extends string>({
             </span>
           </DropdownMenuCheckboxItem>
         ))}
-        {picked.length > 0 && (
+        {kept.length < value.length && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => onValueChange([])}>
+            <DropdownMenuItem onSelect={() => onValueChange(kept)}>
               {labels.clear}
             </DropdownMenuItem>
           </>

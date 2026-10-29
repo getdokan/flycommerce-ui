@@ -20,7 +20,7 @@ describe("FacetFilter", () => {
         onValueChange={() => {}}
       />
     )
-    const trigger = () => screen.getByRole("button", { name: /^Payment:/ })
+    const trigger = () => screen.getByRole("button", { name: /^Payment/ })
     expect(trigger().textContent).toBe("Payment")
     expect(trigger().getAttribute("aria-label")).toBe("Payment: all")
 
@@ -44,7 +44,10 @@ describe("FacetFilter", () => {
       />
     )
     expect(trigger().textContent).toBe("Payment, 2")
-    expect(trigger().getAttribute("aria-label")).toBe("Payment: Paid, Unpaid")
+    // The name starts with what is on screen, so speech control can say "Payment, 2".
+    expect(trigger().getAttribute("aria-label")).toBe(
+      "Payment, 2: Paid, Unpaid"
+    )
     expect(trigger().getAttribute("data-picked")).toBe("2")
   })
 
@@ -155,5 +158,83 @@ describe("FacetFilter", () => {
     )
     const item = screen.getByRole("menuitemcheckbox", { name: /Opaline/ })
     expect(item.querySelector("[data-testid=media]")).toBeTruthy()
+  })
+
+  it("stays open while ticking, by click, Enter and Space", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <FacetFilter
+        label="Payment"
+        options={OPTIONS}
+        value={[]}
+        onValueChange={onValueChange}
+      />
+    )
+    await user.click(screen.getByRole("button", { name: "Payment: all" }))
+    await user.click(screen.getByRole("menuitemcheckbox", { name: /^Paid/ }))
+    expect(screen.getByRole("menu")).toBeTruthy()
+
+    screen.getByRole("menuitemcheckbox", { name: /^Unpaid/ }).focus()
+    await user.keyboard("{Enter}")
+    await user.keyboard(" ")
+    expect(onValueChange).toHaveBeenCalledTimes(3)
+    expect(screen.getByRole("menu")).toBeTruthy()
+
+    await user.keyboard("{Escape}")
+    expect(screen.queryByRole("menu")).toBeNull()
+  })
+
+  it("keeps and counts a picked value that has no option, and Clear removes it", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <FacetFilter
+        label="Vendor"
+        options={OPTIONS}
+        value={["ghost"]}
+        onValueChange={onValueChange}
+      />
+    )
+    const button = screen.getByRole("button", { name: "Vendor, 1" })
+    expect(button.getAttribute("data-picked")).toBe("1")
+
+    await user.click(button)
+    await user.click(screen.getByRole("menuitemcheckbox", { name: /^Paid/ }))
+    expect(onValueChange).toHaveBeenLastCalledWith(["paid", "ghost"])
+
+    await user.click(screen.getByRole("menuitem", { name: "Clear" }))
+    expect(onValueChange).toHaveBeenLastCalledWith([])
+  })
+
+  it("leaves a disabled pick to the app, and offers Clear only when it would change something", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const options = [
+      { value: "paid", label: "Paid" },
+      { value: "locked", label: "Locked", disabled: true },
+    ]
+    const { rerender } = render(
+      <FacetFilter
+        label="Payment"
+        options={options}
+        value={["locked"]}
+        onValueChange={onValueChange}
+        open
+      />
+    )
+    expect(screen.queryByRole("menuitem", { name: "Clear" })).toBeNull()
+
+    rerender(
+      <FacetFilter
+        label="Payment"
+        options={options}
+        value={["paid", "locked"]}
+        onValueChange={onValueChange}
+        open
+      />
+    )
+    await user.click(screen.getByRole("menuitem", { name: "Clear" }))
+    expect(onValueChange).toHaveBeenLastCalledWith(["locked"])
   })
 })
