@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `PersonCell`: a person in a table row, `<PersonCell name src colorFrom href onNavigate description badge />`. A round `Avatar` with the photo, or the initials in the person colour (`icon` draws an icon instead, e.g. `vendors` for a store with no name); the name truncated with the full name on hover, as a link with `href` (a plain click calls `onNavigate` for a client-side router, a modified click opens the URL); an optional second line such as the email, a `badge` such as "Guest", and `placeholder` ("—") when there is no person. `personInitials` is exported for apps that show the same initials elsewhere.
+
 ## [0.5.0] - 2026-10-23
 
 New: `EmptyState` (a one-line empty or failed list), translatable built-in labels and a `locale` for dates, numbers and file sizes across sheets, sidebar, date pickers, the media picker and table filters, person colours for avatars without a picture, and right-to-left fixes.

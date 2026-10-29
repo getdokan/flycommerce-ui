@@ -251,6 +251,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PersonCell,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -338,6 +339,8 @@ const KEYWORDS: Record<string, string> = {
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
   empty:
     "no data blank zero state emptystate nothing yet failed load error retry",
+  "person-cell":
+    "customer vendor staff user avatar initials name guest table row cell",
   input:
     "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
@@ -457,6 +460,7 @@ const SOURCES: Record<string, Source> = {
   card: "prototype",
   table: "prototype",
   "description-list": "prototype",
+  "person-cell": "prototype",
   tabs: "prototype",
   dialog: "prototype",
   "alert-dialog": "prototype",
@@ -1852,6 +1856,52 @@ export const demos: Demo[] = [
           <Badge dot variant="secondary">
             Unfulfilled
           </Badge>
+        </Row>
+      </Stack>
+    ),
+  },
+  {
+    id: "person-cell",
+    title: "Person cell",
+    group: "Data display",
+    render: () => (
+      <Stack>
+        <Row label="Photo">
+          <PersonCell
+            name="Hana Lindqvist"
+            src="https://github.com/shadcn.png"
+            colorFrom={500}
+            description="hana@example.com"
+          />
+        </Row>
+        <Row label="Initials">
+          <PersonCell name="Dana Whitfield" colorFrom="dana@example.com" />
+        </Row>
+        <Row label="Link and badge">
+          <PersonCell
+            name="Mateo Rossi"
+            href="#"
+            badge={<Badge variant="secondary">Guest</Badge>}
+            description="mateo@example.com"
+          />
+        </Row>
+        <Row label="Icon">
+          <PersonCell
+            name="Opaline Parfums"
+            icon={<Icon name="vendors" />}
+            href="#"
+          />
+        </Row>
+        <Row label="Truncated">
+          <div className="w-40">
+            <PersonCell
+              name="Maximiliana Konstantinopoulou-Featherstonehaugh"
+              colorFrom={7}
+            />
+          </div>
+        </Row>
+        <Row label="No person">
+          <PersonCell name="" />
         </Row>
       </Stack>
     ),
