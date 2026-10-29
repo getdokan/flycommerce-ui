@@ -38,6 +38,26 @@ type ConfirmDialogProps = {
   acknowledgeLabel?: React.ReactNode
   /** The dialog closes when this resolves and stays open when it throws. */
   onConfirm: () => void | Promise<void>
+  /**
+   * Where focus goes when the dialog closes, for a dialog opened without its own `trigger` (e.g. from a menu item,
+   * which is gone by then): an element, a ref, or a function read at close. Ignored when the target has left the page.
+   */
+  returnFocusTo?: FocusTarget
+  /** Runs before focus returns; call `event.preventDefault()` to place focus yourself. */
+  onCloseAutoFocus?: (event: Event) => void
+}
+
+type FocusTarget =
+  | HTMLElement
+  | null
+  | React.RefObject<HTMLElement | null>
+  | (() => HTMLElement | null | undefined)
+
+function resolveTarget(target: FocusTarget | undefined) {
+  if (!target) return null
+  if (typeof target === "function") return target() ?? null
+  if ("current" in target) return target.current
+  return target
 }
 
 function ConfirmDialog({
@@ -55,6 +75,8 @@ function ConfirmDialog({
   confirmTextLabel,
   acknowledgeLabel,
   onConfirm,
+  returnFocusTo,
+  onCloseAutoFocus,
 }: ConfirmDialogProps) {
   const [openState, setOpenState] = React.useState(false)
   const [pending, setPending] = React.useState(false)
@@ -97,7 +119,16 @@ function ConfirmDialog({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
-      <AlertDialogContent>
+      <AlertDialogContent
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event)
+          if (event.defaultPrevented) return
+          const target = resolveTarget(returnFocusTo)
+          if (!target?.isConnected) return
+          event.preventDefault()
+          target.focus()
+        }}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description && (

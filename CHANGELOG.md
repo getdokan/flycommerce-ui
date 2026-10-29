@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- `ConfirmDialog` can return focus when it opens without its own `trigger`. A dialog opened from a menu item had nothing to return to, because the item is gone by the time it closes, so focus fell to the page. `returnFocusTo` names the element: an element, a ref, or a function read at close; a target that has left the page is skipped. `onCloseAutoFocus` runs first and can place focus itself with `event.preventDefault()`. A dialog with a `trigger` returns to it as before.
+
 ## [0.5.0] - 2026-10-23
 
 New: `EmptyState` (a one-line empty or failed list), translatable built-in labels and a `locale` for dates, numbers and file sizes across sheets, sidebar, date pickers, the media picker and table filters, person colours for avatars without a picture, and right-to-left fixes.

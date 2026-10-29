@@ -116,9 +116,7 @@ describe("ConfirmDialog acknowledgeLabel", () => {
 
   it("keeps the tick while a controlled dialog stays open", async () => {
     const user = userEvent.setup()
-    render(
-      <RemoveMember trigger={undefined} open onOpenChange={() => {}} />
-    )
+    render(<RemoveMember trigger={undefined} open onOpenChange={() => {}} />)
     await user.click(checkbox())
     await user.keyboard("{Escape}")
 
@@ -164,5 +162,107 @@ describe("ConfirmDialog acknowledgeLabel", () => {
       },
     })
     expect(results.violations.map((violation) => violation.id)).toEqual([])
+  })
+})
+
+function RowMenu(props: Partial<ConfirmDialogProps>) {
+  const more = React.useRef<HTMLButtonElement>(null)
+  const [menu, setMenu] = React.useState(false)
+  const [confirming, setConfirming] = React.useState(false)
+  return (
+    <>
+      <button type="button">Elsewhere</button>
+      <button ref={more} type="button" onClick={() => setMenu(true)}>
+        More actions
+      </button>
+      {menu && (
+        <button
+          type="button"
+          onClick={() => {
+            // A menu item: it is gone once the dialog opens.
+            setMenu(false)
+            setConfirming(true)
+          }}
+        >
+          Void invoice
+        </button>
+      )}
+      <ConfirmDialog
+        open={confirming}
+        onOpenChange={setConfirming}
+        title="Void invoice INV-1002?"
+        confirmLabel="Void"
+        returnFocusTo={more}
+        onConfirm={() => {}}
+        {...props}
+      />
+    </>
+  )
+}
+
+async function openFromMenu(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: "More actions" }))
+  await user.click(screen.getByRole("button", { name: "Void invoice" }))
+  await screen.findByRole("alertdialog")
+}
+
+describe("ConfirmDialog returnFocusTo", () => {
+  it("returns focus to the element it names after Cancel", async () => {
+    const user = userEvent.setup()
+    render(<RowMenu />)
+    await openFromMenu(user)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "More actions" })
+    )
+  })
+
+  it("returns focus after Confirm too", async () => {
+    const user = userEvent.setup()
+    render(<RowMenu />)
+    await openFromMenu(user)
+    await user.click(screen.getByRole("button", { name: "Void" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "More actions" })
+    )
+  })
+
+  it("takes an element or a function as well as a ref", async () => {
+    const user = userEvent.setup()
+    render(
+      <RowMenu
+        returnFocusTo={() => screen.getByRole("button", { name: "Elsewhere" })}
+      />
+    )
+    await openFromMenu(user)
+    await user.keyboard("{Escape}")
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Elsewhere" })
+    )
+  })
+
+  it("lets onCloseAutoFocus place focus itself", async () => {
+    const user = userEvent.setup()
+    const onCloseAutoFocus = vi.fn((event: Event) => {
+      event.preventDefault()
+      screen.getByRole("button", { name: "Elsewhere" }).focus()
+    })
+    render(<RowMenu onCloseAutoFocus={onCloseAutoFocus} />)
+    await openFromMenu(user)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(onCloseAutoFocus).toHaveBeenCalledTimes(1)
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Elsewhere" })
+    )
+  })
+
+  it("still returns focus to its own trigger without returnFocusTo", async () => {
+    const user = userEvent.setup()
+    render(<RemoveMember acknowledgeLabel={undefined} />)
+    await open(user)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Remove member" })
+    )
   })
 })
