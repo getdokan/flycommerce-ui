@@ -871,10 +871,40 @@ export function FacetFilterDemo() {
   const [payment, setPayment] = React.useState<string[]>(["paid"])
   const [vendor, setVendor] = React.useState<string[]>([])
   const [status, setStatus] = React.useState<string[]>([])
+  const [type, setType] = React.useState<string | null>(null)
+  const [month, setMonth] = React.useState<string | null>("2026-10")
   // Counts are fetched only while the menu is open; here they appear once it opens.
   const [counting, setCounting] = React.useState(false)
   return (
     <div className="flex flex-wrap gap-2">
+      <FacetFilter
+        mode="single"
+        label="Type"
+        icon={<Icon name="media" />}
+        allLabel="All types"
+        allCount={1214}
+        options={[
+          { value: "images", label: "Images", count: 1180 },
+          { value: "videos", label: "Videos", count: 22 },
+          { value: "documents", label: "Documents", count: 12 },
+        ]}
+        value={type}
+        onValueChange={setType}
+      />
+      <FacetFilter
+        mode="single"
+        label="Date"
+        heading="Uploaded"
+        icon={<Icon name="period" />}
+        allLabel="All dates"
+        options={[
+          { value: "2026-10", label: "October 2026", count: 48 },
+          { value: "2026-09", label: "September 2026", count: 131 },
+          { value: "2026-07", label: "July 2026", count: 6 },
+        ]}
+        value={month}
+        onValueChange={setMonth}
+      />
       <FacetFilter
         label="Payment"
         icon={<Icon name="cash" />}

@@ -238,3 +238,200 @@ describe("FacetFilter", () => {
     expect(onValueChange).toHaveBeenLastCalledWith(["locked"])
   })
 })
+
+const TYPES = [
+  { value: "images", label: "Images", count: 1204 },
+  { value: "videos", label: "Videos", count: 3 },
+  { value: "documents", label: "Documents" },
+]
+
+describe("FacetFilter mode=single", () => {
+  it("reads the all label, then the pick, and names the filter", () => {
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value={null}
+        onValueChange={() => {}}
+      />
+    )
+    const trigger = () => screen.getByRole("button", { name: /^Type/ })
+    expect(trigger().textContent).toBe("All types")
+    expect(trigger().getAttribute("aria-label")).toBe("Type: All types")
+    expect(trigger().getAttribute("data-picked")).toBeNull()
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="videos"
+        onValueChange={() => {}}
+      />
+    )
+    expect(trigger().textContent).toBe("Videos")
+    expect(trigger().getAttribute("aria-label")).toBe("Type: Videos")
+    expect(trigger().getAttribute("data-picked")).toBe("1")
+  })
+
+  it("lists the all row first, then the options as radio items with their counts, under the heading", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Date"
+        heading="Uploaded"
+        allLabel="All dates"
+        allCount={1207}
+        options={TYPES}
+        value="images"
+        onValueChange={() => {}}
+        locale="en-US"
+        open
+      />
+    )
+    expect(screen.getByText("Uploaded")).toBeTruthy()
+    expect(screen.queryByText("Date")).toBeNull()
+    const items = screen.getAllByRole("menuitemradio")
+    expect(items.map((item) => item.textContent)).toEqual([
+      "All dates1,207",
+      "Images1,204",
+      "Videos3",
+      "Documents—",
+    ])
+    expect(items[1]!.getAttribute("aria-checked")).toBe("true")
+    expect(items[0]!.getAttribute("aria-checked")).toBe("false")
+    expect(screen.queryByRole("menuitemcheckbox")).toBeNull()
+    expect(screen.queryByRole("menuitem", { name: "Clear" })).toBeNull()
+  })
+
+  it("shows no count on the all row without allCount", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value={null}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const all = screen.getByRole("menuitemradio", { name: "All types" })
+    expect(all.textContent).toBe("All types")
+    expect(all.getAttribute("aria-checked")).toBe("true")
+  })
+
+  it("applies a pick at once, closes the menu and returns focus to the trigger", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value={null}
+        onValueChange={onValueChange}
+      />
+    )
+    const trigger = screen.getByRole("button", { name: "Type: All types" })
+    await user.click(trigger)
+    await user.click(screen.getByRole("menuitemradio", { name: /^Videos/ }))
+    expect(onValueChange).toHaveBeenCalledWith("videos")
+    expect(screen.queryByRole("menu")).toBeNull()
+    expect(document.activeElement).toBe(trigger)
+
+    await user.keyboard("{Enter}")
+    screen.getByRole("menuitemradio", { name: /^Documents/ }).focus()
+    await user.keyboard("{Enter}")
+    expect(onValueChange).toHaveBeenLastCalledWith("documents")
+    expect(screen.queryByRole("menu")).toBeNull()
+  })
+
+  it("empties the pick from the all row, and ignores the row already picked", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="images"
+        onValueChange={onValueChange}
+        open
+      />
+    )
+    await user.click(screen.getByRole("menuitemradio", { name: /^Images/ }))
+    expect(onValueChange).not.toHaveBeenCalled()
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="images"
+        onValueChange={onValueChange}
+        open
+      />
+    )
+    await user.click(screen.getByRole("menuitemradio", { name: "All types" }))
+    expect(onValueChange).toHaveBeenCalledWith(null)
+  })
+
+  it("reads the label without an all row, and counts a value with no option", () => {
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        options={TYPES}
+        value={null}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    // The open menu hides the rest of the page from the accessibility tree.
+    const trigger = () =>
+      screen.getByRole("button", { name: /^Type/, hidden: true })
+    expect(trigger().textContent).toBe("Type")
+    expect(trigger().getAttribute("aria-label")).toBe("Type: all")
+    expect(screen.getAllByRole("menuitemradio")).toHaveLength(3)
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="audio"
+        onValueChange={() => {}}
+        open
+      />
+    )
+    expect(trigger().textContent).toBe("Type, 1")
+    expect(trigger().getAttribute("aria-label")).toBe("Type, 1")
+    expect(
+      screen
+        .getAllByRole("menuitemradio")
+        .every((item) => item.getAttribute("aria-checked") === "false")
+    ).toBe(true)
+  })
+
+  it("heads the menu with heading in the default mode too", () => {
+    render(
+      <FacetFilter
+        label="Payment"
+        heading="Payment status"
+        options={OPTIONS}
+        value={[]}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    expect(screen.getByText("Payment status")).toBeTruthy()
+  })
+})
