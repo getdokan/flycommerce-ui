@@ -68,6 +68,7 @@ import {
   type FilterField,
   type FilterValues,
   type NumberRange,
+  type RowSelectionState,
   type IconName,
   type SettingsNavGroup,
   type StatusTone,
@@ -466,6 +467,70 @@ export function DataTableTreeDemo() {
         />
       }
     />
+  )
+}
+
+export function DataTableSelectionDemo() {
+  const pageSize = 5
+  const [query, setQuery] = React.useState("")
+  const [page, setPage] = React.useState(1)
+  const [deleted, setDeleted] = React.useState<ReadonlySet<string>>(new Set())
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const filtered = PRODUCTS.filter(
+    (p) =>
+      !deleted.has(p.id) && p.name.toLowerCase().includes(query.toLowerCase())
+  )
+  const current = Math.min(page, Math.ceil(filtered.length / pageSize) || 1)
+
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-3">
+      <p className="text-xs text-muted-foreground">
+        Tick rows on two pages: the count and Delete cover both. A new search
+        clears the selection.
+      </p>
+      <DataTable
+        columns={productColumns}
+        data={filtered.slice((current - 1) * pageSize, current * pageSize)}
+        getRowId={(row) => row.id}
+        enableRowSelection
+        crossPageSelection
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+        toolbar={
+          <SearchInput
+            containerClassName="w-full sm:w-72"
+            placeholder="Search products"
+            onSearch={(value) => {
+              setQuery(value)
+              setPage(1)
+              setRowSelection({})
+            }}
+          />
+        }
+        bulkActions={(_, clear, ids) => (
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => {
+              setDeleted(new Set([...deleted, ...ids]))
+              clear()
+              toast.success(
+                `${ids.length} ${ids.length === 1 ? "product" : "products"} deleted`
+              )
+            }}
+          >
+            <Trash2Icon /> Delete
+          </Button>
+        )}
+        pagination={{
+          page: current,
+          pageSize,
+          total: filtered.length,
+          onPageChange: setPage,
+          showPageNumbers: true,
+        }}
+      />
+    </div>
   )
 }
 

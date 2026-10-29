@@ -225,8 +225,14 @@ type DataTableProps<TData> = {
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean)
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
-  /** Shown above the table while rows are selected. */
-  bulkActions?: (selected: TData[], clear: () => void) => React.ReactNode
+  /** Keeps ticks on rows that leave `data`, e.g. on other server pages: the bulk bar counts every selected id. Needs `getRowId` and a controlled `rowSelection`: the app clears it when filters change and removes deleted ids. */
+  crossPageSelection?: boolean
+  /** Shown above the table while rows are selected. `selected` holds this page's selected rows (with `crossPageSelection`, also those ticked on other pages), `ids` every selected id. */
+  bulkActions?: (
+    selected: TData[],
+    clear: () => void,
+    ids: string[]
+  ) => React.ReactNode
   /** Enables header sorting. Client-side unless `manualSorting` is set. */
   sortable?: boolean
   sorting?: SortingState
@@ -265,6 +271,7 @@ function DataTable<TData>({
   enableRowSelection = false,
   rowSelection: rowSelectionProp,
   onRowSelectionChange,
+  crossPageSelection = false,
   bulkActions,
   sortable = false,
   sorting: sortingProp,
@@ -288,6 +295,22 @@ function DataTable<TData>({
 
   const rowSelection = rowSelectionProp ?? rowSelectionState
   const sorting = sortingProp ?? sortingState
+
+  // Index ids repeat on every page, and only the app can reset an uncontrolled selection when its filters change.
+  const crossPage =
+    crossPageSelection &&
+    getRowId !== undefined &&
+    rowSelectionProp !== undefined
+  React.useEffect(() => {
+    if (crossPageSelection && !crossPage)
+      console.warn(
+        "DataTable: crossPageSelection needs getRowId and a controlled rowSelection; the selection stays per page."
+      )
+  }, [crossPageSelection, crossPage])
+  // Rows as they were when ticked, so bulk actions still get the ones now on other pages.
+  const [tickedRows, setTickedRows] = React.useState<
+    ReadonlyMap<string, TData>
+  >(() => new Map())
 
   const reorderable = Boolean(onReorder) && !getSubRows
   const reorderEnabled = reorderable && sorting.length === 0
@@ -368,7 +391,20 @@ function DataTable<TData>({
     onExpandedChange: setExpanded,
     getExpandedRowModel: getSubRows ? getExpandedRowModel() : undefined,
     enableRowSelection,
-    onRowSelectionChange: onRowSelectionChange ?? setRowSelectionState,
+    onRowSelectionChange: crossPage
+      ? (updater) => {
+          const next =
+            typeof updater === "function" ? updater(rowSelection) : updater
+          const loaded = table.getCoreRowModel().flatRows
+          setTickedRows((current) => {
+            const rows = new Map(current)
+            for (const row of loaded) rows.set(row.id, row.original)
+            for (const id of rows.keys()) if (!next[id]) rows.delete(id)
+            return rows
+          })
+          onRowSelectionChange?.(next)
+        }
+      : (onRowSelectionChange ?? setRowSelectionState),
     enableSorting: sortable,
     manualSorting,
     onSortingChange: onSortingChange ?? setSortingState,
@@ -378,9 +414,17 @@ function DataTable<TData>({
 
   const rows = table.getRowModel().rows
   const columnCount = table.getVisibleLeafColumns().length
-  const selectedRows = table
-    .getSelectedRowModel()
-    .rows.map((row) => row.original)
+  const pageSelectedRows = table.getSelectedRowModel().rows
+  const loadedRows = table.getCoreRowModel().rowsById
+  const selectedIds = crossPage
+    ? Object.keys(rowSelection).filter((id) => rowSelection[id])
+    : pageSelectedRows.map((row) => row.id)
+  const selectedRows = crossPage
+    ? selectedIds.flatMap((id) => {
+        const row = loadedRows[id]?.original ?? tickedRows.get(id)
+        return row === undefined ? [] : [row]
+      })
+    : pageSelectedRows.map((row) => row.original)
   const clearSelection = () => table.resetRowSelection()
   const showProgress = refreshing && !loading
   const busy = loading && !error
@@ -526,19 +570,19 @@ function DataTable<TData>({
         className
       )}
     >
-      {selectedRows.length > 0 && bulkActions ? (
+      {selectedIds.length > 0 && bulkActions ? (
         <div
           data-slot="data-table-bulk-bar"
           className="flex flex-wrap items-center gap-3 border-b border-border-subtle bg-primary-subtle-2 px-5 py-3"
         >
           <span className="text-sm font-[560]">
-            {labels.selected(selectedRows.length)}
+            {labels.selected(selectedIds.length)}
           </span>
           <Button variant="link" size="sm" onClick={clearSelection}>
             {labels.clearSelection}
           </Button>
           <div className="ms-auto flex flex-wrap items-center gap-2">
-            {bulkActions(selectedRows, clearSelection)}
+            {bulkActions(selectedRows, clearSelection, selectedIds)}
           </div>
         </div>
       ) : (
