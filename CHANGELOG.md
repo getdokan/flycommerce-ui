@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `PeriodMenu`: a toolbar date filter, `<PeriodMenu label presets allLabel value onValueChange range onRangeChange maxDate />`. One outline button with a calendar icon that reads the period ("This month", "All time", or the custom span "Sep 1 – Sep 30", with the year when it isn't this year), opening the presets as radio items, then "All time" when `allLabel` is set, then "Custom range" when `onRangeChange` is set. Custom range opens a two-month calendar (one on phones) anchored to the button, with days after `maxDate` or before `minDate` unavailable, the picked span under it, and Cancel and Apply; one day applies as a one-day range. Focus returns to the button. `value` is a preset's value, `"all"` (`PERIOD_ALL_TIME`) or `"custom"` (`PERIOD_CUSTOM_RANGE`). `locale` formats the span and translates the calendar, `formatRange` replaces the span's format, and every string is in `labels`.
+
 ## [0.5.0] - 2026-10-23
 
 New: `EmptyState` (a one-line empty or failed list), translatable built-in labels and a `locale` for dates, numbers and file sizes across sheets, sidebar, date pickers, the media picker and table filters, person colours for avatars without a picture, and right-to-left fixes.

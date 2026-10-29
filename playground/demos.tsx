@@ -47,6 +47,7 @@ import {
   DataTableDemo,
   DataTableReorderDemo,
   DataTableTreeDemo,
+  PeriodMenuDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -338,6 +339,8 @@ const KEYWORDS: Record<string, string> = {
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
   empty:
     "no data blank zero state emptystate nothing yet failed load error retry",
+  "period-menu":
+    "date filter period range preset today this month all time custom range calendar toolbar report",
   input:
     "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
@@ -457,6 +460,7 @@ const SOURCES: Record<string, Source> = {
   card: "prototype",
   table: "prototype",
   "description-list": "prototype",
+  "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
   "alert-dialog": "prototype",
@@ -1067,6 +1071,12 @@ export const demos: Demo[] = [
     title: "Date & range pickers",
     group: "Patterns",
     render: () => <DatePickerDemo />,
+  },
+  {
+    id: "period-menu",
+    title: "Period menu",
+    group: "Patterns",
+    render: () => <PeriodMenuDemo />,
   },
   {
     id: "segmented-control",
