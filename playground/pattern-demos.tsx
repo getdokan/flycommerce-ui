@@ -71,6 +71,8 @@ import {
   type IconName,
   type SettingsNavGroup,
   type StatusTone,
+  PeriodMenu,
+  type PeriodRange,
 } from "@/index"
 
 type Product = {
@@ -1375,5 +1377,49 @@ export function ActivityFeedDemo() {
         ])
       }}
     />
+  )
+}
+
+const PERIOD_PRESETS = [
+  { value: "today", label: "Today" },
+  { value: "week", label: "This week" },
+  { value: "month", label: "This month" },
+  { value: "quarter", label: "This quarter" },
+  { value: "six-months", label: "Last six months" },
+  { value: "year", label: "This year" },
+]
+
+export function PeriodMenuDemo() {
+  const [period, setPeriod] = React.useState("month")
+  const [range, setRange] = React.useState<PeriodRange>()
+  const [placed, setPlaced] = React.useState("all")
+  return (
+    <div className="flex flex-wrap gap-2">
+      <PeriodMenu
+        label="Date"
+        align="start"
+        presets={PERIOD_PRESETS}
+        allLabel="All time"
+        value={period}
+        onValueChange={setPeriod}
+        range={range}
+        onRangeChange={(next) => {
+          setRange(next)
+          setPeriod("custom")
+        }}
+        maxDate={new Date()}
+      />
+      <PeriodMenu
+        label="Placed"
+        align="start"
+        presets={[
+          { value: "7d", label: "Last 7 days" },
+          { value: "30d", label: "Last 30 days" },
+        ]}
+        allLabel="All time"
+        value={placed}
+        onValueChange={setPlaced}
+      />
+    </div>
   )
 }

@@ -48,6 +48,7 @@ import {
   DataTableReorderDemo,
   DataTableTreeDemo,
   FacetFilterDemo,
+  PeriodMenuDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -344,6 +345,8 @@ const KEYWORDS: Record<string, string> = {
     "customer vendor staff user avatar initials name guest table row cell",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
+  "period-menu":
+    "date filter period range preset today this month all time custom range calendar toolbar report",
   input:
     "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
@@ -465,6 +468,7 @@ const SOURCES: Record<string, Source> = {
   "description-list": "prototype",
   "person-cell": "prototype",
   "facet-filter": "prototype",
+  "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
   "alert-dialog": "prototype",
@@ -1075,6 +1079,12 @@ export const demos: Demo[] = [
     title: "Date & range pickers",
     group: "Patterns",
     render: () => <DatePickerDemo />,
+  },
+  {
+    id: "period-menu",
+    title: "Period menu",
+    group: "Patterns",
+    render: () => <PeriodMenuDemo />,
   },
   {
     id: "segmented-control",
