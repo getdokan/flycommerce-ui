@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `FacetFilter`: a toolbar filter, `<FacetFilter label icon options={[{ value, label, count, media }]} value onValueChange onOpenChange />`. An outline button that reads the filter's name, the one picked option, or "{label}, {n}", opening a menu of checkbox items that apply at once and keep the menu open, each with its count ("—" until it is known) and optional media such as a vendor's avatar, and "Clear" at the foot once something is picked. `onOpenChange` lets the app fetch the counts only while the menu is open. Every string is in `labels`. Use `TableFilters` instead for a sheet of many fields that apply together.
+
 ## [0.5.0] - 2026-10-23
 
 New: `EmptyState` (a one-line empty or failed list), translatable built-in labels and a `locale` for dates, numbers and file sizes across sheets, sidebar, date pickers, the media picker and table filters, person colours for avatars without a picture, and right-to-left fixes.
