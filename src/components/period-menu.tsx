@@ -1,12 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-  format as formatDate,
-  isSameDay,
-  isSameYear,
-  subMonths,
-} from "date-fns"
+import { isSameDay, isSameYear, subMonths } from "date-fns"
 import {
   FiCalendar as CalendarIcon,
   FiChevronDown as ChevronDownIcon,
@@ -19,7 +14,6 @@ import { Calendar } from "@/components/ui/calendar"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -35,11 +29,14 @@ const CUSTOM_RANGE = "custom"
 
 type PeriodPreset = { value: string; label: string }
 
+/** Whole days at local midnight, `to` included: a one-day range has `from` equal to `to`. */
 type PeriodRange = { from: Date; to: Date }
 
 type PeriodMenuLabels = {
   /** The menu item that opens the calendar. */
   custom?: string
+  /** The calendar's accessible name. */
+  calendar?: string
   apply?: string
   cancel?: string
   /** Under the calendar before a first day is picked. */
@@ -49,7 +46,8 @@ type PeriodMenuLabels = {
 }
 
 const DEFAULT_LABELS: Required<PeriodMenuLabels> = {
-  custom: "Custom range",
+  custom: "Custom range…",
+  calendar: "Custom range",
   apply: "Apply",
   cancel: "Cancel",
   pickStart: "Pick the first day",
@@ -73,7 +71,7 @@ type PeriodMenuProps = {
   /** The last day that can be picked, e.g. today for a list of past orders. */
   maxDate?: Date
   minDate?: Date
-  /** Formats the custom range and translates the calendar. */
+  /** Formats the custom range in the locale's own order ("1. Sep." in German) and translates the calendar. */
   locale?: Locale
   /** "Sep 1 – Sep 30"; the year shows when the range isn't in this year. */
   formatRange?: (range: PeriodRange) => string
@@ -85,11 +83,16 @@ type PeriodMenuProps = {
 
 function defaultFormatRange(range: PeriodRange, locale?: Locale) {
   const now = new Date()
-  const withYear =
-    !isSameYear(range.from, now) || !isSameYear(range.to, now) ? "PP" : "MMM d"
-  const from = formatDate(range.from, withYear, { locale })
+  const withYear = !isSameYear(range.from, now) || !isSameYear(range.to, now)
+  // Intl puts day and month in the locale's order; date-fns's "MMM d" would keep English order.
+  const day = new Intl.DateTimeFormat(locale?.code ?? "en-US", {
+    month: "short",
+    day: "numeric",
+    ...(withYear && { year: "numeric" }),
+  })
+  const from = day.format(range.from)
   if (isSameDay(range.from, range.to)) return from
-  return `${from} – ${formatDate(range.to, withYear, { locale })}`
+  return `${from} – ${day.format(range.to)}`
 }
 
 /**
@@ -122,6 +125,8 @@ function PeriodMenu({
   const [month, setMonth] = React.useState<Date>(() => new Date())
   // Set while the menu hands over to the calendar: the menu keeps focus off the trigger and opens the calendar as it closes.
   const handingOver = React.useRef(false)
+  // Set when the calendar closes because the user clicked or tabbed elsewhere: focus stays where they went.
+  const leftOutside = React.useRef(false)
 
   const format =
     formatRange ?? ((r: PeriodRange) => defaultFormatRange(r, locale))
@@ -135,6 +140,7 @@ function PeriodMenu({
 
   const openCalendar = () => {
     handingOver.current = true
+    leftOutside.current = false
     setDraft(range)
     const last = maxDate ?? new Date()
     setMonth(range?.from ?? (isMobile ? last : subMonths(last, 1)))
@@ -182,7 +188,13 @@ function PeriodMenu({
           }}
         >
           <DropdownMenuLabel>{label}</DropdownMenuLabel>
-          <DropdownMenuRadioGroup value={value} onValueChange={onValueChange}>
+          <DropdownMenuRadioGroup
+            value={value}
+            // "Custom range" is a radio item so screen readers hear it is in force; it opens the calendar instead.
+            onValueChange={(next) =>
+              next !== CUSTOM_RANGE && onValueChange(next)
+            }
+          >
             {presets.map((preset) => (
               <DropdownMenuRadioItem key={preset.value} value={preset.value}>
                 {preset.label}
@@ -196,29 +208,32 @@ function PeriodMenu({
                 </DropdownMenuRadioItem>
               </>
             )}
+            {onRangeChange && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioItem
+                  value={CUSTOM_RANGE}
+                  onSelect={openCalendar}
+                >
+                  {labels.custom}
+                </DropdownMenuRadioItem>
+              </>
+            )}
           </DropdownMenuRadioGroup>
-          {onRangeChange && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={openCalendar}
-                data-active={value === CUSTOM_RANGE || undefined}
-                className="data-active:font-semibold"
-              >
-                {labels.custom}…
-              </DropdownMenuItem>
-            </>
-          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <PopoverContent
         align={align}
         collisionPadding={16}
-        aria-label={labels.custom}
+        aria-label={labels.calendar}
+        onInteractOutside={() => {
+          leftOutside.current = true
+        }}
         className="flex max-h-(--radix-popover-content-available-height) w-auto max-w-[calc(100vw-2rem)] flex-col overflow-y-auto p-0"
         onCloseAutoFocus={(event) => {
           event.preventDefault()
-          trigger.current?.focus()
+          if (leftOutside.current) leftOutside.current = false
+          else trigger.current?.focus()
         }}
       >
         <Calendar

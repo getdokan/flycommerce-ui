@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 
+import { de } from "react-day-picker/locale"
+
 import { PeriodMenu, type PeriodMenuProps, type PeriodRange } from "@/index"
 
 const PRESETS = [
@@ -111,7 +113,9 @@ describe("PeriodMenu", () => {
     )
     await user.click(trigger())
     expect(screen.queryByRole("menuitemradio", { name: "All time" })).toBeNull()
-    expect(screen.queryByRole("menuitem", { name: /Custom range/ })).toBeNull()
+    expect(
+      screen.queryByRole("menuitemradio", { name: /Custom range/ })
+    ).toBeNull()
   })
 
   it("picks a custom range on the calendar and applies it", async () => {
@@ -120,7 +124,9 @@ describe("PeriodMenu", () => {
     const max = new Date()
     render(<DateFilter onRangeChange={onRangeChange} maxDate={max} />)
     await user.click(trigger())
-    await user.click(screen.getByRole("menuitem", { name: /Custom range/ }))
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
 
     const calendar = await screen.findByRole("dialog", { name: "Custom range" })
     const apply = within(calendar).getByRole("button", { name: "Apply" })
@@ -143,7 +149,9 @@ describe("PeriodMenu", () => {
     const onRangeChange = vi.fn()
     render(<DateFilter onRangeChange={onRangeChange} />)
     await user.click(trigger())
-    await user.click(screen.getByRole("menuitem", { name: /Custom range/ }))
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
     const calendar = await screen.findByRole("dialog", { name: "Custom range" })
     await user.click(pickableDays(calendar)[0]!)
     await user.click(within(calendar).getByRole("button", { name: "Apply" }))
@@ -156,7 +164,9 @@ describe("PeriodMenu", () => {
     const onRangeChange = vi.fn()
     render(<DateFilter value="month" onRangeChange={onRangeChange} />)
     await user.click(trigger())
-    await user.click(screen.getByRole("menuitem", { name: /Custom range/ }))
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
     const calendar = await screen.findByRole("dialog", { name: "Custom range" })
     await user.click(within(calendar).getByRole("button", { name: "Cancel" }))
     expect(onRangeChange).not.toHaveBeenCalled()
@@ -169,7 +179,9 @@ describe("PeriodMenu", () => {
     const max = new Date(2026, 9, 15)
     render(<DateFilter maxDate={max} />)
     await user.click(trigger())
-    await user.click(screen.getByRole("menuitem", { name: /Custom range/ }))
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
     const calendar = await screen.findByRole("dialog", { name: "Custom range" })
     const day = (name: string) =>
       within(calendar).getByRole("button", { name: new RegExp(`^${name}`) })
@@ -178,5 +190,130 @@ describe("PeriodMenu", () => {
     )
     const sixteenth = day("Friday, October 16th, 2026")
     expect(sixteenth?.hasAttribute("disabled")).toBe(true)
+  })
+
+  it("marks Custom range as the pick while a custom range is in force", async () => {
+    const user = userEvent.setup()
+    render(
+      <PeriodMenu
+        label="Date"
+        presets={PRESETS}
+        value="custom"
+        onValueChange={() => {}}
+        range={{ from: new Date(2024, 8, 1), to: new Date(2024, 8, 30) }}
+        onRangeChange={() => {}}
+      />
+    )
+    await user.click(trigger())
+    expect(
+      screen
+        .getByRole("menuitemradio", { name: /Custom range/ })
+        .getAttribute("aria-checked")
+    ).toBe("true")
+  })
+
+  it("leaves focus where the user went when they click elsewhere", async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <input aria-label="Search" />
+        <DateFilter />
+      </>
+    )
+    await user.click(trigger())
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
+    await screen.findByRole("dialog", { name: "Custom range" })
+    await user.click(screen.getByRole("textbox", { name: "Search" }))
+    expect(screen.queryByRole("dialog")).toBeNull()
+    expect(document.activeElement).toBe(
+      screen.getByRole("textbox", { name: "Search" })
+    )
+  })
+
+  it("opens the calendar from the keyboard and closes it with Escape", async () => {
+    const user = userEvent.setup()
+    render(<DateFilter />)
+    trigger().focus()
+    await user.keyboard("{Enter}")
+    screen.getByRole("menuitemradio", { name: /Custom range/ }).focus()
+    await user.keyboard("{Enter}")
+    const calendar = await screen.findByRole("dialog", { name: "Custom range" })
+    expect(calendar.contains(document.activeElement)).toBe(true)
+    await user.keyboard("{Escape}")
+    expect(document.activeElement).toBe(trigger())
+  })
+
+  it("starts a reopened calendar from the range in force, not from a cancelled pick", async () => {
+    const user = userEvent.setup()
+    render(<DateFilter maxDate={new Date(2026, 9, 15)} />)
+    await user.click(trigger())
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
+    let calendar = await screen.findByRole("dialog", { name: "Custom range" })
+    await user.click(pickableDays(calendar)[0]!)
+    await user.click(within(calendar).getByRole("button", { name: "Cancel" }))
+
+    await user.click(trigger())
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
+    calendar = await screen.findByRole("dialog", { name: "Custom range" })
+    expect(within(calendar).getByText("Pick the first day")).toBeTruthy()
+  })
+
+  it("writes the span in the locale's order, or with formatRange", () => {
+    const range = { from: new Date(2024, 8, 1), to: new Date(2024, 8, 30) }
+    const { rerender } = render(
+      <PeriodMenu
+        label="Datum"
+        presets={PRESETS}
+        value="custom"
+        onValueChange={() => {}}
+        range={range}
+        onRangeChange={() => {}}
+        locale={de}
+      />
+    )
+    expect(screen.getByRole("button").textContent).toBe(
+      "1. Sept. 2024 – 30. Sept. 2024"
+    )
+    rerender(
+      <PeriodMenu
+        label="Date"
+        presets={PRESETS}
+        value="custom"
+        onValueChange={() => {}}
+        range={range}
+        onRangeChange={() => {}}
+        formatRange={() => "September"}
+      />
+    )
+    expect(screen.getByRole("button").textContent).toBe("September")
+  })
+
+  it("can't pick a day before minDate", async () => {
+    const user = userEvent.setup()
+    render(
+      <DateFilter
+        minDate={new Date(2026, 8, 10)}
+        maxDate={new Date(2026, 9, 15)}
+      />
+    )
+    await user.click(trigger())
+    await user.click(
+      screen.getByRole("menuitemradio", { name: /Custom range/ })
+    )
+    const calendar = await screen.findByRole("dialog", { name: "Custom range" })
+    const day = (name: string) =>
+      within(calendar).getByRole("button", { name: new RegExp(`^${name}`) })
+    expect(day("Wednesday, September 9th, 2026").hasAttribute("disabled")).toBe(
+      true
+    )
+    expect(day("Thursday, September 10th, 2026").hasAttribute("disabled")).toBe(
+      false
+    )
   })
 })
