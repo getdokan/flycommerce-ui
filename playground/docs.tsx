@@ -345,7 +345,7 @@ const KNOWS = [
     "Design tokens",
     "Colours, radii, shadows and type through tokens only: no hex values, no one-off styling.",
   ],
-  ["Icons", "The 156 semantic <Icon name> meanings, never raw icon imports."],
+  ["Icons", "The 163 semantic <Icon name> meanings, never raw icon imports."],
   [
     "Screen recipes",
     "List, form and settings pages assembled the FlyCommerce way.",
