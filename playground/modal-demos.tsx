@@ -617,6 +617,66 @@ function OrderDetailsModal() {
   )
 }
 
+function FileDetailModal() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">File details</Button>
+      </DialogTrigger>
+      <DialogContent size="3xl" padding="none">
+        <div className="grid md:grid-cols-2">
+          <div className="grid min-h-64 place-items-center bg-muted p-5 sm:p-8 md:min-h-128">
+            <img
+              src="https://picsum.photos/seed/fcm-0/1600/1200"
+              alt="Red sneaker on a white floor"
+              className="block h-auto max-h-56 w-auto max-w-full rounded-md shadow-2 sm:max-h-104"
+            />
+          </div>
+          <form
+            className="flex min-w-0 flex-col"
+            onSubmit={(event) => {
+              event.preventDefault()
+              toast.success("Changes saved.")
+            }}
+          >
+            <div className="flex flex-col gap-6 p-6">
+              <DialogHeader>
+                <DialogTitle className="truncate" title="sneaker-red.jpg">
+                  sneaker-red.jpg
+                </DialogTitle>
+                <DialogDescription className="truncate">
+                  https://cdn.example.com/media/sneaker-red.jpg
+                </DialogDescription>
+              </DialogHeader>
+              <Field>
+                <FieldLabel htmlFor="file-name">Name</FieldLabel>
+                <Input id="file-name" defaultValue="sneaker-red" />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="file-alt">Alt text</FieldLabel>
+                <Textarea
+                  id="file-alt"
+                  defaultValue="Red sneaker on a white floor"
+                  aria-describedby="file-alt-hint"
+                />
+                <FieldDescription id="file-alt-hint">
+                  Describe the image for shoppers using screen readers.
+                </FieldDescription>
+              </Field>
+            </div>
+            <DialogFooter className="mt-auto">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit">Save</Button>
+            </DialogFooter>
+          </form>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 function LongContentModal() {
   return (
     <Dialog>
@@ -752,6 +812,11 @@ export function ModalUseCasesDemo() {
         <LongContentModal />
         <SuccessModal />
       </>,
+    ],
+    [
+      "Wide, two columns",
+      "size 3xl 960 with padding none · a preview edge to edge beside the form, the footer under the form; the columns stack and the dialog scrolls on phones",
+      <FileDetailModal />,
     ],
   ]
   return (
