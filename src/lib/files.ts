@@ -2,7 +2,7 @@ import type { FileRejection } from "@/components/dropzone"
 
 type FileRules = {
   accept?: string
-  maxSize?: number
+  maxSize?: number | ((file: File) => number | undefined)
   maxFiles?: number
 }
 
@@ -13,9 +13,10 @@ function sortFiles(
   const accepted: File[] = []
   const rejected: FileRejection[] = []
   for (const file of files) {
+    const limit = typeof maxSize === "function" ? maxSize(file) : maxSize
     if (accept && !matchesAccept(file, accept))
       rejected.push({ file, reason: "type" })
-    else if (maxSize !== undefined && file.size > maxSize)
+    else if (limit !== undefined && file.size > limit)
       rejected.push({ file, reason: "size" })
     else if (accepted.length >= maxFiles)
       rejected.push({ file, reason: "count" })

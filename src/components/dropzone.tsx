@@ -19,14 +19,16 @@ type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop" | "title"> & {
   onReject?: (rejections: FileRejection[]) => void
   /** Same syntax as the input `accept` attribute, e.g. "image/*,.pdf". */
   accept?: string
-  /** Bytes. */
-  maxSize?: number
+  /** Bytes, or each file's limit in bytes, e.g. 5 MB for images and 25 MB for the rest. */
+  maxSize?: number | ((file: File) => number | undefined)
   multiple?: boolean
   maxFiles?: number
   disabled?: boolean
   /** Replaces the upload icon; `null` leaves it out. */
   icon?: React.ReactNode
   title?: React.ReactNode
+  /** Replaces the title while files are dragged over the box, e.g. "Drop to upload". */
+  dragTitle?: React.ReactNode
   /** Accessible name of the file input, e.g. "Upload category image". */
   inputLabel?: string
   description?: React.ReactNode
@@ -38,6 +40,9 @@ type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop" | "title"> & {
   children?: React.ReactNode
   inputProps?: React.ComponentProps<"input">
 }
+
+const hasFiles = (event: React.DragEvent) =>
+  Array.from(event.dataTransfer?.types ?? []).includes("Files")
 
 function Dropzone({
   onFiles,
@@ -61,6 +66,7 @@ function Dropzone({
       your files here
     </>
   ),
+  dragTitle,
   description,
   browseLabel,
   actions,
@@ -95,11 +101,13 @@ function Dropzone({
       )}
       onDragEnter={(event) => {
         event.preventDefault()
+        if (!hasFiles(event)) return
         depth.current += 1
         setDragging(true)
       }}
       onDragOver={(event) => event.preventDefault()}
       onDragLeave={() => {
+        if (depth.current === 0) return
         depth.current -= 1
         if (depth.current <= 0) setDragging(false)
       }}
@@ -115,7 +123,9 @@ function Dropzone({
         <>
           {icon}
           <div className="flex flex-col gap-2">
-            <span className="text-base text-foreground-secondary">{title}</span>
+            <span className="text-base text-foreground-secondary">
+              {dragging && dragTitle !== undefined ? dragTitle : title}
+            </span>
             {description && (
               <span className="text-sm text-muted-foreground">
                 {description}
