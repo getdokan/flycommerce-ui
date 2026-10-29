@@ -116,8 +116,11 @@ function Button({
       onKeyDown={
         isLoading
           ? (event: React.KeyboardEvent<HTMLButtonElement>) => {
+              const trigger = event.currentTarget
+              // Radix Select's trigger is a combobox without aria-haspopup.
               const opensPopup =
-                event.currentTarget.getAttribute("aria-haspopup") !== null
+                trigger.getAttribute("aria-haspopup") !== null ||
+                trigger.getAttribute("role") === "combobox"
               if (
                 ACTIVATION_KEYS.has(event.key) ||
                 (opensPopup && POPUP_KEYS.has(event.key))

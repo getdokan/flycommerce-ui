@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
+import { Select as SelectPrimitive } from "radix-ui"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {
@@ -174,6 +175,30 @@ describe("Button loading", () => {
     expect(button.className).not.toMatch(/aria-busy:pointer/)
     fireEvent.click(button)
     expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it("keeps a loading Select trigger closed on the arrow keys", async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    render(
+      <SelectPrimitive.Root onOpenChange={onOpenChange}>
+        <SelectPrimitive.Trigger asChild>
+          <Button loading>Currency</Button>
+        </SelectPrimitive.Trigger>
+        <SelectPrimitive.Portal>
+          <SelectPrimitive.Content>
+            <SelectPrimitive.Viewport>
+              <SelectPrimitive.Item value="usd">
+                <SelectPrimitive.ItemText>USD</SelectPrimitive.ItemText>
+              </SelectPrimitive.Item>
+            </SelectPrimitive.Viewport>
+          </SelectPrimitive.Content>
+        </SelectPrimitive.Portal>
+      </SelectPrimitive.Root>
+    )
+    screen.getByRole("combobox").focus()
+    await user.keyboard("{ArrowDown}{ArrowUp}{Enter} ")
+    expect(onOpenChange).not.toHaveBeenCalled()
   })
 
   it("lets arrow keys through on a loading button that opens no popup", async () => {
