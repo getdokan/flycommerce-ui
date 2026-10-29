@@ -227,7 +227,7 @@ describe("ConfirmDialog returnFocusTo", () => {
     )
   })
 
-  it("takes an element or a function as well as a ref", async () => {
+  it("takes a function as well as a ref", async () => {
     const user = userEvent.setup()
     render(
       <RowMenu
@@ -253,6 +253,76 @@ describe("ConfirmDialog returnFocusTo", () => {
     expect(onCloseAutoFocus).toHaveBeenCalledTimes(1)
     expect(document.activeElement).toBe(
       screen.getByRole("button", { name: "Elsewhere" })
+    )
+  })
+
+  it("takes an element", async () => {
+    const user = userEvent.setup()
+    function WithElement() {
+      const [target, setTarget] = React.useState<HTMLElement | null>(null)
+      return (
+        <>
+          <button type="button" ref={setTarget}>
+            Element target
+          </button>
+          <RowMenu returnFocusTo={target} />
+        </>
+      )
+    }
+    render(<WithElement />)
+    await openFromMenu(user)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Element target" })
+    )
+  })
+
+  it("wins over the dialog's own trigger", async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <button type="button">Other</button>
+        <RemoveMember
+          acknowledgeLabel={undefined}
+          returnFocusTo={() => screen.getByRole("button", { name: "Other" })}
+        />
+      </>
+    )
+    await open(user)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Other" })
+    )
+  })
+
+  it("falls back to the trigger when the target has left the page or can't take focus", async () => {
+    const user = userEvent.setup()
+    const detached = document.createElement("button")
+    const { unmount } = render(
+      <RemoveMember acknowledgeLabel={undefined} returnFocusTo={detached} />
+    )
+    await open(user)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Remove member" })
+    )
+    unmount()
+
+    render(
+      <>
+        <button type="button" disabled>
+          Busy row
+        </button>
+        <RemoveMember
+          acknowledgeLabel={undefined}
+          returnFocusTo={() => screen.getByRole("button", { name: "Busy row" })}
+        />
+      </>
+    )
+    await open(user)
+    await user.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Remove member" })
     )
   })
 

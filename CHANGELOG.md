@@ -4,9 +4,13 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+### Added
+
+- `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
+
 ### Fixed
 
-- `ConfirmDialog` can return focus when it opens without its own `trigger`. A dialog opened from a menu item had nothing to return to, because the item is gone by the time it closes, so focus fell to the page. `returnFocusTo` names the element: an element, a ref, or a function read at close; a target that has left the page is skipped. `onCloseAutoFocus` runs first and can place focus itself with `event.preventDefault()`. A dialog with a `trigger` returns to it as before.
+- `ConfirmDialog` opened without its own `trigger`, e.g. from a menu item that is gone by the time it closes, no longer drops focus to the page when given `returnFocusTo`.
 
 ## [0.5.0] - 2026-10-23
 

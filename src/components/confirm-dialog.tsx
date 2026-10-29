@@ -40,20 +40,21 @@ type ConfirmDialogProps = {
   onConfirm: () => void | Promise<void>
   /**
    * Where focus goes when the dialog closes, for a dialog opened without its own `trigger` (e.g. from a menu item,
-   * which is gone by then): an element, a ref, or a function read at close. Ignored when the target has left the page.
+   * which is gone by then): an element, a ref, or a function read at close. It wins over `trigger`. A target that has
+   * left the page or can't take focus (disabled, hidden) is skipped, and focus goes to the trigger as usual.
    */
-  returnFocusTo?: FocusTarget
+  returnFocusTo?: ConfirmDialogFocusTarget
   /** Runs before focus returns; call `event.preventDefault()` to place focus yourself. */
   onCloseAutoFocus?: (event: Event) => void
 }
 
-type FocusTarget =
+type ConfirmDialogFocusTarget =
   | HTMLElement
   | null
   | React.RefObject<HTMLElement | null>
   | (() => HTMLElement | null | undefined)
 
-function resolveTarget(target: FocusTarget | undefined) {
+function resolveTarget(target: ConfirmDialogFocusTarget | undefined) {
   if (!target) return null
   if (typeof target === "function") return target() ?? null
   if ("current" in target) return target.current
@@ -125,8 +126,9 @@ function ConfirmDialog({
           if (event.defaultPrevented) return
           const target = resolveTarget(returnFocusTo)
           if (!target?.isConnected) return
-          event.preventDefault()
           target.focus()
+          // Only when it took focus; otherwise the trigger still gets it.
+          if (document.activeElement === target) event.preventDefault()
         }}
       >
         <AlertDialogHeader>
@@ -185,4 +187,4 @@ function ConfirmDialog({
   )
 }
 
-export { ConfirmDialog, type ConfirmDialogProps }
+export { ConfirmDialog, type ConfirmDialogProps, type ConfirmDialogFocusTarget }
