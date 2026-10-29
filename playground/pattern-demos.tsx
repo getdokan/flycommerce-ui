@@ -31,6 +31,9 @@ import {
   ICON_GROUPS,
   ActiveFilters,
   Label,
+  Avatar,
+  AvatarFallback,
+  FacetFilter,
   MediaCell,
   MIRRORED_ICONS,
   PageHeader,
@@ -68,6 +71,8 @@ import {
   type IconName,
   type SettingsNavGroup,
   type StatusTone,
+  PeriodMenu,
+  type PeriodRange,
 } from "@/index"
 
 type Product = {
@@ -843,6 +848,79 @@ const ORDER_STATUSES = [
 ]
 const ORDER_TONES: Record<string, StatusTone> = { awaiting_shipment: "default" }
 
+const VENDOR_OPTIONS = [
+  { value: "opaline", label: "Opaline Parfums", count: 61 },
+  { value: "fashion-bd", label: "Fashion BD", count: 34 },
+  { value: "north-tea", label: "North Tea Co.", count: 12 },
+].map((option) => ({
+  ...option,
+  media: (
+    <Avatar size="sm">
+      <AvatarFallback colorFrom={option.value}>
+        {option.label
+          .split(" ")
+          .slice(0, 2)
+          .map((word) => word[0])
+          .join("")}
+      </AvatarFallback>
+    </Avatar>
+  ),
+}))
+
+export function FacetFilterDemo() {
+  const [payment, setPayment] = React.useState<string[]>(["paid"])
+  const [vendor, setVendor] = React.useState<string[]>([])
+  const [status, setStatus] = React.useState<string[]>([])
+  // Counts are fetched only while the menu is open; here they appear once it opens.
+  const [counting, setCounting] = React.useState(false)
+  return (
+    <div className="flex flex-wrap gap-2">
+      <FacetFilter
+        label="Payment"
+        icon={<Icon name="cash" />}
+        options={[
+          { value: "paid", label: "Paid", count: 1280 },
+          { value: "unpaid", label: "Unpaid", count: 9 },
+          { value: "refunded", label: "Refunded", count: 4 },
+        ]}
+        value={payment}
+        onValueChange={setPayment}
+      />
+      <FacetFilter
+        label="Vendor"
+        icon={<Icon name="vendors" />}
+        options={VENDOR_OPTIONS}
+        value={vendor}
+        onValueChange={setVendor}
+      />
+      <FacetFilter
+        label="Status"
+        icon={<Icon name="orders" />}
+        options={[
+          {
+            value: "pending",
+            label: "Pending",
+            count: counting ? 12 : undefined,
+          },
+          {
+            value: "shipped",
+            label: "Shipped",
+            count: counting ? 48 : undefined,
+          },
+          {
+            value: "delivered",
+            label: "Delivered",
+            count: counting ? 1223 : undefined,
+          },
+        ]}
+        value={status}
+        onValueChange={setStatus}
+        onOpenChange={setCounting}
+      />
+    </div>
+  )
+}
+
 export function StatusBadgeDemo() {
   const statuses = [
     "Published",
@@ -1328,5 +1406,49 @@ export function ActivityFeedDemo() {
         ])
       }}
     />
+  )
+}
+
+const PERIOD_PRESETS = [
+  { value: "today", label: "Today" },
+  { value: "week", label: "This week" },
+  { value: "month", label: "This month" },
+  { value: "quarter", label: "This quarter" },
+  { value: "six-months", label: "Last six months" },
+  { value: "year", label: "This year" },
+]
+
+export function PeriodMenuDemo() {
+  const [period, setPeriod] = React.useState("month")
+  const [range, setRange] = React.useState<PeriodRange>()
+  const [placed, setPlaced] = React.useState("all")
+  return (
+    <div className="flex flex-wrap gap-2">
+      <PeriodMenu
+        label="Date"
+        align="start"
+        presets={PERIOD_PRESETS}
+        allLabel="All time"
+        value={period}
+        onValueChange={setPeriod}
+        range={range}
+        onRangeChange={(next) => {
+          setRange(next)
+          setPeriod("custom")
+        }}
+        maxDate={new Date()}
+      />
+      <PeriodMenu
+        label="Placed"
+        align="start"
+        presets={[
+          { value: "7d", label: "Last 7 days" },
+          { value: "30d", label: "Last 30 days" },
+        ]}
+        allLabel="All time"
+        value={placed}
+        onValueChange={setPlaced}
+      />
+    </div>
   )
 }
