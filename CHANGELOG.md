@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
+- `TimelineItem highlighted`: the entry the user is at, such as their installed version in a release history, `<TimelineItem highlighted highlightedLabel="Your version">`. Its text sits on a rounded brand tint, inset a little from the tint's sides, and the tint reaches into the gaps above and below so the text stays level with its dot or icon and the dot and connector stay lined up with the other items. In the middle of a list the items below don't move; a highlighted first or last item is a little taller, so the tint stays inside the list. `highlightedLabel` (default "Current") is read by screen readers before the item, like `upcomingLabel`, and the item carries `data-highlighted`. It works with `upcoming`, `icon` and every `tone`. A `Badge` in a highlighted title needs a variant other than the default, which shares the tint's colour.
 
 ### Fixed
 

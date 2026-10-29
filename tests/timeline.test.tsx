@@ -273,4 +273,181 @@ describe("Timeline", () => {
     expect(markerOf("Picked up").matches(widened)).toBe(false)
     expect(markerOf("Dot only").matches(widened)).toBe(false)
   })
+  describe("highlighted", () => {
+    const bodyOf = (title: string) =>
+      screen
+        .getByText(title)
+        .closest("li")
+        ?.querySelector(":scope > [data-slot=timeline-body]") as HTMLElement
+
+    it("tints the body, not the item, and marks the item", () => {
+      render(
+        <Timeline>
+          <TimelineItem>
+            <TimelineTitle>1.0.3</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted>
+            <TimelineTitle>1.0.2</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      const [plain, current] = screen.getAllByRole("listitem")
+      expect(plain.dataset.highlighted).toBeUndefined()
+      expect(current.dataset.highlighted).toBe("true")
+      expect(current.className).not.toMatch(/\bbg-/)
+      expect(bodyOf("1.0.2").className).toMatch(/\bbg-primary-subtle\b/)
+      expect(bodyOf("1.0.3").className).not.toMatch(/\bbg-primary-subtle\b/)
+    })
+
+    it("keeps an edge on the tint where forced colours drop backgrounds", () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted>
+            <TimelineTitle>1.0.2</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      expect(bodyOf("1.0.2").className).toMatch(/\bforced-colors:outline\b/)
+    })
+
+    it("reads its label before the item, Current unless given another", () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted>
+            <TimelineTitle>1.0.4</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted highlightedLabel="Your version">
+            <TimelineTitle>1.0.2</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      const [latest, yours] = screen.getAllByRole("listitem")
+      expect(latest.textContent).toBe("Current: 1.0.4")
+      expect(yours.textContent).toBe("Your version: 1.0.2")
+      const label = screen.getByText("Your version:", { exact: false })
+      expect(label.className).toContain("sr-only")
+      expect(label.parentElement).toBe(bodyOf("1.0.2"))
+    })
+
+    it("reads both labels on a highlighted step still to come", () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted upcoming>
+            <TimelineTitle>Delivery</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      const item = screen.getByRole("listitem")
+      expect(item.textContent).toBe("Current: Upcoming: Delivery")
+      expect(item.dataset.upcoming).toBe("true")
+      expect(screen.getByText("Delivery").className).toContain(
+        "text-foreground-secondary"
+      )
+    })
+
+    it("leaves the marker as it is, whatever the tone", () => {
+      const tones = [
+        "default",
+        "primary",
+        "success",
+        "warning",
+        "destructive",
+      ] as const
+      render(
+        <Timeline>
+          {tones.flatMap((tone) => [
+            <TimelineItem key={tone} tone={tone}>
+              <TimelineTitle>{`${tone} plain`}</TimelineTitle>
+            </TimelineItem>,
+            <TimelineItem key={`${tone}-on`} tone={tone} highlighted>
+              <TimelineTitle>{`${tone} highlighted`}</TimelineTitle>
+            </TimelineItem>,
+          ])}
+        </Timeline>
+      )
+      const markerOf = (title: string) =>
+        screen
+          .getByText(title)
+          .closest("li")
+          ?.querySelector(":scope > [data-slot=timeline-marker]")?.outerHTML
+      for (const tone of tones) {
+        expect(markerOf(`${tone} highlighted`)).toBe(markerOf(`${tone} plain`))
+        expect(
+          screen.getByText(`${tone} highlighted`).closest("li")?.dataset.tone
+        ).toBe(tone)
+      }
+    })
+
+    it("overhangs the gaps by its padding, so the text and the next item don't move", () => {
+      render(
+        <Timeline>
+          <TimelineItem>
+            <TimelineTitle>Above</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted>
+            <TimelineTitle>Dot</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted icon={<svg />}>
+            <TimelineTitle>Icon</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem>
+            <TimelineTitle>Below</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      const classes = (title: string) => bodyOf(title).className.split(" ")
+      // -mt-1.5 + pt-1.5 = 0 and pb-1.5 + mb-2.5 = pb-4, as on a plain item.
+      expect(classes("Dot")).toEqual(
+        expect.arrayContaining(["-mt-1.5", "py-1.5", "mb-2.5", "px-3"])
+      )
+      expect(classes("Dot")).not.toContain("pb-4")
+      // -mt-1.5 + pt-2.5 = pt-1, the icon's usual step down.
+      expect(classes("Icon")).toEqual(
+        expect.arrayContaining(["-mt-1.5", "pt-2.5", "mb-2.5"])
+      )
+      expect(classes("Icon")).not.toContain("pt-1")
+      expect(classes("Below")).toContain("pb-4")
+    })
+
+    it("keeps its bottom padding as the last item and steps its marker down as the first", () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted>
+            <TimelineTitle>First</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted>
+            <TimelineTitle>Middle</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted>
+            <TimelineTitle>Last</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      // The selectors the item's first- and last-child rules compile to, checked with real CSS matching.
+      const atTop = "[data-highlighted]:first-child > [data-slot=timeline-body]"
+      const atBottom =
+        "[data-highlighted]:last-child > [data-slot=timeline-body]"
+      expect(bodyOf("First").matches(atTop)).toBe(true)
+      expect(bodyOf("First").matches(atBottom)).toBe(false)
+      expect(bodyOf("Middle").matches(atTop)).toBe(false)
+      expect(bodyOf("Middle").matches(atBottom)).toBe(false)
+      expect(bodyOf("Last").matches(atTop)).toBe(false)
+      expect(bodyOf("Last").matches(atBottom)).toBe(true)
+      const [first, , last] = screen.getAllByRole("listitem")
+      for (const item of [first, last]) {
+        expect(item.className).not.toContain(
+          "[&:last-child>[data-slot=timeline-body]]:pb-0"
+        )
+        expect(item.className).toContain(
+          "[&:last-child>[data-slot=timeline-body]]:mb-0"
+        )
+        expect(item.className).toContain(
+          "[&:first-child>[data-slot=timeline-body]]:mt-0"
+        )
+        expect(item.className).toContain(
+          "[&:first-child>[data-slot=timeline-marker]]:pt-1.5"
+        )
+      }
+    })
+  })
 })
