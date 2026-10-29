@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- `FacetFilter`: a toolbar filter, `<FacetFilter label icon options={[{ value, label, count, media }]} value onValueChange onOpenChange />`. An outline button that reads the filter's name, the one picked option, or "{label}, {n}", opening a menu of checkbox items that apply at once and keep the menu open, each with its count ("—" until it is known) and optional media such as a vendor's avatar, and "Clear" at the foot once something is picked. `onOpenChange` lets the app fetch the counts only while the menu is open. Every string is in `labels`. Use `TableFilters` instead for a sheet of many fields that apply together.
 - `PersonCell`: a person in a table row, `<PersonCell name src colorFrom href onNavigate description badge />`. A round `Avatar` with the photo, or the initials in the person colour (`icon` draws an icon instead, e.g. `vendors` for a store with no name); the name truncated with the full name on hover, as a link with `href` (a plain click calls `onNavigate` for a client-side router, a modified click opens the URL); an optional second line such as the email, a `badge` such as "Guest", and `placeholder` ("—") when there is no person. `personInitials` is exported for apps that show the same initials elsewhere.
 
 ## [0.5.0] - 2026-10-23

@@ -47,6 +47,7 @@ import {
   DataTableDemo,
   DataTableReorderDemo,
   DataTableTreeDemo,
+  FacetFilterDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -341,6 +342,8 @@ const KEYWORDS: Record<string, string> = {
     "no data blank zero state emptystate nothing yet failed load error retry",
   "person-cell":
     "customer vendor staff user avatar initials name guest table row cell",
+  "facet-filter":
+    "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
   input:
     "text field form label error hint required optional info icon character count limit",
   "input-group": "prefix suffix addon currency",
@@ -461,6 +464,7 @@ const SOURCES: Record<string, Source> = {
   table: "prototype",
   "description-list": "prototype",
   "person-cell": "prototype",
+  "facet-filter": "prototype",
   tabs: "prototype",
   dialog: "prototype",
   "alert-dialog": "prototype",
@@ -1905,6 +1909,12 @@ export const demos: Demo[] = [
         </Row>
       </Stack>
     ),
+  },
+  {
+    id: "facet-filter",
+    title: "Facet filter",
+    group: "Data display",
+    render: () => <FacetFilterDemo />,
   },
   {
     id: "avatar",
