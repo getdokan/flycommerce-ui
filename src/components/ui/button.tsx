@@ -6,7 +6,7 @@ import { Slot } from "radix-ui"
 import { Spinner } from "@/components/ui/spinner"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center gap-2 border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-busy:pointer-events-none aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center gap-2 border border-transparent text-sm font-[560] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-150 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring disabled:pointer-events-none disabled:not-aria-busy:opacity-50 aria-invalid:border-destructive data-loading:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -72,7 +72,9 @@ type ButtonProps = React.ComponentProps<"button"> &
     loading?: boolean
   }
 
-const ACTIVATION_KEYS = new Set(["Enter", " ", "ArrowDown", "ArrowUp"])
+const ACTIVATION_KEYS = new Set(["Enter", " "])
+// A menu or select trigger also opens on these, so they are swallowed only on one.
+const POPUP_KEYS = new Set(["ArrowDown", "ArrowUp"])
 
 // Enter and Space reach onClick as a click too; preventing it also stops a form submit.
 function swallow(event: React.SyntheticEvent) {
@@ -106,6 +108,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, shape, className }))}
       disabled={asChild ? undefined : disabled}
       aria-busy={isLoading || undefined}
+      data-loading={isLoading || undefined}
       {...props}
       aria-disabled={isLoading || props["aria-disabled"]}
       onClick={isLoading ? swallow : onClick}
@@ -113,7 +116,13 @@ function Button({
       onKeyDown={
         isLoading
           ? (event: React.KeyboardEvent<HTMLButtonElement>) => {
-              if (ACTIVATION_KEYS.has(event.key)) swallow(event)
+              const opensPopup =
+                event.currentTarget.getAttribute("aria-haspopup") !== null
+              if (
+                ACTIVATION_KEYS.has(event.key) ||
+                (opensPopup && POPUP_KEYS.has(event.key))
+              )
+                swallow(event)
               else onKeyDown?.(event)
             }
           : onKeyDown

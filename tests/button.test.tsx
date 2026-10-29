@@ -162,6 +162,33 @@ describe("Button loading", () => {
     expect(onKeyDown).toHaveBeenCalledTimes(1)
   })
 
+  it("keeps an app's own aria-busy button clickable when it isn't loading", () => {
+    const onClick = vi.fn()
+    render(
+      <Button aria-busy onClick={onClick}>
+        Refresh
+      </Button>
+    )
+    const button = screen.getByRole("button", { name: "Refresh" })
+    expect(button.hasAttribute("data-loading")).toBe(false)
+    expect(button.className).not.toMatch(/aria-busy:pointer/)
+    fireEvent.click(button)
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it("lets arrow keys through on a loading button that opens no popup", async () => {
+    const user = userEvent.setup()
+    const onKeyDown = vi.fn()
+    render(
+      <Button loading onKeyDown={onKeyDown}>
+        Save
+      </Button>
+    )
+    screen.getByRole("button", { name: "Save" }).focus()
+    await user.keyboard("{ArrowDown}{ArrowUp}{Enter}")
+    expect(onKeyDown).toHaveBeenCalledTimes(2)
+  })
+
   it("stays natively disabled when disabled is set as well", () => {
     render(
       <Button loading disabled>
