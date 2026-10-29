@@ -47,6 +47,7 @@ import {
   DataTableDemo,
   DataTableReorderDemo,
   DataTableTreeDemo,
+  FacetFilterDemo,
   PeriodMenuDemo,
   IconsDemo,
   PageHeaderDemo,
@@ -252,6 +253,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PersonCell,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -339,6 +341,10 @@ const KEYWORDS: Record<string, string> = {
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
   empty:
     "no data blank zero state emptystate nothing yet failed load error retry",
+  "person-cell":
+    "customer vendor staff user avatar initials name guest table row cell",
+  "facet-filter":
+    "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
   "period-menu":
     "date filter period range preset today this month all time custom range calendar toolbar report",
   input:
@@ -460,6 +466,8 @@ const SOURCES: Record<string, Source> = {
   card: "prototype",
   table: "prototype",
   "description-list": "prototype",
+  "person-cell": "prototype",
+  "facet-filter": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
@@ -1865,6 +1873,58 @@ export const demos: Demo[] = [
         </Row>
       </Stack>
     ),
+  },
+  {
+    id: "person-cell",
+    title: "Person cell",
+    group: "Data display",
+    render: () => (
+      <Stack>
+        <Row label="Photo">
+          <PersonCell
+            name="Hana Lindqvist"
+            src="https://github.com/shadcn.png"
+            colorFrom={500}
+            description="hana@example.com"
+          />
+        </Row>
+        <Row label="Initials">
+          <PersonCell name="Dana Whitfield" colorFrom="dana@example.com" />
+        </Row>
+        <Row label="Link and badge">
+          <PersonCell
+            name="Mateo Rossi"
+            href="#"
+            badge={<Badge variant="secondary">Guest</Badge>}
+            description="mateo@example.com"
+          />
+        </Row>
+        <Row label="Icon">
+          <PersonCell
+            name="Opaline Parfums"
+            icon={<Icon name="vendors" />}
+            href="#"
+          />
+        </Row>
+        <Row label="Truncated">
+          <div className="w-40">
+            <PersonCell
+              name="Maximiliana Konstantinopoulou-Featherstonehaugh"
+              colorFrom={7}
+            />
+          </div>
+        </Row>
+        <Row label="No person">
+          <PersonCell name="" />
+        </Row>
+      </Stack>
+    ),
+  },
+  {
+    id: "facet-filter",
+    title: "Facet filter",
+    group: "Data display",
+    render: () => <FacetFilterDemo />,
   },
   {
     id: "avatar",
