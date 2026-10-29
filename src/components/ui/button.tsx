@@ -65,12 +65,20 @@ type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
     /**
-     * Shows a spinner and ignores clicks, Enter and Space until it ends, including a form submit. The button keeps
-     * focus and stays in the tab order (`aria-disabled`, `aria-busy`), so keyboard users don't lose their place.
-     * Ignored with `asChild`.
+     * Shows a spinner and ignores clicks, presses, Enter, Space and the arrow keys until it ends, so it submits no form
+     * and opens no menu it triggers. The button keeps focus and stays in the tab order (`aria-disabled`, `aria-busy`),
+     * so keyboard users don't lose their place. Ignored with `asChild`.
      */
     loading?: boolean
   }
+
+const ACTIVATION_KEYS = new Set(["Enter", " ", "ArrowDown", "ArrowUp"])
+
+// Enter and Space reach onClick as a click too; preventing it also stops a form submit.
+function swallow(event: React.SyntheticEvent) {
+  event.preventDefault()
+  event.stopPropagation()
+}
 
 function Button({
   className,
@@ -82,6 +90,8 @@ function Button({
   disabled,
   children,
   onClick,
+  onKeyDown,
+  onPointerDown,
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot.Root : "button"
@@ -98,15 +108,17 @@ function Button({
       aria-busy={isLoading || undefined}
       {...props}
       aria-disabled={isLoading || props["aria-disabled"]}
-      onClick={
+      onClick={isLoading ? swallow : onClick}
+      // A trigger it is wrapped in (a menu, a select) opens on these keys or a press, not on the click.
+      onKeyDown={
         isLoading
-          ? (event: React.MouseEvent<HTMLButtonElement>) => {
-              // Enter and Space reach here as a click too; preventing it also stops a form submit.
-              event.preventDefault()
-              event.stopPropagation()
+          ? (event: React.KeyboardEvent<HTMLButtonElement>) => {
+              if (ACTIVATION_KEYS.has(event.key)) swallow(event)
+              else onKeyDown?.(event)
             }
-          : onClick
+          : onKeyDown
       }
+      onPointerDown={isLoading ? swallow : onPointerDown}
     >
       {isLoading ? (
         <>

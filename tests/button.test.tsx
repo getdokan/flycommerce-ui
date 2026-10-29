@@ -3,7 +3,14 @@ import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { Button, ButtonArrow } from "@/index"
+import {
+  Button,
+  ButtonArrow,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/index"
 
 describe("Button shape", () => {
   it("leaves the default shape without a data-shape", () => {
@@ -126,6 +133,33 @@ describe("Button loading", () => {
     await user.click(screen.getByRole("button", { name: "Save" }))
     await user.type(screen.getByRole("textbox", { name: "Note" }), "x{Enter}")
     expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it("doesn't open a menu it triggers, by key or press, while loading", async () => {
+    const user = userEvent.setup()
+    const onKeyDown = vi.fn()
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button loading onKeyDown={onKeyDown}>
+            Export
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>CSV</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+    const button = screen.getByRole("button", { name: "Export" })
+    button.focus()
+    for (const key of ["{Enter}", " ", "{ArrowDown}", "{ArrowUp}"])
+      await user.keyboard(key)
+    fireEvent.pointerDown(button, { button: 0, pointerType: "mouse" })
+    expect(screen.queryByRole("menu")).toBeNull()
+
+    // Other keys still reach the app, and Tab still moves on.
+    await user.keyboard("{Home}")
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
   })
 
   it("stays natively disabled when disabled is set as well", () => {

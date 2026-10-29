@@ -6,7 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Fixed
 
-- `Button loading` keeps focus. A focused button that started loading was disabled, so focus fell to the page and keyboard and screen-reader users lost their place. While loading, the button now stays focusable and in the tab order with `aria-disabled="true"` and `aria-busy="true"`, shows the spinner as before, and ignores clicks, Enter and Space, which also stops a form submit. It looks the same as before. `disabled` together with `loading` still disables it natively. **Check tests:** a test that asserted `toBeDisabled()` (or `.disabled`) on a loading button now sees `aria-disabled="true"` instead. This applies to every component that uses it, such as `ConfirmDialog`'s confirm button and `SaveBar`'s save button.
+- `Button loading` keeps focus. A focused button that started loading was disabled, so focus fell to the page and keyboard and screen-reader users lost their place. While loading, the button now stays focusable and in the tab order with `aria-disabled="true"` and `aria-busy="true"`, shows the spinner as before, and ignores clicks, presses and Enter, Space and the arrow keys, which also stops a form submit and keeps a menu or select it triggers from opening. It looks the same as before. `disabled` together with `loading` still disables it natively. **Check tests:** a test that asserted `toBeDisabled()` (or `.disabled`) on a loading button now sees `aria-disabled="true"` instead. This applies to every component that uses it, such as `ConfirmDialog`'s confirm button and `SaveBar`'s save button.
 
 ## [0.5.0] - 2026-10-23
 
