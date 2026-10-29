@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
+- `DataTable` compact pager, `pagination={{ page, pageSize, total, onPageChange, showPageNumbers, hideSinglePageControls, iconArrows }}`, also on the standalone `DataTablePagination` for a paged grid outside a table (offset pagination). `hideSinglePageControls` hides Previous, Next and the page numbers when everything fits on one page, and the count then reads `labels.total(total)` ("42 files"; default "42 results"); the rows-per-page select stays, and a page past the last one keeps Previous so it isn't a dead end. `iconArrows` draws Previous and Next as icon-only arrows (the `prev` and `next` icons, mirrored in right-to-left layouts) named by `labels.previous` and `labels.next`. Both are off by default, so existing pagers don't change.
 
 ### Fixed
 
