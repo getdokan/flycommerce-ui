@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- `MediaCell media`: `<MediaCell media={<MediaFileGlyph name="guide.pdf" className="size-6" />} title description size={40} />`. Draws any node in the thumbnail's box instead of the image from `src`, in the same size, rounded corners and border, on a muted ground and clipped to the box, which is positioned so an overlay can sit on top: a file-type glyph for a document, or a video poster with a play mark. Without `media`, `src` works as before.
 - `ConfirmDialog` `returnFocusTo`: where focus goes when the dialog closes, an element, a ref, or a function read at close (type `ConfirmDialogFocusTarget`). It wins over `trigger`. A target that has left the page or can't take focus is skipped, and focus goes to the trigger as before. `onCloseAutoFocus` is passed through and runs first; it can place focus itself with `event.preventDefault()`.
 
 ### Fixed
