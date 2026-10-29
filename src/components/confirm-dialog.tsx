@@ -38,6 +38,27 @@ type ConfirmDialogProps = {
   acknowledgeLabel?: React.ReactNode
   /** The dialog closes when this resolves and stays open when it throws. */
   onConfirm: () => void | Promise<void>
+  /**
+   * Where focus goes when the dialog closes, for a dialog opened without its own `trigger` (e.g. from a menu item,
+   * which is gone by then): an element, a ref, or a function read at close. It wins over `trigger`. A target that has
+   * left the page or can't take focus (disabled, hidden) is skipped, and focus goes to the trigger as usual.
+   */
+  returnFocusTo?: ConfirmDialogFocusTarget
+  /** Runs before focus returns; call `event.preventDefault()` to place focus yourself. */
+  onCloseAutoFocus?: (event: Event) => void
+}
+
+type ConfirmDialogFocusTarget =
+  | HTMLElement
+  | null
+  | React.RefObject<HTMLElement | null>
+  | (() => HTMLElement | null | undefined)
+
+function resolveTarget(target: ConfirmDialogFocusTarget | undefined) {
+  if (!target) return null
+  if (typeof target === "function") return target() ?? null
+  if ("current" in target) return target.current
+  return target
 }
 
 function ConfirmDialog({
@@ -55,6 +76,8 @@ function ConfirmDialog({
   confirmTextLabel,
   acknowledgeLabel,
   onConfirm,
+  returnFocusTo,
+  onCloseAutoFocus,
 }: ConfirmDialogProps) {
   const [openState, setOpenState] = React.useState(false)
   const [pending, setPending] = React.useState(false)
@@ -97,7 +120,17 @@ function ConfirmDialog({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
-      <AlertDialogContent>
+      <AlertDialogContent
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event)
+          if (event.defaultPrevented) return
+          const target = resolveTarget(returnFocusTo)
+          if (!target?.isConnected) return
+          target.focus()
+          // Only when it took focus; otherwise the trigger still gets it.
+          if (document.activeElement === target) event.preventDefault()
+        }}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description && (
@@ -154,4 +187,4 @@ function ConfirmDialog({
   )
 }
 
-export { ConfirmDialog, type ConfirmDialogProps }
+export { ConfirmDialog, type ConfirmDialogProps, type ConfirmDialogFocusTarget }

@@ -672,8 +672,37 @@ export function SettingsNavDemo() {
 }
 
 export function ConfirmDialogDemo() {
+  const more = React.useRef<HTMLButtonElement>(null)
+  const [voiding, setVoiding] = React.useState(false)
   return (
     <div className="flex flex-wrap gap-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button ref={more} variant="outline">
+            Opened from a menu
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={() => setVoiding(true)}
+          >
+            Void invoice
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ConfirmDialog
+        open={voiding}
+        onOpenChange={setVoiding}
+        returnFocusTo={more}
+        title="Void invoice INV-1002?"
+        description="Focus goes back to the menu button when this closes."
+        confirmLabel="Void invoice"
+        destructive
+        onConfirm={() => {
+          toast.success("Invoice voided")
+        }}
+      />
       <ConfirmDialog
         trigger={<Button variant="outline">Publish store</Button>}
         title="Publish your store?"
