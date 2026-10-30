@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { cn } from "cn"
 import { FiPlay as PlayIcon } from "react-icons/fi"
@@ -29,29 +31,35 @@ type PreviewStageImageProps = Omit<React.ComponentProps<"img">, "alt"> & {
 function PreviewStageImage({
   className,
   style,
+  onLoad,
   ...props
 }: PreviewStageImageProps) {
+  const [loadedSrc, setLoadedSrc] = React.useState<string>()
   const width = Number(props.width)
   const height = Number(props.height)
-  // With its size known, the image holds its box before it loads: as wide as fits, never past its own width.
-  const sized = width > 0 && height > 0
+  // With its size known, the image holds its box until it loads: as wide as fits, never past its own width. Once loaded, the file's own size takes over.
+  const reserve = width > 0 && height > 0 && loadedSrc !== props.src
   return (
     <img
       data-slot="preview-stage-image"
       draggable={false}
       className={cn(
-        "block h-auto max-h-(--preview-stage-media-h) w-auto max-w-full rounded-md shadow-preview [--preview-stage-media-h:--spacing(56)] sm:[--preview-stage-media-h:--spacing(104)]",
+        "block h-auto max-h-(--preview-stage-media-h) w-auto max-w-full rounded-md object-contain shadow-preview [--preview-stage-media-h:--spacing(56)] md:[--preview-stage-media-h:--spacing(104)]",
         className
       )}
       style={
-        sized
+        reserve
           ? {
-              aspectRatio: `${width} / ${height}`,
+              aspectRatio: `auto ${width} / ${height}`,
               width: `min(100%, ${width}px, calc(var(--preview-stage-media-h) * ${width / height}))`,
               ...style,
             }
           : style
       }
+      onLoad={(event) => {
+        setLoadedSrc(props.src)
+        onLoad?.(event)
+      }}
       {...props}
     />
   )
@@ -94,22 +102,24 @@ function PreviewStageVideo({
   ref,
   onClick,
   onAuxClick,
+  "aria-label": ariaLabel,
   ...props
 }: PreviewStageVideoProps) {
   const labels = { ...DEFAULT_VIDEO_LABELS, ...labelsProp }
+  const label = ariaLabel ?? labels.play(name, Boolean(href))
   const content = (
     <>
       <img
         src={poster}
         alt=""
         draggable={false}
-        className="aspect-video w-full object-cover"
+        className="block aspect-video w-full object-cover"
       />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 flex items-center justify-center"
       >
-        <span className="flex size-16 items-center justify-center rounded-full bg-inverse/60 text-inverse-foreground ring-1 ring-inverse-foreground/30 backdrop-blur-sm transition-colors group-hover/video:bg-inverse/75">
+        <span className="flex size-16 items-center justify-center rounded-full bg-foreground/60 text-background backdrop-blur-sm transition-colors group-hover/video:bg-foreground/75">
           <PlayIcon className="size-7 translate-x-0.5 fill-current" />
         </span>
       </span>
@@ -134,7 +144,7 @@ function PreviewStageVideo({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={labels.play(name, true)}
+        aria-label={label}
         onClick={click}
         onAuxClick={(event) => {
           onAuxClick?.(event)
@@ -152,7 +162,7 @@ function PreviewStageVideo({
       ref={ref as React.Ref<HTMLButtonElement>}
       type="button"
       data-slot="preview-stage-video"
-      aria-label={labels.play(name, false)}
+      aria-label={label}
       onClick={click}
       onAuxClick={onAuxClick}
       className={cn("cursor-pointer", classes)}
