@@ -824,6 +824,20 @@ function DataTablePagination(
   }
 ) {
   const labels = { ...DEFAULT_LABELS, ...props.labels }
+  const countRef = React.useRef<HTMLSpanElement>(null)
+  const controlsHadFocus = React.useRef(false)
+  // React runs a ref's cleanup before it removes the node, so focus is still inside.
+  const trackControls = React.useCallback((node: HTMLDivElement | null) => {
+    if (!node) return
+    return () => {
+      controlsHadFocus.current = node.contains(document.activeElement)
+    }
+  }, [])
+  React.useLayoutEffect(() => {
+    if (!controlsHadFocus.current) return
+    controlsHadFocus.current = false
+    countRef.current?.focus()
+  })
 
   if (props.mode === "cursor") {
     return (
@@ -871,8 +885,11 @@ function DataTablePagination(
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
   // A page past the last one keeps Previous, so it isn't a dead end.
   const controls = !hideSinglePageControls || pageCount > 1 || page > 1
-  const from = total === 0 ? 0 : (page - 1) * pageSize + 1
-  const to = Math.min(page * pageSize, total)
+  // Only the count is left, so it isn't a landmark; the role changes, not the element, so nothing inside remounts.
+  const landmark = controls || Boolean(onPageSizeChange)
+  const current = Math.min(page, pageCount)
+  const from = total === 0 ? 0 : (current - 1) * pageSize + 1
+  const to = Math.min(current * pageSize, total)
   const linkTo = (target: number, disabled = false) => ({
     disabled,
     href: disabled ? undefined : getPageHref?.(target),
@@ -882,14 +899,19 @@ function DataTablePagination(
   return (
     <nav
       data-slot="data-table-pagination"
-      aria-label={labels.pagination}
+      role={landmark ? undefined : "none"}
+      aria-label={landmark ? labels.pagination : undefined}
       className={cn(
         "flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border-subtle px-5 py-3",
         showPageNumbers && "@container/pagination",
         props.className
       )}
     >
-      <span className="text-[12.5px] text-muted-foreground tabular-nums">
+      <span
+        ref={countRef}
+        tabIndex={controls ? undefined : -1}
+        className="text-[12.5px] text-muted-foreground tabular-nums outline-none"
+      >
         {controls ? labels.showing(from, to, total) : labels.total(total)}
       </span>
       {onPageSizeChange && (
@@ -913,12 +935,15 @@ function DataTablePagination(
         </label>
       )}
       {controls && (
-        <div className="ms-auto flex flex-wrap items-center justify-end gap-2">
+        <div
+          ref={trackControls}
+          className="ms-auto flex flex-wrap items-center justify-end gap-2"
+        >
           <PageControl
             variant="outline"
             size={iconArrows ? "icon-sm" : "sm"}
             aria-label={iconArrows ? labels.previous : undefined}
-            {...linkTo(page - 1, page <= 1)}
+            {...linkTo(Math.min(page - 1, pageCount), page <= 1)}
           >
             {iconArrows ? (
               <Icon name="prev" />

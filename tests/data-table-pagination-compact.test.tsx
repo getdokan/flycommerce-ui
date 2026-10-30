@@ -1,3 +1,4 @@
+import * as React from "react"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
@@ -42,7 +43,133 @@ describe("DataTablePagination hideSinglePageControls", () => {
       />
     )
     await user.click(screen.getByRole("button", { name: /Previous/ }))
-    expect(onPageChange).toHaveBeenCalledWith(2)
+    expect(onPageChange).toHaveBeenCalledWith(1)
+  })
+
+  it("moves focus to the count when Previous leaves with the controls", async () => {
+    const user = userEvent.setup()
+    function Pager() {
+      const [page, setPage] = React.useState(3)
+      return (
+        <DataTablePagination
+          page={page}
+          pageSize={24}
+          total={3}
+          onPageChange={setPage}
+          hideSinglePageControls
+          labels={labels}
+        />
+      )
+    }
+    render(<Pager />)
+    await user.click(screen.getByRole("button", { name: /Previous/ }))
+    expect(screen.queryByRole("button")).toBeNull()
+    expect(document.activeElement).toBe(screen.getByText("3 files"))
+  })
+
+  it("leaves focus alone when the controls go while it is elsewhere", () => {
+    const props = {
+      pageSize: 24,
+      total: 3,
+      onPageChange: noop,
+      hideSinglePageControls: true,
+    }
+    const { rerender } = render(
+      <>
+        <input aria-label="Search" />
+        <DataTablePagination {...props} page={2} />
+      </>
+    )
+    const search = screen.getByRole("textbox", { name: "Search" })
+    search.focus()
+    rerender(
+      <>
+        <input aria-label="Search" />
+        <DataTablePagination {...props} page={1} />
+      </>
+    )
+    expect(document.activeElement).toBe(search)
+  })
+
+  it("counts the last page's range on a page past the last one", () => {
+    render(
+      <DataTablePagination
+        page={3}
+        pageSize={24}
+        total={3}
+        onPageChange={noop}
+        hideSinglePageControls
+        labels={labels}
+      />
+    )
+    expect(screen.getByText("1–3 of 3 files")).toBeTruthy()
+  })
+
+  it("goes from a page past the last one to the last page", async () => {
+    const user = userEvent.setup()
+    const onPageChange = vi.fn()
+    render(
+      <DataTablePagination
+        page={9}
+        pageSize={10}
+        total={42}
+        onPageChange={onPageChange}
+        getPageHref={(page) => `?page=${page}`}
+      />
+    )
+    expect(screen.getByText("Showing 41 to 42 of 42")).toBeTruthy()
+    const previous = screen.getByRole("link", { name: /Previous/ })
+    expect(previous.getAttribute("href")).toBe("?page=5")
+    await user.click(previous)
+    expect(onPageChange).toHaveBeenCalledWith(5)
+  })
+
+  it("isn't a landmark when it holds only the count", () => {
+    render(
+      <DataTablePagination
+        page={1}
+        pageSize={24}
+        total={3}
+        onPageChange={noop}
+        hideSinglePageControls
+        labels={labels}
+      />
+    )
+    expect(screen.getByText("3 files")).toBeTruthy()
+    expect(screen.queryByRole("navigation")).toBeNull()
+  })
+
+  it("stays a landmark for the rows-per-page select when the controls go", () => {
+    render(
+      <DataTablePagination
+        page={1}
+        pageSize={50}
+        total={42}
+        onPageChange={noop}
+        onPageSizeChange={noop}
+        hideSinglePageControls
+      />
+    )
+    expect(screen.getByRole("navigation", { name: "Pagination" })).toBeTruthy()
+  })
+
+  it("keeps the same element when it stops being a landmark", () => {
+    const props = {
+      pageSize: 24,
+      total: 3,
+      onPageChange: noop,
+      hideSinglePageControls: true,
+    }
+    const { container, rerender } = render(
+      <DataTablePagination {...props} page={2} />
+    )
+    const pager = container.querySelector("[data-slot=data-table-pagination]")
+    expect(screen.getByRole("navigation", { name: "Pagination" })).toBe(pager)
+    rerender(<DataTablePagination {...props} page={1} />)
+    expect(screen.queryByRole("navigation")).toBeNull()
+    expect(container.querySelector("[data-slot=data-table-pagination]")).toBe(
+      pager
+    )
   })
 
   it("keeps the rows-per-page select mounted when the controls go", () => {
@@ -197,9 +324,9 @@ describe("DataTable with a single page", () => {
         labels={labels}
       />
     )
-    expect(screen.getByText("1 file")).toBeTruthy()
     expect(
-      screen.getByRole("navigation", { name: "Pagination" }).textContent
+      document.querySelector("[data-slot=data-table-pagination]")?.textContent
     ).toBe("1 file")
+    expect(screen.queryByRole("navigation")).toBeNull()
   })
 })
