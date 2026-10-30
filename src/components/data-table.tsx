@@ -227,7 +227,7 @@ type DataTableProps<TData> = {
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   /** Keeps ticks on rows that leave `data`, e.g. on other server pages: the bulk bar counts every selected id. Needs `getRowId` and a controlled `rowSelection`: the app clears it when filters change and removes deleted ids. */
   crossPageSelection?: boolean
-  /** Shown above the table while rows are selected. `selected` holds this page's selected rows (with `crossPageSelection`, also those ticked on other pages), `ids` every selected id. */
+  /** Shown above the table while rows are selected. `selected` holds this page's selected rows (with `crossPageSelection`, also the last loaded copy of those on other pages), `ids` every selected row id (from `getRowId`; row indexes without it). */
   bulkActions?: (
     selected: TData[],
     clear: () => void,
@@ -304,10 +304,10 @@ function DataTable<TData>({
   React.useEffect(() => {
     if (crossPageSelection && !crossPage)
       console.warn(
-        "DataTable: crossPageSelection needs getRowId and a controlled rowSelection; the selection stays per page."
+        "DataTable: crossPageSelection needs getRowId and a controlled rowSelection, so it is ignored."
       )
   }, [crossPageSelection, crossPage])
-  // Rows as they were when ticked, so bulk actions still get the ones now on other pages.
+  // The last loaded copy of each selected row, so bulk actions still get the ones now on other pages.
   const [tickedRows, setTickedRows] = React.useState<
     ReadonlyMap<string, TData>
   >(() => new Map())
@@ -391,20 +391,7 @@ function DataTable<TData>({
     onExpandedChange: setExpanded,
     getExpandedRowModel: getSubRows ? getExpandedRowModel() : undefined,
     enableRowSelection,
-    onRowSelectionChange: crossPage
-      ? (updater) => {
-          const next =
-            typeof updater === "function" ? updater(rowSelection) : updater
-          const loaded = table.getCoreRowModel().flatRows
-          setTickedRows((current) => {
-            const rows = new Map(current)
-            for (const row of loaded) rows.set(row.id, row.original)
-            for (const id of rows.keys()) if (!next[id]) rows.delete(id)
-            return rows
-          })
-          onRowSelectionChange?.(next)
-        }
-      : (onRowSelectionChange ?? setRowSelectionState),
+    onRowSelectionChange: onRowSelectionChange ?? setRowSelectionState,
     enableSorting: sortable,
     manualSorting,
     onSortingChange: onSortingChange ?? setSortingState,
@@ -415,13 +402,24 @@ function DataTable<TData>({
   const rows = table.getRowModel().rows
   const columnCount = table.getVisibleLeafColumns().length
   const pageSelectedRows = table.getSelectedRowModel().rows
-  const loadedRows = table.getCoreRowModel().rowsById
+  const keptRows = new Map<string, TData>()
+  if (crossPage && bulkActions) {
+    for (const [id, row] of tickedRows)
+      if (rowSelection[id]) keptRows.set(id, row)
+    for (const row of table.getCoreRowModel().flatRows)
+      if (rowSelection[row.id]) keptRows.set(row.id, row.original)
+  }
+  // Only on a real change, so a new `data` array with the same rows doesn't render twice.
+  let keptChanged = keptRows.size !== tickedRows.size
+  for (const [id, row] of keptRows)
+    if (tickedRows.get(id) !== row) keptChanged = true
+  if (keptChanged) setTickedRows(keptRows)
   const selectedIds = crossPage
     ? Object.keys(rowSelection).filter((id) => rowSelection[id])
     : pageSelectedRows.map((row) => row.id)
   const selectedRows = crossPage
     ? selectedIds.flatMap((id) => {
-        const row = loadedRows[id]?.original ?? tickedRows.get(id)
+        const row = keptRows.get(id)
         return row === undefined ? [] : [row]
       })
     : pageSelectedRows.map((row) => row.original)

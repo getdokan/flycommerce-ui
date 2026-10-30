@@ -1,5 +1,5 @@
 import * as React from "react"
-import { render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -150,7 +150,7 @@ describe("DataTable crossPageSelection", () => {
     expect(selected.map((file) => file.id)).toEqual(["f3"])
   })
 
-  it("stays per page without getRowId, whose index ids repeat on every page", async () => {
+  it("is ignored without getRowId, whose index ids repeat on every page", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const user = userEvent.setup()
     const onBulk = vi.fn<BulkActions>()
@@ -168,7 +168,7 @@ describe("DataTable crossPageSelection", () => {
     warn.mockRestore()
   })
 
-  it("stays per page with an uncontrolled selection, which the app can't reset", async () => {
+  it("is ignored with an uncontrolled selection, which the app can't reset", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const user = userEvent.setup()
     const onBulk = vi.fn<BulkActions>()
@@ -225,5 +225,117 @@ describe("DataTable crossPageSelection", () => {
     const [selected, ids] = onBulk.mock.calls.at(-1)!
     expect(ids).toEqual(["a", "a1"])
     expect(selected.map((node) => node.name)).toEqual(["Shoes", "Boots"])
+  })
+
+  it("keeps both of two ticks made before a render", () => {
+    const onBulk = vi.fn<BulkActions>()
+    render(<Library onBulk={onBulk} />)
+    const boxes = screen.getAllByRole("checkbox", { name: "Select row" })
+
+    act(() => {
+      boxes[0].click()
+      boxes[1].click()
+    })
+    expect(screen.getByText("2 selected")).toBeTruthy()
+    expect(lastCall(onBulk)[2]).toEqual(["f1", "f2"])
+  })
+
+  describe("rows kept from other pages", () => {
+    function Editable({ onBulk }: { onBulk: BulkActions }) {
+      const [files, setFiles] = React.useState(FILES)
+      const [paused, setPaused] = React.useState(false)
+      const [page, setPage] = React.useState(1)
+      const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
+        {}
+      )
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() =>
+              setFiles((current) =>
+                current.map((file) =>
+                  file.id === "f1" ? { ...file, name: "renamed.jpg" } : file
+                )
+              )
+            }
+          >
+            Rename
+          </button>
+          <button type="button" onClick={() => setRowSelection({})}>
+            Reset
+          </button>
+          <button type="button" onClick={() => setRowSelection({ f1: true })}>
+            Restore
+          </button>
+          <button type="button" onClick={() => setPaused((value) => !value)}>
+            Pause
+          </button>
+          <DataTable
+            columns={columns}
+            data={files.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)}
+            getRowId={(file) => file.id}
+            enableRowSelection
+            crossPageSelection
+            rowSelection={paused ? undefined : rowSelection}
+            onRowSelectionChange={setRowSelection}
+            bulkActions={(selected, clear, ids) => {
+              onBulk(selected, clear, ids)
+              return null
+            }}
+            pagination={{
+              page,
+              pageSize: PAGE_SIZE,
+              total: files.length,
+              onPageChange: setPage,
+            }}
+          />
+        </>
+      )
+    }
+
+    it("are the latest copy loaded while they were selected", async () => {
+      const user = userEvent.setup()
+      const onBulk = vi.fn<BulkActions>()
+      render(<Editable onBulk={onBulk} />)
+
+      await tick(user, "file-1.jpg")
+      await user.click(screen.getByRole("button", { name: "Rename" }))
+      await user.click(screen.getByRole("button", { name: /Next/ }))
+      expect(lastCall(onBulk)[0].map((file) => file.name)).toEqual([
+        "renamed.jpg",
+      ])
+    })
+
+    it("are dropped once the app empties the selection", async () => {
+      const user = userEvent.setup()
+      const onBulk = vi.fn<BulkActions>()
+      render(<Editable onBulk={onBulk} />)
+
+      await tick(user, "file-1.jpg")
+      await user.click(screen.getByRole("button", { name: /Next/ }))
+      await user.click(screen.getByRole("button", { name: "Reset" }))
+      await user.click(screen.getByRole("button", { name: "Restore" }))
+      const [selected, , ids] = lastCall(onBulk)
+      expect(ids).toEqual(["f1"])
+      expect(selected).toEqual([])
+    })
+
+    it("are dropped while crossPageSelection is off", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+      const user = userEvent.setup()
+      const onBulk = vi.fn<BulkActions>()
+      render(<Editable onBulk={onBulk} />)
+
+      await tick(user, "file-1.jpg")
+      await user.click(screen.getByRole("button", { name: "Pause" }))
+      await user.click(screen.getByRole("button", { name: "Rename" }))
+      await user.click(screen.getByRole("button", { name: /Next/ }))
+      await user.click(screen.getByRole("button", { name: "Pause" }))
+      const [selected, , ids] = lastCall(onBulk)
+      expect(ids).toEqual(["f1"])
+      expect(selected).toEqual([])
+      warn.mockRestore()
+    })
   })
 })
