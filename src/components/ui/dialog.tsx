@@ -58,7 +58,7 @@ function DialogContent({
   closeLabel = "Close",
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  /** Width from sm upward: sm 400px, default 480px, lg 720px, xl 800px, 2xl 900px, 3xl 960px. */
+  /** Width from sm upward: sm 400px, default 480px, lg 720px, xl 800px, 2xl 900px, 3xl 960px (keeping a 1rem side margin on narrower screens). */
   size?: "sm" | "default" | "lg" | "xl" | "2xl" | "3xl"
   /** `none` drops the padding and the gap, for a body that runs edge to edge, such as a preview beside a form; pad the parts inside. */
   padding?: "default" | "none"
@@ -73,7 +73,7 @@ function DialogContent({
         data-size={size}
         data-padding={padding}
         className={cn(
-          "fixed start-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 overflow-y-auto rounded-xl border bg-popover p-6 text-sm text-popover-foreground shadow-pop duration-100 outline-none data-[size=2xl]:sm:max-w-[900px] data-[size=3xl]:sm:max-w-[960px] data-[size=default]:sm:max-w-[480px] data-[size=lg]:sm:max-w-[720px] data-[size=sm]:sm:max-w-[400px] data-[size=xl]:sm:max-w-[800px] rtl:translate-x-1/2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed start-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 overflow-y-auto rounded-xl border bg-popover p-6 text-sm text-popover-foreground shadow-pop duration-100 outline-none data-[size=2xl]:sm:max-w-[900px] data-[size=3xl]:sm:max-w-[min(960px,calc(100%-2rem))] data-[size=default]:sm:max-w-[480px] data-[size=lg]:sm:max-w-[720px] data-[size=sm]:sm:max-w-[400px] data-[size=xl]:sm:max-w-[800px] rtl:translate-x-1/2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           padding === "none" && "grid-cols-1 gap-0 p-0",
           className
         )}

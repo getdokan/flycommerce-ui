@@ -21,7 +21,7 @@ function FileDetail({
       <DialogContent size={size} padding={padding}>
         <div className="grid md:grid-cols-2">
           <div data-testid="preview">Preview</div>
-          <div className="flex flex-col">
+          <div className="flex min-w-0 flex-col">
             <div className="flex flex-col gap-6 p-6">
               <DialogHeader>
                 <DialogTitle>sneaker.jpg</DialogTitle>
@@ -30,7 +30,7 @@ function FileDetail({
                 </DialogDescription>
               </DialogHeader>
             </div>
-            <DialogFooter>
+            <DialogFooter className="mt-auto">
               <Button>Save</Button>
             </DialogFooter>
           </div>
@@ -46,10 +46,12 @@ const footer = () =>
   document.querySelector<HTMLElement>('[data-slot="dialog-footer"]')!
 
 describe("DialogContent", () => {
-  it("takes a 3xl size, 960px from sm upward", () => {
+  it("takes a 3xl size, 960px from sm upward, keeping a side margin on tablets", () => {
     render(<FileDetail size="3xl" />)
     expect(content().getAttribute("data-size")).toBe("3xl")
-    expect(content().className).toContain("data-[size=3xl]:sm:max-w-[960px]")
+    expect(content().className).toContain(
+      "data-[size=3xl]:sm:max-w-[min(960px,calc(100%-2rem))]"
+    )
   })
 
   it("keeps the padding, the gap and the footer's bleed by default", () => {
