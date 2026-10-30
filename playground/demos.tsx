@@ -83,6 +83,7 @@ import {
   MediaPageDemo,
   MediaPartsDemo,
   MediaPickerDemo,
+  PreviewFrameDemo,
   PreviewStageDemo,
 } from "./media-demos"
 import {
@@ -433,6 +434,8 @@ const KEYWORDS: Record<string, string> = {
   "media-parts": "tile thumbnail upload progress queue file",
   "preview-stage":
     "file detail preview dot grid image video play document glyph theme",
+  "preview-frame":
+    "browser window theme screenshot store domain address bar mockup preview",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
@@ -523,6 +526,7 @@ const SOURCES: Record<string, Source> = {
   "media-page": "composite",
   "media-parts": "figma",
   "preview-stage": "prototype",
+  "preview-frame": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
   "option-list-editor": "figma",
@@ -1153,6 +1157,12 @@ export const demos: Demo[] = [
     title: "Preview stage",
     group: "Patterns",
     render: () => <PreviewStageDemo />,
+  },
+  {
+    id: "preview-frame",
+    title: "Preview frame",
+    group: "Patterns",
+    render: () => <PreviewFrameDemo />,
   },
   {
     id: "dropzone",
