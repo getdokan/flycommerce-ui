@@ -220,6 +220,7 @@ function CompactQueue({
 }) {
   const list = React.useRef<HTMLUListElement>(null)
   const [scrolls, setScrolls] = React.useState(false)
+  const ids = items.map((item) => item.id).join("\n")
 
   React.useEffect(() => {
     const el = list.current
@@ -228,8 +229,10 @@ function CompactQueue({
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(el)
+    // A row can grow, e.g. a wrapped error, while the capped list keeps its height.
+    for (const row of el.children) observer.observe(row)
     return () => observer.disconnect()
-  }, [items.length])
+  }, [ids])
 
   return (
     <ul
@@ -336,7 +339,10 @@ function Thumbnail({
       src={item.thumbnailUrl}
       alt=""
       fallback={glyph}
-      containerClassName={cn("rounded-md", className)}
+      containerClassName={cn(
+        "rounded-md data-failed:overflow-visible",
+        className
+      )}
     />
   )
 }

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react"
+import { act, fireEvent, render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -109,6 +109,49 @@ describe("UploadQueue", () => {
     expect(glyph.getAttribute("class")).toContain("size-full")
   })
 
+  it("doesn't clip the fallback glyph's badge when a thumbnail fails to load", () => {
+    const { container } = render(
+      <UploadQueue
+        items={[
+          {
+            id: "1",
+            name: "brief.docx",
+            size: MB,
+            progress: 100,
+            status: "done",
+            thumbnailUrl: "https://example.invalid/brief.jpg",
+          },
+        ]}
+      />
+    )
+    const box = container.querySelector("[data-slot=image]")!
+    expect(box.className).toContain("overflow-hidden")
+    fireEvent.error(container.querySelector("img")!)
+    expect(box.hasAttribute("data-failed")).toBe(true)
+    expect(box.className).toContain("data-failed:overflow-visible")
+    expect(box.textContent).toBe("DOCX")
+  })
+
+  it("keeps the glyph of a file without a thumbnail as it was", () => {
+    const { container } = render(
+      <UploadQueue
+        items={[
+          {
+            id: "1",
+            name: "brief.docx",
+            size: MB,
+            progress: 40,
+            status: "uploading",
+          },
+        ]}
+      />
+    )
+    expect(container.querySelector("[data-slot=image]")).toBeNull()
+    const glyph = container.querySelector("li > [aria-hidden=true]")!
+    expect(glyph.getAttribute("class")).toContain("mt-0.5 size-9")
+    expect(glyph.textContent).toBe("DOCX")
+  })
+
   describe('variant="compact"', () => {
     const rows: UploadQueueItem[] = [
       {
@@ -203,6 +246,67 @@ describe("UploadQueue", () => {
       )
       expect(list.getAttribute("tabindex")).toBe("0")
       vi.restoreAllMocks()
+    })
+
+    it("doesn't clip the glyph drawn in place of a thumbnail", () => {
+      const { container } = render(
+        <UploadQueue
+          variant="compact"
+          items={[{ ...rows[1], name: "brief.docx" }]}
+        />
+      )
+      const box = container.querySelector("[data-slot=image]")!
+      expect(box.hasAttribute("data-failed")).toBe(true)
+      expect(box.className).toContain("data-failed:overflow-visible")
+      expect(
+        box.querySelector("[aria-hidden=true]")!.getAttribute("class")
+      ).toContain("size-3/5")
+    })
+
+    it("takes keyboard focus when a row grows past the height", () => {
+      const observers: { targets: Element[]; callback: () => void }[] = []
+      vi.stubGlobal(
+        "ResizeObserver",
+        class {
+          entry
+          constructor(callback: () => void) {
+            this.entry = { targets: [] as Element[], callback }
+            observers.push(this.entry)
+          }
+          observe(target: Element) {
+            this.entry.targets.push(target)
+          }
+          unobserve() {}
+          disconnect() {
+            this.entry.targets = []
+          }
+        }
+      )
+      const failed: UploadQueueItem = {
+        ...rows[3],
+        error: "clip.mp4 is over 25 MB, which is the limit for videos.",
+      }
+      const { rerender } = render(
+        <UploadQueue variant="compact" items={[rows[0], rows[3]]} />
+      )
+      const list = screen.getByRole("list", { name: "Uploads" })
+      expect(list.hasAttribute("tabindex")).toBe(false)
+
+      vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(
+        300
+      )
+      vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(
+        288
+      )
+      rerender(<UploadQueue variant="compact" items={[rows[0], failed]} />)
+      const row = within(list).getAllByRole("listitem")[1]
+      act(() => {
+        for (const observer of observers)
+          if (observer.targets.includes(row)) observer.callback()
+      })
+      expect(list.getAttribute("tabindex")).toBe("0")
+      vi.restoreAllMocks()
+      vi.unstubAllGlobals()
     })
 
     it("shows the media slot in place of the thumbnail", () => {
