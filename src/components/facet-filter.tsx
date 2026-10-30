@@ -29,7 +29,7 @@ type FacetOption<T extends string = string> = {
 type FacetFilterLabels = {
   /** The item at the foot that empties the pick. */
   clear?: string
-  /** Read in the trigger's name when nothing is picked and there is no `allLabel`: "Payment: all". */
+  /** Read in the trigger's name when nothing is picked: "Payment: all". Single mode reads `allLabel` instead. */
   all?: string
   /** The trigger's text for more than one pick. */
   summary?: (label: string, count: number) => string
@@ -80,8 +80,8 @@ type FacetFilterSingleProps<T extends string> = FacetFilterBaseProps<T> & {
   value: T | null
   /** Called with `null` when the "all" row is picked. */
   onValueChange: (value: T | null) => void
-  /** Adds a first row that empties the pick, e.g. "All types"; the trigger reads it while nothing is picked. */
-  allLabel?: string
+  /** The first row, which empties the pick, e.g. "All types"; the trigger reads it while nothing is picked. */
+  allLabel: string
   /** The "all" row's count; it shows no count without one. */
   allCount?: number
 }
@@ -136,17 +136,18 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
   } = props
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
   const allLabel = props.mode === "single" ? props.allLabel : undefined
+  const known = new Set(options.map((option) => option.value))
+  // A single pick with no option (e.g. a month whose files were all deleted) reads as the "all" row.
   const value =
     props.mode !== "single"
       ? props.value
-      : props.value === null
-        ? []
-        : [props.value]
+      : props.value !== null && known.has(props.value)
+        ? [props.value]
+        : []
   // Radix needs a string for the "all" row's radio value; an id can't clash with an option's value.
   const none = React.useId()
   const picked = options.filter((option) => value.includes(option.value))
-  const known = new Set(options.map((option) => option.value))
-  // Picked values with no option (e.g. from the address, while the options load) are kept and counted, not dropped.
+  // Multiple picks with no option (e.g. from the address, while the options load) are kept and counted, not dropped.
   const unknown = value.filter((item) => !known.has(item))
   const total = picked.length + unknown.length
   const summary =
@@ -210,26 +211,22 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
         <DropdownMenuLabel>{heading ?? label}</DropdownMenuLabel>
         {props.mode === "single" ? (
           <DropdownMenuRadioGroup
-            value={props.value ?? none}
+            value={value[0] ?? none}
             onValueChange={(next) => {
               const nextValue = next === none ? null : (next as T)
               // Picking the row that is already picked changes nothing, so the app doesn't reset its page.
               if (nextValue !== props.value) props.onValueChange(nextValue)
             }}
           >
-            {allLabel !== undefined && (
-              <>
-                <DropdownMenuRadioItem value={none}>
-                  <FacetRow
-                    label={allLabel}
-                    count={props.allCount}
-                    showCount={props.allCount !== undefined}
-                    format={format}
-                  />
-                </DropdownMenuRadioItem>
-                {options.length > 0 && <DropdownMenuSeparator />}
-              </>
-            )}
+            <DropdownMenuRadioItem value={none}>
+              <FacetRow
+                label={props.allLabel}
+                count={props.allCount}
+                showCount={props.allCount !== undefined}
+                format={format}
+              />
+            </DropdownMenuRadioItem>
+            {options.length > 0 && <DropdownMenuSeparator />}
             {options.map((option) => (
               <DropdownMenuRadioItem
                 key={option.value}

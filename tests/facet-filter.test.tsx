@@ -383,23 +383,43 @@ describe("FacetFilter mode=single", () => {
     expect(onValueChange).toHaveBeenCalledWith(null)
   })
 
-  it("reads the label without an all row, and counts a value with no option", () => {
+  it("reads the all label for a value with no option, and the all row clears it", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <FacetFilter
+        mode="single"
+        label="Date"
+        allLabel="All dates"
+        options={TYPES}
+        value="2026-05"
+        onValueChange={onValueChange}
+      />
+    )
+    const trigger = screen.getByRole("button", { name: "Date: All dates" })
+    expect(trigger.textContent).toBe("All dates")
+    expect(trigger.getAttribute("data-picked")).toBeNull()
+
+    await user.click(trigger)
+    const all = screen.getByRole("menuitemradio", { name: "All dates" })
+    expect(all.getAttribute("aria-checked")).toBe("true")
+    await user.click(all)
+    expect(onValueChange).toHaveBeenCalledWith(null)
+  })
+
+  it("reads the all label until the picked value's option arrives", () => {
     const { rerender } = render(
       <FacetFilter
         mode="single"
         label="Type"
-        options={TYPES}
-        value={null}
+        allLabel="All types"
+        options={[]}
+        value="videos"
         onValueChange={() => {}}
-        open
       />
     )
-    // The open menu hides the rest of the page from the accessibility tree.
-    const trigger = () =>
-      screen.getByRole("button", { name: /^Type/, hidden: true })
-    expect(trigger().textContent).toBe("Type")
-    expect(trigger().getAttribute("aria-label")).toBe("Type: all")
-    expect(screen.getAllByRole("menuitemradio")).toHaveLength(3)
+    const trigger = () => screen.getByRole("button", { name: /^Type/ })
+    expect(trigger().textContent).toBe("All types")
 
     rerender(
       <FacetFilter
@@ -407,18 +427,12 @@ describe("FacetFilter mode=single", () => {
         label="Type"
         allLabel="All types"
         options={TYPES}
-        value="audio"
+        value="videos"
         onValueChange={() => {}}
-        open
       />
     )
-    expect(trigger().textContent).toBe("Type, 1")
-    expect(trigger().getAttribute("aria-label")).toBe("Type, 1")
-    expect(
-      screen
-        .getAllByRole("menuitemradio")
-        .every((item) => item.getAttribute("aria-checked") === "false")
-    ).toBe(true)
+    expect(trigger().textContent).toBe("Videos")
+    expect(trigger().getAttribute("aria-label")).toBe("Type: Videos")
   })
 
   it("heads the menu with heading in the default mode too", () => {

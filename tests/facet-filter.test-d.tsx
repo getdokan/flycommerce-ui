@@ -32,6 +32,7 @@ export const rejected = [
   <FacetFilter
     mode="single"
     label="Type"
+    allLabel="All types"
     options={options}
     value={["images"]}
     onValueChange={() => {}}
@@ -39,10 +40,19 @@ export const rejected = [
   <FacetFilter
     mode="single"
     label="Type"
+    allLabel="All types"
     options={options}
     value="images"
     // @ts-expect-error a single filter can call back with null
     onValueChange={(value: "images") => value}
+  />,
+  // @ts-expect-error a single filter needs the all row, or a pick could never be undone
+  <FacetFilter
+    mode="single"
+    label="Type"
+    options={options}
+    value={null}
+    onValueChange={() => {}}
   />,
   // @ts-expect-error a multiple filter takes a list
   <FacetFilter
