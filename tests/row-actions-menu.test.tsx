@@ -199,6 +199,25 @@ describe("RowActionsMenu", () => {
     expect(screen.queryByRole("menu")).toBeNull()
   })
 
+  it("draws only the spinner while loading, in place of the more icon", () => {
+    const { rerender } = render(<RowActionsMenu items={items()} loading />)
+    const trigger = () => screen.getByRole("button", { name: "Actions" })
+    expect(trigger().querySelectorAll("svg")).toHaveLength(1)
+    expect(trigger().querySelector("[data-icon-name=more]")).toBeNull()
+
+    rerender(<RowActionsMenu items={items()} />)
+    expect(trigger().querySelectorAll("svg")).toHaveLength(1)
+    expect(trigger().querySelector("[data-icon-name=more]")).toBeTruthy()
+  })
+
+  it("doesn't light up on hover while disabled or loading", () => {
+    const { rerender } = render(<RowActionsMenu items={items()} loading />)
+    const trigger = () => screen.getByRole("button", { name: "Actions" })
+    expect(trigger().className).toContain("data-loading:hover:bg-transparent")
+    rerender(<RowActionsMenu items={items()} disabled />)
+    expect(trigger().className).toContain("disabled:hover:bg-transparent")
+  })
+
   it("aligns to the end edge, and follows the direction in RTL", () => {
     render(
       <DirectionProvider dir="rtl">

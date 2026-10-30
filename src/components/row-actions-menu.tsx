@@ -56,7 +56,7 @@ type RowActionsMenuProps = {
   open?: boolean
   defaultOpen?: boolean
   align?: "start" | "center" | "end"
-  /** Shows a spinner on the trigger while an action runs. */
+  /** Shows a spinner in place of the ⋯ while an action runs. */
   loading?: boolean
   disabled?: boolean
   /** Classes for the trigger. */
@@ -117,14 +117,15 @@ function RowActionsMenu({
           data-slot="row-actions-menu"
           // A busy or disabled button that let the pointer through would hand the click to the row under it.
           className={cn(
-            "disabled:pointer-events-auto data-loading:pointer-events-auto",
+            "disabled:pointer-events-auto disabled:hover:bg-transparent data-loading:pointer-events-auto data-loading:hover:bg-transparent",
             className
           )}
           // The row or tile around the menu has its own click and Enter; the menu's are kept from it.
           onClick={stop}
           onKeyDown={stopActivation}
         >
-          <Icon name="more" />
+          {/* Button draws its spinner before the children; the icon makes way so the two don't overflow it. */}
+          {!loading && <Icon name="more" />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

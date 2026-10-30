@@ -958,7 +958,14 @@ function fileActions(file: DemoFile, canDelete: boolean): RowActionsMenuItem[] {
     {
       label: "Copy URL",
       icon: <Icon name="duplicate" />,
-      onSelect: () => toast.success("Link copied."),
+      onSelect: async () => {
+        try {
+          await navigator.clipboard.writeText(file.url)
+          toast.success("Link copied.")
+        } catch {
+          toast.error("Couldn't copy the link. Your browser blocked it.")
+        }
+      },
     },
     {
       label: "Download",
