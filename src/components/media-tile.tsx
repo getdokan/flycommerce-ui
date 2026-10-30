@@ -73,9 +73,12 @@ function formatBytes(bytes: number, locale?: string) {
 /** File-type glyph with its extension, used where an image can't be shown. */
 function MediaFileGlyph({
   name,
+  size = "default",
   className,
 }: {
   name: string
+  /** `lg` draws a larger extension label, for a glyph of about 64 px and up. */
+  size?: "default" | "lg"
   className?: string
 }) {
   const ext = fileExtension(name)
@@ -89,7 +92,14 @@ function MediaFileGlyph({
     >
       <FileIcon className="size-full" strokeWidth={1.25} />
       {ext && (
-        <span className="absolute start-[-8%] bottom-[18%] rounded-[3px] bg-primary px-1 text-[9px] leading-[14px] font-bold text-primary-foreground">
+        <span
+          className={cn(
+            "absolute start-[-8%] bottom-[18%] bg-primary font-bold text-primary-foreground",
+            size === "lg"
+              ? "rounded-sm px-1.5 text-xs leading-5"
+              : "rounded-[3px] px-1 text-[9px] leading-[14px]"
+          )}
+        >
           {ext.slice(0, 4)}
         </span>
       )}
