@@ -44,6 +44,7 @@ import {
   PageHeaderTitle,
   P3_GLYPHS,
   P3IconProvider,
+  RowActionsMenu,
   SaveBar,
   SearchInput,
   SegmentedControl,
@@ -56,7 +57,13 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Table,
+  TableBody,
+  TableCell,
   TableFilters,
+  TableHead,
+  TableHeader,
+  TableRow,
   Timeline,
   TimelineDescription,
   TimelineHeader,
@@ -73,6 +80,7 @@ import {
   type StatusTone,
   PeriodMenu,
   type PeriodRange,
+  type RowActionsMenuItem,
 } from "@/index"
 
 type Product = {
@@ -917,6 +925,134 @@ export function FacetFilterDemo() {
         onValueChange={setStatus}
         onOpenChange={setCounting}
       />
+    </div>
+  )
+}
+
+type DemoFile = { id: string; name: string; type: string; url: string }
+
+const DEMO_FILES: DemoFile[] = [
+  {
+    id: "1",
+    name: "boutique-tote.jpg",
+    type: "JPG image",
+    url: "https://picsum.photos/seed/fc-tote/800/800",
+  },
+  {
+    id: "2",
+    name: "Autumn winter 2026 campaign",
+    type: "YouTube video",
+    url: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+  },
+]
+
+function fileActions(file: DemoFile, canDelete: boolean): RowActionsMenuItem[] {
+  const video = file.type === "YouTube video"
+  return [
+    {
+      label: "Open",
+      icon: <Icon name="external" />,
+      href: file.url,
+      target: "_blank",
+    },
+    {
+      label: "Copy URL",
+      icon: <Icon name="duplicate" />,
+      onSelect: async () => {
+        try {
+          await navigator.clipboard.writeText(file.url)
+          toast.success("Link copied.")
+        } catch {
+          toast.error("Couldn't copy the link. Your browser blocked it.")
+        }
+      },
+    },
+    {
+      label: "Download",
+      icon: <Icon name="export" />,
+      hidden: video,
+      onSelect: () => toast(`Downloading ${file.name}.`),
+    },
+    {
+      label: "Delete",
+      icon: <Icon name="delete" />,
+      destructive: true,
+      separatorBefore: true,
+      hidden: !canDelete,
+      onSelect: () => toast(`Delete ${file.name}?`),
+    },
+  ]
+}
+
+export function RowActionsMenuDemo() {
+  const [canDelete, setCanDelete] = React.useState(true)
+  const open = (file: DemoFile) => toast(`Opened the details of ${file.name}.`)
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <SwitchField
+        title="Can delete media"
+        checked={canDelete}
+        onCheckedChange={setCanDelete}
+      />
+      <Card className="w-full">
+        <CardContent flush>
+          <Table variant="list">
+            <TableHeader>
+              <TableRow>
+                <TableHead>File</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {DEMO_FILES.map((file) => (
+                <TableRow
+                  key={file.id}
+                  tabIndex={0}
+                  onClick={() => open(file)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") open(file)
+                  }}
+                >
+                  <TableCell className="font-medium">{file.name}</TableCell>
+                  <TableCell>{file.type}</TableCell>
+                  <TableCell className="text-end">
+                    <RowActionsMenu
+                      label={`Actions for ${file.name}`}
+                      items={fileActions(file, canDelete)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {DEMO_FILES.map((file) => (
+          <div
+            key={file.id}
+            className="relative aspect-square overflow-hidden rounded-xl bg-muted"
+          >
+            <button
+              type="button"
+              aria-label={`Open details for ${file.name}`}
+              onClick={() => open(file)}
+              className="absolute inset-0 flex items-end rounded-xl p-3 text-start text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
+            >
+              <span className="truncate">{file.name}</span>
+            </button>
+            <div className="absolute end-2 top-2 rounded-md bg-card shadow-1">
+              <RowActionsMenu
+                label={`Actions for ${file.name}`}
+                items={fileActions(file, canDelete)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

@@ -49,6 +49,7 @@ import {
   DataTableTreeDemo,
   FacetFilterDemo,
   PeriodMenuDemo,
+  RowActionsMenuDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -343,6 +344,8 @@ const KEYWORDS: Record<string, string> = {
     "no data blank zero state emptystate nothing yet failed load error retry",
   "person-cell":
     "customer vendor staff user avatar initials name guest table row cell",
+  "row-actions-menu":
+    "more ellipsis kebab dots row actions menu dropdown open copy download delete tile list file",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
   "period-menu":
@@ -468,6 +471,7 @@ const SOURCES: Record<string, Source> = {
   "description-list": "prototype",
   "person-cell": "prototype",
   "facet-filter": "prototype",
+  "row-actions-menu": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
@@ -1925,6 +1929,12 @@ export const demos: Demo[] = [
     title: "Facet filter",
     group: "Data display",
     render: () => <FacetFilterDemo />,
+  },
+  {
+    id: "row-actions-menu",
+    title: "Row actions menu",
+    group: "Data display",
+    render: () => <RowActionsMenuDemo />,
   },
   {
     id: "avatar",
