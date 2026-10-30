@@ -123,6 +123,7 @@ function MediaGrid({
   }
 
   const responsive = columns === "responsive"
+  const shell = responsive && "@container/media-grid w-full"
   const grid = cn(
     "grid",
     responsive
@@ -155,7 +156,7 @@ function MediaGrid({
         </div>
       )
     return (
-      <div className={cn("@container/media-grid", className)} aria-busy="true">
+      <div className={cn(shell, className)} aria-busy="true">
         <div className={grid}>{skeletons}</div>
       </div>
     )
@@ -163,7 +164,7 @@ function MediaGrid({
 
   if (items.length === 0) {
     return (
-      <div className={className}>
+      <div className={responsive ? cn("w-full", className) : className}>
         {empty ?? (
           <Empty>
             <EmptyHeader>
@@ -180,13 +181,7 @@ function MediaGrid({
   }
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-4",
-        responsive && "@container/media-grid",
-        className
-      )}
-    >
+    <div className={cn("flex flex-col gap-4", shell, className)}>
       {full && (
         <p role="status" className="text-xs text-muted-foreground">
           {labels.maxReached(max!)}

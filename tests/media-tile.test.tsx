@@ -236,7 +236,7 @@ describe("MediaGrid with onOpen", () => {
   })
 })
 
-describe("MediaTile review fixes", () => {
+describe("MediaTile edge cases", () => {
   it("doesn't dim an openable tile that can't be selected", () => {
     const { container } = render(
       <MediaTile
@@ -283,5 +283,23 @@ describe("MediaGrid loading with caption", () => {
       <MediaGrid items={[]} loading skeletonCount={2} caption />
     )
     expect(container.querySelectorAll("[data-slot=skeleton]").length).toBe(6)
+  })
+})
+
+describe("MediaGrid width and video caption", () => {
+  it("takes the full width with columns=responsive in every state, so a flex parent can't collapse it", () => {
+    const { container, rerender } = render(
+      <MediaGrid items={[photo]} columns="responsive" />
+    )
+    expect(container.firstElementChild!.className).toContain("w-full")
+    rerender(<MediaGrid items={[]} loading columns="responsive" />)
+    expect(container.firstElementChild!.className).toContain("w-full")
+    rerender(<MediaGrid items={[]} columns="responsive" />)
+    expect(container.firstElementChild!.className).toContain("w-full")
+  })
+
+  it("reads Video once when description returns null", () => {
+    render(<MediaGrid items={[video]} caption description={() => null} />)
+    expect(screen.getAllByText("Video")).toHaveLength(1)
   })
 })

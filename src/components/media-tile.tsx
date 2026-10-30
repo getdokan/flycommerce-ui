@@ -213,7 +213,7 @@ function MediaTile({
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <span className="flex size-10 items-center justify-center rounded-full bg-foreground/60 text-background">
             <PlayIcon className="size-4 fill-current" aria-hidden="true" />
-            {!(caption && description === undefined) && (
+            {!(caption && description == null) && (
               <span className="sr-only">{labels.video}</span>
             )}
           </span>
