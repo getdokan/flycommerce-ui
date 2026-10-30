@@ -1,8 +1,15 @@
+import * as React from "react"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import { BulkBar, Button, type BulkBarProps } from "@/index"
+import {
+  BulkBar,
+  Button,
+  SearchInput,
+  type BulkBarPageState,
+  type BulkBarProps,
+} from "@/index"
 
 const renderBar = (props: Partial<BulkBarProps> = {}) => {
   const handlers = {
@@ -146,6 +153,116 @@ describe("BulkBar", () => {
     expect(
       screen.queryByRole("button", { name: "Select all on page" })
     ).toBeNull()
+    expect(document.activeElement).toBe(pageCheckbox())
+  })
+
+  it("forgets a Select all on page that didn't fill the page once the page changes", async () => {
+    const user = userEvent.setup()
+    const onSelectPage = vi.fn()
+    const props = (pageState: BulkBarPageState) => ({
+      selectedCount: 2,
+      pageState,
+      onPageCheckedChange: () => {},
+      onSelectPage,
+      onClear: () => {},
+    })
+    const { rerender } = render(<BulkBar {...props("some")} />)
+    await user.click(screen.getByRole("button", { name: "Select all on page" }))
+    // The page changed another way before it ever filled.
+    rerender(<BulkBar {...props("none")} />)
+    ;(document.activeElement as HTMLElement).blur()
+    rerender(<BulkBar {...props("all")} />)
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  it("returns focus to returnFocusTo when the bar goes away with focus in it", async () => {
+    const user = userEvent.setup()
+    function List() {
+      const [selected, setSelected] = React.useState(2)
+      const search = React.useRef<HTMLInputElement>(null)
+      return selected > 0 ? (
+        <BulkBar
+          selectedCount={selected}
+          pageState="some"
+          onPageCheckedChange={() => {}}
+          onClear={() => setSelected(0)}
+          returnFocusTo={search}
+        />
+      ) : (
+        <SearchInput ref={search} aria-label="Search files" />
+      )
+    }
+    render(<List />)
+    await user.click(screen.getByRole("button", { name: "Clear" }))
+    expect(document.activeElement).toBe(
+      screen.getByRole("searchbox", { name: "Search files" })
+    )
+  })
+
+  it("leaves focus alone when the bar goes away with focus elsewhere", () => {
+    const outside = document.createElement("button")
+    document.body.append(outside)
+    const search = document.createElement("input")
+    document.body.append(search)
+    const { unmount } = renderBar({ returnFocusTo: search })
+    outside.focus()
+    unmount()
+    expect(document.activeElement).toBe(outside)
+    outside.remove()
+    search.remove()
+  })
+
+  it("doesn't take focus that was never in the bar when it goes away", () => {
+    const search = document.createElement("input")
+    document.body.append(search)
+    const { unmount } = renderBar({ returnFocusTo: search })
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    unmount()
+    expect(document.activeElement).toBe(document.body)
+    search.remove()
+  })
+
+  it("leaves focus alone when StrictMode mounts the bar twice", () => {
+    const search = document.createElement("input")
+    document.body.append(search)
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    render(
+      <React.StrictMode>
+        <BulkBar
+          selectedCount={1}
+          pageState="some"
+          onPageCheckedChange={() => {}}
+          onClear={() => {}}
+          returnFocusTo={search}
+        />
+      </React.StrictMode>
+    )
+    expect(document.activeElement).toBe(document.body)
+    search.remove()
+  })
+
+  it("moves focus to the page checkbox when a focus trap caught it on its container", async () => {
+    const user = userEvent.setup()
+    const props = (pageState: BulkBarPageState) => ({
+      selectedCount: 2,
+      pageState,
+      onPageCheckedChange: () => {},
+      onSelectPage: () => {},
+      onClear: () => {},
+    })
+    const { rerender } = render(
+      <div tabIndex={-1} data-testid="dialog">
+        <BulkBar {...props("some")} />
+      </div>
+    )
+    await user.click(screen.getByRole("button", { name: "Select all on page" }))
+    // A dialog's focus scope moves focus to its container when the focused button is removed.
+    screen.getByTestId("dialog").focus()
+    rerender(
+      <div tabIndex={-1} data-testid="dialog">
+        <BulkBar {...props("all")} />
+      </div>
+    )
     expect(document.activeElement).toBe(pageCheckbox())
   })
 

@@ -935,6 +935,7 @@ export function BulkBarDemo() {
   const [selected, setSelected] = React.useState<string[]>(["2", "3"])
   // Kept here, so the search survives the bar standing in for the toolbar.
   const [query, setQuery] = React.useState("")
+  const search = React.useRef<HTMLInputElement>(null)
   const pageCount = Math.ceil(BULK_FILES.length / BULK_PAGE_SIZE)
   const onPage = BULK_FILES.slice(
     (page - 1) * BULK_PAGE_SIZE,
@@ -965,6 +966,7 @@ export function BulkBarDemo() {
           pageState={pageState}
           onPageCheckedChange={setPageChecked}
           onClear={() => setSelected([])}
+          returnFocusTo={search}
           actions={
             <>
               <Button
@@ -989,6 +991,7 @@ export function BulkBarDemo() {
       ) : (
         <div className="border-b border-border-subtle px-5 py-3">
           <SearchInput
+            ref={search}
             aria-label="Search files"
             placeholder="Search files by name"
             value={query}

@@ -25,6 +25,19 @@ const DEFAULT_LABELS: Required<BulkBarLabels> = {
   clear: "Clear",
 }
 
+type BulkBarFocusTarget =
+  | HTMLElement
+  | null
+  | React.RefObject<HTMLElement | null>
+  | (() => HTMLElement | null | undefined)
+
+function resolveTarget(target: BulkBarFocusTarget | undefined) {
+  if (!target) return null
+  if (typeof target === "function") return target() ?? null
+  if ("current" in target) return target.current
+  return target
+}
+
 type BulkBarProps = Omit<React.ComponentProps<"div">, "children"> & {
   /** Every selected item, on this page and on others. */
   selectedCount: number
@@ -38,6 +51,11 @@ type BulkBarProps = Omit<React.ComponentProps<"div">, "children"> & {
   onClear: () => void
   /** Buttons at the end, before Clear, e.g. Download and Delete. */
   actions?: React.ReactNode
+  /**
+   * Where focus goes when the bar goes away with focus in it, e.g. after Clear: usually the toolbar's search, which
+   * is back by then. An element, a ref, or a function read at that moment.
+   */
+  returnFocusTo?: BulkBarFocusTarget
   /** Formats the count; the browser's locale by default. */
   locale?: string
   labels?: BulkBarLabels
@@ -51,6 +69,7 @@ function BulkBar({
   onSelectPage,
   onClear,
   actions,
+  returnFocusTo,
   locale,
   labels: labelsProp,
   className,
@@ -67,14 +86,43 @@ function BulkBar({
     else onPageCheckedChange(true)
   }
 
-  // The button goes once the page is selected; its focus would fall to the page, so the page checkbox takes it.
-  React.useEffect(() => {
-    if (pageState !== "all" || !selectingPage.current) return
-    selectingPage.current = false
+  // Focus that fell out of a removed control lands on the page, or on a focus trap's container around the bar.
+  const focusFell = () => {
     const active = document.activeElement
-    if (active === null || active === document.body)
+    const root = checkboxRef.current?.closest("[data-slot=bulk-bar]")
+    return !active || (root != null && active.contains(root))
+  }
+
+  // The button goes once the page is selected, so the page checkbox takes its focus.
+  // Any other change of the page forgets the click, so a page filled later in another way doesn't move focus.
+  React.useEffect(() => {
+    const selecting = selectingPage.current
+    selectingPage.current = false
+    if (pageState === "all" && selecting && focusFell())
       checkboxRef.current?.focus()
   }, [pageState])
+
+  const returnFocusRef = React.useRef(returnFocusTo)
+  React.useEffect(() => {
+    returnFocusRef.current = returnFocusTo
+  })
+  // Read before the bar leaves the page: only focus that was in it goes to returnFocusTo.
+  const hadFocus = React.useRef(false)
+  React.useLayoutEffect(() => {
+    const root = checkboxRef.current?.closest("[data-slot=bulk-bar]")
+    return () => {
+      hadFocus.current = root?.contains(document.activeElement) ?? false
+    }
+  }, [])
+  React.useEffect(
+    () => () => {
+      if (!hadFocus.current) return
+      hadFocus.current = false
+      const target = resolveTarget(returnFocusRef.current)
+      if (target?.isConnected) target.focus()
+    },
+    []
+  )
 
   return (
     <div
@@ -125,4 +173,10 @@ function BulkBar({
   )
 }
 
-export { BulkBar, type BulkBarProps, type BulkBarPageState, type BulkBarLabels }
+export {
+  BulkBar,
+  type BulkBarProps,
+  type BulkBarPageState,
+  type BulkBarLabels,
+  type BulkBarFocusTarget,
+}
