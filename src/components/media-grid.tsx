@@ -37,8 +37,22 @@ type MediaGridProps = {
   /** The item whose details are shown; defaults to the last one clicked. */
   activeId?: string | null
   onActiveChange?: (id: string | null) => void
+  /** Clicking a tile's picture opens it, also while others are selected; selection moves to a checkbox on each tile. */
+  onOpen?: (item: MediaItem) => void
+  /** Each tile's top-end slot, e.g. a ⋯ menu. */
+  actions?: (item: MediaItem) => React.ReactNode
   onPreview?: (item: MediaItem) => void
   onRemove?: (item: MediaItem) => void
+  /** Shows each file's name and a second line under its picture. */
+  caption?: boolean
+  /** Replaces a caption's second line ("JPG · 1.2 MB", or "Video"). */
+  description?: (item: MediaItem) => React.ReactNode
+  /** `square` for a managed library; `default` is 6:5. */
+  aspect?: "default" | "square"
+  /** `responsive`: 2 per row, then 3, 4, 5 and 6 as the grid widens; `auto` fills rows with tiles of about 140px. */
+  columns?: "auto" | "responsive"
+  /** Formats the sizes in the captions. */
+  locale?: string
   loading?: boolean
   skeletonCount?: number
   hasMore?: boolean
@@ -66,8 +80,15 @@ function MediaGrid({
   max,
   activeId: activeIdProp,
   onActiveChange,
+  onOpen,
+  actions,
   onPreview,
   onRemove,
+  caption = false,
+  description,
+  aspect = "default",
+  columns = "auto",
+  locale,
   loading = false,
   skeletonCount = 12,
   hasMore = false,
@@ -101,22 +122,49 @@ function MediaGrid({
     setActive(item.id)
   }
 
-  const grid =
-    "grid grid-cols-[repeat(auto-fill,minmax(min(140px,40%),1fr))] gap-3"
+  const responsive = columns === "responsive"
+  const shell = responsive && "@container/media-grid w-full"
+  const grid = cn(
+    "grid",
+    responsive
+      ? "grid-cols-2 @sm/media-grid:grid-cols-3 @xl/media-grid:grid-cols-4 @3xl/media-grid:grid-cols-5 @5xl/media-grid:grid-cols-6"
+      : "grid-cols-[repeat(auto-fill,minmax(min(140px,40%),1fr))]",
+    caption ? "gap-x-3 gap-y-4" : "gap-3"
+  )
 
   if (loading) {
+    const skeletons = Array.from({ length: skeletonCount }, (_, i) => {
+      const pictureClass = cn(
+        "rounded-lg",
+        aspect === "square" ? "aspect-square" : "aspect-[6/5]"
+      )
+      if (!caption) return <Skeleton key={i} className={pictureClass} />
+      return (
+        <div key={i} className="flex flex-col gap-2">
+          <Skeleton className={pictureClass} />
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+        </div>
+      )
+    })
+    if (!responsive)
+      return (
+        <div className={cn(grid, className)} aria-busy="true">
+          {skeletons}
+        </div>
+      )
     return (
-      <div className={cn(grid, className)} aria-busy="true">
-        {Array.from({ length: skeletonCount }, (_, i) => (
-          <Skeleton key={i} className="aspect-[6/5] rounded-lg" />
-        ))}
+      <div className={cn(shell, className)} aria-busy="true">
+        <div className={grid}>{skeletons}</div>
       </div>
     )
   }
 
   if (items.length === 0) {
     return (
-      <div className={className}>
+      <div className={responsive ? cn("w-full", className) : className}>
         {empty ?? (
           <Empty>
             <EmptyHeader>
@@ -133,26 +181,37 @@ function MediaGrid({
   }
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
+    <div className={cn("flex flex-col gap-4", shell, className)}>
       {full && (
         <p role="status" className="text-xs text-muted-foreground">
           {labels.maxReached(max!)}
         </p>
       )}
       <div className={grid}>
-        {items.map((item) => (
-          <MediaTile
-            key={item.id}
-            item={item}
-            selected={selected.includes(item.id)}
-            active={activeId === item.id}
-            disabled={full}
-            onClick={onSelectedChange ? () => toggle(item) : undefined}
-            onPreview={onPreview ? () => onPreview(item) : undefined}
-            onRemove={onRemove ? () => onRemove(item) : undefined}
-            labels={labels}
-          />
-        ))}
+        {items.map((item) => {
+          const select = onSelectedChange ? () => toggle(item) : undefined
+          return (
+            <MediaTile
+              key={item.id}
+              item={item}
+              selected={selected.includes(item.id)}
+              active={activeId === item.id}
+              disabled={full}
+              onClick={onOpen ? undefined : select}
+              onOpen={onOpen ? () => onOpen(item) : undefined}
+              onSelectedChange={onOpen ? select : undefined}
+              selecting={selected.length > 0}
+              actions={actions?.(item)}
+              onPreview={onPreview ? () => onPreview(item) : undefined}
+              onRemove={onRemove ? () => onRemove(item) : undefined}
+              caption={caption}
+              description={description?.(item)}
+              aspect={aspect}
+              locale={locale}
+              labels={labels}
+            />
+          )
+        })}
       </div>
       {hasMore && onLoadMore && (
         <Button
