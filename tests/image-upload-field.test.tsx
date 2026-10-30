@@ -304,6 +304,21 @@ describe("ImageUploadField", () => {
     expect(document.querySelector("img")?.dataset.fit).toBe("contain")
   })
 
+  it("sizes the image to the tile rather than the tile's row to the image", () => {
+    render(
+      <ImageUploadField value={LOGO} previewFit="contain" onFiles={() => {}} />
+    )
+    const tile = document.querySelector(
+      "[data-slot=image-upload-field-preview]"
+    )!
+    expect([...tile.classList]).toEqual(
+      expect.arrayContaining(["h-16", "w-24", "grid-cols-1", "grid-rows-1"])
+    )
+    expect(tile.querySelector("img")?.classList.contains("size-full")).toBe(
+      true
+    )
+  })
+
   it("draws a preview node in the tile instead of the image", () => {
     render(
       <ImageUploadField
