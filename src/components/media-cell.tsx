@@ -5,7 +5,7 @@ import { ImageWithFallback } from "@/components/image-with-fallback"
 
 type MediaCellProps = React.ComponentProps<"div"> & {
   src?: string
-  /** Drawn in the thumbnail's box instead of the image (`src` is then not used), e.g. a file-type glyph, or a video poster with a play mark. */
+  /** Drawn in the thumbnail's box instead of the image (`src` is then not used), e.g. a file-type glyph, or a video poster with a play mark. The box clips it to its rounded corners, unless a `MediaFileGlyph` is passed directly (alone or in a fragment), so the glyph's extension badge isn't cut. */
   media?: React.ReactNode
   title: React.ReactNode
   /** Second line, e.g. "by Fashion BD" or a SKU. */
@@ -37,7 +37,7 @@ function MediaCell({
         {media ? (
           <span
             data-slot="media-cell-media"
-            className="relative flex size-full items-center justify-center overflow-hidden rounded-md border border-border-subtle bg-muted text-muted-foreground"
+            className="relative flex size-full items-center justify-center overflow-hidden rounded-md border border-border-subtle bg-muted text-muted-foreground has-[>[data-slot=media-file-glyph]]:overflow-visible"
           >
             {media}
             {alt && <span className="sr-only">{alt}</span>}

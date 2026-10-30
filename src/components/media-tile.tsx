@@ -81,6 +81,7 @@ function MediaFileGlyph({
   const ext = fileExtension(name)
   return (
     <span
+      data-slot="media-file-glyph"
       aria-hidden="true"
       className={cn(
         "relative inline-flex items-center justify-center text-muted-foreground",
