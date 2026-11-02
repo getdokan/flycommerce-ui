@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -113,30 +113,44 @@ describe("MediaCell media with alt", () => {
     )
     expect(screen.getByText("Size guide PDF").className).toContain("sr-only")
   })
+})
 
+describe("MediaCell title link", () => {
   it("makes the title a link with href, and hands a plain click to onNavigate", async () => {
     const user = userEvent.setup()
     const onNavigate = vi.fn()
     render(
       <MediaCell
         title="Silk twill scarf, ivory"
-        href="/admin/products/101/edit"
+        href="#products/101/edit"
         onNavigate={onNavigate}
         description="MO-AC-SCRF-IVR"
       />
     )
     const link = screen.getByRole("link", { name: "Silk twill scarf, ivory" })
-    expect(link.getAttribute("href")).toBe("/admin/products/101/edit")
+    expect(link.getAttribute("href")).toBe("#products/101/edit")
     expect(link.getAttribute("title")).toBe("Silk twill scarf, ivory")
     expect(link.className).toContain("truncate")
 
     await user.click(link)
     expect(onNavigate).toHaveBeenCalledTimes(1)
 
-    await user.keyboard("{Control>}")
-    await user.click(link)
-    await user.keyboard("{/Control}")
+    // A modified click is left to the browser: no preventDefault, no onNavigate.
+    for (const modifier of ["ctrlKey", "metaKey", "shiftKey", "altKey"]) {
+      expect(fireEvent.click(link, { [modifier]: true })).toBe(true)
+    }
     expect(onNavigate).toHaveBeenCalledTimes(1)
+
+    link.focus()
+    await user.keyboard("{Enter}")
+    expect(onNavigate).toHaveBeenCalledTimes(2)
+  })
+
+  it("keeps a blank title plain, so there is no empty link", () => {
+    const { container } = render(
+      <MediaCell title="" href="/admin/products/9/edit" />
+    )
+    expect(container.querySelector("a")).toBeNull()
   })
 
   it("shows a plain-text title in full on hover, and takes any node as the title", () => {
@@ -149,5 +163,17 @@ describe("MediaCell media with alt", () => {
     const emphasised = screen.getByText("Glass bud vase")
     expect(emphasised.tagName).toBe("EM")
     expect(emphasised.parentElement!.getAttribute("title")).toBeNull()
+  })
+
+  it("shows a numeric title in full on hover", () => {
+    render(<MediaCell title={1048576} />)
+    expect(screen.getByText("1048576").getAttribute("title")).toBe("1048576")
+  })
+
+  it("leaves a click to the browser when there is no onNavigate", () => {
+    render(<MediaCell title="Glass bud vase" href="#product-101" />)
+    const link = screen.getByRole("link", { name: "Glass bud vase" })
+    // fireEvent returns false only when a handler called preventDefault.
+    expect(fireEvent.click(link)).toBe(true)
   })
 })

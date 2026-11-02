@@ -404,6 +404,15 @@ export function MediaCellDemo() {
       <li className="p-3">
         <MediaCell
           size={40}
+          src="https://picsum.photos/seed/fcm-scarf/80/80"
+          title="Silk twill scarf, ivory"
+          href="#products/101/edit"
+          description="MO-AC-SCRF-IVR"
+        />
+      </li>
+      <li className="p-3">
+        <MediaCell
+          size={40}
           media={
             <>
               <ImageWithFallback
