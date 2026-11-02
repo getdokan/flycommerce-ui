@@ -57,6 +57,7 @@ import {
   SettingsNavDemo,
   StatusBadgeDemo,
   TimelineDemo,
+  StepMeterDemo,
   ActivityFeedDemo,
 } from "./pattern-demos"
 import { CodeEditorDemo } from "./code-editor-demos"
@@ -403,6 +404,8 @@ const KEYWORDS: Record<string, string> = {
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
   timeline: "timeline activity history events log steps feed",
+  "step-meter":
+    "stepper wizard steps progress multi-step import flow indicator",
   "activity-feed": "activity log history notes order timeline comments",
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
@@ -493,6 +496,7 @@ const SOURCES: Record<string, Source> = {
   "search-input": "prototype",
   "status-badge": "prototype",
   timeline: "prototype",
+  "step-meter": "prototype",
   "activity-feed": "prototype",
   "data-table": "prototype",
   "data-table-tree": "figma",
@@ -1199,6 +1203,12 @@ export const demos: Demo[] = [
     title: "Timeline",
     group: "Patterns",
     render: () => <TimelineDemo />,
+  },
+  {
+    id: "step-meter",
+    title: "Step meter",
+    group: "Patterns",
+    render: () => <StepMeterDemo />,
   },
   {
     id: "activity-feed",
