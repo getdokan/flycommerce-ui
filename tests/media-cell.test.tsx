@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import userEvent from "@testing-library/user-event"
+import { describe, expect, it, vi } from "vitest"
 
 import { MediaCell, MediaFileGlyph } from "@/index"
 
@@ -111,5 +112,42 @@ describe("MediaCell media with alt", () => {
       />
     )
     expect(screen.getByText("Size guide PDF").className).toContain("sr-only")
+  })
+
+  it("makes the title a link with href, and hands a plain click to onNavigate", async () => {
+    const user = userEvent.setup()
+    const onNavigate = vi.fn()
+    render(
+      <MediaCell
+        title="Silk twill scarf, ivory"
+        href="/admin/products/101/edit"
+        onNavigate={onNavigate}
+        description="MO-AC-SCRF-IVR"
+      />
+    )
+    const link = screen.getByRole("link", { name: "Silk twill scarf, ivory" })
+    expect(link.getAttribute("href")).toBe("/admin/products/101/edit")
+    expect(link.getAttribute("title")).toBe("Silk twill scarf, ivory")
+    expect(link.className).toContain("truncate")
+
+    await user.click(link)
+    expect(onNavigate).toHaveBeenCalledTimes(1)
+
+    await user.keyboard("{Control>}")
+    await user.click(link)
+    await user.keyboard("{/Control}")
+    expect(onNavigate).toHaveBeenCalledTimes(1)
+  })
+
+  it("shows a plain-text title in full on hover, and takes any node as the title", () => {
+    const { rerender } = render(<MediaCell title="Glass bud vase" />)
+    expect(screen.getByText("Glass bud vase").getAttribute("title")).toBe(
+      "Glass bud vase"
+    )
+
+    rerender(<MediaCell title={<em>Glass bud vase</em>} />)
+    const emphasised = screen.getByText("Glass bud vase")
+    expect(emphasised.tagName).toBe("EM")
+    expect(emphasised.parentElement!.getAttribute("title")).toBeNull()
   })
 })

@@ -3,11 +3,16 @@ import { cn } from "cn"
 
 import { ImageWithFallback } from "@/components/image-with-fallback"
 
-type MediaCellProps = React.ComponentProps<"div"> & {
+type MediaCellProps = Omit<React.ComponentProps<"div">, "title"> & {
   src?: string
   /** Drawn in the thumbnail's box instead of the image (`src` is then not used), e.g. a file-type glyph, or a video poster with a play mark. The box clips it to its rounded corners, unless a `MediaFileGlyph` is passed directly (alone or in a fragment), so the glyph's extension badge isn't cut. */
   media?: React.ReactNode
+  /** The first line, truncated; plain text also shows in full on hover. */
   title: React.ReactNode
+  /** Makes the title a link to the record, e.g. the product's edit page. */
+  href?: string
+  /** Called on a plain click of the link, for a client-side router; a modified click (new tab) opens `href` as usual. */
+  onNavigate?: () => void
   /** Second line, e.g. "by Fashion BD" or a SKU. */
   description?: React.ReactNode
   /** Empty by default: the title next to the thumbnail already names it. */
@@ -21,12 +26,16 @@ function MediaCell({
   src,
   media,
   title,
+  href,
+  onNavigate,
   description,
   alt,
   size = 36,
   className,
   ...props
 }: MediaCellProps) {
+  const hover = typeof title === "string" ? title : undefined
+
   return (
     <div
       data-slot="media-cell"
@@ -51,7 +60,35 @@ function MediaCell({
         )}
       </span>
       <div className="min-w-0">
-        <div className="truncate font-[560] text-foreground">{title}</div>
+        {href ? (
+          // Truncated on the link itself, so its focus ring isn't clipped, as in PersonCell.
+          <div className="flex min-w-0 font-[560] text-foreground">
+            <a
+              href={href}
+              title={hover}
+              className="truncate rounded-sm hover:underline focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+              onClick={(event) => {
+                if (
+                  !onNavigate ||
+                  event.button !== 0 ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                )
+                  return
+                event.preventDefault()
+                onNavigate()
+              }}
+            >
+              {title}
+            </a>
+          </div>
+        ) : (
+          <div className="truncate font-[560] text-foreground" title={hover}>
+            {title}
+          </div>
+        )}
         {description && (
           <div className="truncate text-[12.5px] text-muted-foreground">
             {description}
