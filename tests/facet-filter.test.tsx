@@ -449,3 +449,131 @@ describe("FacetFilter mode=single", () => {
     expect(screen.getByText("Payment status")).toBeTruthy()
   })
 })
+
+const CATEGORIES = [
+  { value: "shoes", label: "Shoes", count: 14 },
+  { value: "sneakers", label: "Sneakers", count: 2, depth: 1 },
+  { value: "high-tops", label: "High-tops", count: 1, depth: 2 },
+  { value: "home", label: "Home", count: 9 },
+]
+
+const row = (item: HTMLElement) =>
+  item.querySelector<HTMLElement>("[data-slot=facet-filter-row]")!
+
+describe("FacetFilter option depth", () => {
+  it("indents each level by one step and leaves top-level options flush", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value={null}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const item = (name: RegExp) => screen.getByRole("menuitemradio", { name })
+    expect(row(item(/^Shoes/)).style.paddingInlineStart).toBe("")
+    expect(row(item(/^Sneakers/)).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 3)"
+    )
+    expect(row(item(/^High-tops/)).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 6)"
+    )
+    expect(row(item(/^All categories/)).style.paddingInlineStart).toBe("")
+  })
+
+  it("keeps the count inside the indented row, and the item's name as its label and count", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value={null}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const sneakers = screen.getByRole("menuitemradio", { name: "Sneakers2" })
+    expect(row(sneakers).textContent).toBe("Sneakers2")
+  })
+
+  it("picks an indented option and reads its label in the trigger", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value={null}
+        onValueChange={onValueChange}
+      />
+    )
+    await user.click(
+      screen.getByRole("button", { name: "Category: All categories" })
+    )
+    await user.click(screen.getByRole("menuitemradio", { name: /^Sneakers/ }))
+    expect(onValueChange).toHaveBeenCalledWith("sneakers")
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value="sneakers"
+        onValueChange={onValueChange}
+      />
+    )
+    const trigger = screen.getByRole("button", { name: "Category: Sneakers" })
+    expect(trigger.textContent).toBe("Sneakers")
+  })
+
+  it("indents checkbox options in the default mode too", () => {
+    render(
+      <FacetFilter
+        label="Category"
+        options={CATEGORIES}
+        value={["high-tops"]}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const highTops = screen.getByRole("menuitemcheckbox", {
+      name: /^High-tops/,
+    })
+    expect(highTops.getAttribute("aria-checked")).toBe("true")
+    expect(row(highTops).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 6)"
+    )
+  })
+
+  it("reads a negative, fractional, missing or non-finite depth as whole levels from 0", () => {
+    render(
+      <FacetFilter
+        label="Category"
+        options={[
+          { value: "a", label: "Minus", depth: -2 },
+          { value: "b", label: "Fraction", depth: 1.8 },
+          { value: "c", label: "Nan", depth: Number.NaN },
+          { value: "d", label: "Infinite", depth: Number.POSITIVE_INFINITY },
+        ]}
+        value={[]}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const item = (name: RegExp) =>
+      screen.getByRole("menuitemcheckbox", { name })
+    expect(row(item(/^Minus/)).style.paddingInlineStart).toBe("")
+    expect(row(item(/^Fraction/)).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 3)"
+    )
+    expect(row(item(/^Nan/)).style.paddingInlineStart).toBe("")
+    expect(row(item(/^Infinite/)).style.paddingInlineStart).toBe("")
+  })
+})

@@ -873,10 +873,28 @@ export function FacetFilterDemo() {
   const [status, setStatus] = React.useState<string[]>([])
   const [type, setType] = React.useState<string | null>(null)
   const [month, setMonth] = React.useState<string | null>("2026-10")
+  const [category, setCategory] = React.useState<string | null>(null)
   // Counts are fetched only while the menu is open; here they appear once it opens.
   const [counting, setCounting] = React.useState(false)
   return (
     <div className="flex flex-wrap gap-2">
+      <FacetFilter
+        mode="single"
+        label="Category"
+        icon={<Icon name="categories" />}
+        allLabel="All categories"
+        allCount={23}
+        options={[
+          { value: "shoes", label: "Shoes", count: 14 },
+          { value: "sneakers", label: "Sneakers", count: 2, depth: 1 },
+          { value: "high-tops", label: "High-tops", count: 1, depth: 2 },
+          { value: "boots", label: "Boots", count: 5, depth: 1 },
+          { value: "home", label: "Home", count: 9 },
+          { value: "vases", label: "Vases", count: 4, depth: 1 },
+        ]}
+        value={category}
+        onValueChange={setCategory}
+      />
       <FacetFilter
         mode="single"
         label="Type"
