@@ -103,6 +103,12 @@ describe("Icon without an IconProvider", () => {
         "expand": "FiChevronDown",
         "export": "FiDownload",
         "external": "FiExternalLink",
+        "fieldCheckbox": "FiCheckSquare",
+        "fieldDropdown": "LuSquareChevronDown",
+        "fieldMultiselect": "LuListChecks",
+        "fieldParagraph": "FiAlignLeft",
+        "fieldRadio": "FiDisc",
+        "fieldText": "FiType",
         "file": "FiFile",
         "fileArchive": "LuFileArchive",
         "filter": "FiFilter",
@@ -236,6 +242,7 @@ describe("Icon in right-to-left layouts", () => {
       "signOut",
       "sidebarToggle",
       "list",
+      "fieldParagraph",
     ])
   })
 
