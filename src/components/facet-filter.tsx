@@ -3,7 +3,7 @@
 import * as React from "react"
 import { FiChevronDown as ChevronDownIcon } from "react-icons/fi"
 
-import { FacetRow, FacetSearch } from "@/components/facet-search"
+import { FacetRow, FacetSearch } from "@/components/internal/facet-search"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
