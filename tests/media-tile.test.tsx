@@ -304,6 +304,81 @@ describe("MediaTile edge cases", () => {
   })
 })
 
+describe("MediaGrid active tile", () => {
+  const library = (selected: string[], onSelectedChange = vi.fn()) => (
+    <MediaGrid
+      items={[photo, pdf]}
+      multiple
+      selected={selected}
+      onSelectedChange={onSelectedChange}
+      onOpen={() => {}}
+    />
+  )
+  const active = (container: Element) =>
+    container.querySelectorAll("[data-slot=media-tile-picture][data-active]")
+
+  it("doesn't keep a ring after the selection is cleared from outside the grid", async () => {
+    const user = userEvent.setup()
+    const { container, rerender } = render(library([]))
+    await user.click(
+      screen.getByRole("checkbox", { name: "Select sneaker-red.jpg" })
+    )
+    expect(active(container)).toHaveLength(0)
+
+    rerender(library(["1"]))
+    expect(active(container)).toHaveLength(0)
+    rerender(library([]))
+    await applyTailwind()
+    expect(active(container)).toHaveLength(0)
+    for (const picture of container.querySelectorAll(
+      "[data-slot=media-tile-picture]"
+    ))
+      expect(ring(picture)).toBe("")
+  })
+
+  it("takes the active tile only from activeId with onOpen, and doesn't report a checkbox as a move", async () => {
+    const user = userEvent.setup()
+    const onActiveChange = vi.fn()
+    const { container } = render(
+      <MediaGrid
+        items={[photo, pdf]}
+        multiple
+        selected={[]}
+        onSelectedChange={() => {}}
+        onOpen={() => {}}
+        activeId="3"
+        onActiveChange={onActiveChange}
+      />
+    )
+    await user.click(
+      screen.getByRole("checkbox", { name: "Select sneaker-red.jpg" })
+    )
+    expect(onActiveChange).not.toHaveBeenCalled()
+    expect(active(container)).toHaveLength(1)
+    expect(
+      active(container)[0]!.closest("[data-slot=media-tile]")!.textContent
+    ).toContain("size-guide.pdf")
+  })
+
+  it("still tracks the last one clicked without onOpen", async () => {
+    const user = userEvent.setup()
+    const onActiveChange = vi.fn()
+    const { container } = render(
+      <MediaGrid
+        items={[photo, pdf]}
+        selected={[]}
+        onSelectedChange={() => {}}
+        onActiveChange={onActiveChange}
+      />
+    )
+    await user.click(
+      screen.getByRole("button", { name: "Select size-guide.pdf" })
+    )
+    expect(onActiveChange).toHaveBeenCalledWith("3")
+    expect(active(container)).toHaveLength(1)
+  })
+})
+
 describe("MediaGrid loading with caption", () => {
   it("draws the caption lines under each skeleton", () => {
     const { container } = render(

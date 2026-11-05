@@ -34,7 +34,7 @@ type MediaGridProps = {
   multiple?: boolean
   /** Most items that can be selected at once (multiple only). */
   max?: number
-  /** The item whose details are shown; defaults to the last one clicked. */
+  /** The item whose details are shown; defaults to the last one clicked. With `onOpen` only this says so: a checkbox selects without moving it. */
   activeId?: string | null
   onActiveChange?: (id: string | null) => void
   /** Clicking a tile's picture opens it, also while others are selected; selection moves to a checkbox on each tile. */
@@ -104,6 +104,7 @@ function MediaGrid({
   const full = multiple && max !== undefined && selected.length >= max
 
   const setActive = (id: string | null) => {
+    if (onOpen) return
     if (activeIdProp === undefined) setActiveState(id)
     onActiveChange?.(id)
   }
