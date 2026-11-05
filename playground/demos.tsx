@@ -1137,18 +1137,6 @@ export const demos: Demo[] = [
     render: () => <MediaPickerDemo />,
   },
   {
-    id: "media-page",
-    title: "Media library page",
-    group: "Patterns",
-    render: () => <MediaPageDemo />,
-  },
-  {
-    id: "media-parts",
-    title: "Media tile & upload rows",
-    group: "Patterns",
-    render: () => <MediaPartsDemo />,
-  },
-  {
     id: "preview-stage",
     title: "Preview stage",
     group: "Patterns",
@@ -1159,6 +1147,18 @@ export const demos: Demo[] = [
     title: "Preview frame",
     group: "Patterns",
     render: () => <PreviewFrameDemo />,
+  },
+  {
+    id: "media-page",
+    title: "Media library page",
+    group: "Patterns",
+    render: () => <MediaPageDemo />,
+  },
+  {
+    id: "media-parts",
+    title: "Media tile & upload rows",
+    group: "Patterns",
+    render: () => <MediaPartsDemo />,
   },
   {
     id: "dropzone",
