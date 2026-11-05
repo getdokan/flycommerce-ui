@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `StepMeter`: where the user is in a short flow, such as an import sheet, `<StepMeter steps={["Upload", "Map columns", "Import"]} current={1} aria-label="Import steps" />`. One bar per step with its name under it, in equal columns: steps before `current` are complete, `current` is current (`aria-current="step"`, its name in semibold), the rest are upcoming (a muted bar). Each step carries `data-state`. A screen reader hears "Upload, completed" and "Import, not completed", with the words in `labels.complete` and `labels.upcoming`. Long names wrap. `current` past the last step marks every step complete.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.

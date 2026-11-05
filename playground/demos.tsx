@@ -59,6 +59,7 @@ import {
   TimelineDemo,
   ActivityFeedDemo,
 } from "./pattern-demos"
+import { StepMeterDemo } from "./step-meter-demo"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import {
@@ -404,6 +405,8 @@ const KEYWORDS: Record<string, string> = {
   "status-badge": "status pill order state",
   timeline: "timeline activity history events log steps feed",
   "activity-feed": "activity log history notes order timeline comments",
+  "step-meter":
+    "stepper wizard steps progress multi-step import flow indicator",
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
   "icon-chip": "icon tile badge avatar tinted background circle square",
@@ -493,6 +496,7 @@ const SOURCES: Record<string, Source> = {
   "search-input": "prototype",
   "status-badge": "prototype",
   timeline: "prototype",
+  "step-meter": "prototype",
   "activity-feed": "prototype",
   "data-table": "prototype",
   "data-table-tree": "figma",
@@ -1199,6 +1203,12 @@ export const demos: Demo[] = [
     title: "Timeline",
     group: "Patterns",
     render: () => <TimelineDemo />,
+  },
+  {
+    id: "step-meter",
+    title: "Step meter",
+    group: "Patterns",
+    render: () => <StepMeterDemo />,
   },
   {
     id: "activity-feed",
