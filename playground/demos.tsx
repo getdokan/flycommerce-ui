@@ -404,9 +404,9 @@ const KEYWORDS: Record<string, string> = {
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
   timeline: "timeline activity history events log steps feed",
+  "activity-feed": "activity log history notes order timeline comments",
   "step-meter":
     "stepper wizard steps progress multi-step import flow indicator",
-  "activity-feed": "activity log history notes order timeline comments",
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
   "icon-chip": "icon tile badge avatar tinted background circle square",
