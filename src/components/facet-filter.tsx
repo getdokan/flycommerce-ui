@@ -33,6 +33,8 @@ type FacetOption<T extends string = string> = {
   count?: number
   /** Before the label, e.g. an `Avatar` for a vendor. */
   media?: React.ReactNode
+  /** Indents the option by this many levels, e.g. 1 for a child category under its parent. */
+  depth?: number
   disabled?: boolean
 }
 
@@ -126,16 +128,31 @@ function FacetRow({
   media,
   count,
   showCount = true,
+  depth,
   format,
 }: {
   label: string
   media?: React.ReactNode
   count?: number
   showCount?: boolean
+  depth?: number
   format: Intl.NumberFormat
 }) {
+  const level =
+    depth !== undefined && Number.isFinite(depth)
+      ? Math.max(0, Math.floor(depth))
+      : 0
   return (
-    <span className="flex w-full min-w-0 items-center gap-2">
+    <span
+      data-slot="facet-filter-row"
+      className="flex w-full min-w-0 items-center gap-2"
+      // The indent pads the whole row; the count's ms-auto keeps it at the end edge.
+      style={
+        level
+          ? { paddingInlineStart: `calc(var(--spacing) * ${level * 3})` }
+          : undefined
+      }
+    >
       {media && <span className="flex shrink-0">{media}</span>}
       <span className="truncate">{label}</span>
       {showCount && (
@@ -305,6 +322,7 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
                   label={option.label}
                   media={option.media}
                   count={option.count}
+                  depth={option.depth}
                   format={format}
                 />
               </DropdownMenuRadioItem>
@@ -327,6 +345,7 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
                   label={option.label}
                   media={option.media}
                   count={option.count}
+                  depth={option.depth}
                   format={format}
                 />
               </DropdownMenuCheckboxItem>

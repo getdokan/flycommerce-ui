@@ -344,7 +344,7 @@ const KEYWORDS: Record<string, string> = {
   "person-cell":
     "customer vendor staff user avatar initials name guest table row cell",
   "facet-filter":
-    "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable",
+    "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable category tree depth indent",
   "period-menu":
     "date filter period range preset today this month all time custom range calendar toolbar report",
   input:
