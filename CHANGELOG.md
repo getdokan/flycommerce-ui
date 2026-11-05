@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `DataTable` compact pager, `pagination={{ page, pageSize, total, onPageChange, showPageNumbers, hideSinglePageControls, iconArrows }}`, also on the standalone `DataTablePagination` for a paged grid outside a table (offset pagination). `hideSinglePageControls` hides Previous, Next and the page numbers when everything fits on one page, and the count then reads `labels.total(total)` ("42 files"; default "42 results") and, without a rows-per-page select, the pager isn't a navigation landmark; the rows-per-page select stays, and a page past the last one keeps Previous so it isn't a dead end. With nothing to count (`total` is 0, as on a first load), the count is left out, and without a rows-per-page select the pager draws nothing. `iconArrows` draws Previous and Next as icon-only chevrons (mirrored in right-to-left layouts) named by `labels.previous` and `labels.next`. Both are off by default, so existing pagers don't change. When Previous from a page past the last one hides the controls, focus moves to the count instead of falling to the page.
+
+### Fixed
+
+- `DataTable` and `DataTablePagination` (offset pagination) on a page past the last one, e.g. after rows were deleted: the count reads the last page's range ("Showing 41 to 42 of 42") instead of running backwards ("Showing 81 to 42 of 42"), Previous goes straight to the last page instead of one page back, and the page numbers mark the last page as current.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.

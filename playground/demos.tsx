@@ -45,6 +45,7 @@ import {
   CardBrandIconDemo,
   ConfirmDialogDemo,
   DataTableDemo,
+  DataTablePagerDemo,
   DataTableReorderDemo,
   DataTableTreeDemo,
   FacetFilterDemo,
@@ -395,6 +396,8 @@ const KEYWORDS: Record<string, string> = {
     "table grid tanstack sort select bulk pagination filter sidebar thumbnail image",
   "data-table-tree": "tree nested category expand hierarchy",
   "data-table-reorder": "drag drop reorder sort order position handle dnd",
+  "data-table-pager":
+    "pagination pager pages footer count compact arrows grid standalone",
   "confirm-dialog":
     "confirm delete remove modal are you sure acknowledge checkbox type to confirm",
   "save-bar": "unsaved changes discard sticky footer",
@@ -497,6 +500,7 @@ const SOURCES: Record<string, Source> = {
   "data-table": "prototype",
   "data-table-tree": "figma",
   "data-table-reorder": "figma",
+  "data-table-pager": "prototype",
   "radio-card": "prototype",
   "switch-field": "prototype",
   "stat-card": "prototype",
@@ -989,6 +993,12 @@ export const demos: Demo[] = [
     title: "Data table: reorder rows",
     group: "Patterns",
     render: () => <DataTableReorderDemo />,
+  },
+  {
+    id: "data-table-pager",
+    title: "Data table: compact pager",
+    group: "Patterns",
+    render: () => <DataTablePagerDemo />,
   },
   {
     id: "data-table-tree",

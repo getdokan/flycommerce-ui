@@ -19,6 +19,7 @@ import {
   CardTitle,
   ConfirmDialog,
   DataTable,
+  DataTablePagination,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -1207,6 +1208,63 @@ export function DataTableReorderDemo() {
           onPageChange: () => {},
         }}
       />
+    </div>
+  )
+}
+
+const FILE_LABELS = {
+  showing: (from: number, to: number, total: number) =>
+    `${from}–${to} of ${total} files`,
+  total: (total: number) => `${total} ${total === 1 ? "file" : "files"}`,
+  previous: "Previous page",
+  next: "Next page",
+}
+
+export function DataTablePagerDemo() {
+  const pageSize = 4
+  const [onePage, setOnePage] = React.useState(false)
+  const [page, setPage] = React.useState(1)
+  const total = onePage ? 3 : 42
+
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-3">
+      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Switch
+          checked={onePage}
+          onCheckedChange={(checked) => {
+            setOnePage(checked)
+            setPage(1)
+          }}
+        />{" "}
+        One page
+      </label>
+      <Card className="gap-0 overflow-hidden py-0">
+        <ul className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-4">
+          {Array.from({ length: total })
+            .slice((page - 1) * pageSize, page * pageSize)
+            .map((_, index) => {
+              const number = (page - 1) * pageSize + index + 1
+              return (
+                <li
+                  key={number}
+                  className="truncate rounded-lg bg-muted px-3 py-8 text-center text-xs text-muted-foreground"
+                >
+                  file-{number}.jpg
+                </li>
+              )
+            })}
+        </ul>
+        <DataTablePagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          showPageNumbers
+          hideSinglePageControls
+          iconArrows
+          labels={FILE_LABELS}
+        />
+      </Card>
     </div>
   )
 }
