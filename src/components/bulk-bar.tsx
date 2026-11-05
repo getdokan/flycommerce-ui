@@ -26,6 +26,8 @@ const DEFAULT_LABELS: Required<BulkBarLabels> = {
   clear: "Clear",
 }
 
+const ANNOUNCE_DELAY = 100
+
 type BulkBarFocusTarget = FocusTarget
 
 type BulkBarProps = Omit<React.ComponentProps<"div">, "children"> & {
@@ -95,6 +97,14 @@ function BulkBar({
   const controlsRef = React.useRef<HTMLDivElement>(null)
   useReturnFocus(controlsRef, returnFocusTo)
 
+  // A live region only reads what changes after it is on the page, so the count moves into it a moment after the bar appears.
+  const [announcing, setAnnouncing] = React.useState(false)
+  React.useEffect(() => {
+    const timer = setTimeout(() => setAnnouncing(true), ANNOUNCE_DELAY)
+    return () => clearTimeout(timer)
+  }, [])
+  const count = labels.selected(selectedCount, format.format(selectedCount))
+
   return (
     <div
       data-slot="bulk-bar"
@@ -122,12 +132,11 @@ function BulkBar({
             }
             onCheckedChange={(checked) => onPageCheckedChange(checked === true)}
           />
-          <span
-            aria-live="polite"
-            aria-atomic="true"
-            className="text-sm font-[560] tabular-nums"
-          >
-            {labels.selected(selectedCount, format.format(selectedCount))}
+          <span className="text-sm font-[560] tabular-nums">
+            {!announcing && <span aria-hidden="true">{count}</span>}
+            <span aria-live="polite" aria-atomic="true">
+              {announcing && count}
+            </span>
           </span>
           {pageState !== "all" && (
             <Button variant="ghost" size="sm" onClick={selectPage}>

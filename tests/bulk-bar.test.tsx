@@ -41,8 +41,9 @@ const pageCheckbox = () =>
   screen.getByRole("checkbox", { name: "Select all on this page" })
 
 describe("BulkBar", () => {
-  it("reads in order: page checkbox, count, Select all on page, the actions, Clear", () => {
+  it("reads in order: page checkbox, count, Select all on page, the actions, Clear", async () => {
     const { container } = renderBar()
+    await screen.findByText("2 selected", { selector: "[aria-live]" })
     const order = Array.from(
       container.querySelectorAll("[role=checkbox], [aria-live], button")
     ).map(
@@ -321,10 +322,22 @@ describe("BulkBar", () => {
     expect(screen.getByRole("button", { name: "Aufheben" })).toBeTruthy()
   })
 
-  it("updates the count in place, in a live region that stays while the bar is shown", () => {
+  it("mounts the live region empty and fills it after, so the first count is announced", async () => {
+    const { container } = renderBar()
+    const region = container.querySelector("[aria-live=polite]")!
+    expect(region.textContent).toBe("")
+    expect(screen.getAllByText("2 selected")).toHaveLength(1)
+
+    await screen.findByText("2 selected", { selector: "[aria-live]" })
+    expect(region.isConnected).toBe(true)
+    expect(screen.getAllByText("2 selected")).toHaveLength(1)
+  })
+
+  it("updates the count in place, in a live region that stays while the bar is shown", async () => {
     const { rerender, onPageCheckedChange, onClear } = renderBar()
-    const count = screen.getByText("2 selected")
-    expect(count.getAttribute("aria-live")).toBe("polite")
+    const count = await screen.findByText("2 selected", {
+      selector: "[aria-live]",
+    })
     rerender(
       <BulkBar
         selectedCount={24}
