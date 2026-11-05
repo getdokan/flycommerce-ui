@@ -208,6 +208,16 @@ describe("RowActionsMenu", () => {
     expect(trigger().querySelectorAll("svg")).toHaveLength(1)
   })
 
+  it("takes two items with the same label", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {})
+    const user = userEvent.setup()
+    render(<RowActionsMenu items={[{ label: "Copy" }, { label: "Copy" }]} />)
+    await user.click(screen.getByRole("button", { name: "Actions" }))
+    expect(screen.getAllByRole("menuitem", { name: "Copy" })).toHaveLength(2)
+    expect(error).not.toHaveBeenCalled()
+    error.mockRestore()
+  })
+
   it("doesn't light up on hover while disabled or loading", () => {
     const { rerender } = render(<RowActionsMenu items={items()} loading />)
     const trigger = () => screen.getByRole("button", { name: "Actions" })

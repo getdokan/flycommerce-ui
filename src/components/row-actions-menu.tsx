@@ -40,7 +40,6 @@ type RowActionsMenuLinkProps = {
 }
 
 type RowActionsMenuProps = {
-  /** Labels must be unique: they key the items. */
   items: RowActionsMenuItem[]
   /** The trigger, e.g. for `ConfirmDialog returnFocusTo` when an item opens a confirm. */
   ref?: React.Ref<HTMLButtonElement>
@@ -91,12 +90,13 @@ function RowActionsMenu({
   disabled,
   className,
 }: RowActionsMenuProps) {
-  const shown: { item: RowActionsMenuItem; divider: boolean }[] = []
+  const shown: { item: RowActionsMenuItem; divider: boolean; index: number }[] =
+    []
   let divider = false
-  for (const item of items) {
+  for (const [index, item] of items.entries()) {
     divider ||= Boolean(item.separatorBefore)
     if (item.hidden) continue
-    shown.push({ item, divider: divider && shown.length > 0 })
+    shown.push({ item, divider: divider && shown.length > 0, index })
     divider = false
   }
   if (shown.length === 0) return null
@@ -135,7 +135,7 @@ function RowActionsMenu({
         onClick={stop}
         onKeyDown={stop}
       >
-        {shown.map(({ item, divider }) => {
+        {shown.map(({ item, divider, index }) => {
           const content = (
             <>
               {item.icon}
@@ -144,7 +144,8 @@ function RowActionsMenu({
           )
           const link = item.href !== undefined && !item.disabled
           return (
-            <React.Fragment key={item.label}>
+            // The place in `items`, so hiding an earlier item doesn't move focus to another action.
+            <React.Fragment key={index}>
               {divider && <DropdownMenuSeparator />}
               <DropdownMenuItem
                 variant={item.destructive ? "destructive" : "default"}
