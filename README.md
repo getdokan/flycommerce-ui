@@ -386,7 +386,7 @@ export function AddOrder() {
 }
 ```
 
-The gallery's [Icons page](https://ui.flycommerce.com/#icons) lists all 156 names.
+The gallery's [Icons page](https://ui.flycommerce.com/#icons) lists all 163 names.
 
 To draw the FlyCommerce P3 Figma icon set, wrap the app (or one area of it) in `P3IconProvider`. Every name `P3_GLYPHS` lists then draws its P3 glyph, and the other names stay as they are:
 

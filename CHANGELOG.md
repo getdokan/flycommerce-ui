@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `Icon` names for media screens: `crop` (Feather Crop) and `link` (Feather Link) under Actions; `grid` (Feather Grid), the grid-view twin of `list`; the file-type marks `file` (Feather File), `document` (Feather FileText) and `fileArchive` (Lucide FileArchive); and `video` (Feather Youtube). None mirror in right-to-left layouts, and `P3IconProvider` draws them with these default glyphs.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
