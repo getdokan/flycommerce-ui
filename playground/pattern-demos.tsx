@@ -10,10 +10,12 @@ import { toast } from "sonner"
 
 import {
   ActivityFeed,
+  BulkBar,
   Button,
   Card,
   CardBrandIcon,
   CardContent,
+  Checkbox,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -73,6 +75,7 @@ import {
   type StatusTone,
   PeriodMenu,
   type PeriodRange,
+  type BulkBarPageState,
 } from "@/index"
 
 type Product = {
@@ -918,6 +921,125 @@ export function FacetFilterDemo() {
         onOpenChange={setCounting}
       />
     </div>
+  )
+}
+
+const BULK_FILES = Array.from({ length: 10 }, (_, i) => ({
+  id: String(i + 1),
+  name: `lookbook-aw26-${String(i + 1).padStart(2, "0")}.jpg`,
+}))
+const BULK_PAGE_SIZE = 6
+
+export function BulkBarDemo() {
+  const [page, setPage] = React.useState(1)
+  const [selected, setSelected] = React.useState<string[]>(["2", "3"])
+  // Kept here, so the search survives the bar standing in for the toolbar.
+  const [query, setQuery] = React.useState("")
+  const search = React.useRef<HTMLInputElement>(null)
+  const pageCount = Math.ceil(BULK_FILES.length / BULK_PAGE_SIZE)
+  const onPage = BULK_FILES.slice(
+    (page - 1) * BULK_PAGE_SIZE,
+    page * BULK_PAGE_SIZE
+  )
+  const pickedOnPage = onPage.filter((file) => selected.includes(file.id))
+  const pageState: BulkBarPageState =
+    pickedOnPage.length === 0
+      ? "none"
+      : pickedOnPage.length === onPage.length
+        ? "all"
+        : "some"
+  const setPageChecked = (checked: boolean) => {
+    const ids = onPage.map((file) => file.id)
+    const rest = selected.filter((id) => !ids.includes(id))
+    setSelected(checked ? [...rest, ...ids] : rest)
+  }
+  const toggle = (id: string, checked: boolean) =>
+    setSelected(
+      checked ? [...selected, id] : selected.filter((item) => item !== id)
+    )
+
+  return (
+    <Card className="w-full gap-0 py-0">
+      {selected.length > 0 ? (
+        <BulkBar
+          selectedCount={selected.length}
+          pageState={pageState}
+          onPageCheckedChange={setPageChecked}
+          onClear={() => setSelected([])}
+          returnFocusTo={search}
+          actions={
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toast(`Downloading ${selected.length} files.`)}
+              >
+                <Icon name="export" data-icon="inline-start" />
+                Download
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => toast(`Delete ${selected.length} files?`)}
+              >
+                <Icon name="delete" data-icon="inline-start" />
+                Delete
+              </Button>
+            </>
+          }
+        />
+      ) : (
+        <div className="border-b border-border-subtle px-5 py-3">
+          <SearchInput
+            ref={search}
+            aria-label="Search files"
+            placeholder="Search files by name"
+            value={query}
+            onValueChange={setQuery}
+          />
+        </div>
+      )}
+      <ul className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3">
+        {onPage.map((file) => (
+          <li
+            key={file.id}
+            className="flex min-w-0 items-center gap-2 rounded-lg border border-border p-3"
+          >
+            <Checkbox
+              id={`bulk-file-${file.id}`}
+              checked={selected.includes(file.id)}
+              onCheckedChange={(checked) => toggle(file.id, checked === true)}
+            />
+            <Label htmlFor={`bulk-file-${file.id}`} className="truncate">
+              {file.name}
+            </Label>
+          </li>
+        ))}
+      </ul>
+      <div className="flex items-center justify-between gap-3 border-t border-border-subtle px-5 py-3 text-muted-foreground">
+        <span className="tabular-nums">
+          Page {page} of {pageCount}
+        </span>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === pageCount}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </Card>
   )
 }
 

@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `BulkBar`: the bar that stands in for a list's toolbar while items are selected, above a grid as well as a table, `<BulkBar selectedCount pageState onPageCheckedChange onSelectPage onClear actions />`. In order: a checkbox for the current page, ticked, a dash or empty as `pageState` is `"all"`, `"some"` or `"none"` (ticking it selects the page, unticking clears it); "{n} selected", where `selectedCount` counts every page, in a polite live region that also announces the first selection, as the count moves into it a moment after the bar appears; "Select all on page", shown until the whole page is selected, after which focus moves to the page checkbox if it would otherwise be lost to the page or a dialog's container; then, at the end, the app's `actions` (e.g. Download and a red Delete) and Clear. On a narrow bar the buttons move to their own line. `returnFocusTo` names where focus goes when the bar goes away with focus in it, e.g. the toolbar's search after Clear; a confirm opened from Delete takes `ConfirmDialog returnFocusTo` too. `locale` formats the count, and every string is in `labels`. `DataTable`'s own bulk bar is unchanged.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
