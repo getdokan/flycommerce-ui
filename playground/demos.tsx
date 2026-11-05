@@ -79,6 +79,7 @@ import {
   RichSelectDemo,
   TreeSelectDemo,
 } from "./product-demos"
+import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import {
   ColorInputDemo,
@@ -425,6 +426,8 @@ const KEYWORDS: Record<string, string> = {
   "media-picker":
     "gallery image upload library choose existing video url attachment details",
   "media-page": "admin media library gallery bulk delete files",
+  "media-library-grid":
+    "media library grid tile checkbox select open caption menu square",
   "media-parts": "tile thumbnail upload progress queue file",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
@@ -514,6 +517,7 @@ const SOURCES: Record<string, Source> = {
   "code-editor": "prototype",
   "media-picker": "figma",
   "media-page": "composite",
+  "media-library-grid": "prototype",
   "media-parts": "figma",
   "tree-select": "figma",
   "rich-select": "figma",
@@ -1133,6 +1137,12 @@ export const demos: Demo[] = [
     title: "Media library page",
     group: "Patterns",
     render: () => <MediaPageDemo />,
+  },
+  {
+    id: "media-library-grid",
+    title: "Media library grid",
+    group: "Patterns",
+    render: () => <MediaLibraryGridDemo />,
   },
   {
     id: "media-parts",

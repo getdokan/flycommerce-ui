@@ -2,6 +2,17 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+**Check when upgrading:**
+
+- `MediaTile`'s `className` moved from the 6:5 picture box to a new outer root, `data-slot="media-tile"`, with the picture inside as `data-slot="media-tile-picture"`. `className="aspect-square"` no longer reshapes the picture: use `aspect="square"`. A class or selector that styled the box itself, such as its ring, border or radius, no longer reaches it.
+- `MediaTileProps` is now a union of the two modes, so a wrapper typed `Omit<MediaTileProps, "item">` no longer compiles when it spreads its props onto `MediaTile`. Omit over each member with a distributive helper, or list the props the wrapper takes.
+
+### Added
+
+- `MediaGrid` and `MediaTile` for a managed media library: `<MediaGrid items multiple selected onSelectedChange onOpen actions caption aspect="square" columns="responsive" />`. With `onOpen`, clicking a tile's picture opens the file, also while others are selected, and selection moves to a checkbox at the top start of each tile, shown on hover, keyboard focus and touch screens, and on every tile once one is selected (`MediaTile selecting`); a selected tile gets a brand ring and a soft brand tint instead of the corner check. `actions` puts a chip at the top end for a ⋯ menu, shown the same way and while its menu is open. `caption` adds the file name under the picture, truncated with the full name on hover, then "JPG · 1.2 MB" or "Video" (`description` replaces that line, `locale` formats the size, and `labels.fileCaption` and `labels.open` translate it). `aspect="square"` makes square tiles, and `columns="responsive"` lays out 2, 3, 4, 5 and 6 per row by the grid's own width, taking the full width of its parent. `onActiveChange` doesn't fire with `onOpen`, and `activeId` alone draws the active ring, so a checkbox never leaves one behind. A tile takes `onClick`, or `onOpen` and `onSelectedChange`; the types refuse a mix. Apart from the two changes under **Check when upgrading**, a tile and a grid without these props behave as before, and `MediaPickerDialog` is unchanged.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
