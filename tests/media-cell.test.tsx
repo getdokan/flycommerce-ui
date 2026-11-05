@@ -128,7 +128,8 @@ describe("MediaCell title link", () => {
     const link = screen.getByRole("link", { name: "Silk twill scarf, ivory" })
     expect(link.getAttribute("href")).toBe("#products/101/edit")
     expect(link.getAttribute("title")).toBe("Silk twill scarf, ivory")
-    expect(link.className).toContain("truncate")
+    await applyTailwind()
+    expect(getComputedStyle(link).textOverflow).toBe("ellipsis")
 
     await user.click(link)
     expect(onNavigate).toHaveBeenCalledTimes(1)
@@ -144,11 +145,31 @@ describe("MediaCell title link", () => {
     expect(onNavigate).toHaveBeenCalledTimes(2)
   })
 
-  it("keeps a blank title plain, so there is no empty link", () => {
+  it.each([
+    ["an empty string", ""],
+    ["spaces", "   "],
+    ["true", true],
+    ["false", false],
+    ["null", null],
+    ["an empty fragment", <></>],
+    ["a fragment of nothing", <>{false}</>],
+    ["an empty list", []],
+  ])("keeps %s plain, so there is no empty link", (_name, title) => {
     const { container } = render(
-      <MediaCell title="" href="/admin/products/9/edit" />
+      <MediaCell title={title} href="/admin/products/9/edit" />
     )
     expect(container.querySelector("a")).toBeNull()
+  })
+
+  it.each([
+    ["a number, even 0", 0],
+    ["an element", <span key="name">Scarf</span>],
+    ["a fragment with text", <>Scarf</>],
+  ])("links %s", (_name, title) => {
+    const { container } = render(
+      <MediaCell title={title} href="/admin/products/9/edit" />
+    )
+    expect(container.querySelector("a")).not.toBeNull()
   })
 
   it("shows a plain-text title in full on hover, and takes any node as the title", () => {

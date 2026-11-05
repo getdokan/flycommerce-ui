@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cn } from "cn"
 
+import { CellLink } from "@/components/cell-link"
 import { ImageWithFallback } from "@/components/image-with-fallback"
 import { MediaThumb } from "@/components/media-tile"
 
@@ -24,6 +25,16 @@ type MediaCellProps = Omit<React.ComponentProps<"div">, "title"> & {
   size?: number
 }
 
+// A title that draws nothing would make a link with no name, so it stays plain.
+function hasContent(node: React.ReactNode): boolean {
+  if (node == null || typeof node === "boolean") return false
+  if (typeof node === "string") return node.trim() !== ""
+  if (Array.isArray(node)) return node.some(hasContent)
+  if (React.isValidElement<React.PropsWithChildren>(node))
+    return node.type !== React.Fragment || hasContent(node.props.children)
+  return true
+}
+
 /** Table cell with a thumbnail, a title and an optional second line (Figma product rows). */
 function MediaCell({
   src,
@@ -41,8 +52,6 @@ function MediaCell({
     typeof title === "string" || typeof title === "number"
       ? String(title)
       : undefined
-  // A blank title would make an empty link with no name, so it stays plain.
-  const linked = !!href && title != null && title !== "" && title !== false
 
   return (
     <div
@@ -68,31 +77,11 @@ function MediaCell({
         )}
       </span>
       <div className="min-w-0">
-        {linked ? (
-          // Truncated on the link itself, so its focus ring isn't clipped, as in PersonCell.
+        {href && hasContent(title) ? (
           <div className="flex min-w-0 font-[560] text-foreground">
-            <a
-              href={href}
-              title={hover}
-              className="truncate rounded-sm hover:underline focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
-              onClick={
-                onNavigate &&
-                ((event) => {
-                  if (
-                    event.button !== 0 ||
-                    event.metaKey ||
-                    event.ctrlKey ||
-                    event.shiftKey ||
-                    event.altKey
-                  )
-                    return
-                  event.preventDefault()
-                  onNavigate()
-                })
-              }
-            >
+            <CellLink href={href} title={hover} onNavigate={onNavigate}>
               {title}
-            </a>
+            </CellLink>
           </div>
         ) : (
           <div className="truncate font-[560] text-foreground" title={hover}>
