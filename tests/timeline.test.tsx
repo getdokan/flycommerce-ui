@@ -10,6 +10,8 @@ import {
   TimelineTitle,
 } from "@/index"
 
+import { applyTailwind } from "./tailwind"
+
 const slot = (element: Element | null) => element?.getAttribute("data-slot")
 
 function renderSteps() {
@@ -378,38 +380,7 @@ describe("Timeline", () => {
       }
     })
 
-    it("overhangs the gaps by its padding, so the text and the next item don't move", () => {
-      render(
-        <Timeline>
-          <TimelineItem>
-            <TimelineTitle>Above</TimelineTitle>
-          </TimelineItem>
-          <TimelineItem highlighted>
-            <TimelineTitle>Dot</TimelineTitle>
-          </TimelineItem>
-          <TimelineItem highlighted icon={<svg />}>
-            <TimelineTitle>Icon</TimelineTitle>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineTitle>Below</TimelineTitle>
-          </TimelineItem>
-        </Timeline>
-      )
-      const classes = (title: string) => bodyOf(title).className.split(" ")
-      // -mt-1.5 + pt-1.5 = 0 and pb-1.5 + mb-2.5 = pb-4, as on a plain item.
-      expect(classes("Dot")).toEqual(
-        expect.arrayContaining(["-mt-1.5", "py-1.5", "mb-2.5", "px-3"])
-      )
-      expect(classes("Dot")).not.toContain("pb-4")
-      // -mt-1.5 + pt-2.5 = pt-1, the icon's usual step down.
-      expect(classes("Icon")).toEqual(
-        expect.arrayContaining(["-mt-1.5", "pt-2.5", "mb-2.5"])
-      )
-      expect(classes("Icon")).not.toContain("pt-1")
-      expect(classes("Below")).toContain("pb-4")
-    })
-
-    it("keeps its bottom padding as the last item and steps its marker down as the first", () => {
+    it("drops its overhang at the ends of the list, where there's no gap to overhang into", async () => {
       render(
         <Timeline>
           <TimelineItem highlighted>
@@ -423,31 +394,14 @@ describe("Timeline", () => {
           </TimelineItem>
         </Timeline>
       )
-      // The selectors the item's first- and last-child rules compile to, checked with real CSS matching.
-      const atTop = "[data-highlighted]:first-child > [data-slot=timeline-body]"
-      const atBottom =
-        "[data-highlighted]:last-child > [data-slot=timeline-body]"
-      expect(bodyOf("First").matches(atTop)).toBe(true)
-      expect(bodyOf("First").matches(atBottom)).toBe(false)
-      expect(bodyOf("Middle").matches(atTop)).toBe(false)
-      expect(bodyOf("Middle").matches(atBottom)).toBe(false)
-      expect(bodyOf("Last").matches(atTop)).toBe(false)
-      expect(bodyOf("Last").matches(atBottom)).toBe(true)
-      const [first, , last] = screen.getAllByRole("listitem")
-      for (const item of [first, last]) {
-        expect(item.className).not.toContain(
-          "[&:last-child>[data-slot=timeline-body]]:pb-0"
-        )
-        expect(item.className).toContain(
-          "[&:last-child>[data-slot=timeline-body]]:mb-0"
-        )
-        expect(item.className).toContain(
-          "[&:first-child>[data-slot=timeline-body]]:mt-0"
-        )
-        expect(item.className).toContain(
-          "[&:first-child>[data-slot=timeline-marker]]:pt-1.5"
-        )
+      await applyTailwind()
+      const margins = (title: string) => {
+        const { marginTop, marginBottom } = getComputedStyle(bodyOf(title))
+        return [marginTop === "0px", marginBottom === "0px"]
       }
+      expect(margins("First")).toEqual([true, false])
+      expect(margins("Middle")).toEqual([false, false])
+      expect(margins("Last")).toEqual([false, true])
     })
   })
 })
