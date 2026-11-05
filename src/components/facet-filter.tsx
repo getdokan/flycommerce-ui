@@ -154,17 +154,16 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
   const allLabel = props.mode === "single" ? props.allLabel : undefined
   const known = new Set(options.map((option) => option.value))
-  // A single pick with no option (e.g. a month whose files were all deleted) reads as the "all" row.
   const value =
     props.mode !== "single"
       ? props.value
-      : props.value !== null && known.has(props.value)
-        ? [props.value]
-        : []
+      : props.value === null
+        ? []
+        : [props.value]
   // Radix needs a string for the "all" row's radio value; an id can't clash with an option's value.
   const none = React.useId()
   const picked = options.filter((option) => value.includes(option.value))
-  // Multiple picks with no option (e.g. from the address, while the options load) are kept and counted, not dropped.
+  // Picks with no option (e.g. from the address, while the options load) are kept and counted, not dropped.
   const unknown = value.filter((item) => !known.has(item))
   const total = picked.length + unknown.length
   const summary =

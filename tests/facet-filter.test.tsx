@@ -383,7 +383,7 @@ describe("FacetFilter mode=single", () => {
     expect(onValueChange).toHaveBeenCalledWith(null)
   })
 
-  it("reads the all label for a value with no option, and the all row clears it", async () => {
+  it('reads "{label}, 1" for a value with no option, and the all row clears it', async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(
@@ -396,18 +396,18 @@ describe("FacetFilter mode=single", () => {
         onValueChange={onValueChange}
       />
     )
-    const trigger = screen.getByRole("button", { name: "Date: All dates" })
-    expect(trigger.textContent).toBe("All dates")
-    expect(trigger.getAttribute("data-picked")).toBeNull()
+    const trigger = screen.getByRole("button", { name: "Date, 1" })
+    expect(trigger.textContent).toBe("Date, 1")
+    expect(trigger.getAttribute("data-picked")).toBe("1")
 
     await user.click(trigger)
     const all = screen.getByRole("menuitemradio", { name: "All dates" })
-    expect(all.getAttribute("aria-checked")).toBe("true")
+    expect(all.getAttribute("aria-checked")).toBe("false")
     await user.click(all)
     expect(onValueChange).toHaveBeenCalledWith(null)
   })
 
-  it("reads the all label until the picked value's option arrives", () => {
+  it("reads the option's label once the picked value's option arrives", () => {
     const { rerender } = render(
       <FacetFilter
         mode="single"
@@ -419,7 +419,7 @@ describe("FacetFilter mode=single", () => {
       />
     )
     const trigger = () => screen.getByRole("button", { name: /^Type/ })
-    expect(trigger().textContent).toBe("All types")
+    expect(trigger().textContent).toBe("Type, 1")
 
     rerender(
       <FacetFilter
