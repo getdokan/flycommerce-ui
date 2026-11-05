@@ -1,8 +1,8 @@
-import type { FileRejection } from "@/components/dropzone"
+import type { FileRejection, FileSizeLimit } from "@/components/dropzone"
 
 type FileRules = {
   accept?: string
-  maxSize?: number | ((file: File) => number | undefined)
+  maxSize?: FileSizeLimit
   maxFiles?: number
 }
 

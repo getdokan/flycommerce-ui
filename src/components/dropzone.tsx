@@ -12,6 +12,9 @@ type FileRejection = {
   reason: "type" | "size" | "count"
 }
 
+/** Bytes, or a function giving each file's limit in bytes; from the function, `undefined` or `NaN` means no limit for that file. */
+type FileSizeLimit = number | ((file: File) => number | undefined)
+
 type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop" | "title"> & {
   /** Accepted files, after validation. */
   onFiles: (files: File[]) => void
@@ -19,8 +22,8 @@ type DropzoneProps = Omit<React.ComponentProps<"div">, "onDrop" | "title"> & {
   onReject?: (rejections: FileRejection[]) => void
   /** Same syntax as the input `accept` attribute, e.g. "image/*,.pdf". */
   accept?: string
-  /** Bytes, or each file's limit in bytes, e.g. 5 MB for images and 25 MB for the rest. */
-  maxSize?: number | ((file: File) => number | undefined)
+  /** Bytes, or each file's limit in bytes, e.g. 5 MB for images and 25 MB for the rest. From a function, `undefined` or `NaN` means no limit for that file. */
+  maxSize?: FileSizeLimit
   multiple?: boolean
   maxFiles?: number
   disabled?: boolean
@@ -166,4 +169,4 @@ function Dropzone({
   )
 }
 
-export { Dropzone, type DropzoneProps, type FileRejection }
+export { Dropzone, type DropzoneProps, type FileRejection, type FileSizeLimit }

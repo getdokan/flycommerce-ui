@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import { Dropzone } from "@/index"
+import { Dropzone, type FileRejection, type FileSizeLimit } from "@/index"
 
 const files = { dataTransfer: { types: ["Files"] } }
 
@@ -79,6 +79,62 @@ describe("Dropzone", () => {
     ])
     expect(onReject.mock.calls[0][0][0].file.name).toBe("big.png")
   })
+
+  it("applies a size limit per file to dropped files too", () => {
+    const onFiles = vi.fn()
+    const onReject = vi.fn()
+    const { container } = render(
+      <Dropzone
+        maxSize={(f) => (f.type.startsWith("image/") ? 100 : 1000)}
+        onFiles={onFiles}
+        onReject={onReject}
+      />
+    )
+
+    fireEvent.drop(container.querySelector("[data-slot=dropzone]")!, {
+      dataTransfer: {
+        files: [
+          file("small.png", "image/png", 50),
+          file("big.png", "image/png", 500),
+          file("guide.pdf", "application/pdf", 500),
+        ],
+      },
+    })
+
+    expect(onFiles.mock.calls[0][0].map((f: File) => f.name)).toEqual([
+      "small.png",
+      "guide.pdf",
+    ])
+    expect(
+      onReject.mock.calls[0][0].map((r: FileRejection) => r.file.name)
+    ).toEqual(["big.png"])
+  })
+
+  it.each([
+    ["undefined", undefined],
+    ["NaN", Number.NaN],
+  ])(
+    "takes %s from a size limit function as no limit",
+    async (_name, limit) => {
+      const user = userEvent.setup()
+      const onFiles = vi.fn()
+      const onReject = vi.fn()
+      render(
+        <Dropzone
+          maxSize={() => limit}
+          inputLabel="Upload files"
+          onFiles={onFiles}
+          onReject={onReject}
+        />
+      )
+      await user.upload(
+        screen.getByLabelText("Upload files"),
+        file("huge.png", "image/png", 5000)
+      )
+      expect(onFiles).toHaveBeenCalledTimes(1)
+      expect(onReject).not.toHaveBeenCalled()
+    }
+  )
 
   it("shows dragTitle while files are dragged over it", () => {
     const { container } = render(
