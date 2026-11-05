@@ -250,10 +250,10 @@ describe("DataTablePagination hideSinglePageControls", () => {
 })
 
 describe("DataTablePagination iconArrows", () => {
-  it("names the icon-only arrows from labels and draws the mirrored prev and next icons", async () => {
+  it("names the icon-only arrows from labels and draws them without the icon registry", async () => {
     const user = userEvent.setup()
     const onPageChange = vi.fn()
-    render(
+    const { container } = render(
       <div dir="rtl">
         <DataTablePagination
           page={2}
@@ -269,12 +269,9 @@ describe("DataTablePagination iconArrows", () => {
     const next = screen.getByRole("button", { name: "Next page" })
     expect(previous.textContent).toBe("")
     expect(next.textContent).toBe("")
-    expect(
-      previous
-        .querySelector("[data-icon-name=prev]")
-        ?.hasAttribute("data-mirror")
-    ).toBe(true)
-    expect(next.querySelector("[data-icon-name=next]")).toBeTruthy()
+    expect(previous.querySelector("svg")).toBeTruthy()
+    expect(next.querySelector("svg")).toBeTruthy()
+    expect(container.querySelector("[data-icon-name]")).toBeNull()
 
     await user.click(previous)
     expect(onPageChange).toHaveBeenLastCalledWith(1)

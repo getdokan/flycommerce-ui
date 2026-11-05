@@ -31,7 +31,6 @@ import {
   LuGripVertical as GripVerticalIcon,
 } from "react-icons/lu"
 
-import { Icon } from "@/components/icon"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -945,13 +944,8 @@ function DataTablePagination(
             aria-label={iconArrows ? labels.previous : undefined}
             {...linkTo(Math.min(page - 1, pageCount), page <= 1)}
           >
-            {iconArrows ? (
-              <Icon name="prev" />
-            ) : (
-              <>
-                <ChevronLeftIcon className="rtl:rotate-180" /> {labels.previous}
-              </>
-            )}
+            <ChevronLeftIcon className="rtl:rotate-180" />
+            {!iconArrows && <> {labels.previous}</>}
           </PageControl>
           {showPageNumbers && (
             <div className="hidden items-center gap-1 @md/pagination:flex">
@@ -986,13 +980,8 @@ function DataTablePagination(
             aria-label={iconArrows ? labels.next : undefined}
             {...linkTo(page + 1, page >= pageCount)}
           >
-            {iconArrows ? (
-              <Icon name="next" />
-            ) : (
-              <>
-                {labels.next} <ChevronRightIcon className="rtl:rotate-180" />
-              </>
-            )}
+            {!iconArrows && <>{labels.next} </>}
+            <ChevronRightIcon className="rtl:rotate-180" />
           </PageControl>
         </div>
       )}
