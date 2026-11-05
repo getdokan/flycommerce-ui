@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import { Dropzone, type FileRejection, type FileSizeLimit } from "@/index"
+import { Dropzone, type FileRejection } from "@/index"
 
 const files = { dataTransfer: { types: ["Files"] } }
 

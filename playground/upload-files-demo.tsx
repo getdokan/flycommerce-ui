@@ -55,6 +55,28 @@ const UPLOAD_SEED: UploadQueueItem[] = [
   },
 ]
 
+/** Pretend upload: progress over ~1.5s; files named "fail…" reject. */
+const fakeUpload = (
+  file: File,
+  {
+    signal,
+    onProgress,
+  }: { signal: AbortSignal; onProgress: (progress: number) => void }
+) =>
+  new Promise<void>((resolve, reject) => {
+    let progress = 0
+    const timer = setInterval(() => {
+      progress += 20
+      onProgress(progress)
+      if (progress < 100) return
+      clearInterval(timer)
+      if (file.name.toLowerCase().startsWith("fail"))
+        reject(new Error("The server rejected this file"))
+      else resolve()
+    }, 300)
+    signal.addEventListener("abort", () => clearInterval(timer))
+  })
+
 export function UploadFilesDemo() {
   const [items, setItems] = React.useState(UPLOAD_SEED)
   const uploads = React.useRef(new Map<string, AbortController>())
