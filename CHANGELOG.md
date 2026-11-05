@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `PreviewTile`: a picture tile that opens a detail view, such as a theme in the Themes page's grid, `<PreviewTile src alt label labelIcon openLabel onOpen href onNavigate highlighted>…footer…</PreviewTile>`. The picture (4:3 by default, `aspectRatio` changes it) is one button with `onOpen`, or a link with `href` (a plain click then calls `onNavigate` for a client-side router, a modified click opens the URL), named by `openLabel` or else `alt`, with a focus ring; it zooms slightly on hover and keyboard focus, except with reduced motion. `label` is a pill over the bottom of the picture (`MediaPill`, also `MediaTile`'s private pill, now 12px; `labelIcon` adds or replaces its text) shown on hover and keyboard focus, and always on touch screens, when there is something to open. `highlighted` draws the brand ring of an active `MediaTile`, e.g. on the live theme. `children` render below the picture, outside the click target, so their buttons and links work on their own. A missing or broken image shows `fallback`, as in `ImageWithFallback`.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
