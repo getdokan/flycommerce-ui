@@ -226,7 +226,7 @@ type DataTableProps<TData> = {
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean)
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
-  /** Keeps ticks on rows that leave `data`, e.g. on other server pages: the bulk bar counts every selected id. Needs `getRowId` and a controlled `rowSelection`: the app clears it when filters change and removes deleted ids. */
+  /** Keeps ticks on rows that leave `data`, e.g. on other server pages: the bulk bar counts every selected id, so a parent ticked with its two children counts 3 (without it, 1). Needs `getRowId`, `bulkActions` and a controlled `rowSelection`: the app clears it when filters change and removes deleted ids. With an app's own bar, such as `BulkBar`, it does nothing: `rowSelection` already holds every page. */
   crossPageSelection?: boolean
   /** Shown above the table while rows are selected. `selected` holds this page's selected rows (with `crossPageSelection`, also the last loaded copy of those on other pages), `ids` every selected row id (from `getRowId`; row indexes without it). */
   bulkActions?: (

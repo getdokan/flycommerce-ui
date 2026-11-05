@@ -227,6 +227,48 @@ describe("DataTable crossPageSelection", () => {
     expect(selected.map((node) => node.name)).toEqual(["Shoes", "Boots"])
   })
 
+  it("counts every ticked id: a parent with two children reads 3, and 1 without it", async () => {
+    type Node = { id: string; name: string; children?: Node[] }
+    const DATA: Node[] = [
+      {
+        id: "a",
+        name: "Shoes",
+        children: [
+          { id: "a1", name: "Boots" },
+          { id: "a2", name: "Sneakers" },
+        ],
+      },
+    ]
+    function Tree({ crossPage }: { crossPage: boolean }) {
+      const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
+        {}
+      )
+      return (
+        <DataTable
+          columns={[{ accessorKey: "name", header: "Name" }]}
+          data={DATA}
+          getRowId={(node) => node.id}
+          getSubRows={(node) => node.children}
+          defaultExpanded={true}
+          enableRowSelection
+          crossPageSelection={crossPage}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          bulkActions={() => null}
+        />
+      )
+    }
+    const user = userEvent.setup()
+    const { unmount } = render(<Tree crossPage />)
+    await tick(user, "Shoes")
+    expect(screen.getByText("3 selected")).toBeTruthy()
+    unmount()
+
+    render(<Tree crossPage={false} />)
+    await tick(user, "Shoes")
+    expect(screen.getByText("1 selected")).toBeTruthy()
+  })
+
   it("keeps both of two ticks made before a render", () => {
     const onBulk = vi.fn<BulkActions>()
     render(<Library onBulk={onBulk} />)
