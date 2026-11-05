@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `DataTable crossPageSelection`: selection that persists across server pages, `<DataTable getRowId enableRowSelection crossPageSelection rowSelection onRowSelectionChange bulkActions={(selected, clear, ids) => …} />`. Ticks on rows that leave `data` stay selected, so the bulk bar shows and counts "{n} selected" over every page, even on a page with none ticked. `bulkActions` gets a third argument, `ids`, with every selected id, including rows the table never loaded (a selection restored from the address); `selected` holds this page's selected rows plus the selected rows on other pages, as last loaded. The header checkbox still ticks and clears only this page, and Clear empties every page. The selection must be controlled: the app clears `rowSelection` when its filters change and drops the ids of deleted rows. Without `getRowId` or a controlled `rowSelection`, the table warns and ignores `crossPageSelection`. It only drives `bulkActions`: with an app's own bar, such as `BulkBar`, it does nothing, since `rowSelection` already holds every page. With `getSubRows` the count is every ticked id, so a parent ticked with its two children reads "3 selected" (without `crossPageSelection`, "1 selected"), because a row on another page can't be told from a child. Without `crossPageSelection` nothing changes, apart from `bulkActions` also getting the ids of this page's ticked rows.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
