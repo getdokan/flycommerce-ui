@@ -50,7 +50,6 @@ function PreviewFrame({
           </span>
           <span
             data-slot="preview-frame-address"
-            aria-hidden={address ? undefined : true}
             className="flex h-6 min-w-0 flex-1 items-center rounded-md border border-border bg-card px-2.5 text-xs text-muted-foreground"
           >
             {/* The domain takes its own direction, so it keeps its start when cut short on either page direction. */}
