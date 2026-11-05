@@ -3,11 +3,10 @@ import { describe, expect, it } from "vitest"
 
 import { Badge } from "@/index"
 
-const SOLID_DOT =
-  '<span aria-hidden="true" class="size-1.5 shrink-0 rounded-full bg-current"></span>'
+import { applyTailwind } from "./tailwind"
 
 describe("Badge", () => {
-  it("draws the same static dot for dot and dot={true}", () => {
+  it("draws a static dot, hidden from assistive tech, for dot and dot={true}", () => {
     const { container } = render(
       <>
         <Badge dot>Active</Badge>
@@ -15,7 +14,10 @@ describe("Badge", () => {
       </>
     )
     for (const badge of container.querySelectorAll("[data-slot=badge]")) {
-      expect(badge.innerHTML).toBe(`${SOLID_DOT}Active`)
+      const dot = badge.querySelector("[data-slot=badge-dot]")!
+      expect(dot.getAttribute("aria-hidden")).toBe("true")
+      expect(dot.querySelector("[data-slot=badge-dot-ping]")).toBeNull()
+      expect(badge.textContent).toBe("Active")
     }
   })
 
@@ -26,25 +28,21 @@ describe("Badge", () => {
         <Badge dot={false}>Draft</Badge>
       </>
     )
-    expect(container.querySelector("[aria-hidden]")).toBeNull()
+    expect(container.querySelector("[data-slot=badge-dot]")).toBeNull()
   })
 
-  it('draws a solid dot over a pinging ring that hides under reduced motion with dot="pulse"', () => {
+  it('adds a ping inside the dot with dot="pulse", which reads nothing and hides under reduced motion', async () => {
     const { container } = render(
       <Badge variant="success" dot="pulse">
         Live on maisonoriel.com
       </Badge>
     )
+    await applyTailwind()
     const badge = container.querySelector("[data-slot=badge]")!
-    const dot = badge.firstElementChild!
+    const dot = badge.querySelector("[data-slot=badge-dot]")!
     expect(dot.getAttribute("aria-hidden")).toBe("true")
-    expect(dot.className).toContain("size-1.5")
-    const [ring, solid] = Array.from(dot.children)
-    expect(ring.className).toContain("animate-ping")
-    expect(ring.className).toContain("motion-reduce:hidden")
-    expect(ring.className).toContain("bg-current")
-    expect(solid.className).toContain("bg-current")
-    expect(solid.className).not.toContain("animate-ping")
+    const ping = dot.querySelector("[data-slot=badge-dot-ping]")!
+    expect(getComputedStyle(ping).position).toBe("absolute")
     expect(badge.textContent).toBe("Live on maisonoriel.com")
   })
 })

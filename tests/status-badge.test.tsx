@@ -76,8 +76,8 @@ describe("StatusBadge", () => {
       </>
     )
     const [live, paid] = container.querySelectorAll("[data-slot=badge]")
-    expect(live.querySelector(".animate-ping")).not.toBeNull()
-    expect(paid.querySelector(".animate-ping")).toBeNull()
-    expect(paid.querySelector("[aria-hidden]")).not.toBeNull()
+    expect(live.querySelector("[data-slot=badge-dot-ping]")).not.toBeNull()
+    expect(paid.querySelector("[data-slot=badge-dot-ping]")).toBeNull()
+    expect(paid.querySelector("[data-slot=badge-dot]")).not.toBeNull()
   })
 })
