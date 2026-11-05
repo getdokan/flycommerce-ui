@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `DialogContent` `size="3xl"` and `padding="none"`: `<DialogContent size="3xl" padding="none">`. `3xl` is 960px wide from `sm` upward, after `2xl` (900px), and keeps a 1rem side margin on narrower screens. `padding="none"` drops the 24px padding and the gap and lays the body out in one column that can shrink, so a long file name or link in a `truncate` line can't widen the dialog on a phone, as long as the columns inside can shrink too (`min-w-0` on a flex or grid column). It is for a body that runs edge to edge, such as a file preview beside a form in two columns that stack on phones while the dialog scrolls; the parts inside carry their own padding. A `DialogFooter` inside such a dialog, directly or at the foot of a column, sits flush with no bleed into the padding, and stays pinned at the bottom of the dialog while its column is in view as the dialog scrolls. `className` on `DialogContent` still overrides its padding, gap and columns. A `DialogFooter` `className` doesn't override the footer's flush place here: `mb-4` loses to it, so use the same variant, `in-data-[padding=none]:mb-4`. The close button stays at the top end. The other sizes and the default padding are unchanged; the content now carries `data-padding`.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.

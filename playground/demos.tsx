@@ -437,7 +437,7 @@ const KEYWORDS: Record<string, string> = {
     "code snippet html css javascript json script codemirror monospace line numbers merge tags custom code",
   "modal-figma": "dialog popup new category form",
   "modal-use-cases":
-    "dialog popup import export csv bulk edit invite details terms reject success wizard",
+    "dialog popup import export csv bulk edit invite details terms reject success wizard wide two columns 960 file detail preview",
   "copy-button": "clipboard copy",
   "copy-field":
     "clipboard copy read only value url key secret token dns record callback webhook",
@@ -2372,7 +2372,7 @@ export const demos: Demo[] = [
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        {(["sm", "lg", "xl"] as const).map((size) => (
+        {(["sm", "lg", "xl", "2xl", "3xl"] as const).map((size) => (
           <Dialog key={size}>
             <DialogTrigger asChild>
               <Button variant="ghost">Size {size}</Button>
@@ -2381,7 +2381,8 @@ export const demos: Demo[] = [
               <DialogHeader>
                 <DialogTitle>Dialog size “{size}”</DialogTitle>
                 <DialogDescription>
-                  sm 400px · default 480px · lg 720px · xl 800px.
+                  sm 400px · default 480px · lg 720px · xl 800px · 2xl 900px ·
+                  3xl 960px.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
