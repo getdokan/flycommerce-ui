@@ -232,7 +232,6 @@ function MediaTile({
   const selectable = Boolean(onSelectedChange)
   const blocked = disabled && !selected
   const cornerCheck = selected && !selectable
-  const captionReadsVideo = caption && description == null
 
   const picture = (
     <div
@@ -268,9 +267,7 @@ function MediaTile({
       {item.videoUrl && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <MediaPlayMark />
-          {!captionReadsVideo && (
-            <span className="sr-only">{labels.video}</span>
-          )}
+          <span className="sr-only">{labels.video}</span>
         </span>
       )}
       {selectable && selected && (

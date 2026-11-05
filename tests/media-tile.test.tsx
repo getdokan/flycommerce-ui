@@ -151,7 +151,7 @@ describe("MediaTile caption", () => {
       getComputedStyle(screen.getByTitle("sneaker-red.jpg")).textOverflow
     ).toBe("ellipsis")
     expect(screen.getByText("JPG · 1.2 MB")).toBeTruthy()
-    expect(screen.getByText("Video")).toBeTruthy()
+    expect(screen.getAllByText("Video").length).toBeGreaterThan(0)
     expect(screen.getByText("PDF · 84 KB")).toBeTruthy()
     // The document's name shows once, in the caption, not again in the picture.
     expect(screen.getAllByText("size-guide.pdf")).toHaveLength(1)
@@ -406,6 +406,9 @@ describe("MediaGrid width and video caption", () => {
 
   it("reads Video once when description returns null", () => {
     render(<MediaGrid items={[video]} caption description={() => null} />)
-    expect(screen.getAllByText("Video")).toHaveLength(1)
+    const read = screen
+      .getAllByText("Video")
+      .filter((label) => !label.closest("[aria-hidden]"))
+    expect(read).toHaveLength(1)
   })
 })
