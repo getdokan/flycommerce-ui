@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest"
 
 import { StepMeter } from "@/index"
 
+import { applyTailwind } from "./tailwind"
+
 const STEPS = ["Upload", "Map columns", "Import"]
 
 const step = (name: string) =>
@@ -73,5 +75,34 @@ describe("StepMeter", () => {
     for (const name of STEPS) {
       expect(step(name).getAttribute("data-state")).toBe("upcoming")
     }
+  })
+
+  it("keeps its bars in forced colours, where a background alone is dropped", async () => {
+    const { container } = render(
+      <StepMeter steps={["Upload", "Map", "Import"]} current={1} />
+    )
+    await applyTailwind()
+    const forced = [...document.styleSheets]
+      .flatMap((sheet) => [...sheet.cssRules])
+      .filter(
+        (rule): rule is CSSMediaRule =>
+          rule instanceof CSSMediaRule &&
+          rule.media.mediaText.includes("forced-colors")
+      )
+      .flatMap((media) => [...media.cssRules] as CSSStyleRule[])
+    const bars = container.querySelectorAll(
+      "[data-slot=step-meter-step] > [aria-hidden]"
+    )
+    expect(bars).toHaveLength(3)
+    const declares = (bar: Element, css: string) =>
+      forced.some(
+        (rule) => bar.matches(rule.selectorText) && rule.cssText.includes(css)
+      )
+    expect([...bars].every((bar) => declares(bar, "outline-style"))).toBe(true)
+    expect([...bars].map((bar) => declares(bar, "CanvasText"))).toEqual([
+      true,
+      true,
+      false,
+    ])
   })
 })

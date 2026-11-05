@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { cn } from "cn"
 
@@ -62,8 +60,10 @@ function StepMeter({
             <span
               aria-hidden
               className={cn(
-                "block h-1 rounded-full",
-                state === "upcoming" ? "bg-border" : "bg-primary"
+                "block h-1 rounded-full forced-colors:outline",
+                state === "upcoming"
+                  ? "bg-border"
+                  : "bg-primary forced-colors:bg-[CanvasText]"
               )}
             />
             <span
