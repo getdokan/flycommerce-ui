@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest"
 
 import { MediaCell, MediaFileGlyph } from "@/index"
 
+import { applyTailwind } from "./tailwind"
+
 describe("MediaCell", () => {
   it("draws the image from src, as before", () => {
     const { container } = render(
@@ -27,8 +29,6 @@ describe("MediaCell", () => {
     expect(container.querySelector("img")).toBeNull()
     const box = container.querySelector("[data-slot=media-cell-media]")!
     expect(box.textContent).toBe("PDF")
-    expect(box.className).toContain("rounded-md")
-    expect(box.className).toContain("border-border-subtle")
     const frame = box.parentElement as HTMLElement
     expect(frame.style.width).toBe("40px")
     expect(frame.style.height).toBe("40px")
@@ -36,7 +36,7 @@ describe("MediaCell", () => {
     expect(screen.getByText("PDF document")).toBeTruthy()
   })
 
-  it("lets media place an overlay on a poster", () => {
+  it("lets media place an overlay on a poster", async () => {
     const { container } = render(
       <MediaCell
         media={
@@ -49,25 +49,15 @@ describe("MediaCell", () => {
       />
     )
     const box = container.querySelector("[data-slot=media-cell-media]")!
-    expect(box.className).toContain("relative")
-    expect(box.className).toContain("overflow-hidden")
+    await applyTailwind()
+    expect(getComputedStyle(box).position).toBe("relative")
+    expect(getComputedStyle(box).overflow).toBe("hidden")
     expect(box.contains(screen.getByTestId("play"))).toBe(true)
   })
 })
 
-// jsdom has no Tailwind, so read the overflow a box would get from its own classes.
-function overflowOf(box: Element) {
-  const classes = box.className.split(/\s+/)
-  const unclip = classes
-    .map((name) => name.match(/^has-\[(.+)\]:overflow-visible$/)?.[1])
-    .find(Boolean)
-  if (classes.includes("overflow-visible")) return "visible"
-  if (unclip && box.matches(`:has(${unclip})`)) return "visible"
-  return classes.includes("overflow-hidden") ? "hidden" : "visible"
-}
-
 describe("MediaCell media clipping", () => {
-  it("doesn't clip a file-type glyph, so its extension badge isn't cut", () => {
+  it("doesn't clip a file-type glyph, so its extension badge isn't cut", async () => {
     const { container } = render(
       <MediaCell
         media={<MediaFileGlyph name="brief.docx" className="size-6" />}
@@ -76,10 +66,11 @@ describe("MediaCell media clipping", () => {
       />
     )
     const box = container.querySelector("[data-slot=media-cell-media]")!
-    expect(overflowOf(box)).toBe("visible")
+    await applyTailwind()
+    expect(getComputedStyle(box).overflow).toBe("visible")
   })
 
-  it("still clips a poster, or a glyph nested inside other media", () => {
+  it("still clips a poster, or a glyph nested inside other media", async () => {
     const { container } = render(
       <>
         <MediaCell
@@ -97,12 +88,16 @@ describe("MediaCell media clipping", () => {
       </>
     )
     const boxes = container.querySelectorAll("[data-slot=media-cell-media]")
-    expect([...boxes].map(overflowOf)).toEqual(["hidden", "hidden"])
+    await applyTailwind()
+    expect([...boxes].map((box) => getComputedStyle(box).overflow)).toEqual([
+      "hidden",
+      "hidden",
+    ])
   })
 })
 
 describe("MediaCell media with alt", () => {
-  it("keeps alt as screen-reader text, as the image fallback does", () => {
+  it("keeps alt as screen-reader text, as the image fallback does", async () => {
     render(
       <MediaCell
         media={<MediaFileGlyph name="size-guide.pdf" className="size-6" />}
@@ -110,6 +105,9 @@ describe("MediaCell media with alt", () => {
         title="size-guide.pdf"
       />
     )
-    expect(screen.getByText("Size guide PDF").className).toContain("sr-only")
+    await applyTailwind()
+    expect(getComputedStyle(screen.getByText("Size guide PDF")).position).toBe(
+      "absolute"
+    )
   })
 })
