@@ -175,6 +175,62 @@ describe("PreviewStage", () => {
     expect(screen.queryByRole("link")).toBeNull()
   })
 
+  it("shows the fallback, with the alt text for screen readers, when the image fails", () => {
+    const { container } = render(
+      <PreviewStageImage
+        src="https://example.com/broken.jpg"
+        alt="Red sneaker"
+        fallback={<span>No preview</span>}
+      />
+    )
+    fireEvent.error(screen.getByRole("img", { name: "Red sneaker" }))
+    expect(screen.getByText("No preview")).toBeTruthy()
+    expect(screen.getByText("Red sneaker")).toBeTruthy()
+    expect(container.querySelector("img")).toBeNull()
+  })
+
+  it("draws the placeholder without a fallback, or without a src", () => {
+    const { container } = render(<PreviewStageImage alt="Red sneaker" />)
+    expect(container.querySelector("img")).toBeNull()
+    expect(container.querySelector("svg")).not.toBeNull()
+    expect(screen.getByText("Red sneaker")).toBeTruthy()
+  })
+
+  it("starts over when a failed image gets a new src, holding its box again", () => {
+    const image = (src: string) => (
+      <PreviewStageImage src={src} alt="A" width={1600} height={1200} />
+    )
+    const { rerender } = render(image("https://example.com/broken.jpg"))
+    fireEvent.error(screen.getByRole("img", { name: "A" }))
+    expect(screen.queryByRole("img", { name: "A" })).toBeNull()
+
+    rerender(image("https://example.com/next.jpg"))
+    const next = screen.getByRole("img", { name: "A" })
+    expect(next.getAttribute("src")).toBe("https://example.com/next.jpg")
+    expect(next.style.width).toContain("min(100%, 1600px")
+  })
+
+  it("passes onLoad and onError on, and holds no box for a size it can't read", () => {
+    const onLoad = vi.fn()
+    const onError = vi.fn()
+    render(
+      <PreviewStageImage
+        src="https://example.com/a.jpg"
+        alt="A"
+        width="auto"
+        height={0}
+        onLoad={onLoad}
+        onError={onError}
+      />
+    )
+    const image = screen.getByRole("img", { name: "A" })
+    expect(image.style.width).toBe("")
+    fireEvent.load(image)
+    expect(onLoad).toHaveBeenCalledTimes(1)
+    fireEvent.error(image)
+    expect(onError).toHaveBeenCalledTimes(1)
+  })
+
   it("shows a document as its file-type glyph with the extension", () => {
     const { container } = render(<PreviewStageDocument name="size-guide.pdf" />)
     expect(screen.getByRole("img", { name: "size-guide.pdf" })).toBeTruthy()
