@@ -154,7 +154,7 @@ function MediaPlayMark({
   )
 }
 
-type MediaTileBaseProps = {
+type MediaTileProps = {
   item: MediaItem
   selected?: boolean
   /** The tile whose details are shown. */
@@ -177,7 +177,7 @@ type MediaTileBaseProps = {
   locale?: string
   labels?: MediaTileLabels
   className?: string
-}
+} & (MediaTilePickerProps | MediaTileLibraryProps)
 
 type MediaTilePickerProps = {
   /** Clicking the picture selects, as in the picker. */
@@ -193,9 +193,6 @@ type MediaTileLibraryProps = {
   /** Adds a selection checkbox at the top start, shown on hover, focus, touch and while selected; a selected tile gets a ring and a tint. */
   onSelectedChange?: (selected: boolean) => void
 }
-
-type MediaTileProps = MediaTileBaseProps &
-  (MediaTilePickerProps | MediaTileLibraryProps)
 
 function captionLine(
   item: MediaItem,
@@ -237,6 +234,140 @@ function MediaTile({
   const cornerCheck = selected && !selectable
   const captionReadsVideo = caption && description == null
 
+  const picture = (
+    <div
+      data-slot="media-tile-picture"
+      data-selected={selected || undefined}
+      data-active={active || undefined}
+      className={cn(
+        "relative overflow-hidden rounded-lg border border-border bg-page transition-shadow data-selected:border-primary data-active:ring-2 data-active:ring-primary",
+        aspect === "square" ? "aspect-square" : "aspect-[6/5]",
+        selectable && "data-selected:ring-2 data-selected:ring-primary"
+      )}
+    >
+      {showImage ? (
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          draggable={false}
+          onError={() => setBroken(true)}
+          className="size-full object-cover"
+        />
+      ) : (
+        <span className="flex size-full flex-col items-center justify-center gap-2 p-3">
+          <MediaFileGlyph name={item.name} className="size-10" />
+          {!caption && (
+            <span className="w-full truncate text-center text-xs text-muted-foreground">
+              {item.name}
+            </span>
+          )}
+        </span>
+      )}
+
+      {item.videoUrl && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <MediaPlayMark />
+          {!captionReadsVideo && (
+            <span className="sr-only">{labels.video}</span>
+          )}
+        </span>
+      )}
+      {selectable && selected && (
+        <span
+          data-slot="media-tile-tint"
+          className="pointer-events-none absolute inset-0 bg-primary/10"
+        />
+      )}
+      {item.isPrivate && (
+        <span className="pointer-events-none absolute start-2 bottom-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-semibold text-foreground-secondary shadow-1">
+          <LockIcon className="size-3" aria-hidden="true" />
+          {labels.private}
+        </span>
+      )}
+
+      {onOpen ? (
+        <button
+          type="button"
+          aria-label={labels.open(item.title || item.name)}
+          onClick={onOpen}
+          className="absolute inset-0 cursor-pointer rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
+        />
+      ) : (
+        onClick &&
+        !selectable && (
+          <button
+            type="button"
+            aria-label={labels.select(item.title || item.name)}
+            aria-pressed={selected}
+            aria-disabled={blocked || undefined}
+            onClick={(event) => {
+              if (blocked) return
+              onClick(event)
+            }}
+            className="absolute inset-0 cursor-pointer rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset aria-disabled:cursor-not-allowed"
+          />
+        )
+      )}
+      {blocked && !onOpen && (
+        <span
+          data-slot="media-tile-dim"
+          className="pointer-events-none absolute inset-0 bg-background/50"
+        />
+      )}
+
+      {selectable && (
+        <span
+          className={cn(
+            "absolute start-2 top-2 flex size-7 items-center justify-center rounded-md bg-background shadow-1",
+            !(selected || selecting) && REVEAL
+          )}
+        >
+          <Checkbox
+            checked={selected}
+            disabled={blocked}
+            aria-label={labels.select(item.title || item.name)}
+            onCheckedChange={(checked) => onSelectedChange?.(checked === true)}
+          />
+        </span>
+      )}
+
+      {cornerCheck && (
+        <span
+          data-slot="media-tile-check"
+          className="pointer-events-none absolute end-2 top-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-1"
+        >
+          <CheckIcon className="size-3" strokeWidth={3} aria-hidden="true" />
+        </span>
+      )}
+
+      {(onPreview || onRemove || actions) && !cornerCheck && (
+        <span
+          className={cn(
+            "absolute end-2 top-2 flex gap-1.5 has-data-[state=open]:opacity-100",
+            REVEAL
+          )}
+        >
+          {onPreview && (
+            <TileAction label={labels.preview(item.name)} onClick={onPreview}>
+              <EyeIcon />
+            </TileAction>
+          )}
+          {onRemove && (
+            <TileAction label={labels.remove(item.name)} onClick={onRemove}>
+              <Trash2Icon />
+            </TileAction>
+          )}
+          {actions && (
+            <span className="flex size-7 items-center justify-center rounded-md bg-background text-foreground-secondary shadow-1">
+              {actions}
+            </span>
+          )}
+        </span>
+      )}
+    </div>
+  )
+
   return (
     <div
       data-slot="media-tile"
@@ -244,139 +375,7 @@ function MediaTile({
       data-active={active || undefined}
       className={cn("group/tile flex min-w-0 flex-col gap-2", className)}
     >
-      <div
-        data-slot="media-tile-picture"
-        data-selected={selected || undefined}
-        data-active={active || undefined}
-        className={cn(
-          "relative overflow-hidden rounded-lg border border-border bg-page transition-shadow data-selected:border-primary data-active:ring-2 data-active:ring-primary",
-          aspect === "square" ? "aspect-square" : "aspect-[6/5]",
-          selectable && "data-selected:ring-2 data-selected:ring-primary"
-        )}
-      >
-        {showImage ? (
-          <img
-            src={src}
-            alt=""
-            loading="lazy"
-            draggable={false}
-            onError={() => setBroken(true)}
-            className="size-full object-cover"
-          />
-        ) : (
-          <span className="flex size-full flex-col items-center justify-center gap-2 p-3">
-            <MediaFileGlyph name={item.name} className="size-10" />
-            {!caption && (
-              <span className="w-full truncate text-center text-xs text-muted-foreground">
-                {item.name}
-              </span>
-            )}
-          </span>
-        )}
-
-        {item.videoUrl && (
-          <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <MediaPlayMark />
-            {!captionReadsVideo && (
-              <span className="sr-only">{labels.video}</span>
-            )}
-          </span>
-        )}
-        {selectable && selected && (
-          <span
-            data-slot="media-tile-tint"
-            className="pointer-events-none absolute inset-0 bg-primary/10"
-          />
-        )}
-        {item.isPrivate && (
-          <span className="pointer-events-none absolute start-2 bottom-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-semibold text-foreground-secondary shadow-1">
-            <LockIcon className="size-3" aria-hidden="true" />
-            {labels.private}
-          </span>
-        )}
-
-        {onOpen ? (
-          <button
-            type="button"
-            aria-label={labels.open(item.title || item.name)}
-            onClick={onOpen}
-            className="absolute inset-0 cursor-pointer rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
-          />
-        ) : (
-          onClick &&
-          !selectable && (
-            <button
-              type="button"
-              aria-label={labels.select(item.title || item.name)}
-              aria-pressed={selected}
-              aria-disabled={blocked || undefined}
-              onClick={(event) => {
-                if (blocked) return
-                onClick(event)
-              }}
-              className="absolute inset-0 cursor-pointer rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset aria-disabled:cursor-not-allowed"
-            />
-          )
-        )}
-        {blocked && !onOpen && (
-          <span
-            data-slot="media-tile-dim"
-            className="pointer-events-none absolute inset-0 bg-background/50"
-          />
-        )}
-
-        {selectable && (
-          <span
-            className={cn(
-              "absolute start-2 top-2 flex size-7 items-center justify-center rounded-md bg-background shadow-1",
-              !(selected || selecting) && REVEAL
-            )}
-          >
-            <Checkbox
-              checked={selected}
-              disabled={blocked}
-              aria-label={labels.select(item.title || item.name)}
-              onCheckedChange={(checked) =>
-                onSelectedChange?.(checked === true)
-              }
-            />
-          </span>
-        )}
-
-        {cornerCheck && (
-          <span
-            data-slot="media-tile-check"
-            className="pointer-events-none absolute end-2 top-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-1"
-          >
-            <CheckIcon className="size-3" strokeWidth={3} aria-hidden="true" />
-          </span>
-        )}
-
-        {(onPreview || onRemove || actions) && !cornerCheck && (
-          <span
-            className={cn(
-              "absolute end-2 top-2 flex gap-1.5 has-data-[state=open]:opacity-100",
-              REVEAL
-            )}
-          >
-            {onPreview && (
-              <TileAction label={labels.preview(item.name)} onClick={onPreview}>
-                <EyeIcon />
-              </TileAction>
-            )}
-            {onRemove && (
-              <TileAction label={labels.remove(item.name)} onClick={onRemove}>
-                <Trash2Icon />
-              </TileAction>
-            )}
-            {actions && (
-              <span className="flex size-7 items-center justify-center rounded-md bg-background text-foreground-secondary shadow-1">
-                {actions}
-              </span>
-            )}
-          </span>
-        )}
-      </div>
+      {picture}
       {caption && (
         <div className="min-w-0">
           <div
