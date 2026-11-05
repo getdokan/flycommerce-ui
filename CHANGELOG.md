@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `Badge dot="pulse"`: the status dot with a soft ring in the badge's colour that pings outwards behind it, for the one live, current state on a screen, e.g. `<Badge variant="success" dot="pulse">Live on maisonoriel.com</Badge>`. With reduced motion the ring isn't drawn and the solid dot shows as before. It is decorative (`aria-hidden`), so the badge text carries the meaning. `StatusBadge` passes it through, and `dot` and `dot={true}` look the same as before.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
