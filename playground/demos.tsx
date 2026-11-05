@@ -1142,17 +1142,17 @@ export const demos: Demo[] = [
     render: () => <MediaPartsDemo />,
   },
   {
+    id: "dropzone",
+    title: "File drop zone",
+    group: "Patterns",
+    render: () => <DropzoneDemo />,
+  },
+  {
     id: "upload-files",
     title: "Upload files (compact queue)",
     group: "Patterns",
     keywords: "dropzone upload queue progress drag drop media modal",
     render: () => <UploadFilesDemo />,
-  },
-  {
-    id: "dropzone",
-    title: "File drop zone",
-    group: "Patterns",
-    render: () => <DropzoneDemo />,
   },
   {
     id: "image-upload-field",
