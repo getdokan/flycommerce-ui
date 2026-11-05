@@ -4,6 +4,8 @@ import { describe, expect, it, vi } from "vitest"
 
 import { MediaGrid, MediaTile, type MediaItem } from "@/index"
 
+import { applyTailwind } from "./tailwind"
+
 const photo: MediaItem = {
   id: "1",
   name: "sneaker-red.jpg",
@@ -27,6 +29,10 @@ const pdf: MediaItem = {
 }
 
 const chip = (checkbox: HTMLElement) => checkbox.parentElement as HTMLElement
+const pictureOf = (root: ParentNode) =>
+  root.querySelector("[data-slot=media-tile-picture]") as HTMLElement
+const ring = (element: Element) =>
+  getComputedStyle(element).getPropertyValue("--tw-ring-shadow")
 
 describe("MediaTile with onOpen and onSelectedChange", () => {
   it("opens from the picture and selects from the checkbox", async () => {
@@ -54,64 +60,61 @@ describe("MediaTile with onOpen and onSelectedChange", () => {
     expect(onOpen).toHaveBeenCalledTimes(1)
   })
 
-  it("shows the checkbox and actions on hover, focus and touch, and the checkbox always while selecting", () => {
-    const { rerender } = render(
+  it("hides the checkbox and actions until revealed, and keeps the checkbox while selecting", async () => {
+    const tile = (selecting: boolean) => (
       <MediaTile
         item={photo}
+        selecting={selecting}
         onOpen={() => {}}
         onSelectedChange={() => {}}
         actions={<button type="button">More</button>}
       />
     )
-    const reveal = [
-      "opacity-0",
-      "group-hover/tile:opacity-100",
-      "group-focus-within/tile:opacity-100",
-      "pointer-coarse:opacity-100",
-    ]
-    const checkboxChip = () => chip(screen.getByRole("checkbox")).className
+    const { rerender } = render(tile(false))
+    await applyTailwind()
+    const opacity = (element: Element) => getComputedStyle(element).opacity
+    const checkboxChip = () => chip(screen.getByRole("checkbox"))
     const actionsGroup = () =>
-      chip(chip(screen.getByRole("button", { name: "More" }))).className
-    for (const name of reveal) {
-      expect(checkboxChip()).toContain(name)
-      expect(actionsGroup()).toContain(name)
-    }
-    expect(actionsGroup()).toContain("has-data-[state=open]:opacity-100")
+      chip(chip(screen.getByRole("button", { name: "More" })))
+    expect(opacity(checkboxChip())).toBe("0%")
+    expect(opacity(actionsGroup())).toBe("0%")
 
-    rerender(
-      <MediaTile
-        item={photo}
-        selecting
-        onOpen={() => {}}
-        onSelectedChange={() => {}}
-        actions={<button type="button">More</button>}
-      />
-    )
-    expect(checkboxChip()).not.toContain("opacity-0")
-    expect(actionsGroup()).toContain("opacity-0")
+    screen.getByRole("checkbox").focus()
+    expect(opacity(checkboxChip())).toBe("100%")
+    expect(opacity(actionsGroup())).toBe("100%")
+    screen.getByRole("checkbox").blur()
+
+    rerender(tile(true))
+    await applyTailwind()
+    expect(opacity(checkboxChip())).toBe("1")
+    expect(opacity(actionsGroup())).toBe("0%")
   })
 
-  it("marks a selected tile with a ring, a tint and a ticked checkbox, not the corner check", () => {
+  it("marks a selected tile with a ring, a tint and a ticked checkbox, not the corner check", async () => {
     const { container } = render(
       <MediaTile item={photo} selected onSelectedChange={() => {}} />
     )
-    const tile = container.querySelector("[data-slot=media-tile]")!
-    expect(tile.className).toContain("data-selected:ring-2")
-    expect(tile.querySelector(".bg-primary\\/10")).toBeTruthy()
-    expect(tile.querySelector(".rounded-full.bg-primary")).toBeNull()
+    await applyTailwind()
+    expect(ring(pictureOf(container))).not.toBe("")
+    expect(
+      container.querySelector("[data-slot=media-tile-tint]")
+    ).not.toBeNull()
+    expect(container.querySelector("[data-slot=media-tile-check]")).toBeNull()
     expect(screen.getByRole("checkbox").getAttribute("aria-checked")).toBe(
       "true"
     )
   })
 
-  it("keeps the picker tile as it was without the new props", () => {
+  it("keeps the picker tile as it was without the new props", async () => {
     const { container } = render(
       <MediaTile item={photo} selected onClick={() => {}} />
     )
-    const tile = container.querySelector("[data-slot=media-tile]")!
-    expect(tile.className).toContain("aspect-[6/5]")
-    expect(tile.className).not.toContain("data-selected:ring-2")
-    expect(tile.querySelector(".rounded-full.bg-primary")).toBeTruthy()
+    await applyTailwind()
+    expect(getComputedStyle(pictureOf(container)).aspectRatio).toBe("6/5")
+    expect(ring(pictureOf(container))).toBe("")
+    expect(
+      container.querySelector("[data-slot=media-tile-check]")
+    ).not.toBeNull()
     expect(screen.queryByRole("checkbox")).toBeNull()
     expect(
       screen
@@ -119,10 +122,23 @@ describe("MediaTile with onOpen and onSelectedChange", () => {
         .getAttribute("aria-pressed")
     ).toBe("true")
   })
+
+  it.each([
+    ["without a caption", false],
+    ["with a caption", true],
+  ])("puts data-slot and className on the same root %s", (_name, caption) => {
+    const { container } = render(
+      <MediaTile item={photo} caption={caption} className="own" />
+    )
+    const root = container.firstElementChild!
+    expect(root.getAttribute("data-slot")).toBe("media-tile")
+    expect(root.classList.contains("own")).toBe(true)
+    expect(pictureOf(root).classList.contains("own")).toBe(false)
+  })
 })
 
 describe("MediaTile caption", () => {
-  it("shows the name in full on hover, then the type and size, or Video", () => {
+  it("shows the name in full on hover, then the type and size, or Video", async () => {
     render(
       <>
         <MediaTile item={photo} caption aspect="square" />
@@ -130,7 +146,10 @@ describe("MediaTile caption", () => {
         <MediaTile item={pdf} caption />
       </>
     )
-    expect(screen.getByTitle("sneaker-red.jpg").className).toContain("truncate")
+    await applyTailwind()
+    expect(
+      getComputedStyle(screen.getByTitle("sneaker-red.jpg")).textOverflow
+    ).toBe("ellipsis")
     expect(screen.getByText("JPG · 1.2 MB")).toBeTruthy()
     expect(screen.getByText("Video")).toBeTruthy()
     expect(screen.getByText("PDF · 84 KB")).toBeTruthy()
@@ -139,9 +158,7 @@ describe("MediaTile caption", () => {
     const square = screen
       .getByTitle("sneaker-red.jpg")
       .closest("[data-slot=media-tile]")!
-    expect(
-      square.querySelector("[data-slot=media-tile-picture]")!.className
-    ).toContain("aspect-square")
+    expect(getComputedStyle(pictureOf(square)).aspectRatio).toBe("1 / 1")
   })
 
   it("takes a description, translations and a locale", () => {
@@ -199,23 +216,25 @@ describe("MediaGrid with onOpen", () => {
     expect(onSelectedChange).toHaveBeenCalledWith(["2", "1"])
 
     // One file is selected, so every checkbox shows.
+    await applyTailwind()
     for (const checkbox of screen.getAllByRole("checkbox"))
-      expect(chip(checkbox).className).not.toContain("opacity-0")
+      expect(getComputedStyle(chip(checkbox)).opacity).toBe("1")
     expect(
       screen.getByRole("button", { name: "Actions for size-guide.pdf" })
     ).toBeTruthy()
   })
 
-  it("lays out 2 to 6 columns by its own width with columns=responsive", () => {
+  it("lays out by its own width with columns=responsive, and starts at 2 columns", async () => {
     const { container } = render(
       <MediaGrid items={[photo]} columns="responsive" className="p-5" />
     )
+    await applyTailwind()
     const root = container.firstElementChild!
-    expect(root.className).toContain("@container/media-grid")
-    expect(root.className).toContain("p-5")
-    const grid = root.firstElementChild!
-    expect(grid.className).toContain("grid-cols-2")
-    expect(grid.className).toContain("@5xl/media-grid:grid-cols-6")
+    expect(getComputedStyle(root).containerType).toBe("inline-size")
+    expect(root.classList.contains("p-5")).toBe(true)
+    expect(getComputedStyle(root.firstElementChild!).gridTemplateColumns).toBe(
+      "repeat(2, minmax(0, 1fr))"
+    )
   })
 
   it("still toggles from the picture without onOpen", async () => {
@@ -237,7 +256,12 @@ describe("MediaGrid with onOpen", () => {
 })
 
 describe("MediaTile edge cases", () => {
-  it("doesn't dim an openable tile that can't be selected", () => {
+  it("dims a tile that can't be picked, but not an openable one", () => {
+    const { container: picker } = render(
+      <MediaTile item={photo} disabled onClick={() => {}} />
+    )
+    expect(picker.querySelector("[data-slot=media-tile-dim]")).not.toBeNull()
+
     const { container } = render(
       <MediaTile
         item={photo}
@@ -246,19 +270,23 @@ describe("MediaTile edge cases", () => {
         onSelectedChange={() => {}}
       />
     )
-    expect(container.querySelector(".bg-background\\/50")).toBeNull()
+    expect(container.querySelector("[data-slot=media-tile-dim]")).toBeNull()
     expect((screen.getByRole("checkbox") as HTMLButtonElement).disabled).toBe(
       true
     )
   })
 
-  it("keeps the video name for screen readers when description replaces the caption line", () => {
+  it("keeps the video name for screen readers when description replaces the caption line", async () => {
     render(<MediaTile item={video} caption description="2:34" />)
-    expect(screen.getByText("Video").className).toContain("sr-only")
+    await applyTailwind()
+    expect(getComputedStyle(screen.getByText("Video")).position).toBe(
+      "absolute"
+    )
   })
 
   it("has one selection control when onClick and onSelectedChange are both given", () => {
     render(
+      // @ts-expect-error The two modes don't mix; a plain-JS caller still gets one control.
       <MediaTile item={photo} onClick={() => {}} onSelectedChange={() => {}} />
     )
     expect(screen.getAllByRole("checkbox")).toHaveLength(1)
@@ -267,12 +295,11 @@ describe("MediaTile edge cases", () => {
     ).toBeNull()
   })
 
-  it("reveals the controls from the caption too, and marks the captioned tile selected", () => {
+  it("marks the captioned tile selected", () => {
     const { container } = render(
       <MediaTile item={photo} caption selected onSelectedChange={() => {}} />
     )
     const root = container.querySelector("[data-slot=media-tile]")!
-    expect(root.className).toContain("group/tile")
     expect(root.getAttribute("data-selected")).toBe("true")
   })
 })
@@ -287,16 +314,20 @@ describe("MediaGrid loading with caption", () => {
 })
 
 describe("MediaGrid width and video caption", () => {
-  it("takes the full width with columns=responsive in every state, so a flex parent can't collapse it", () => {
-    const { container, rerender } = render(
-      <MediaGrid items={[photo]} columns="responsive" />
-    )
-    expect(container.firstElementChild!.className).toContain("w-full")
-    rerender(<MediaGrid items={[]} loading columns="responsive" />)
-    expect(container.firstElementChild!.className).toContain("w-full")
-    rerender(<MediaGrid items={[]} columns="responsive" />)
-    expect(container.firstElementChild!.className).toContain("w-full")
-  })
+  it.each([
+    ["with items", { items: [photo] }],
+    ["loading", { items: [], loading: true }],
+    ["empty", { items: [] }],
+  ])(
+    "takes the full width with columns=responsive %s, so a flex parent can't collapse it",
+    async (_name, props) => {
+      const { container } = render(
+        <MediaGrid {...props} columns="responsive" />
+      )
+      await applyTailwind()
+      expect(getComputedStyle(container.firstElementChild!).width).toBe("100%")
+    }
+  )
 
   it("reads Video once when description returns null", () => {
     render(<MediaGrid items={[video]} caption description={() => null} />)

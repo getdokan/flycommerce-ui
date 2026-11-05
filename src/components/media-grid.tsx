@@ -190,6 +190,9 @@ function MediaGrid({
       <div className={grid}>
         {items.map((item) => {
           const select = onSelectedChange ? () => toggle(item) : undefined
+          const mode = onOpen
+            ? { onOpen: () => onOpen(item), onSelectedChange: select }
+            : { onClick: select }
           return (
             <MediaTile
               key={item.id}
@@ -197,9 +200,7 @@ function MediaGrid({
               selected={selected.includes(item.id)}
               active={activeId === item.id}
               disabled={full}
-              onClick={onOpen ? undefined : select}
-              onOpen={onOpen ? () => onOpen(item) : undefined}
-              onSelectedChange={onOpen ? select : undefined}
+              {...mode}
               selecting={selected.length > 0}
               actions={actions?.(item)}
               onPreview={onPreview ? () => onPreview(item) : undefined}
