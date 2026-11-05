@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `UploadQueue variant="compact"` and `Dropzone dragTitle`, for an upload modal: `<Dropzone title dragTitle="Drop to upload" maxSize={(file) => (file.type.startsWith("image/") ? 5 * MB : 25 * MB)} onFiles onReject />` above `<UploadQueue variant="compact" items onCancel onRemove />`. The compact queue is one bordered box of divided rows that scrolls when long, named "Uploads" (`labels.list`) and focusable while it scrolls; each row has a 40px thumbnail, the file name, and a status built from the item: a progress bar with "{size} · {percent}" (`labels.progress`) and × to cancel while uploading, a green tick and "Uploaded · {size}" (`labels.uploaded`) and no button when done, and for a refused file a warning icon, the error in red and × to remove. Items take `thumbnailUrl` (the picture, with the file-type glyph when it is missing or fails to load), `media` (any element in place of the thumbnail, e.g. a play mark) and `kind: "link"`, which reads "Added" (`labels.added`) when done, in both variants. `Dropzone dragTitle` replaces the title while files are dragged over the box (a drag that carries no files, such as selected text, no longer tints the box), and `maxSize` also takes a function that gives each file's limit, so images and documents can have their own; a file over its limit goes to `onReject` with `reason: "size"` as before, and `undefined` or `NaN` from the function means no limit for that file (type `FileSizeLimit`). Keep a compact queue mounted while it's empty: it holds the live region that reads a settled or refused row out. The default variant and a `Dropzone` without `dragTitle` look and behave as before.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.

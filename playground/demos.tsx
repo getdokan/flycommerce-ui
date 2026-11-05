@@ -79,6 +79,7 @@ import {
   RichSelectDemo,
   TreeSelectDemo,
 } from "./product-demos"
+import { UploadFilesDemo } from "./upload-files-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import {
   ColorInputDemo,
@@ -1145,6 +1146,13 @@ export const demos: Demo[] = [
     title: "File drop zone",
     group: "Patterns",
     render: () => <DropzoneDemo />,
+  },
+  {
+    id: "upload-files",
+    title: "Upload files (compact queue)",
+    group: "Patterns",
+    keywords: "dropzone upload queue progress drag drop media modal",
+    render: () => <UploadFilesDemo />,
   },
   {
     id: "image-upload-field",
