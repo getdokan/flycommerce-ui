@@ -79,12 +79,8 @@ import {
   RichSelectDemo,
   TreeSelectDemo,
 } from "./product-demos"
-import {
-  MediaCellDemo,
-  MediaPageDemo,
-  MediaPartsDemo,
-  MediaPickerDemo,
-} from "./media-demos"
+import { MediaCellDemo } from "./media-cell-demo"
+import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import {
   ColorInputDemo,
   CopyFieldDemo,
