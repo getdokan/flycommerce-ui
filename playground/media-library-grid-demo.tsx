@@ -29,6 +29,7 @@ const ITEMS: MediaItem[] = [
     name: "unboxing.mp4",
     url: "https://picsum.photos/seed/fcm-video/900/900",
     thumbnailUrl: "https://picsum.photos/seed/fcm-video/300/300",
+    mimeType: "image/jpeg",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   },
   {
