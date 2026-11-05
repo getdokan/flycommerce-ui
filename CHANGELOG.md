@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `FacetFilter mode="single"`: a one-choice toolbar filter, `<FacetFilter mode="single" label heading allLabel allCount options value onValueChange />`, e.g. Type ("All types", Images, Videos) or Date ("All dates", then the months). `allLabel` is required, so a pick can always be undone. The menu lists radio items, with the `allLabel` row first and its `allCount` when given, then a separator and the options with their counts ("—" until known). A pick applies at once and closes the menu, focus returns to the trigger, and picking the row already picked doesn't call `onValueChange`. `value` is the picked option's value or `null`, and the "all" row calls back with `null`. The trigger keeps the outline button and reads the picked option's label, `allLabel` while nothing is picked, or "{label}, 1" for a `value` with no option yet (e.g. from the address while the options load), which counts as a pick in `data-picked` and ticks no row; its accessible name is "Type: All types" or "Type: Videos". There is no Clear item in this mode. `heading` heads the menu instead of `label` in both modes, e.g. "Uploaded" in a "Date" filter. The default mode is unchanged (`mode="multiple"` may be written out), and the props types are exported as `FacetFilterSingleProps` and `FacetFilterMultipleProps`. **Check types:** `FacetFilterProps<T>` is now the union of the two, so a type read from it, such as `FacetFilterProps<T>["value"]` or an `Omit<FacetFilterProps<T>, …>` wrapper, now covers both modes (an `Omit` of a union no longer type-checks when passed back to `FacetFilter`); use `FacetFilterMultipleProps<T>` for the checkbox filter.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
