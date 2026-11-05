@@ -51,7 +51,7 @@ describe("RowActionsMenu", () => {
     expect(trigger.getAttribute("data-variant")).toBe("ghost")
     expect(trigger.getAttribute("data-size")).toBe("icon-sm")
     expect(trigger.getAttribute("aria-haspopup")).toBe("menu")
-    expect(trigger.querySelector("[data-icon-name=more]")).toBeTruthy()
+    expect(trigger.querySelector("svg")).toBeTruthy()
     expect(trigger.textContent).toBe("")
 
     rerender(
@@ -203,11 +203,9 @@ describe("RowActionsMenu", () => {
     const { rerender } = render(<RowActionsMenu items={items()} loading />)
     const trigger = () => screen.getByRole("button", { name: "Actions" })
     expect(trigger().querySelectorAll("svg")).toHaveLength(1)
-    expect(trigger().querySelector("[data-icon-name=more]")).toBeNull()
 
     rerender(<RowActionsMenu items={items()} />)
     expect(trigger().querySelectorAll("svg")).toHaveLength(1)
-    expect(trigger().querySelector("[data-icon-name=more]")).toBeTruthy()
   })
 
   it("doesn't light up on hover while disabled or loading", () => {

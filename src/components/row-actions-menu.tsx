@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { cn } from "cn"
+import { FiMoreHorizontal as MoreHorizontalIcon } from "react-icons/fi"
 
-import { Icon } from "@/components/icon"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -125,7 +125,7 @@ function RowActionsMenu({
           onKeyDown={stopActivation}
         >
           {/* Button draws its spinner before the children; the icon makes way so the two don't overflow it. */}
-          {!loading && <Icon name="more" />}
+          {!loading && <MoreHorizontalIcon />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
