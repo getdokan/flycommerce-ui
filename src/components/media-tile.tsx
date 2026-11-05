@@ -381,7 +381,11 @@ function MediaTile({
           >
             {item.name}
           </div>
-          <div className="truncate text-xs text-muted-foreground tabular-nums">
+          <div
+            // The picture already reads "Video" out.
+            aria-hidden={(item.videoUrl && description == null) || undefined}
+            className="truncate text-xs text-muted-foreground tabular-nums"
+          >
             {description ?? captionLine(item, labels, locale)}
           </div>
         </div>
