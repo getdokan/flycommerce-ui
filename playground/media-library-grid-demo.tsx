@@ -57,7 +57,7 @@ export function MediaLibraryGridDemo() {
           </>
         ) : (
           <span className="text-sm text-muted-foreground">
-            {items.length} files
+            {ITEMS.length} files
           </span>
         )}
       </div>
