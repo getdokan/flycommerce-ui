@@ -6,6 +6,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Added
 
+- `MediaThumb` and `MediaPlayMark`: the box for any node in a thumbnail's place, clipped to its rounded corners except a `MediaFileGlyph` passed directly, and the round play mark over a video poster, `size="sm"`, `"default"` or `"lg"`.
 - `MediaCell media`: `<MediaCell media={<MediaFileGlyph name="guide.pdf" className="size-6" />} title description size={40} />`. Draws any node in the thumbnail's box instead of the image from `src`, in the same size, rounded corners and border, on a muted ground and clipped to the box (except a `MediaFileGlyph` passed directly, so its extension badge isn't cut), which is positioned so an overlay can sit on top: a file-type glyph for a document, or a video poster with a play mark. Without `media`, `src` works as before.
 
 ## [0.6.0] - 2026-11-04
