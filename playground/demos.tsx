@@ -57,9 +57,9 @@ import {
   SettingsNavDemo,
   StatusBadgeDemo,
   TimelineDemo,
-  StepMeterDemo,
   ActivityFeedDemo,
 } from "./pattern-demos"
+import { StepMeterDemo } from "./step-meter-demo"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import {
