@@ -13,6 +13,7 @@ import {
   type ExpandedState,
   type OnChangeFn,
   type Row,
+  type RowData,
   type RowSelectionState,
   type SortingState,
 } from "@tanstack/react-table"
@@ -103,6 +104,9 @@ declare module "@tanstack/react-table" {
     headerClassName?: string
     cellClassName?: string
   }
+  interface TableMeta<TData extends RowData> {
+    selectRowLabel?: (row: TData) => string
+  }
 }
 
 type OffsetPagination = {
@@ -141,7 +145,10 @@ type DataTableLabels = {
   page?: (page: number) => string
   morePages?: string
   selectAll?: string
+  /** A row checkbox's name when `getRowLabel` isn't set or gives a blank name. */
   selectRow?: string
+  /** A row checkbox's name from `getRowLabel`: "Select Silk twill scarf". */
+  selectNamedRow?: (name: string) => string
   clearSelection?: string
   expandRow?: string
   collapseRow?: string
@@ -151,7 +158,7 @@ type DataTableLabels = {
   dragHandleRole?: string
   /** Read when a drag handle is focused: how to move a row with the keyboard. */
   dragInstructions?: string
-  /** A row's name in reorder announcements when `getRowLabel` isn't set. */
+  /** A row's name in reorder announcements when `getRowLabel` isn't set or gives a blank name. */
   row?: (index: number) => string
   pickedUp?: (label: string, position: number, total: number) => string
   movedTo?: (label: string, position: number, total: number) => string
@@ -175,6 +182,7 @@ const DEFAULT_LABELS: Required<DataTableLabels> = {
   morePages: "More pages",
   selectAll: "Select all rows",
   selectRow: "Select row",
+  selectNamedRow: (name) => `Select ${name}`,
   clearSelection: "Clear",
   expandRow: "Expand row",
   collapseRow: "Collapse row",
@@ -242,7 +250,7 @@ type DataTableProps<TData> = {
   paginationPlacement?: "outside" | "inside"
   /** Adds a drag-handle column; called with the reordered `data` (mouse or keyboard: Space, arrows, Space). */
   onReorder?: (rows: TData[], move: { from: number; to: number }) => void
-  /** Row name for screen-reader reorder announcements, e.g. the product name. */
+  /** Row name for screen readers, e.g. the product name: it names the row's checkbox and the reorder announcements. */
   getRowLabel?: (row: TData) => string
   labels?: DataTableLabels
   className?: string
@@ -334,9 +342,10 @@ function DataTable<TData>({
             }
           />
         ),
-        cell: ({ row }) => (
+        cell: ({ row, table }) => (
           <Checkbox
-            aria-label={labels.selectRow}
+            // Read through the table's meta, which is current every render, so an inline getRowLabel doesn't rebuild the columns.
+            aria-label={table.options.meta?.selectRowLabel?.(row.original)}
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onClick={(event) => event.stopPropagation()}
@@ -354,14 +363,30 @@ function DataTable<TData>({
     enableRowSelection,
     reorderable,
     labels.selectAll,
-    labels.selectRow,
     labels.reorder,
   ])
+
+  // A blank name falls back: the checkbox to `selectRow`, the reorder announcements to `row(index)`.
+  const rowName = (row: TData) => {
+    const name: unknown = getRowLabel?.(row)
+    return typeof name === "string" || typeof name === "number"
+      ? String(name).trim()
+      : ""
+  }
+  // An app that translated `selectRow` but not `selectNamedRow` keeps its own words, not the English default.
+  const selectNamedRow =
+    labelsProp?.selectNamedRow ??
+    (labelsProp?.selectRow ? undefined : DEFAULT_LABELS.selectNamedRow)
+  const selectRowLabel = (row: TData) => {
+    const name = rowName(row)
+    return (name && selectNamedRow?.(name)) || labels.selectRow
+  }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns non-memoizable functions by design
   const table = useReactTable({
     data,
     columns: allColumns,
+    meta: { selectRowLabel },
     getRowId,
     state: { rowSelection, sorting, expanded },
     getSubRows,
@@ -388,7 +413,7 @@ function DataTable<TData>({
   const rowLabel = (id: string) => {
     const index = rows.findIndex((row) => row.id === id)
     if (index < 0) return ""
-    return getRowLabel?.(rows[index].original) ?? labels.row(index)
+    return rowName(rows[index].original) || labels.row(index)
   }
   const moveRow = (from: number, to: number) => {
     const next = [...data]

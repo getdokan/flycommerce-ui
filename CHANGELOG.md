@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `DataTable` `labels.selectNamedRow(name)`: a row checkbox's name built from `getRowLabel`, "Select Silk twill scarf, ivory" by default. An app that translates `labels` should translate it too; until it does, it keeps its own `selectRow`.
+
+### Changed
+
+- `DataTable` row checkboxes are named after their row: with `getRowLabel`, each row's checkbox reads `labels.selectNamedRow(name)`, "Select Silk twill scarf, ivory" by default, so a screen-reader user hears what they are ticking instead of "Select row" on every row. Without `getRowLabel`, or when it gives an empty or blank name (or something other than a string or number), the checkbox keeps `labels.selectRow`, and the reorder announcements now fall back to `labels.row` ("Row 1") for a blank name too, instead of announcing nothing. The header checkbox keeps `labels.selectAll`. The name follows the row's current data and an inline `getRowLabel` without rebuilding the columns. **Check when upgrading:** a table that already passes `getRowLabel` (for reorder announcements) now names its row checkboxes after the row. An app that sets its own `selectRow` but not `selectNamedRow` keeps its own `selectRow` on every row until it adds `selectNamedRow`, so a translated table is never switched to English. A test that looked for "Select row" on a table with `getRowLabel` finds "Select {name}".
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
