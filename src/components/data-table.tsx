@@ -13,6 +13,7 @@ import {
   type ExpandedState,
   type OnChangeFn,
   type Row,
+  type RowData,
   type RowSelectionState,
   type SortingState,
 } from "@tanstack/react-table"
@@ -103,9 +104,10 @@ declare module "@tanstack/react-table" {
     headerClassName?: string
     cellClassName?: string
   }
+  interface TableMeta<TData extends RowData> {
+    selectRowLabel?: (row: TData) => string
+  }
 }
-
-type SelectionMeta<TData> = { selectRowLabel: (row: TData) => string }
 
 type OffsetPagination = {
   mode?: "offset"
@@ -343,9 +345,7 @@ function DataTable<TData>({
         cell: ({ row, table }) => (
           <Checkbox
             // Read through the table's meta, which is current every render, so an inline getRowLabel doesn't rebuild the columns.
-            aria-label={(
-              table.options.meta as SelectionMeta<TData>
-            ).selectRowLabel(row.original)}
+            aria-label={table.options.meta?.selectRowLabel?.(row.original)}
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onClick={(event) => event.stopPropagation()}
@@ -386,7 +386,7 @@ function DataTable<TData>({
   const table = useReactTable({
     data,
     columns: allColumns,
-    meta: { selectRowLabel } satisfies SelectionMeta<TData>,
+    meta: { selectRowLabel },
     getRowId,
     state: { rowSelection, sorting, expanded },
     getSubRows,
