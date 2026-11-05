@@ -15,6 +15,7 @@ import {
   type Row,
   type RowSelectionState,
   type SortingState,
+  type Table as TableInstance,
 } from "@tanstack/react-table"
 import {
   FiArrowDown as ArrowDownIcon,
@@ -254,6 +255,28 @@ type DataTableProps<TData> = {
   className?: string
 }
 
+/** The last loaded copy of each selected row, so bulk actions still get the ones now on other pages. */
+function useKeptRows<TData>(
+  table: TableInstance<TData>,
+  rowSelection: RowSelectionState,
+  enabled: boolean
+) {
+  const [lastKept, setLastKept] = React.useState<ReadonlyMap<string, TData>>(
+    () => new Map()
+  )
+  const kept = new Map<string, TData>()
+  if (enabled) {
+    for (const [id, row] of lastKept) if (rowSelection[id]) kept.set(id, row)
+    for (const row of table.getCoreRowModel().flatRows)
+      if (rowSelection[row.id]) kept.set(row.id, row.original)
+  }
+  // Only on a real change, so a new `data` array with the same rows doesn't render twice.
+  let changed = kept.size !== lastKept.size
+  for (const [id, row] of kept) if (lastKept.get(id) !== row) changed = true
+  if (changed) setLastKept(kept)
+  return kept
+}
+
 function DataTable<TData>({
   columns,
   data,
@@ -307,10 +330,6 @@ function DataTable<TData>({
         "DataTable: crossPageSelection needs getRowId and a controlled rowSelection, so it is ignored."
       )
   }, [crossPageSelection, crossPage])
-  // The last loaded copy of each selected row, so bulk actions still get the ones now on other pages.
-  const [tickedRows, setTickedRows] = React.useState<
-    ReadonlyMap<string, TData>
-  >(() => new Map())
 
   const reorderable = Boolean(onReorder) && !getSubRows
   const reorderEnabled = reorderable && sorting.length === 0
@@ -402,18 +421,11 @@ function DataTable<TData>({
   const rows = table.getRowModel().rows
   const columnCount = table.getVisibleLeafColumns().length
   const pageSelectedRows = table.getSelectedRowModel().rows
-  const keptRows = new Map<string, TData>()
-  if (crossPage && bulkActions) {
-    for (const [id, row] of tickedRows)
-      if (rowSelection[id]) keptRows.set(id, row)
-    for (const row of table.getCoreRowModel().flatRows)
-      if (rowSelection[row.id]) keptRows.set(row.id, row.original)
-  }
-  // Only on a real change, so a new `data` array with the same rows doesn't render twice.
-  let keptChanged = keptRows.size !== tickedRows.size
-  for (const [id, row] of keptRows)
-    if (tickedRows.get(id) !== row) keptChanged = true
-  if (keptChanged) setTickedRows(keptRows)
+  const keptRows = useKeptRows(
+    table,
+    rowSelection,
+    crossPage && Boolean(bulkActions)
+  )
   const selectedIds = crossPage
     ? Object.keys(rowSelection).filter((id) => rowSelection[id])
     : pageSelectedRows.map((row) => row.id)
