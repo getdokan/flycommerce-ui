@@ -367,7 +367,12 @@ function DataTable<TData>({
   ])
 
   // A blank name falls back: the checkbox to `selectRow`, the reorder announcements to `row(index)`.
-  const rowName = (row: TData) => String(getRowLabel?.(row) ?? "").trim()
+  const rowName = (row: TData) => {
+    const name: unknown = getRowLabel?.(row)
+    return typeof name === "string" || typeof name === "number"
+      ? String(name).trim()
+      : ""
+  }
   // An app that translated `selectRow` but not `selectNamedRow` keeps its own words, not the English default.
   const selectNamedRow =
     labelsProp?.selectNamedRow ??

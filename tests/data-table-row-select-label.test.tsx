@@ -72,6 +72,35 @@ describe("DataTable row checkbox names", () => {
     expect(checkboxNames().slice(1)).toEqual(["Pick", "Pick Glass bud vase"])
   })
 
+  it("reads a number as text and falls back to selectRow for an object or element", () => {
+    const { unmount } = render(
+      <DataTable
+        columns={columns}
+        data={data}
+        getRowLabel={(row) => Number(row.id) as unknown as string}
+        enableRowSelection
+      />
+    )
+    expect(checkboxNames().slice(1)).toEqual(["Select 1", "Select 2"])
+    unmount()
+
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        getRowLabel={(row) =>
+          (row.id === "1" ? (
+            { en: row.title }
+          ) : (
+            <b>{row.title}</b>
+          )) as unknown as string
+        }
+        enableRowSelection
+      />
+    )
+    expect(checkboxNames().slice(1)).toEqual(["Select row", "Select row"])
+  })
+
   it("falls back to selectRow for an empty selectNamedRow", () => {
     render(
       <DataTable
