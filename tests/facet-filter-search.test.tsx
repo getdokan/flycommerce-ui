@@ -259,7 +259,7 @@ describe("FacetFilter searchable", () => {
     expect(await check()).toEqual([])
   })
 
-  describe("review fixes", () => {
+  describe("highlight, focus and controlled opening", () => {
     const Multi = ({
       options = VENDORS,
       onValueChange = () => {},
@@ -448,7 +448,7 @@ describe("FacetFilter searchable", () => {
     })
   })
 
-  describe("review pass 2", () => {
+  describe("no match, scrolling and the highlight's identity", () => {
     it("doesn't clear the pick when Enter meets a search with no match", async () => {
       const onValueChange = vi.fn()
       const user = userEvent.setup()
@@ -509,28 +509,72 @@ describe("FacetFilter searchable", () => {
       expect(active(search)).toBe("Café Noir")
     })
 
-    it("scrolls the first match into view after filtering", async () => {
+    const scrolled = async (run: () => Promise<void>) => {
       const scroll = vi.fn()
       const original = Element.prototype.scrollIntoView
       Element.prototype.scrollIntoView = scroll
       try {
-        const user = userEvent.setup()
-        render(
-          <FacetFilter
-            searchable
-            label="Vendor"
-            options={VENDORS}
-            value={[]}
-            onValueChange={() => {}}
-          />
-        )
-        await user.click(trigger())
-        scroll.mockClear()
-        await user.type(screen.getByRole("combobox"), "b")
-        expect(scroll).toHaveBeenCalled()
+        await run()
+        return scroll.mock.contexts as Element[]
       } finally {
         Element.prototype.scrollIntoView = original
       }
+    }
+
+    it("scrolls the pick into view when the menu opens", async () => {
+      const elements = await scrolled(async () => {
+        const user = userEvent.setup()
+        render(<Single initial="5" />)
+        await user.click(trigger())
+      })
+      expect(elements.at(-1)?.textContent).toMatch(/^Halden Studio/)
+    })
+
+    it("scrolls the first match into view after filtering", async () => {
+      const user = userEvent.setup()
+      const elements = await scrolled(async () => {
+        render(<Single initial="5" />)
+        await user.click(trigger())
+        await user.type(screen.getByRole("combobox"), "bas")
+      })
+      expect(elements.at(-1)?.textContent).toMatch(/^Bastide Homme/)
+    })
+
+    it("goes back to the pick when the search empties, so Enter keeps it", async () => {
+      const onValueChange = vi.fn()
+      const user = userEvent.setup()
+      render(<Single initial="2" onValueChange={onValueChange} />)
+      const search = await open(user)
+      await user.type(search, "zzz")
+      await user.keyboard("{Escape}")
+      expect(active(search)).toBe("Café Noir")
+      await user.keyboard("{Enter}")
+      expect(onValueChange).not.toHaveBeenCalled()
+    })
+
+    it("indents a child option as the plain menu does", async () => {
+      const user = userEvent.setup()
+      render(
+        <FacetFilter
+          searchable
+          label="Category"
+          options={[
+            { value: "shoes", label: "Shoes" },
+            { value: "boots", label: "Boots", depth: 1 },
+          ]}
+          value={[]}
+          onValueChange={() => {}}
+        />
+      )
+      await user.click(screen.getByRole("button", { name: /^Category/ }))
+      const row = (name: RegExp) =>
+        screen
+          .getByRole("option", { name })
+          .querySelector<HTMLElement>("[data-slot=facet-filter-row]")!
+      expect(row(/^Shoes/).style.paddingInlineStart).toBe("")
+      expect(row(/^Boots/).style.paddingInlineStart).toBe(
+        "calc(var(--spacing) * 3)"
+      )
     })
 
     it("draws no separator under the all row when nothing matches", async () => {
