@@ -823,20 +823,6 @@ function DataTablePagination(
   }
 ) {
   const labels = { ...DEFAULT_LABELS, ...props.labels }
-  const countRef = React.useRef<HTMLSpanElement>(null)
-  const controlsHadFocus = React.useRef(false)
-  // React runs a ref's cleanup before it removes the node, so focus is still inside.
-  const trackControls = React.useCallback((node: HTMLDivElement | null) => {
-    if (!node) return
-    return () => {
-      controlsHadFocus.current = node.contains(document.activeElement)
-    }
-  }, [])
-  React.useLayoutEffect(() => {
-    if (!controlsHadFocus.current) return
-    controlsHadFocus.current = false
-    countRef.current?.focus()
-  })
 
   if (props.mode === "cursor") {
     return (
@@ -868,10 +854,35 @@ function DataTablePagination(
     )
   }
 
+  return <OffsetPager {...props} labels={labels} />
+}
+
+function OffsetPager(
+  props: OffsetPagination & {
+    labels: Required<DataTableLabels>
+    className?: string
+  }
+) {
+  const countRef = React.useRef<HTMLSpanElement>(null)
+  const controlsHadFocus = React.useRef(false)
+  // React runs a ref's cleanup before it removes the node, so focus is still inside.
+  const trackControls = React.useCallback((node: HTMLDivElement | null) => {
+    if (!node) return
+    return () => {
+      controlsHadFocus.current = node.contains(document.activeElement)
+    }
+  }, [])
+  React.useLayoutEffect(() => {
+    if (!controlsHadFocus.current) return
+    controlsHadFocus.current = false
+    countRef.current?.focus()
+  })
+
   const {
     page,
     pageSize,
     total,
+    labels,
     onPageChange,
     onPageSizeChange,
     showPageNumbers = false,
