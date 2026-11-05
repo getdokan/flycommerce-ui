@@ -7,6 +7,7 @@ import { PiSlidersHorizontal } from "react-icons/pi"
 import { TbShoppingCartX } from "react-icons/tb"
 import {
   FiActivity as ActivityIcon,
+  FiAlignLeft as AlignLeftIcon,
   FiArrowLeft as ArrowLeftIcon,
   FiArrowRight as ArrowRightIcon,
   FiBarChart2 as BarChart2Icon,
@@ -14,6 +15,7 @@ import {
   FiBookOpen as BookOpenIcon,
   FiCalendar as CalendarDaysIcon,
   FiCheck as CheckIcon,
+  FiCheckSquare as CheckSquareIcon,
   FiChevronDown as ChevronDownIcon,
   FiChevronLeft as ChevronLeftIcon,
   FiChevronRight as ChevronRightIcon,
@@ -31,6 +33,7 @@ import {
   FiCornerDownRight as CornerDownRightIcon,
   FiCreditCard as CreditCardIcon,
   FiCrop as CropIcon,
+  FiDisc as DiscIcon,
   FiDownload as DownloadIcon,
   FiExternalLink as ExternalLinkIcon,
   FiEye as EyeIcon,
@@ -85,6 +88,7 @@ import {
   FiTrendingUp as TrendingUpIcon,
   FiAlertTriangle as TriangleAlertIcon,
   FiTruck as TruckIcon,
+  FiType as TypeIcon,
   FiUpload as UploadIcon,
   FiUser as UserCircleIcon,
   FiUserPlus as UserPlusIcon,
@@ -115,6 +119,7 @@ import {
   LuLandmark as LandmarkIcon,
   LuLanguages as LanguagesIcon,
   LuLibraryBig as LibraryBigIcon,
+  LuListChecks as ListChecksIcon,
   LuLoaderCircle as LoaderCircleIcon,
   LuLockOpen as LockOpenIcon,
   LuMailCheck as MailCheckIcon,
@@ -133,6 +138,7 @@ import {
   LuShieldCheck as ShieldCheckIcon,
   LuShirt as ShirtIcon,
   LuSparkles as SparklesIcon,
+  LuSquareChevronDown as SquareChevronDownIcon,
   LuStore as StoreIcon,
   LuTicket as TicketIcon,
   LuUserRoundPlus as UserRoundPlusIcon,
@@ -286,6 +292,14 @@ const ICON_GROUPS = {
     play: CirclePlayIcon,
     sidebarToggle: PanelLeftIcon,
   },
+  Fields: {
+    fieldText: TypeIcon,
+    fieldParagraph: AlignLeftIcon,
+    fieldDropdown: SquareChevronDownIcon,
+    fieldCheckbox: CheckSquareIcon,
+    fieldRadio: DiscIcon,
+    fieldMultiselect: ListChecksIcon,
+  },
   Feedback: {
     info: InfoIcon,
     warning: TriangleAlertIcon,
@@ -347,6 +361,7 @@ const MIRRORED_ICONS: readonly IconName[] = [
   "signOut",
   "sidebarToggle",
   "list",
+  "fieldParagraph",
 ]
 
 type IconProps = Omit<React.ComponentProps<IconType>, "ref"> & {

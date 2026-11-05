@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `Icon` names for media screens: `crop` (Feather Crop) and `link` (Feather Link) under Actions; `grid` (Feather Grid), the grid-view twin of `list`; the file-type marks `file` (Feather File), `document` (Feather FileText) and `fileArchive` (Lucide FileArchive); and `video` (Feather Youtube). None mirror in right-to-left layouts, and `P3IconProvider` draws them with these default glyphs.
+- `Icon` names for attribute types, in a new Fields group: `fieldText` (Feather Type), `fieldParagraph` (Feather AlignLeft), `fieldDropdown` (Lucide SquareChevronDown), `fieldCheckbox` (Feather CheckSquare), `fieldRadio` (Feather Disc) and `fieldMultiselect` (Lucide ListChecks). `fieldParagraph` mirrors in right-to-left layouts, as `list` does; `fieldMultiselect` keeps its checkmarks as drawn, like the other checkmarks. `P3IconProvider` draws all six with these default glyphs.
 
 ## [0.6.0] - 2026-11-04
 
