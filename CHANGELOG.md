@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `RowActionsMenu`: the ⋯ menu on a list row or a grid tile, `<RowActionsMenu label="Actions for boutique-tote.jpg" items={[{ label, icon, onSelect, href, target, disabled, hidden, destructive, separatorBefore }]} />`. An icon-only ghost button with the `more` icon, named by `label` (default "Actions"), opening a menu aligned to the end edge (the left in RTL). Items are actions (`onSelect`) or links (`href`, with `target`; `"_blank"` adds `rel="noopener noreferrer"`); `renderLink` renders links through the app's router. `destructive` items are red, `separatorBefore` starts a group with a divider above it, and `hidden` leaves an item out, passing its divider to the next item shown and dropping one that would dangle; with every item hidden nothing renders. Clicks, Enter and Space on the button and in the menu don't reach a clickable row or tile around it, also while the button is disabled or loading; Tab and the arrow keys still reach a dialog or grid around it. `ref` is the button, e.g. for `ConfirmDialog returnFocusTo` when Delete opens a confirm. `onOpenChange` lets the app load a row's actions only while the menu is open, and `loading` shows a spinner in place of the ⋯ while an action runs.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
