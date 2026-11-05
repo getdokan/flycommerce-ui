@@ -22,7 +22,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Field,
   FieldDescription,
@@ -177,23 +176,14 @@ const productColumns: ColumnDef<Product, unknown>[] = [
     meta: { align: "end" },
     header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            aria-label={`Actions for ${row.original.name}`}
-          >
-            <EllipsisIcon />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Duplicate</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RowActionsMenu
+        label={`Actions for ${row.original.name}`}
+        items={[
+          { label: "Edit" },
+          { label: "Duplicate" },
+          { label: "Delete", destructive: true, separatorBefore: true },
+        ]}
+      />
     ),
   },
 ]
