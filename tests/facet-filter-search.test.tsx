@@ -540,6 +540,35 @@ describe("FacetFilter searchable", () => {
       expect(elements.at(-1)?.textContent).toMatch(/^Bastide Homme/)
     })
 
+    it("scrolls the pick into view again when placing the menu resizes the list", async () => {
+      const observed = new Map<Element, () => void>()
+      vi.stubGlobal(
+        "ResizeObserver",
+        class {
+          callback: () => void
+          constructor(callback: () => void) {
+            this.callback = callback
+          }
+          observe(target: Element) {
+            observed.set(target, this.callback)
+          }
+          disconnect() {}
+        }
+      )
+      try {
+        const elements = await scrolled(async () => {
+          const user = userEvent.setup()
+          render(<Single initial="5" />)
+          await user.click(trigger())
+          vi.mocked(Element.prototype.scrollIntoView).mockClear()
+          observed.get(screen.getByRole("listbox"))?.()
+        })
+        expect(elements.at(-1)?.textContent).toMatch(/^Halden Studio/)
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    })
+
     it("goes back to the pick when the search empties, so Enter keeps it", async () => {
       const onValueChange = vi.fn()
       const user = userEvent.setup()

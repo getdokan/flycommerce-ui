@@ -260,7 +260,7 @@ function FacetSearchPanel<T extends string>({
           aria-labelledby={headingId}
           aria-multiselectable={multiple || undefined}
           // A height of its own from the first render, so the pick can be scrolled to before the popover is placed.
-          className="max-h-80 min-h-0 overflow-y-auto"
+          className="max-h-80 min-h-0 overflow-x-hidden overflow-y-auto"
         >
           {rows.map((row, index) => (
             <React.Fragment key={row.key}>

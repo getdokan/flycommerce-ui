@@ -35,9 +35,17 @@ function useListboxNav<Row extends { disabled?: boolean }>({
   const current: Row | undefined = rows[activeIndex]
   const currentKey = current && getKey(current)
 
-  React.useEffect(() => {
+  const scrollToActive = React.useCallback(() => {
     list?.querySelector("[data-active]")?.scrollIntoView?.({ block: "nearest" })
-  }, [list, currentKey, rows.length])
+  }, [list])
+  React.useEffect(scrollToActive, [scrollToActive, currentKey, rows.length])
+  // Placing a popover can shrink the list after that first scroll.
+  React.useEffect(() => {
+    if (!list || typeof ResizeObserver === "undefined") return
+    const observer = new ResizeObserver(scrollToActive)
+    observer.observe(list)
+    return () => observer.disconnect()
+  }, [list, scrollToActive])
 
   const highlight = (index: number) => {
     if (index >= 0) setActiveKey(getKey(rows[index]!))
