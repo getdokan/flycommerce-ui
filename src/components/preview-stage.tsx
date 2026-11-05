@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { FiPlay as PlayIcon } from "react-icons/fi"
 
-import { MediaFileGlyph } from "@/components/media-tile"
+import { ImageWithFallback } from "@/components/image-with-fallback"
+import { MediaFileGlyph, MediaPlayMark } from "@/components/media-tile"
 
 type PreviewStageProps = React.ComponentProps<"div">
 
@@ -25,23 +25,52 @@ function PreviewStage({ className, ...props }: PreviewStageProps) {
 type PreviewStageImageProps = Omit<React.ComponentProps<"img">, "alt"> & {
   /** The file's alt text, or its name when it has none. */
   alt: string
+  /** Shown when `src` is missing or fails to load. */
+  fallback?: React.ReactNode
 }
 
 /** An image at its own shape with a soft shadow, as large as the stage allows. */
 function PreviewStageImage({
+  src,
+  alt,
+  width,
+  height,
+  fallback,
   className,
   style,
   onLoad,
+  onError,
   ...props
 }: PreviewStageImageProps) {
-  const [loadedSrc, setLoadedSrc] = React.useState<string>()
-  const width = Number(props.width)
-  const height = Number(props.height)
+  // Which src has settled, so a new file starts over.
+  const [settled, setSettled] = React.useState<{
+    src: typeof src
+    failed: boolean
+  }>()
+  const current = settled?.src === src ? settled : undefined
+
+  if (!src || current?.failed)
+    return (
+      <ImageWithFallback
+        alt={alt}
+        fallback={fallback}
+        containerClassName={cn(
+          "aspect-video w-full max-w-lg rounded-md shadow-preview",
+          className
+        )}
+      />
+    )
+
+  const ratio = Number(width) / Number(height)
   // With its size known, the image holds its box until it loads: as wide as fits, never past its own width. Once loaded, the file's own size takes over.
-  const reserve = width > 0 && height > 0 && loadedSrc !== props.src
+  const reserve = !current && ratio > 0 && Number.isFinite(ratio)
   return (
     <img
       data-slot="preview-stage-image"
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
       draggable={false}
       className={cn(
         "block h-auto max-h-(--preview-stage-media-h) w-auto max-w-full rounded-md object-contain shadow-preview [--preview-stage-media-h:--spacing(56)] md:[--preview-stage-media-h:--spacing(104)]",
@@ -51,14 +80,18 @@ function PreviewStageImage({
         reserve
           ? {
               aspectRatio: `auto ${width} / ${height}`,
-              width: `min(100%, ${width}px, calc(var(--preview-stage-media-h) * ${width / height}))`,
+              width: `min(100%, ${width}px, calc(var(--preview-stage-media-h) * ${ratio}))`,
               ...style,
             }
           : style
       }
       onLoad={(event) => {
-        setLoadedSrc(props.src)
+        setSettled({ src, failed: false })
         onLoad?.(event)
+      }}
+      onError={(event) => {
+        setSettled({ src, failed: true })
+        onError?.(event)
       }}
       {...props}
     />
@@ -115,13 +148,11 @@ function PreviewStageVideo({
         draggable={false}
         className="block aspect-video w-full object-cover"
       />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-      >
-        <span className="flex size-16 items-center justify-center rounded-full bg-foreground/60 text-background backdrop-blur-sm transition-colors group-hover/video:bg-foreground/75">
-          <PlayIcon className="size-7 translate-x-0.5 fill-current" />
-        </span>
+      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <MediaPlayMark
+          size="lg"
+          className="backdrop-blur-sm transition-colors group-hover/video:bg-foreground/75"
+        />
       </span>
     </>
   )
