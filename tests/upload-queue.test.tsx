@@ -341,4 +341,62 @@ describe("UploadQueue", () => {
       expect(within(list).getByText("Eklendi")).toBeTruthy()
     })
   })
+
+  describe("compact status announcements", () => {
+    const region = (container: Element) =>
+      container.querySelector("[aria-live=polite]")
+    const refused: UploadQueueItem = {
+      id: "r",
+      name: "lookbook.mp4",
+      size: 48 * MB,
+      progress: 0,
+      status: "error",
+      error: "That file type isn't supported.",
+    }
+
+    it("has its live region before the first row, so a row that arrives refused is announced", () => {
+      const { container, rerender } = render(
+        <UploadQueue variant="compact" items={[]} />
+      )
+      const before = region(container)
+      expect(before).not.toBeNull()
+      expect(before!.textContent).toBe("")
+      expect(screen.queryByRole("list")).toBeNull()
+
+      rerender(<UploadQueue variant="compact" items={[refused]} />)
+      expect(region(container)).toBe(before)
+      expect(before!.textContent).toBe(
+        "lookbook.mp4: That file type isn't supported."
+      )
+    })
+
+    it("has one live region, and announces a row once it settles", () => {
+      const uploading: UploadQueueItem = {
+        id: "u",
+        name: "kapak.jpg",
+        size: MB,
+        progress: 50,
+        status: "uploading",
+      }
+      const { container, rerender } = render(
+        <UploadQueue variant="compact" items={[uploading]} />
+      )
+      expect(container.querySelectorAll("[aria-live]")).toHaveLength(1)
+      expect(region(container)!.textContent).toBe("")
+
+      rerender(
+        <UploadQueue
+          variant="compact"
+          items={[{ ...uploading, progress: 100, status: "done" }]}
+        />
+      )
+      expect(region(container)!.textContent).toBe("kapak.jpg: Uploaded · 1 MB")
+      expect(screen.getByText("Uploaded · 1 MB")).toBeTruthy()
+    })
+
+    it("still renders nothing for an empty default queue", () => {
+      const { container } = render(<UploadQueue items={[]} />)
+      expect(container.firstChild).toBeNull()
+    })
+  })
 })
