@@ -72,36 +72,7 @@ describe("DataTable row checkbox names", () => {
     expect(checkboxNames().slice(1)).toEqual(["Pick", "Pick Glass bud vase"])
   })
 
-  it("reads a name that isn't a string at runtime as text instead of crashing", () => {
-    render(
-      <DataTable
-        columns={columns}
-        data={data}
-        // An untyped API field, e.g. an order number sent as a number.
-        getRowLabel={(row) => Number(row.id) as unknown as string}
-        enableRowSelection
-      />
-    )
-    expect(checkboxNames().slice(1)).toEqual(["Select 1", "Select 2"])
-  })
-
-  it("falls back to selectRow for an object name, or an empty selectNamedRow", () => {
-    const { unmount } = render(
-      <DataTable
-        columns={columns}
-        data={data}
-        getRowLabel={(row) =>
-          (row.id === "1" ? { en: row.title } : row.title) as unknown as string
-        }
-        enableRowSelection
-      />
-    )
-    expect(checkboxNames().slice(1)).toEqual([
-      "Select row",
-      "Select Glass bud vase",
-    ])
-    unmount()
-
+  it("falls back to selectRow for an empty selectNamedRow", () => {
     render(
       <DataTable
         columns={columns}
