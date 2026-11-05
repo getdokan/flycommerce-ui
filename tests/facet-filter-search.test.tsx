@@ -578,6 +578,49 @@ describe("FacetFilter searchable", () => {
       expect(screen.queryByRole("listbox")).toBeNull()
     })
 
+    it("starts over when it reopens during the closing animation", async () => {
+      const real = window.getComputedStyle
+      // Presence keeps the content mounted while its animation name differs from the open one.
+      const animated = (element: Element) =>
+        new Proxy(real(element), {
+          get: (styles, key) =>
+            key === "animationName"
+              ? element.getAttribute("data-state") === "closed"
+                ? "exit"
+                : "enter"
+              : Reflect.get(styles, key),
+        })
+      vi.stubGlobal("getComputedStyle", animated)
+      try {
+        const user = userEvent.setup()
+        const view = (isOpen: boolean) => (
+          <FacetFilter
+            searchable
+            label="Vendor"
+            options={VENDORS}
+            value={[]}
+            onValueChange={() => {}}
+            open={isOpen}
+            onOpenChange={() => {}}
+          />
+        )
+        const { rerender } = render(view(true))
+        await user.type(screen.getByRole("combobox"), "hale")
+        rerender(view(false))
+        const closing = document.querySelector(
+          "[data-slot=facet-filter-content]"
+        )
+        expect(closing?.getAttribute("data-state")).toBe("closed")
+
+        rerender(view(true))
+        const search = screen.getByRole("combobox") as HTMLInputElement
+        expect(search.value).toBe("")
+        expect(document.activeElement).toBe(search)
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    })
+
     it("goes back to the pick when the search empties, so Enter keeps it", async () => {
       const onValueChange = vi.fn()
       const user = userEvent.setup()

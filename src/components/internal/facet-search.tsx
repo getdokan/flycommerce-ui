@@ -94,6 +94,14 @@ function FacetSearch<T extends string>({
   const headingId = React.useId()
   const searchRef = React.useRef<HTMLInputElement>(null)
 
+  // The content stays mounted through its closing animation, so an opening can't rely on mounting anew.
+  const [opening, setOpening] = React.useState(0)
+  const [wasOpen, setWasOpen] = React.useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) setOpening(opening + 1)
+  }
+
   const setOpen = (next: boolean) => {
     setOpenState(next)
     onOpenChange?.(next)
@@ -127,8 +135,8 @@ function FacetSearch<T extends string>({
             event.preventDefault()
         }}
       >
-        {/* Mounts with each opening, so every way of opening starts over. */}
         <FacetSearchPanel
+          key={opening}
           {...panel}
           headingId={headingId}
           searchRef={searchRef}
@@ -179,6 +187,8 @@ function FacetSearchPanel<T extends string>({
 }) {
   const [query, setQuery] = React.useState("")
   const listId = React.useId()
+  // The popover's own focus only runs when it mounts, not when a reopening replaces this panel.
+  React.useEffect(() => searchRef.current?.focus(), [searchRef])
 
   const folded = React.useMemo(
     () => options.map((option) => fold(option.label)),
