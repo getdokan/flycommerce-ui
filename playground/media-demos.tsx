@@ -40,7 +40,7 @@ const NAMES = [
   "candle",
 ]
 
-export const SEED: MediaItem[] = [
+const SEED: MediaItem[] = [
   ...NAMES.map((name, i) => ({
     id: `img-${i}`,
     name: `${name}.jpg`,

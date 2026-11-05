@@ -10,12 +10,38 @@ import {
   DropdownMenuTrigger,
   Icon,
   MediaGrid,
+  type MediaItem,
 } from "@/index"
-import { SEED } from "./media-demos"
+
+const ITEMS: MediaItem[] = [
+  ...["sneaker-red", "watch-steel", "tee-white", "bag-leather"].map(
+    (name, index) => ({
+      id: name,
+      name: `${name}.jpg`,
+      url: `https://picsum.photos/seed/fcm-${index}/900/900`,
+      thumbnailUrl: `https://picsum.photos/seed/fcm-${index}/300/300`,
+      mimeType: "image/jpeg",
+      size: 240_000 + index * 91_000,
+    })
+  ),
+  {
+    id: "unboxing",
+    name: "unboxing.mp4",
+    url: "https://picsum.photos/seed/fcm-video/900/900",
+    thumbnailUrl: "https://picsum.photos/seed/fcm-video/300/300",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  },
+  {
+    id: "size-guide",
+    name: "size-guide.pdf",
+    url: "https://example.com/size-guide.pdf",
+    mimeType: "application/pdf",
+    size: 86_016,
+  },
+]
 
 export function MediaLibraryGridDemo() {
   const [selected, setSelected] = React.useState<string[]>([])
-  const items = SEED.filter((item) => !item.isPrivate)
 
   return (
     <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-xl border bg-card shadow-1">
@@ -37,7 +63,7 @@ export function MediaLibraryGridDemo() {
       </div>
       <MediaGrid
         className="p-5"
-        items={items}
+        items={ITEMS}
         multiple
         selected={selected}
         onSelectedChange={setSelected}
