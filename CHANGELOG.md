@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `PreviewStage`: a file or a page shown large on a dot-grid ground, `<PreviewStage><PreviewStageImage src alt width height /></PreviewStage>`, with `<PreviewStageVideo poster name href onPlay />` or `<PreviewStageDocument name />` in place of the image. The ground is `bg-muted` with dots in the new `--dot-grid` colour token, set for light and dark, and it centres whatever it holds, so other previews such as a theme in a browser frame can sit on it too; it is shorter on phones and grows from the `md` breakpoint. The image keeps its own shape within the stage, never past its own width, with a soft shadow (the new `--elevation-preview` token, `shadow-preview`). Given `width` and `height`, it holds its space before it loads; once loaded it keeps its own ratio, so a stale size can't stretch it. A missing or broken image shows `fallback`, as in `ImageWithFallback`. The video is its poster with a large round play mark: with `href` it is a link that opens in a new tab, otherwise a button. `onPlay(event)` runs on a click, and on a middle-click of the link; `event.preventDefault()` keeps the link from opening, e.g. to play in the app. `labels.play(name, newTab)` names it unless the app passes its own `aria-label`, and other attributes and `ref` reach the link or button. The document is `MediaFileGlyph` with its extension, which now takes `size="lg"` for a larger extension label. The dots are the new `dot-grid` utility, for other grounds that need them.
+
 ## [0.6.0] - 2026-11-04
 
 New: `PeriodMenu` (a toolbar date filter with presets and a custom range), `FacetFilter` (a toolbar filter with counts that applies at once), `PersonCell` (a person in a table row) and `ConfirmDialog returnFocusTo`. Fixed: `Button loading` keeps focus, and `ImageUploadField` shows the whole image in its tile.
