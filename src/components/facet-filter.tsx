@@ -3,6 +3,7 @@
 import * as React from "react"
 import { FiChevronDown as ChevronDownIcon } from "react-icons/fi"
 
+import { FacetRow, FacetSearch } from "@/components/internal/facet-search"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -23,6 +24,8 @@ type FacetOption<T extends string = string> = {
   count?: number
   /** Before the label, e.g. an `Avatar` for a vendor. */
   media?: React.ReactNode
+  /** Indents the option by this many levels, e.g. 1 for a child category under its parent. */
+  depth?: number
   disabled?: boolean
 }
 
@@ -35,6 +38,12 @@ type FacetFilterLabels = {
   summary?: (label: string, count: number) => string
   /** The trigger's accessible name: the filter, then what is picked. */
   name?: (label: string, picked: string) => string
+  /** The search field's name and placeholder, with `searchable`. */
+  search?: string
+  /** Shown when the search matches no option, with `searchable`. */
+  noResults?: string
+  /** The search field's clear button, with `searchable`. */
+  clearSearch?: string
 }
 
 const DEFAULT_LABELS: Required<FacetFilterLabels> = {
@@ -42,6 +51,9 @@ const DEFAULT_LABELS: Required<FacetFilterLabels> = {
   all: "all",
   summary: (label, count) => `${label}, ${count}`,
   name: (label, picked) => `${label}: ${picked}`,
+  search: "Search",
+  noResults: "No matches",
+  clearSearch: "Clear search",
 }
 
 type FacetFilterBaseProps<T extends string> = {
@@ -58,6 +70,11 @@ type FacetFilterBaseProps<T extends string> = {
   align?: "start" | "center" | "end"
   /** Formats the counts; the browser's locale by default. */
   locale?: string
+  /**
+   * Adds a search field that filters the options by label, for a long list such as vendors.
+   * The menu becomes a listbox the field drives, so focus stays in the field while arrows move through the options.
+   */
+  searchable?: boolean
   disabled?: boolean
   labels?: FacetFilterLabels
   className?: string
@@ -89,35 +106,6 @@ type FacetFilterSingleProps<T extends string> = FacetFilterBaseProps<T> & {
 type FacetFilterProps<T extends string> =
   FacetFilterMultipleProps<T> | FacetFilterSingleProps<T>
 
-function FacetRow({
-  label,
-  media,
-  count,
-  showCount = true,
-  format,
-}: {
-  label: string
-  media?: React.ReactNode
-  count?: number
-  showCount?: boolean
-  format: Intl.NumberFormat
-}) {
-  return (
-    <span className="flex w-full min-w-0 items-center gap-2">
-      {media && <span className="flex shrink-0">{media}</span>}
-      <span className="truncate">{label}</span>
-      {showCount && (
-        <span
-          className="ms-auto text-[12.5px] text-muted-foreground tabular-nums"
-          aria-hidden={count === undefined ? true : undefined}
-        >
-          {count === undefined ? "—" : format.format(count)}
-        </span>
-      )}
-    </span>
-  )
-}
-
 /** A toolbar filter: tick any options, each with its count, applied at once, with Clear at the foot; `mode="single"` picks one from radio items. */
 function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
   const {
@@ -130,6 +118,7 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
     defaultOpen,
     align = "end",
     locale,
+    searchable = false,
     disabled,
     labels: labelsProp,
     className,
@@ -181,31 +170,68 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
     ...unknown,
   ]
 
+  const trigger = (
+    <Button
+      variant="outline"
+      disabled={disabled}
+      aria-label={name}
+      data-slot="facet-filter"
+      data-picked={total || undefined}
+      className={className}
+    >
+      {React.isValidElement(icon)
+        ? React.cloneElement(
+            icon as React.ReactElement<{ "data-icon"?: string }>,
+            { "data-icon": "inline-start" }
+          )
+        : icon}
+      {summary}
+      <ChevronDownIcon data-icon="inline-end" />
+    </Button>
+  )
+
+  if (searchable) {
+    return (
+      <FacetSearch
+        trigger={trigger}
+        heading={heading ?? label}
+        options={options}
+        value={value}
+        all={
+          props.mode === "single"
+            ? { label: props.allLabel, count: props.allCount }
+            : undefined
+        }
+        closeOnPick={props.mode === "single"}
+        onPick={(option) => {
+          if (props.mode === "single") {
+            if (option !== props.value) props.onValueChange(option)
+          } else if (option !== null) {
+            props.onValueChange(toggled(option, !value.includes(option)))
+          }
+        }}
+        onClear={
+          props.mode !== "single" && kept.length < value.length
+            ? () => props.onValueChange(kept)
+            : undefined
+        }
+        open={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={onOpenChange}
+        align={align}
+        labels={labels}
+        format={format}
+      />
+    )
+  }
+
   return (
     <DropdownMenu
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange}
     >
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          disabled={disabled}
-          aria-label={name}
-          data-slot="facet-filter"
-          data-picked={total || undefined}
-          className={className}
-        >
-          {React.isValidElement(icon)
-            ? React.cloneElement(
-                icon as React.ReactElement<{ "data-icon"?: string }>,
-                { "data-icon": "inline-start" }
-              )
-            : icon}
-          {summary}
-          <ChevronDownIcon data-icon="inline-end" />
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align={align} className="w-auto max-w-80 min-w-56">
         <DropdownMenuLabel>{heading ?? label}</DropdownMenuLabel>
         {props.mode === "single" ? (
@@ -236,6 +262,7 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
                   label={option.label}
                   media={option.media}
                   count={option.count}
+                  depth={option.depth}
                   format={format}
                 />
               </DropdownMenuRadioItem>
@@ -258,6 +285,7 @@ function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
                   label={option.label}
                   media={option.media}
                   count={option.count}
+                  depth={option.depth}
                   format={format}
                 />
               </DropdownMenuCheckboxItem>

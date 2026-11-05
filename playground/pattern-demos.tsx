@@ -867,16 +867,118 @@ const VENDOR_OPTIONS = [
   ),
 }))
 
+// A marketplace's long vendor list, for the searchable filter.
+const MANY_VENDORS = [
+  "Atelier Noor",
+  "Bastide Homme",
+  "Café Noir",
+  "Dhaka Loom",
+  "Élan Studio",
+  "Fern & Fable",
+  "Gold Thread",
+  "Halden Studio",
+  "Indigo Row",
+  "Jute Works",
+  "Kantha House",
+  "Lumen Lab",
+  "Margaux Hale",
+  "Nakshi Craft",
+  "Opaline Parfums",
+  "Paper Moon",
+  "Quill & Ink",
+  "Rosewood Co.",
+  "Saffron Kitchen",
+  "Tide Pool",
+  "Umber Goods",
+  "Velvet Hour",
+  "Willow Bay",
+  "Xylo Toys",
+  "Yarrow Botanics",
+  "Zephyr Home",
+  "Amber Fields",
+  "Birch & Bone",
+  "Coral Reef",
+  "Dune Leather",
+  "Ember Candle",
+  "Fable Books",
+  "Grove Tea",
+  "Harbor Supply",
+  "Iris Ceramics",
+  "Juniper Skin",
+  "Kiln & Clay",
+  "Lark Audio",
+  "Moss Garden",
+  "Nimbus Bags",
+  "Olive Press",
+  "Pebble Kids",
+  "Quarry Stone",
+  "Raven Ink",
+  "Sage Apothecary",
+  "Thistle Linen",
+  "Upland Coffee",
+  "Vale Optics",
+  "Wren Jewelry",
+  "Yew Furniture",
+  "Zinnia Florals",
+  "Aster Knits",
+  "Bramble Bakery",
+  "Cinder Grill",
+  "Delta Bikes",
+  "Echo Vinyl",
+  "Flint Tools",
+  "Garnet Wine",
+  "Heron Outdoor",
+  "Ivy Prints",
+]
+  .sort((a, b) => a.localeCompare(b))
+  .map((label, index) => ({
+    value: String(index + 1),
+    label,
+    count: ((index * 7) % 23) + 1,
+  }))
+
 export function FacetFilterDemo() {
+  const [seller, setSeller] = React.useState<string | null>(null)
   const [payment, setPayment] = React.useState<string[]>(["paid"])
   const [vendor, setVendor] = React.useState<string[]>([])
   const [status, setStatus] = React.useState<string[]>([])
   const [type, setType] = React.useState<string | null>(null)
   const [month, setMonth] = React.useState<string | null>("2026-10")
+  const [category, setCategory] = React.useState<string | null>(null)
   // Counts are fetched only while the menu is open; here they appear once it opens.
   const [counting, setCounting] = React.useState(false)
   return (
     <div className="flex flex-wrap gap-2">
+      <FacetFilter
+        mode="single"
+        searchable
+        label="Vendor"
+        heading="Sold by"
+        icon={<Icon name="vendors" />}
+        allLabel="All vendors"
+        allCount={MANY_VENDORS.reduce((sum, vendor) => sum + vendor.count, 0)}
+        options={MANY_VENDORS}
+        value={seller}
+        onValueChange={setSeller}
+        labels={{ search: "Search vendors", noResults: "No vendors found" }}
+      />
+      <FacetFilter
+        mode="single"
+        label="Category"
+        icon={<Icon name="categories" />}
+        allLabel="All categories"
+        allCount={23}
+        options={[
+          { value: "shoes", label: "Shoes", count: 14 },
+          { value: "sneakers", label: "Sneakers", count: 2, depth: 1 },
+          { value: "high-tops", label: "High-tops", count: 1, depth: 2 },
+          { value: "boots", label: "Boots", count: 5, depth: 1 },
+          { value: "home", label: "Home", count: 9 },
+          { value: "vases", label: "Vases", count: 4, depth: 1 },
+        ]}
+        value={category}
+        onValueChange={setCategory}
+      />
       <FacetFilter
         mode="single"
         label="Type"

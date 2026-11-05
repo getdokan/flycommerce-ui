@@ -14,6 +14,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { fold } from "@/lib/fold"
+import { useListboxNav } from "@/lib/use-listbox-nav"
 
 type RichSelectOption = {
   value: string
@@ -87,7 +89,6 @@ function RichSelect(props: RichSelectProps) {
   const withSearch = searchable || Boolean(onCreate)
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
-  const [active, setActive] = React.useState(0)
   const listId = React.useId()
   const listRef = React.useRef<HTMLDivElement>(null)
 
@@ -98,18 +99,12 @@ function RichSelect(props: RichSelectProps) {
       : []
   const isSelected = (v: string) => selectedValues.includes(v)
 
-  const q = query.trim().toLowerCase()
+  const q = fold(query.trim())
   const rows = q
     ? options.filter((option) =>
-        `${option.label} ${option.keywords ?? ""}`.toLowerCase().includes(q)
+        fold(`${option.label} ${option.keywords ?? ""}`).includes(q)
       )
     : options
-
-  React.useEffect(() => {
-    listRef.current
-      ?.querySelector("[data-active]")
-      ?.scrollIntoView({ block: "nearest" })
-  }, [active])
 
   const toggle = (option: RichSelectOption) => {
     if (option.disabled) return
@@ -125,16 +120,25 @@ function RichSelect(props: RichSelectProps) {
     }
   }
 
+  const {
+    activeIndex,
+    current,
+    setList,
+    highlight,
+    setActiveKey,
+    onKeyDown: navKeyDown,
+  } = useListboxNav({
+    rows,
+    getKey: (option) => option.value,
+    onChoose: toggle,
+  })
+
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "ArrowDown") {
+    if (event.key === " " && !withSearch) {
       event.preventDefault()
-      setActive((i) => Math.min(i + 1, rows.length - 1))
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault()
-      setActive((i) => Math.max(i - 1, 0))
-    } else if (event.key === "Enter" || (event.key === " " && !withSearch)) {
-      event.preventDefault()
-      if (rows[active]) toggle(rows[active])
+      if (current) toggle(current)
+    } else {
+      navKeyDown(event)
     }
   }
 
@@ -147,8 +151,7 @@ function RichSelect(props: RichSelectProps) {
       onOpenChange={(next) => {
         if (next) {
           setQuery("")
-          const index = options.findIndex((option) => isSelected(option.value))
-          setActive(Math.max(index, 0))
+          setActiveKey(options.find((o) => isSelected(o.value))?.value)
         }
         setOpen(next)
       }}
@@ -186,6 +189,7 @@ function RichSelect(props: RichSelectProps) {
         </button>
       </PopoverTrigger>
       <PopoverContent
+        ref={setList}
         align="start"
         collisionPadding={16}
         className="max-h-(--radix-popover-content-available-height) w-(--radix-popover-trigger-width) max-w-[calc(100vw-2rem)] min-w-64 gap-0 p-0"
@@ -205,14 +209,14 @@ function RichSelect(props: RichSelectProps) {
                 aria-expanded
                 aria-controls={listId}
                 aria-activedescendant={
-                  rows[active] ? `${listId}-${rows[active].value}` : undefined
+                  current ? `${listId}-${current.value}` : undefined
                 }
                 aria-label={labels.search}
                 placeholder={labels.search}
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value)
-                  setActive(0)
+                  setActiveKey(undefined)
                 }}
                 onKeyDown={onKeyDown}
                 className="h-9 w-full rounded-control bg-page ps-8 pe-3 text-sm outline-none placeholder:text-placeholder focus-visible:ring-2 focus-visible:ring-ring"
@@ -239,9 +243,7 @@ function RichSelect(props: RichSelectProps) {
           role="listbox"
           aria-multiselectable={props.multiple || undefined}
           aria-activedescendant={
-            !withSearch && rows[active]
-              ? `${listId}-${rows[active].value}`
-              : undefined
+            !withSearch && current ? `${listId}-${current.value}` : undefined
           }
           tabIndex={withSearch ? -1 : 0}
           onKeyDown={withSearch ? undefined : onKeyDown}
@@ -264,8 +266,10 @@ function RichSelect(props: RichSelectProps) {
                 role="option"
                 aria-selected={selected}
                 aria-disabled={option.disabled || undefined}
-                data-active={index === active || undefined}
-                onMouseEnter={() => setActive(index)}
+                data-active={index === activeIndex || undefined}
+                onMouseEnter={() => {
+                  if (!option.disabled) highlight(index)
+                }}
                 onClick={() => toggle(option)}
                 className="flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-active:bg-page"
               >
