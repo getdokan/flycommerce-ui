@@ -5,6 +5,7 @@ import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useReturnFocus, type FocusTarget } from "@/lib/focus"
 
 type BulkBarPageState = "all" | "some" | "none"
 
@@ -25,18 +26,7 @@ const DEFAULT_LABELS: Required<BulkBarLabels> = {
   clear: "Clear",
 }
 
-type BulkBarFocusTarget =
-  | HTMLElement
-  | null
-  | React.RefObject<HTMLElement | null>
-  | (() => HTMLElement | null | undefined)
-
-function resolveTarget(target: BulkBarFocusTarget | undefined) {
-  if (!target) return null
-  if (typeof target === "function") return target() ?? null
-  if ("current" in target) return target.current
-  return target
-}
+type BulkBarFocusTarget = FocusTarget
 
 type BulkBarProps = Omit<React.ComponentProps<"div">, "children"> & {
   /** Every selected item, on this page and on others. */
@@ -102,27 +92,8 @@ function BulkBar({
       checkboxRef.current?.focus()
   }, [pageState])
 
-  const returnFocusRef = React.useRef(returnFocusTo)
-  React.useEffect(() => {
-    returnFocusRef.current = returnFocusTo
-  })
-  // Read before the bar leaves the page: only focus that was in it goes to returnFocusTo.
-  const hadFocus = React.useRef(false)
-  React.useLayoutEffect(() => {
-    const root = checkboxRef.current?.closest("[data-slot=bulk-bar]")
-    return () => {
-      hadFocus.current = root?.contains(document.activeElement) ?? false
-    }
-  }, [])
-  React.useEffect(
-    () => () => {
-      if (!hadFocus.current) return
-      hadFocus.current = false
-      const target = resolveTarget(returnFocusRef.current)
-      if (target?.isConnected) target.focus()
-    },
-    []
-  )
+  const controlsRef = React.useRef<HTMLDivElement>(null)
+  useReturnFocus(controlsRef, returnFocusTo)
 
   return (
     <div
@@ -134,7 +105,10 @@ function BulkBar({
       )}
       {...props}
     >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      <div
+        ref={controlsRef}
+        className="flex flex-wrap items-center gap-x-3 gap-y-2"
+      >
         <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
           <Checkbox
             ref={checkboxRef}

@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { resolveFocusTarget, type FocusTarget } from "@/lib/focus"
 
 type ConfirmDialogProps = {
   open?: boolean
@@ -48,18 +49,7 @@ type ConfirmDialogProps = {
   onCloseAutoFocus?: (event: Event) => void
 }
 
-type ConfirmDialogFocusTarget =
-  | HTMLElement
-  | null
-  | React.RefObject<HTMLElement | null>
-  | (() => HTMLElement | null | undefined)
-
-function resolveTarget(target: ConfirmDialogFocusTarget | undefined) {
-  if (!target) return null
-  if (typeof target === "function") return target() ?? null
-  if ("current" in target) return target.current
-  return target
-}
+type ConfirmDialogFocusTarget = FocusTarget
 
 function ConfirmDialog({
   open: openProp,
@@ -124,7 +114,7 @@ function ConfirmDialog({
         onCloseAutoFocus={(event) => {
           onCloseAutoFocus?.(event)
           if (event.defaultPrevented) return
-          const target = resolveTarget(returnFocusTo)
+          const target = resolveFocusTarget(returnFocusTo)
           if (!target?.isConnected) return
           target.focus()
           // Only when it took focus; otherwise the trigger still gets it.
