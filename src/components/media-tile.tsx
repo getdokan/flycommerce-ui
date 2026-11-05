@@ -98,6 +98,50 @@ function MediaFileGlyph({
   )
 }
 
+/** The box for any node shown in a thumbnail's place. It clips to its rounded corners, except a `MediaFileGlyph` passed directly, so the glyph's extension badge isn't cut. */
+function MediaThumb({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="media-thumb"
+      className={cn(
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-muted-foreground has-[>[data-slot=media-file-glyph]]:overflow-visible",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/** The round play mark over a video poster: `sm` on a row thumbnail, `default` on a tile, `lg` on a large preview. */
+function MediaPlayMark({
+  size = "default",
+  className,
+}: {
+  size?: "sm" | "default" | "lg"
+  className?: string
+}) {
+  return (
+    <span
+      data-slot="media-play-mark"
+      aria-hidden="true"
+      className={cn(
+        "flex items-center justify-center rounded-full bg-foreground/60 text-background",
+        { sm: "size-5", default: "size-10", lg: "size-16" }[size],
+        className
+      )}
+    >
+      <PlayIcon
+        className={cn(
+          "fill-current",
+          { sm: "size-2.5", default: "size-4", lg: "size-7 translate-x-0.5" }[
+            size
+          ]
+        )}
+      />
+    </span>
+  )
+}
+
 type MediaTileProps = {
   item: MediaItem
   selected?: boolean
@@ -159,10 +203,8 @@ function MediaTile({
 
       {item.videoUrl && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="flex size-10 items-center justify-center rounded-full bg-foreground/60 text-background">
-            <PlayIcon className="size-4 fill-current" aria-hidden="true" />
-            <span className="sr-only">{labels.video}</span>
-          </span>
+          <MediaPlayMark />
+          <span className="sr-only">{labels.video}</span>
         </span>
       )}
       {item.isPrivate && (
@@ -238,6 +280,8 @@ export {
   formatBytes,
   isImage,
   MediaFileGlyph,
+  MediaPlayMark,
+  MediaThumb,
   MediaTile,
   type MediaItem,
   type MediaTileLabels,

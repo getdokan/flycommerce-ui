@@ -4,6 +4,7 @@ import * as React from "react"
 import { cn } from "cn"
 
 import { ImageWithFallback } from "@/components/image-with-fallback"
+import { MediaThumb } from "@/components/media-tile"
 
 type MediaCellProps = Omit<React.ComponentProps<"div">, "title"> & {
   src?: string
@@ -51,13 +52,13 @@ function MediaCell({
     >
       <span className="flex shrink-0" style={{ width: size, height: size }}>
         {media ? (
-          <span
+          <MediaThumb
             data-slot="media-cell-media"
-            className="relative flex size-full items-center justify-center overflow-hidden rounded-md border border-border-subtle bg-muted text-muted-foreground has-[>[data-slot=media-file-glyph]]:overflow-visible"
+            className="size-full border border-border-subtle"
           >
             {media}
             {alt && <span className="sr-only">{alt}</span>}
-          </span>
+          </MediaThumb>
         ) : (
           <ImageWithFallback
             src={src}
