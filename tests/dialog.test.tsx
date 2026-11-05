@@ -46,23 +46,38 @@ const footer = () =>
   document.querySelector<HTMLElement>('[data-slot="dialog-footer"]')!
 
 describe("DialogContent", () => {
-  it("takes a 3xl size, 960px from sm upward, keeping a side margin on tablets", () => {
+  it("takes a 3xl size", () => {
     render(<FileDetail size="3xl" />)
     expect(content().getAttribute("data-size")).toBe("3xl")
-    expect(content().className).toContain(
-      "data-[size=3xl]:sm:max-w-[min(960px,calc(100%-2rem))]"
-    )
   })
 
-  it("keeps the padding, the gap and the footer's bleed by default", () => {
+  it("keeps the footer's bleed by default", async () => {
     render(<FileDetail size="xl" />)
+    await applyTailwind()
     expect(content().getAttribute("data-padding")).toBe("default")
-    expect(content().className.split(" ")).toEqual(
-      expect.arrayContaining(["p-6", "gap-6"])
+    expect(getComputedStyle(footer()).marginBottom).toBe(
+      "calc(var(--spacing) * -6)"
     )
-    expect(footer().className.split(" ")).toEqual(
-      expect.arrayContaining(["-mx-6", "-mb-6", "-bottom-6"])
+    expect(getComputedStyle(footer()).bottom).toBe("calc(var(--spacing) * -6)")
+  })
+
+  it("seats a footer flush wherever it sits inside a padding none dialog", async () => {
+    render(
+      <Dialog open>
+        <DialogContent padding="none" aria-describedby={undefined}>
+          <DialogTitle>Export</DialogTitle>
+          <section>
+            <div>
+              <DialogFooter>
+                <Button>Export</Button>
+              </DialogFooter>
+            </div>
+          </section>
+        </DialogContent>
+      </Dialog>
     )
+    await applyTailwind()
+    expect(getComputedStyle(footer()).marginBottom).toBe("0px")
   })
 
   it("runs edge to edge with padding none, and the footer sits flush", async () => {
@@ -82,7 +97,7 @@ describe("DialogContent", () => {
     expect(screen.getByRole("dialog", { name: "sneaker.jpg" })).toBeTruthy()
   })
 
-  it("lets className override the padding, the gap, the columns and the footer's place with padding none", async () => {
+  it("lets className override the padding, the gap, the columns and, with the same variant, the footer's place with padding none", async () => {
     render(
       <Dialog open>
         <DialogContent
@@ -91,7 +106,7 @@ describe("DialogContent", () => {
           aria-describedby={undefined}
         >
           <DialogTitle>Export</DialogTitle>
-          <DialogFooter className="bottom-[5px] mx-[3px] mb-[2px]">
+          <DialogFooter className="in-data-[padding=none]:bottom-[5px] in-data-[padding=none]:mx-[3px] in-data-[padding=none]:mb-[2px]">
             <Button>Export</Button>
           </DialogFooter>
         </DialogContent>

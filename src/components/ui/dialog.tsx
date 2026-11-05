@@ -47,8 +47,6 @@ function DialogOverlay({
   )
 }
 
-const DialogPaddingContext = React.createContext<"default" | "none">("default")
-
 function DialogContent({
   className,
   children,
@@ -79,9 +77,7 @@ function DialogContent({
         )}
         {...props}
       >
-        <DialogPaddingContext.Provider value={padding}>
-          {children}
-        </DialogPaddingContext.Provider>
+        {children}
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
             <Button
@@ -122,13 +118,11 @@ function DialogFooter({
   showCloseButton?: boolean
   closeLabel?: React.ReactNode
 }) {
-  const padding = React.useContext(DialogPaddingContext)
   return (
     <div
       data-slot="dialog-footer"
       className={cn(
-        "sticky -bottom-6 z-10 -mx-6 -mb-6 flex flex-col-reverse gap-3 border-t border-border bg-card-header px-6 py-5 sm:flex-row sm:justify-end sm:gap-4",
-        padding === "none" && "bottom-0 mx-0 mb-0",
+        "sticky -bottom-6 z-10 -mx-6 -mb-6 flex flex-col-reverse gap-3 border-t border-border bg-card-header px-6 py-5 in-data-[padding=none]:bottom-0 in-data-[padding=none]:mx-0 in-data-[padding=none]:mb-0 sm:flex-row sm:justify-end sm:gap-4",
         className
       )}
       {...props}
