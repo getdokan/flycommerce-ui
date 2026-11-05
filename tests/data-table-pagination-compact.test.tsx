@@ -124,6 +124,48 @@ describe("DataTablePagination hideSinglePageControls", () => {
     expect(onPageChange).toHaveBeenCalledWith(5)
   })
 
+  it("marks the last page as current on a page past the last one", () => {
+    const { container } = render(
+      <DataTablePagination
+        page={5}
+        pageSize={24}
+        total={72}
+        onPageChange={noop}
+        showPageNumbers
+      />
+    )
+    expect(container.querySelector("[aria-current=page]")?.textContent).toBe(
+      "3"
+    )
+  })
+
+  it("draws nothing with nothing to count, but keeps the rows-per-page select", () => {
+    const { container, rerender } = render(
+      <DataTablePagination
+        page={1}
+        pageSize={24}
+        total={0}
+        onPageChange={noop}
+        hideSinglePageControls
+      />
+    )
+    expect(container.textContent).toBe("")
+    expect(screen.queryByRole("navigation")).toBeNull()
+
+    rerender(
+      <DataTablePagination
+        page={1}
+        pageSize={24}
+        total={0}
+        onPageChange={noop}
+        onPageSizeChange={noop}
+        hideSinglePageControls
+      />
+    )
+    expect(screen.queryByText(/results/)).toBeNull()
+    expect(screen.getByRole("combobox")).toBeTruthy()
+  })
+
   it("isn't a landmark when it holds only the count", () => {
     render(
       <DataTablePagination
@@ -300,6 +342,28 @@ describe("DataTablePagination iconArrows", () => {
 })
 
 describe("DataTable with a single page", () => {
+  it("doesn't read 0 results under the skeleton on a first load", () => {
+    const view = (loading: boolean, total: number) => (
+      <DataTable
+        columns={[{ accessorKey: "name", header: "Name" }]}
+        data={total ? [{ name: "Tote" }] : []}
+        loading={loading}
+        pagination={{
+          page: 1,
+          pageSize: 24,
+          total,
+          onPageChange: noop,
+          hideSinglePageControls: true,
+        }}
+      />
+    )
+    const { rerender } = render(view(true, 0))
+    expect(screen.queryByText(/results?$/)).toBeNull()
+
+    rerender(view(false, 1))
+    expect(screen.getByText("1 result")).toBeTruthy()
+  })
+
   it("shows the count in place of the controls", () => {
     type File = { id: string; name: string }
     const columns: ColumnDef<File, unknown>[] = [

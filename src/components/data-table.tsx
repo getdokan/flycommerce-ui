@@ -906,6 +906,9 @@ function OffsetPager(
     onNavigate: target === page ? undefined : () => onPageChange(target),
   })
 
+  // Nothing to count: a first load's total is still 0, and an empty list has its own empty state.
+  if (!controls && total === 0 && !onPageSizeChange) return null
+
   return (
     <nav
       data-slot="data-table-pagination"
@@ -922,7 +925,9 @@ function OffsetPager(
         tabIndex={controls ? undefined : -1}
         className="text-[12.5px] text-muted-foreground tabular-nums outline-none"
       >
-        {controls ? labels.showing(from, to, total) : labels.total(total)}
+        {controls
+          ? labels.showing(from, to, total)
+          : total > 0 && labels.total(total)}
       </span>
       {onPageSizeChange && (
         <label className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
@@ -960,7 +965,7 @@ function OffsetPager(
           </PageControl>
           {showPageNumbers && (
             <div className="hidden items-center gap-1 @md/pagination:flex">
-              {pageItems(page, pageCount, siblingCount).map((item, index) =>
+              {pageItems(current, pageCount, siblingCount).map((item, index) =>
                 item === "ellipsis" ? (
                   <span
                     key={`ellipsis-${index}`}
@@ -972,11 +977,11 @@ function OffsetPager(
                 ) : (
                   <PageControl
                     key={item}
-                    variant={item === page ? "secondary" : "ghost"}
+                    variant={item === current ? "secondary" : "ghost"}
                     size="sm"
                     className="min-w-8 px-2 tabular-nums"
                     aria-label={labels.page(item)}
-                    aria-current={item === page ? "page" : undefined}
+                    aria-current={item === current ? "page" : undefined}
                     {...linkTo(item)}
                   >
                     {item}
