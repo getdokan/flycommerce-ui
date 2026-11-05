@@ -184,7 +184,7 @@ function ImageUploadField({
                   : undefined
               }
               className={cn(
-                "grid h-16 w-24 shrink-0 place-items-center overflow-hidden rounded-lg ring-1 ring-border data-[background=dark]:text-on-dark data-[background=light]:text-on-light",
+                "grid h-16 w-24 shrink-0 grid-cols-1 grid-rows-1 place-items-center overflow-hidden rounded-lg ring-1 ring-border data-[background=dark]:text-on-dark data-[background=light]:text-on-light",
                 !background && "bg-muted"
               )}
             >
