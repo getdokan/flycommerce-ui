@@ -569,6 +569,15 @@ describe("FacetFilter searchable", () => {
       }
     })
 
+    it("closes on Esc with a query typed and focus off the field", async () => {
+      const user = userEvent.setup()
+      render(<Single />)
+      await user.type(await open(user), "ca")
+      screen.getByRole("button", { name: "Clear search" }).focus()
+      await user.keyboard("{Escape}")
+      expect(screen.queryByRole("listbox")).toBeNull()
+    })
+
     it("goes back to the pick when the search empties, so Enter keeps it", async () => {
       const onValueChange = vi.fn()
       const user = userEvent.setup()

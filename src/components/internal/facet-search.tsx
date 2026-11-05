@@ -119,8 +119,12 @@ function FacetSearch<T extends string>({
         aria-labelledby={headingId}
         className="max-h-(--radix-popover-content-available-height) w-72 gap-0 p-1"
         onEscapeKeyDown={(event) => {
-          // Esc empties the search first (SearchInput does that), then closes the menu.
-          if (searchRef.current?.value.trim()) event.preventDefault()
+          // Esc in the field empties the search first (SearchInput does that), then closes the menu.
+          if (
+            event.target === searchRef.current &&
+            searchRef.current?.value.trim()
+          )
+            event.preventDefault()
         }}
       >
         {/* Mounts with each opening, so every way of opening starts over. */}
