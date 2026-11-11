@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cn } from "cn"
 
+import { CellLink } from "@/components/cell-link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 type PersonCellProps = Omit<React.ComponentProps<"div">, "title"> & {
@@ -83,26 +84,9 @@ function PersonCell({
     )
 
   const label = href ? (
-    <a
-      href={href}
-      title={name}
-      className="truncate rounded-sm hover:underline focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
-      onClick={(event) => {
-        if (
-          !onNavigate ||
-          event.button !== 0 ||
-          event.metaKey ||
-          event.ctrlKey ||
-          event.shiftKey ||
-          event.altKey
-        )
-          return
-        event.preventDefault()
-        onNavigate()
-      }}
-    >
+    <CellLink href={href} title={name} onNavigate={onNavigate}>
       {name}
-    </a>
+    </CellLink>
   ) : (
     <span className="truncate" title={name}>
       {name}
