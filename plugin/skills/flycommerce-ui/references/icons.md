@@ -28,6 +28,10 @@ Use `<Icon name="…" />` with one of these names. Never import from react-icons
 
 `add` (Plus), `edit` (Pencil), `delete` (Trash2), `duplicate` (Copy), `export` (Download), `import` (Upload), `search` (Search), `filter` (ListFilter), `more` (MoreHorizontal), `external` (ExternalLink), `back` (ArrowLeft), `forward` (ArrowRight), `close` (X), `check` (Check), `expand` (ChevronDown), `collapse` (ChevronUp), `next` (ChevronRight), `prev` (ChevronLeft), `print` (Printer), `refresh` (RefreshCw), `crop` (Crop), `link` (Link), `impersonate` (LogIn), `play` (CirclePlay), `sidebarToggle` (PanelLeft)
 
+## Fields
+
+`fieldText` (Type), `fieldParagraph` (AlignLeft), `fieldDropdown` (SquareChevronDown), `fieldCheckbox` (CheckSquare), `fieldRadio` (Disc), `fieldMultiselect` (ListChecks)
+
 ## Feedback
 
 `info` (Info), `warning` (TriangleAlert), `error` (CircleAlert), `success` (CircleCheck), `todo` (Circle), `empty` (Inbox), `loading` (LoaderCircle)
@@ -38,4 +42,4 @@ Use `<Icon name="…" />` with one of these names. Never import from react-icons
 
 ## Mirrored in right-to-left layouts
 
-`back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle`, `list` mirror themselves in RTL. Don't flip them again: `rtl:rotate-180` or a flipping wrapper turns them back, and `rtl:-scale-x-100` is redundant. `mirror={false}` keeps one as drawn. No other name mirrors.
+`back`, `forward`, `prev`, `next`, `redirects`, `impersonate`, `signOut`, `sidebarToggle`, `list`, `fieldParagraph` mirror themselves in RTL. Don't flip them again: `rtl:rotate-180` or a flipping wrapper turns them back, and `rtl:-scale-x-100` is redundant. `mirror={false}` keeps one as drawn. No other name mirrors.
