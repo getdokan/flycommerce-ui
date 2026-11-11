@@ -3,6 +3,7 @@
 import * as React from "react"
 import { FiChevronDown as ChevronDownIcon } from "react-icons/fi"
 
+import { FacetRow, FacetSearch } from "@/components/internal/facet-search"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -10,6 +11,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -21,18 +24,26 @@ type FacetOption<T extends string = string> = {
   count?: number
   /** Before the label, e.g. an `Avatar` for a vendor. */
   media?: React.ReactNode
+  /** Indents the option by this many levels, e.g. 1 for a child category under its parent. */
+  depth?: number
   disabled?: boolean
 }
 
 type FacetFilterLabels = {
   /** The item at the foot that empties the pick. */
   clear?: string
-  /** Read in the trigger's name when nothing is picked: "Payment: all". */
+  /** Read in the trigger's name when nothing is picked: "Payment: all". Single mode reads `allLabel` instead. */
   all?: string
   /** The trigger's text for more than one pick. */
   summary?: (label: string, count: number) => string
   /** The trigger's accessible name: the filter, then what is picked. */
   name?: (label: string, picked: string) => string
+  /** The search field's name and placeholder, with `searchable`. */
+  search?: string
+  /** Shown when the search matches no option, with `searchable`. */
+  noResults?: string
+  /** The search field's clear button, with `searchable`. */
+  clearSearch?: string
 }
 
 const DEFAULT_LABELS: Required<FacetFilterLabels> = {
@@ -40,16 +51,18 @@ const DEFAULT_LABELS: Required<FacetFilterLabels> = {
   all: "all",
   summary: (label, count) => `${label}, ${count}`,
   name: (label, picked) => `${label}: ${picked}`,
+  search: "Search",
+  noResults: "No matches",
+  clearSearch: "Clear search",
 }
 
-type FacetFilterProps<T extends string> = {
+type FacetFilterBaseProps<T extends string> = {
   label: string
   /** An icon element before the label, e.g. `<Icon name="cash" />`. */
   icon?: React.ReactNode
   options: FacetOption<T>[]
-  /** The picked values; ticks apply at once. */
-  value: T[]
-  onValueChange: (value: T[]) => void
+  /** Heads the menu instead of `label`, e.g. "Uploaded" in a "Date" filter. */
+  heading?: string
   /** The menu opened or closed; fetch the counts while it is open. */
   onOpenChange?: (open: boolean) => void
   open?: boolean
@@ -57,44 +70,85 @@ type FacetFilterProps<T extends string> = {
   align?: "start" | "center" | "end"
   /** Formats the counts; the browser's locale by default. */
   locale?: string
+  /**
+   * Adds a search field that filters the options by label, for a long list such as vendors.
+   * The menu becomes a listbox the field drives, so focus stays in the field while arrows move through the options.
+   */
+  searchable?: boolean
   disabled?: boolean
   labels?: FacetFilterLabels
   className?: string
 }
 
-/** A toolbar filter: tick any options, each with its count, applied at once, with Clear at the foot. */
-function FacetFilter<T extends string>({
-  label,
-  icon,
-  options,
-  value,
-  onValueChange,
-  onOpenChange,
-  open,
-  defaultOpen,
-  align = "end",
-  locale,
-  disabled,
-  labels: labelsProp,
-  className,
-}: FacetFilterProps<T>) {
+type FacetFilterMultipleProps<T extends string> = FacetFilterBaseProps<T> & {
+  /** Any number of options, as checkbox items; the default. */
+  mode?: "multiple"
+  /** The picked values; ticks apply at once. */
+  value: T[]
+  onValueChange: (value: T[]) => void
+  allLabel?: never
+  allCount?: never
+}
+
+type FacetFilterSingleProps<T extends string> = FacetFilterBaseProps<T> & {
+  /** One option at most, as radio items; a pick applies at once and closes the menu. */
+  mode: "single"
+  /** The picked value, or `null` for none. */
+  value: T | null
+  /** Called with `null` when the "all" row is picked. */
+  onValueChange: (value: T | null) => void
+  /** The first row, which empties the pick, e.g. "All types"; the trigger reads it while nothing is picked. */
+  allLabel: string
+  /** The "all" row's count; it shows no count without one. */
+  allCount?: number
+}
+
+type FacetFilterProps<T extends string> =
+  FacetFilterMultipleProps<T> | FacetFilterSingleProps<T>
+
+/** A toolbar filter: tick any options, each with its count, applied at once, with Clear at the foot; `mode="single"` picks one from radio items. */
+function FacetFilter<T extends string>(props: FacetFilterProps<T>) {
+  const {
+    label,
+    icon,
+    options,
+    heading,
+    onOpenChange,
+    open,
+    defaultOpen,
+    align = "end",
+    locale,
+    searchable = false,
+    disabled,
+    labels: labelsProp,
+    className,
+  } = props
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
-  const picked = options.filter((option) => value.includes(option.value))
+  const allLabel = props.mode === "single" ? props.allLabel : undefined
   const known = new Set(options.map((option) => option.value))
-  // Picked values with no option (e.g. from the address, while the options load) are kept and counted, not dropped.
+  const value =
+    props.mode !== "single"
+      ? props.value
+      : props.value === null
+        ? []
+        : [props.value]
+  // Radix needs a string for the "all" row's radio value; an id can't clash with an option's value.
+  const none = React.useId()
+  const picked = options.filter((option) => value.includes(option.value))
+  // Picks with no option (e.g. from the address, while the options load) are kept and counted, not dropped.
   const unknown = value.filter((item) => !known.has(item))
   const total = picked.length + unknown.length
   const summary =
     total === 0
-      ? label
+      ? (allLabel ?? label)
       : total === 1 && picked.length === 1
         ? picked[0]!.label
         : labels.summary(label, total)
   const pickedLabels = picked.map((option) => option.label).join(", ")
-  // The accessible name holds the visible text: "Payment: all", "Payment: Paid", or "Payment, 2: Paid, Unpaid".
+  // The accessible name holds the visible text: "Payment: all", "Type: All types", "Payment: Paid", or "Payment, 2: Paid, Unpaid".
   const name =
     total === 0
-      ? labels.name(label, labels.all)
+      ? labels.name(label, allLabel ?? labels.all)
       : picked.length === 0
         ? summary
         : total === 1
@@ -107,15 +161,69 @@ function FacetFilter<T extends string>({
   const format = React.useMemo(() => new Intl.NumberFormat(locale), [locale])
 
   // The pick keeps the options' order, whichever order they were ticked in, then the values with no option.
-  const toggle = (option: T, checked: boolean) =>
-    onValueChange([
-      ...options
-        .filter((item) =>
-          item.value === option ? checked : value.includes(item.value)
-        )
-        .map((item) => item.value),
-      ...unknown,
-    ])
+  const toggled = (option: T, checked: boolean) => [
+    ...options
+      .filter((item) =>
+        item.value === option ? checked : value.includes(item.value)
+      )
+      .map((item) => item.value),
+    ...unknown,
+  ]
+
+  const trigger = (
+    <Button
+      variant="outline"
+      disabled={disabled}
+      aria-label={name}
+      data-slot="facet-filter"
+      data-picked={total || undefined}
+      className={className}
+    >
+      {React.isValidElement(icon)
+        ? React.cloneElement(
+            icon as React.ReactElement<{ "data-icon"?: string }>,
+            { "data-icon": "inline-start" }
+          )
+        : icon}
+      {summary}
+      <ChevronDownIcon data-icon="inline-end" />
+    </Button>
+  )
+
+  if (searchable) {
+    return (
+      <FacetSearch
+        trigger={trigger}
+        heading={heading ?? label}
+        options={options}
+        value={value}
+        all={
+          props.mode === "single"
+            ? { label: props.allLabel, count: props.allCount }
+            : undefined
+        }
+        closeOnPick={props.mode === "single"}
+        onPick={(option) => {
+          if (props.mode === "single") {
+            if (option !== props.value) props.onValueChange(option)
+          } else if (option !== null) {
+            props.onValueChange(toggled(option, !value.includes(option)))
+          }
+        }}
+        onClear={
+          props.mode !== "single" && kept.length < value.length
+            ? () => props.onValueChange(kept)
+            : undefined
+        }
+        open={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={onOpenChange}
+        align={align}
+        labels={labels}
+        format={format}
+      />
+    )
+  }
 
   return (
     <DropdownMenu
@@ -123,56 +231,73 @@ function FacetFilter<T extends string>({
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange}
     >
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          disabled={disabled}
-          aria-label={name}
-          data-slot="facet-filter"
-          data-picked={total || undefined}
-          className={className}
-        >
-          {React.isValidElement(icon)
-            ? React.cloneElement(
-                icon as React.ReactElement<{ "data-icon"?: string }>,
-                { "data-icon": "inline-start" }
-              )
-            : icon}
-          {summary}
-          <ChevronDownIcon data-icon="inline-end" />
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align={align} className="w-auto max-w-80 min-w-56">
-        <DropdownMenuLabel>{label}</DropdownMenuLabel>
-        {options.map((option) => (
-          <DropdownMenuCheckboxItem
-            key={option.value}
-            checked={value.includes(option.value)}
-            disabled={option.disabled}
-            // The menu stays open, so several options can be ticked in one go.
-            onSelect={(event) => event.preventDefault()}
-            onCheckedChange={(checked) => toggle(option.value, checked)}
+        <DropdownMenuLabel>{heading ?? label}</DropdownMenuLabel>
+        {props.mode === "single" ? (
+          <DropdownMenuRadioGroup
+            value={value[0] ?? none}
+            onValueChange={(next) => {
+              const nextValue = next === none ? null : (next as T)
+              // Picking the row that is already picked changes nothing, so the app doesn't reset its page.
+              if (nextValue !== props.value) props.onValueChange(nextValue)
+            }}
           >
-            <span className="flex w-full min-w-0 items-center gap-2">
-              {option.media && (
-                <span className="flex shrink-0">{option.media}</span>
-              )}
-              <span className="truncate">{option.label}</span>
-              <span
-                className="ms-auto text-[12.5px] text-muted-foreground tabular-nums"
-                aria-hidden={option.count === undefined ? true : undefined}
+            <DropdownMenuRadioItem value={none}>
+              <FacetRow
+                label={props.allLabel}
+                count={props.allCount}
+                showCount={props.allCount !== undefined}
+                format={format}
+              />
+            </DropdownMenuRadioItem>
+            {options.length > 0 && <DropdownMenuSeparator />}
+            {options.map((option) => (
+              <DropdownMenuRadioItem
+                key={option.value}
+                value={option.value}
+                disabled={option.disabled}
               >
-                {option.count === undefined ? "—" : format.format(option.count)}
-              </span>
-            </span>
-          </DropdownMenuCheckboxItem>
-        ))}
-        {kept.length < value.length && (
+                <FacetRow
+                  label={option.label}
+                  media={option.media}
+                  count={option.count}
+                  depth={option.depth}
+                  format={format}
+                />
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        ) : (
           <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => onValueChange(kept)}>
-              {labels.clear}
-            </DropdownMenuItem>
+            {options.map((option) => (
+              <DropdownMenuCheckboxItem
+                key={option.value}
+                checked={value.includes(option.value)}
+                disabled={option.disabled}
+                // The menu stays open, so several options can be ticked in one go.
+                onSelect={(event) => event.preventDefault()}
+                onCheckedChange={(checked) =>
+                  props.onValueChange(toggled(option.value, checked))
+                }
+              >
+                <FacetRow
+                  label={option.label}
+                  media={option.media}
+                  count={option.count}
+                  depth={option.depth}
+                  format={format}
+                />
+              </DropdownMenuCheckboxItem>
+            ))}
+            {kept.length < value.length && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => props.onValueChange(kept)}>
+                  {labels.clear}
+                </DropdownMenuItem>
+              </>
+            )}
           </>
         )}
       </DropdownMenuContent>
@@ -183,6 +308,8 @@ function FacetFilter<T extends string>({
 export {
   FacetFilter,
   type FacetFilterProps,
+  type FacetFilterMultipleProps,
+  type FacetFilterSingleProps,
   type FacetOption,
   type FacetFilterLabels,
 }

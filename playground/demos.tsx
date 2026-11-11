@@ -81,6 +81,7 @@ import {
 } from "./product-demos"
 import { PreviewFrameDemo } from "./preview-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
+import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaCellDemo } from "./media-cell-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import { PreviewTileDemo } from "./preview-tile-demo"
@@ -350,7 +351,7 @@ const KEYWORDS: Record<string, string> = {
   "preview-tile":
     "theme template picture thumbnail card tile grid look inside highlighted live install",
   "facet-filter":
-    "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
+    "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable category tree depth indent",
   "period-menu":
     "date filter period range preset today this month all time custom range calendar toolbar report",
   input:
@@ -432,6 +433,8 @@ const KEYWORDS: Record<string, string> = {
   "media-picker":
     "gallery image upload library choose existing video url attachment details",
   "media-page": "admin media library gallery bulk delete files",
+  "media-library-grid":
+    "media library grid tile checkbox select open caption menu square",
   "media-parts": "tile thumbnail upload progress queue file",
   "preview-stage":
     "file detail preview dot grid image video play document glyph theme",
@@ -527,6 +530,7 @@ const SOURCES: Record<string, Source> = {
   "code-editor": "prototype",
   "media-picker": "figma",
   "media-page": "composite",
+  "media-library-grid": "prototype",
   "media-parts": "figma",
   "preview-stage": "prototype",
   "preview-frame": "prototype",
@@ -1161,6 +1165,12 @@ export const demos: Demo[] = [
     title: "Media library page",
     group: "Patterns",
     render: () => <MediaPageDemo />,
+  },
+  {
+    id: "media-library-grid",
+    title: "Media library grid",
+    group: "Patterns",
+    render: () => <MediaLibraryGridDemo />,
   },
   {
     id: "media-parts",
