@@ -356,7 +356,7 @@ const KEYWORDS: Record<string, string> = {
   checkbox: "radio switch toggle tick indeterminate",
   "input-otp": "otp pin verification code",
   calendar: "date",
-  badge: "pill tag chip label status",
+  badge: "pill tag chip label status dot pulse live",
   avatar: "user profile photo initials person colour customer",
   card: "panel box container tile",
   table: "grid rows columns list density compact roomy",
@@ -1869,6 +1869,11 @@ export const demos: Demo[] = [
           <Badge dot>Processing</Badge>
           <Badge dot variant="secondary">
             Unfulfilled
+          </Badge>
+        </Row>
+        <Row label="Pulsing dot">
+          <Badge dot="pulse" variant="success">
+            Live on maisonoriel.com
           </Badge>
         </Row>
       </Stack>
