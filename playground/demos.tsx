@@ -49,6 +49,7 @@ import {
   DataTableTreeDemo,
   FacetFilterDemo,
   PeriodMenuDemo,
+  RowActionsMenuDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -350,6 +351,8 @@ const KEYWORDS: Record<string, string> = {
     "customer vendor staff user avatar initials name guest table row cell",
   "preview-tile":
     "theme template picture thumbnail card tile grid look inside highlighted live install",
+  "row-actions-menu":
+    "more ellipsis kebab dots row actions menu dropdown open copy download delete tile list file",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable category tree depth indent",
   "period-menu":
@@ -484,6 +487,7 @@ const SOURCES: Record<string, Source> = {
   "person-cell": "prototype",
   "preview-tile": "prototype",
   "facet-filter": "prototype",
+  "row-actions-menu": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
@@ -1980,6 +1984,12 @@ export const demos: Demo[] = [
     title: "Preview tile",
     group: "Data display",
     render: () => <PreviewTileDemo />,
+  },
+  {
+    id: "row-actions-menu",
+    title: "Row actions menu",
+    group: "Data display",
+    render: () => <RowActionsMenuDemo />,
   },
   {
     id: "avatar",
