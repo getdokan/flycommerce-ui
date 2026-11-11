@@ -10,10 +10,12 @@ import { toast } from "sonner"
 
 import {
   ActivityFeed,
+  BulkBar,
   Button,
   Card,
   CardBrandIcon,
   CardContent,
+  Checkbox,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -23,7 +25,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Field,
   FieldDescription,
@@ -45,6 +46,7 @@ import {
   PageHeaderTitle,
   P3_GLYPHS,
   P3IconProvider,
+  RowActionsMenu,
   SaveBar,
   SearchInput,
   SegmentedControl,
@@ -57,7 +59,13 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Table,
+  TableBody,
+  TableCell,
   TableFilters,
+  TableHead,
+  TableHeader,
+  TableRow,
   Timeline,
   TimelineDescription,
   TimelineHeader,
@@ -69,11 +77,14 @@ import {
   type FilterField,
   type FilterValues,
   type NumberRange,
+  type RowSelectionState,
   type IconName,
   type SettingsNavGroup,
   type StatusTone,
   PeriodMenu,
   type PeriodRange,
+  type RowActionsMenuItem,
+  type BulkBarPageState,
 } from "@/index"
 import { TimelineReleaseHistory } from "./timeline-release-demo"
 
@@ -171,23 +182,14 @@ const productColumns: ColumnDef<Product, unknown>[] = [
     meta: { align: "end" },
     header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            aria-label={`Actions for ${row.original.name}`}
-          >
-            <EllipsisIcon />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Duplicate</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RowActionsMenu
+        label={`Actions for ${row.original.name}`}
+        items={[
+          { label: "Edit" },
+          { label: "Duplicate" },
+          { label: "Delete", destructive: true, separatorBefore: true },
+        ]}
+      />
     ),
   },
 ]
@@ -468,6 +470,70 @@ export function DataTableTreeDemo() {
         />
       }
     />
+  )
+}
+
+export function DataTableSelectionDemo() {
+  const pageSize = 5
+  const [query, setQuery] = React.useState("")
+  const [page, setPage] = React.useState(1)
+  const [deleted, setDeleted] = React.useState<ReadonlySet<string>>(new Set())
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const filtered = PRODUCTS.filter(
+    (p) =>
+      !deleted.has(p.id) && p.name.toLowerCase().includes(query.toLowerCase())
+  )
+  const current = Math.min(page, Math.ceil(filtered.length / pageSize) || 1)
+
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-3">
+      <p className="text-xs text-muted-foreground">
+        Tick rows on two pages: the count and Delete cover both. A new search
+        clears the selection.
+      </p>
+      <DataTable
+        columns={productColumns}
+        data={filtered.slice((current - 1) * pageSize, current * pageSize)}
+        getRowId={(row) => row.id}
+        enableRowSelection
+        crossPageSelection
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+        toolbar={
+          <SearchInput
+            containerClassName="w-full sm:w-72"
+            placeholder="Search products"
+            onSearch={(value) => {
+              setQuery(value)
+              setPage(1)
+              setRowSelection({})
+            }}
+          />
+        }
+        bulkActions={(_, clear, ids) => (
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => {
+              setDeleted(new Set([...deleted, ...ids]))
+              clear()
+              toast.success(
+                `${ids.length} ${ids.length === 1 ? "product" : "products"} deleted`
+              )
+            }}
+          >
+            <Trash2Icon /> Delete
+          </Button>
+        )}
+        pagination={{
+          page: current,
+          pageSize,
+          total: filtered.length,
+          onPageChange: setPage,
+          showPageNumbers: true,
+        }}
+      />
+    </div>
   )
 }
 
@@ -869,14 +935,146 @@ const VENDOR_OPTIONS = [
   ),
 }))
 
+// A marketplace's long vendor list, for the searchable filter.
+const MANY_VENDORS = [
+  "Atelier Noor",
+  "Bastide Homme",
+  "Café Noir",
+  "Dhaka Loom",
+  "Élan Studio",
+  "Fern & Fable",
+  "Gold Thread",
+  "Halden Studio",
+  "Indigo Row",
+  "Jute Works",
+  "Kantha House",
+  "Lumen Lab",
+  "Margaux Hale",
+  "Nakshi Craft",
+  "Opaline Parfums",
+  "Paper Moon",
+  "Quill & Ink",
+  "Rosewood Co.",
+  "Saffron Kitchen",
+  "Tide Pool",
+  "Umber Goods",
+  "Velvet Hour",
+  "Willow Bay",
+  "Xylo Toys",
+  "Yarrow Botanics",
+  "Zephyr Home",
+  "Amber Fields",
+  "Birch & Bone",
+  "Coral Reef",
+  "Dune Leather",
+  "Ember Candle",
+  "Fable Books",
+  "Grove Tea",
+  "Harbor Supply",
+  "Iris Ceramics",
+  "Juniper Skin",
+  "Kiln & Clay",
+  "Lark Audio",
+  "Moss Garden",
+  "Nimbus Bags",
+  "Olive Press",
+  "Pebble Kids",
+  "Quarry Stone",
+  "Raven Ink",
+  "Sage Apothecary",
+  "Thistle Linen",
+  "Upland Coffee",
+  "Vale Optics",
+  "Wren Jewelry",
+  "Yew Furniture",
+  "Zinnia Florals",
+  "Aster Knits",
+  "Bramble Bakery",
+  "Cinder Grill",
+  "Delta Bikes",
+  "Echo Vinyl",
+  "Flint Tools",
+  "Garnet Wine",
+  "Heron Outdoor",
+  "Ivy Prints",
+]
+  .sort((a, b) => a.localeCompare(b))
+  .map((label, index) => ({
+    value: String(index + 1),
+    label,
+    count: ((index * 7) % 23) + 1,
+  }))
+
 export function FacetFilterDemo() {
+  const [seller, setSeller] = React.useState<string | null>(null)
   const [payment, setPayment] = React.useState<string[]>(["paid"])
   const [vendor, setVendor] = React.useState<string[]>([])
   const [status, setStatus] = React.useState<string[]>([])
+  const [type, setType] = React.useState<string | null>(null)
+  const [month, setMonth] = React.useState<string | null>("2026-10")
+  const [category, setCategory] = React.useState<string | null>(null)
   // Counts are fetched only while the menu is open; here they appear once it opens.
   const [counting, setCounting] = React.useState(false)
   return (
     <div className="flex flex-wrap gap-2">
+      <FacetFilter
+        mode="single"
+        searchable
+        label="Vendor"
+        heading="Sold by"
+        icon={<Icon name="vendors" />}
+        allLabel="All vendors"
+        allCount={MANY_VENDORS.reduce((sum, vendor) => sum + vendor.count, 0)}
+        options={MANY_VENDORS}
+        value={seller}
+        onValueChange={setSeller}
+        labels={{ search: "Search vendors", noResults: "No vendors found" }}
+      />
+      <FacetFilter
+        mode="single"
+        label="Category"
+        icon={<Icon name="categories" />}
+        allLabel="All categories"
+        allCount={23}
+        options={[
+          { value: "shoes", label: "Shoes", count: 14 },
+          { value: "sneakers", label: "Sneakers", count: 2, depth: 1 },
+          { value: "high-tops", label: "High-tops", count: 1, depth: 2 },
+          { value: "boots", label: "Boots", count: 5, depth: 1 },
+          { value: "home", label: "Home", count: 9 },
+          { value: "vases", label: "Vases", count: 4, depth: 1 },
+        ]}
+        value={category}
+        onValueChange={setCategory}
+      />
+      <FacetFilter
+        mode="single"
+        label="Type"
+        icon={<Icon name="media" />}
+        allLabel="All types"
+        allCount={1214}
+        options={[
+          { value: "images", label: "Images", count: 1180 },
+          { value: "videos", label: "Videos", count: 22 },
+          { value: "documents", label: "Documents", count: 12 },
+        ]}
+        value={type}
+        onValueChange={setType}
+      />
+      <FacetFilter
+        mode="single"
+        label="Date"
+        heading="Uploaded"
+        icon={<Icon name="period" />}
+        allLabel="All dates"
+        options={[
+          { value: "2026-10", label: "October 2026", count: 48 },
+          { value: "2026-09", label: "September 2026", count: 131 },
+          { value: "2026-07", label: "July 2026", count: 6 },
+        ]}
+        value={month}
+        onValueChange={setMonth}
+      />
       <FacetFilter
         label="Payment"
         icon={<Icon name="cash" />}
@@ -920,6 +1118,253 @@ export function FacetFilterDemo() {
         onOpenChange={setCounting}
       />
     </div>
+  )
+}
+
+type DemoFile = { id: string; name: string; type: string; url: string }
+
+const DEMO_FILES: DemoFile[] = [
+  {
+    id: "1",
+    name: "boutique-tote.jpg",
+    type: "JPG image",
+    url: "https://picsum.photos/seed/fc-tote/800/800",
+  },
+  {
+    id: "2",
+    name: "Autumn winter 2026 campaign",
+    type: "YouTube video",
+    url: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+  },
+]
+
+function fileActions(file: DemoFile, canDelete: boolean): RowActionsMenuItem[] {
+  const video = file.type === "YouTube video"
+  return [
+    {
+      label: "Open",
+      icon: <Icon name="external" />,
+      href: file.url,
+      target: "_blank",
+    },
+    {
+      label: "Copy URL",
+      icon: <Icon name="duplicate" />,
+      onSelect: async () => {
+        try {
+          await navigator.clipboard.writeText(file.url)
+          toast.success("Link copied.")
+        } catch {
+          toast.error("Couldn't copy the link. Your browser blocked it.")
+        }
+      },
+    },
+    {
+      label: "Download",
+      icon: <Icon name="export" />,
+      hidden: video,
+      onSelect: () => toast(`Downloading ${file.name}.`),
+    },
+    {
+      label: "Delete",
+      icon: <Icon name="delete" />,
+      destructive: true,
+      separatorBefore: true,
+      hidden: !canDelete,
+      onSelect: () => toast(`Delete ${file.name}?`),
+    },
+  ]
+}
+
+export function RowActionsMenuDemo() {
+  const [canDelete, setCanDelete] = React.useState(true)
+  const open = (file: DemoFile) => toast(`Opened the details of ${file.name}.`)
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <SwitchField
+        title="Can delete media"
+        checked={canDelete}
+        onCheckedChange={setCanDelete}
+      />
+      <Card className="w-full">
+        <CardContent flush>
+          <Table variant="list">
+            <TableHeader>
+              <TableRow>
+                <TableHead>File</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {DEMO_FILES.map((file) => (
+                <TableRow
+                  key={file.id}
+                  tabIndex={0}
+                  onClick={() => open(file)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") open(file)
+                  }}
+                >
+                  <TableCell className="font-medium">{file.name}</TableCell>
+                  <TableCell>{file.type}</TableCell>
+                  <TableCell className="text-end">
+                    <RowActionsMenu
+                      label={`Actions for ${file.name}`}
+                      items={fileActions(file, canDelete)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {DEMO_FILES.map((file) => (
+          <div
+            key={file.id}
+            className="relative aspect-square overflow-hidden rounded-xl bg-muted"
+          >
+            <button
+              type="button"
+              aria-label={`Open details for ${file.name}`}
+              onClick={() => open(file)}
+              className="absolute inset-0 flex items-end rounded-xl p-3 text-start text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
+            >
+              <span className="truncate">{file.name}</span>
+            </button>
+            <div className="absolute end-2 top-2 rounded-md bg-card shadow-1">
+              <RowActionsMenu
+                label={`Actions for ${file.name}`}
+                items={fileActions(file, canDelete)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const BULK_FILES = Array.from({ length: 10 }, (_, i) => ({
+  id: String(i + 1),
+  name: `lookbook-aw26-${String(i + 1).padStart(2, "0")}.jpg`,
+}))
+const BULK_PAGE_SIZE = 6
+
+export function BulkBarDemo() {
+  const [page, setPage] = React.useState(1)
+  const [selected, setSelected] = React.useState<string[]>(["2", "3"])
+  // Kept here, so the search survives the bar standing in for the toolbar.
+  const [query, setQuery] = React.useState("")
+  const search = React.useRef<HTMLInputElement>(null)
+  const pageCount = Math.ceil(BULK_FILES.length / BULK_PAGE_SIZE)
+  const onPage = BULK_FILES.slice(
+    (page - 1) * BULK_PAGE_SIZE,
+    page * BULK_PAGE_SIZE
+  )
+  const pickedOnPage = onPage.filter((file) => selected.includes(file.id))
+  const pageState: BulkBarPageState =
+    pickedOnPage.length === 0
+      ? "none"
+      : pickedOnPage.length === onPage.length
+        ? "all"
+        : "some"
+  const setPageChecked = (checked: boolean) => {
+    const ids = onPage.map((file) => file.id)
+    const rest = selected.filter((id) => !ids.includes(id))
+    setSelected(checked ? [...rest, ...ids] : rest)
+  }
+  const toggle = (id: string, checked: boolean) =>
+    setSelected(
+      checked ? [...selected, id] : selected.filter((item) => item !== id)
+    )
+
+  return (
+    <Card className="w-full gap-0 py-0">
+      {selected.length > 0 ? (
+        <BulkBar
+          selectedCount={selected.length}
+          pageState={pageState}
+          onPageCheckedChange={setPageChecked}
+          onClear={() => setSelected([])}
+          returnFocusTo={search}
+          actions={
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toast(`Downloading ${selected.length} files.`)}
+              >
+                <Icon name="export" data-icon="inline-start" />
+                Download
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => toast(`Delete ${selected.length} files?`)}
+              >
+                <Icon name="delete" data-icon="inline-start" />
+                Delete
+              </Button>
+            </>
+          }
+        />
+      ) : (
+        <div className="border-b border-border-subtle px-5 py-3">
+          <SearchInput
+            ref={search}
+            aria-label="Search files"
+            placeholder="Search files by name"
+            value={query}
+            onValueChange={setQuery}
+          />
+        </div>
+      )}
+      <ul className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3">
+        {onPage.map((file) => (
+          <li
+            key={file.id}
+            className="flex min-w-0 items-center gap-2 rounded-lg border border-border p-3"
+          >
+            <Checkbox
+              id={`bulk-file-${file.id}`}
+              checked={selected.includes(file.id)}
+              onCheckedChange={(checked) => toggle(file.id, checked === true)}
+            />
+            <Label htmlFor={`bulk-file-${file.id}`} className="truncate">
+              {file.name}
+            </Label>
+          </li>
+        ))}
+      </ul>
+      <div className="flex items-center justify-between gap-3 border-t border-border-subtle px-5 py-3 text-muted-foreground">
+        <span className="tabular-nums">
+          Page {page} of {pageCount}
+        </span>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === pageCount}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </Card>
   )
 }
 
