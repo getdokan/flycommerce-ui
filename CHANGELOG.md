@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Added
 
 - `Badge dot="pulse"`: the status dot with a soft ring in the badge's colour that pings outwards behind it, for the one live, current state on a screen, e.g. `<Badge variant="success" dot="pulse">Live on maisonoriel.com</Badge>`. With reduced motion the ring isn't drawn and the solid dot shows as before. It is decorative (`aria-hidden`), so the badge text carries the meaning. `StatusBadge` passes it through, and `dot` and `dot={true}` look the same as before.
+- `TimelineItem highlighted`: the entry the user is at, such as their installed version in a release history, `<TimelineItem highlighted highlightedLabel="Your version">`. Its text sits on a rounded brand tint, inset a little from the tint's sides, and the tint reaches into the gaps above and below so the text stays level with its dot or icon and the dot and connector stay lined up with the other items. In the middle of a list the items below don't move; a highlighted first or last item is a little taller, so the tint stays inside the list. `highlightedLabel` (default "Current") is read by screen readers before the item, like `upcomingLabel`, and the item carries `data-highlighted`. It works with `upcoming`, `icon` and every `tone`. A `Badge` in a highlighted title needs a variant other than the default, which shares the tint's colour.
 
 ## [0.6.0] - 2026-11-04
 

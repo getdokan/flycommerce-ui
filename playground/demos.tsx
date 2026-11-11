@@ -402,7 +402,8 @@ const KEYWORDS: Record<string, string> = {
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
-  timeline: "timeline activity history events log steps feed",
+  timeline:
+    "timeline activity history events log steps feed release changelog version current highlighted",
   "activity-feed": "activity log history notes order timeline comments",
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
