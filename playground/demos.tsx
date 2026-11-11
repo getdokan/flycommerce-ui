@@ -82,6 +82,7 @@ import {
 import { PreviewFrameDemo } from "./preview-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaLibraryGridDemo } from "./media-library-grid-demo"
+import { MediaCellDemo } from "./media-cell-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import { PreviewTileDemo } from "./preview-tile-demo"
 import {
@@ -439,6 +440,7 @@ const KEYWORDS: Record<string, string> = {
     "file detail preview dot grid image video play document glyph theme",
   "preview-frame":
     "browser window theme screenshot store domain address bar mockup preview",
+  "media-cell": "table cell thumbnail file video play document glyph list",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
@@ -532,6 +534,7 @@ const SOURCES: Record<string, Source> = {
   "media-parts": "figma",
   "preview-stage": "prototype",
   "preview-frame": "prototype",
+  "media-cell": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
   "option-list-editor": "figma",
@@ -1174,6 +1177,12 @@ export const demos: Demo[] = [
     title: "Media tile & upload rows",
     group: "Patterns",
     render: () => <MediaPartsDemo />,
+  },
+  {
+    id: "media-cell",
+    title: "Media cell",
+    group: "Patterns",
+    render: () => <MediaCellDemo />,
   },
   {
     id: "dropzone",
