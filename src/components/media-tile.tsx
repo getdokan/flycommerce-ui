@@ -73,14 +73,18 @@ function formatBytes(bytes: number, locale?: string) {
 /** File-type glyph with its extension, used where an image can't be shown. */
 function MediaFileGlyph({
   name,
+  size = "default",
   className,
 }: {
   name: string
+  /** `lg` draws a larger extension label, for a glyph of about 64 px and up. */
+  size?: "default" | "lg"
   className?: string
 }) {
   const ext = fileExtension(name)
   return (
     <span
+      data-slot="media-file-glyph"
       aria-hidden="true"
       className={cn(
         "relative inline-flex items-center justify-center text-muted-foreground",
@@ -89,10 +93,61 @@ function MediaFileGlyph({
     >
       <FileIcon className="size-full" strokeWidth={1.25} />
       {ext && (
-        <span className="absolute start-[-8%] bottom-[18%] rounded-[3px] bg-primary px-1 text-[9px] leading-[14px] font-bold text-primary-foreground">
+        <span
+          className={cn(
+            "absolute start-[-8%] bottom-[18%] bg-primary font-bold text-primary-foreground",
+            size === "lg"
+              ? "rounded-sm px-1.5 text-xs leading-5"
+              : "rounded-[3px] px-1 text-[9px] leading-[14px]"
+          )}
+        >
           {ext.slice(0, 4)}
         </span>
       )}
+    </span>
+  )
+}
+
+/** The box for any node shown in a thumbnail's place. It clips to its rounded corners, except a `MediaFileGlyph` passed directly, so the glyph's extension badge isn't cut. */
+function MediaThumb({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="media-thumb"
+      className={cn(
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-muted-foreground has-[>[data-slot=media-file-glyph]]:overflow-visible",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/** The round play mark over a video poster: `sm` on a row thumbnail, `default` on a tile, `lg` on a large preview. */
+function MediaPlayMark({
+  size = "default",
+  className,
+}: {
+  size?: "sm" | "default" | "lg"
+  className?: string
+}) {
+  return (
+    <span
+      data-slot="media-play-mark"
+      aria-hidden="true"
+      className={cn(
+        "flex items-center justify-center rounded-full bg-foreground/60 text-background",
+        { sm: "size-5", default: "size-10", lg: "size-16" }[size],
+        className
+      )}
+    >
+      <PlayIcon
+        className={cn(
+          "fill-current",
+          { sm: "size-2.5", default: "size-4", lg: "size-7 translate-x-0.5" }[
+            size
+          ]
+        )}
+      />
     </span>
   )
 }
@@ -158,10 +213,8 @@ function MediaTile({
 
       {item.videoUrl && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="flex size-10 items-center justify-center rounded-full bg-foreground/60 text-background">
-            <PlayIcon className="size-4 fill-current" aria-hidden="true" />
-            <span className="sr-only">{labels.video}</span>
-          </span>
+          <MediaPlayMark />
+          <span className="sr-only">{labels.video}</span>
         </span>
       )}
       {item.isPrivate && (
@@ -251,6 +304,8 @@ export {
   formatBytes,
   isImage,
   MediaFileGlyph,
+  MediaPlayMark,
+  MediaThumb,
   MediaTile,
   MediaPill,
   type MediaItem,
