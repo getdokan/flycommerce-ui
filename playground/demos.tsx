@@ -79,7 +79,10 @@ import {
   RichSelectDemo,
   TreeSelectDemo,
 } from "./product-demos"
+import { PreviewFrameDemo } from "./preview-frame-demo"
+import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
+import { PreviewTileDemo } from "./preview-tile-demo"
 import {
   ColorInputDemo,
   CopyFieldDemo,
@@ -343,6 +346,8 @@ const KEYWORDS: Record<string, string> = {
     "no data blank zero state emptystate nothing yet failed load error retry",
   "person-cell":
     "customer vendor staff user avatar initials name guest table row cell",
+  "preview-tile":
+    "theme template picture thumbnail card tile grid look inside highlighted live install",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable category tree depth indent",
   "period-menu":
@@ -356,7 +361,7 @@ const KEYWORDS: Record<string, string> = {
   checkbox: "radio switch toggle tick indeterminate",
   "input-otp": "otp pin verification code",
   calendar: "date",
-  badge: "pill tag chip label status",
+  badge: "pill tag chip label status dot pulse live",
   avatar: "user profile photo initials person colour customer",
   card: "panel box container tile",
   table: "grid rows columns list density compact roomy",
@@ -402,7 +407,8 @@ const KEYWORDS: Record<string, string> = {
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
-  timeline: "timeline activity history events log steps feed",
+  timeline:
+    "timeline activity history events log steps feed release changelog version current highlighted",
   "activity-feed": "activity log history notes order timeline comments",
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
@@ -426,6 +432,10 @@ const KEYWORDS: Record<string, string> = {
     "gallery image upload library choose existing video url attachment details",
   "media-page": "admin media library gallery bulk delete files",
   "media-parts": "tile thumbnail upload progress queue file",
+  "preview-stage":
+    "file detail preview dot grid image video play document glyph theme",
+  "preview-frame":
+    "browser window theme screenshot store domain address bar mockup preview",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
@@ -467,6 +477,7 @@ const SOURCES: Record<string, Source> = {
   table: "prototype",
   "description-list": "prototype",
   "person-cell": "prototype",
+  "preview-tile": "prototype",
   "facet-filter": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
@@ -515,6 +526,8 @@ const SOURCES: Record<string, Source> = {
   "media-picker": "figma",
   "media-page": "composite",
   "media-parts": "figma",
+  "preview-stage": "prototype",
+  "preview-frame": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
   "option-list-editor": "figma",
@@ -1127,6 +1140,18 @@ export const demos: Demo[] = [
     title: "Media picker (Add Media)",
     group: "Patterns",
     render: () => <MediaPickerDemo />,
+  },
+  {
+    id: "preview-stage",
+    title: "Preview stage",
+    group: "Patterns",
+    render: () => <PreviewStageDemo />,
+  },
+  {
+    id: "preview-frame",
+    title: "Preview frame",
+    group: "Patterns",
+    render: () => <PreviewFrameDemo />,
   },
   {
     id: "media-page",
@@ -1871,6 +1896,11 @@ export const demos: Demo[] = [
             Unfulfilled
           </Badge>
         </Row>
+        <Row label="Pulsing dot">
+          <Badge dot="pulse" variant="success">
+            Live on maisonoriel.com
+          </Badge>
+        </Row>
       </Stack>
     ),
   },
@@ -1925,6 +1955,12 @@ export const demos: Demo[] = [
     title: "Facet filter",
     group: "Data display",
     render: () => <FacetFilterDemo />,
+  },
+  {
+    id: "preview-tile",
+    title: "Preview tile",
+    group: "Data display",
+    render: () => <PreviewTileDemo />,
   },
   {
     id: "avatar",

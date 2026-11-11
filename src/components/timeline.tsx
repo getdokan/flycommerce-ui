@@ -68,12 +68,18 @@ type TimelineItemProps = React.ComponentProps<"li"> & {
   upcomingLabel?: string
   /** Replaces the dot, e.g. `<Icon name="email" />` for an activity log. */
   icon?: React.ReactNode
+  /** The entry the user is at, e.g. their installed version: its text sits on a brand tint. */
+  highlighted?: boolean
+  /** Read before a highlighted item, since the tint alone says nothing to assistive tech. */
+  highlightedLabel?: string
 }
 
 function TimelineItem({
   tone = "default",
   upcoming = false,
   upcomingLabel = "Upcoming",
+  highlighted = false,
+  highlightedLabel = "Current",
   icon,
   className,
   children,
@@ -86,8 +92,13 @@ function TimelineItem({
       data-slot="timeline-item"
       data-tone={tone}
       data-upcoming={upcoming || undefined}
+      data-highlighted={highlighted || undefined}
       className={cn(
-        "flex gap-3 [&:last-child>[data-slot=timeline-body]]:pb-0 [&:last-child>[data-slot=timeline-marker]>[data-slot=timeline-connector]]:hidden",
+        "flex gap-3 [&:last-child>[data-slot=timeline-marker]>[data-slot=timeline-connector]]:hidden",
+        highlighted
+          ? // Nothing above the first item to overhang into, so its marker steps down with the text instead.
+            "[&:first-child>[data-slot=timeline-body]]:mt-0 [&:first-child>[data-slot=timeline-marker]]:pt-1.5 [&:last-child>[data-slot=timeline-body]]:mb-0"
+          : "[&:last-child>[data-slot=timeline-body]]:pb-0",
         className
       )}
       {...props}
@@ -119,8 +130,16 @@ function TimelineItem({
       <div
         data-slot="timeline-body"
         // relative keeps the sr-only label inside; pt-1 lines the first row up with the icon's middle.
-        className={cn("relative min-w-0 flex-1 pb-4", icon && "pt-1")}
+        className={cn(
+          "relative min-w-0 flex-1 pb-4",
+          icon && "pt-1",
+          // The tint overhangs into the gaps by its own padding, so the text, the dot and the next item stay where they were.
+          highlighted &&
+            "-mt-1.5 mb-2.5 rounded-md bg-primary-subtle px-3 py-1.5 forced-colors:outline",
+          highlighted && icon && "pt-2.5"
+        )}
       >
+        {highlighted && <span className="sr-only">{highlightedLabel}: </span>}
         {upcoming && <span className="sr-only">{upcomingLabel}: </span>}
         <TimelineItemContext.Provider value={context}>
           {children}
