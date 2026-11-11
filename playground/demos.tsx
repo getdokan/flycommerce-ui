@@ -46,6 +46,7 @@ import {
   ConfirmDialogDemo,
   DataTableDemo,
   DataTableReorderDemo,
+  DataTableSelectionDemo,
   DataTableTreeDemo,
   FacetFilterDemo,
   PeriodMenuDemo,
@@ -407,6 +408,8 @@ const KEYWORDS: Record<string, string> = {
   "data-table":
     "table grid tanstack sort select bulk pagination filter sidebar thumbnail image",
   "data-table-tree": "tree nested category expand hierarchy",
+  "data-table-selection":
+    "select selection checkbox bulk pages cross-page server pagination",
   "data-table-reorder": "drag drop reorder sort order position handle dnd",
   "confirm-dialog":
     "confirm delete remove modal are you sure acknowledge checkbox type to confirm",
@@ -520,6 +523,7 @@ const SOURCES: Record<string, Source> = {
   "activity-feed": "prototype",
   "data-table": "prototype",
   "data-table-tree": "figma",
+  "data-table-selection": "prototype",
   "data-table-reorder": "figma",
   "radio-card": "prototype",
   "switch-field": "prototype",
@@ -1023,6 +1027,12 @@ export const demos: Demo[] = [
     title: "Data table: tree rows",
     group: "Patterns",
     render: () => <DataTableTreeDemo />,
+  },
+  {
+    id: "data-table-selection",
+    title: "Data table: selection across pages",
+    group: "Patterns",
+    render: () => <DataTableSelectionDemo />,
   },
   {
     id: "confirm-dialog",
