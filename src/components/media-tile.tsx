@@ -218,10 +218,10 @@ function MediaTile({
         </span>
       )}
       {item.isPrivate && (
-        <span className="pointer-events-none absolute start-2 bottom-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-semibold text-foreground-secondary shadow-1">
+        <MediaPill>
           <LockIcon className="size-3" aria-hidden="true" />
           {labels.private}
-        </span>
+        </MediaPill>
       )}
 
       {onClick && (
@@ -265,6 +265,20 @@ function MediaTile({
   )
 }
 
+/** A label over the bottom of a picture. */
+function MediaPill({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="media-pill"
+      className={cn(
+        "pointer-events-none absolute start-2 bottom-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-xs font-semibold text-foreground-secondary shadow-1",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
 function TileAction({
   label,
   onClick,
@@ -293,6 +307,7 @@ export {
   MediaPlayMark,
   MediaThumb,
   MediaTile,
+  MediaPill,
   type MediaItem,
   type MediaTileLabels,
   type MediaTileProps,
