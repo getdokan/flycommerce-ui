@@ -75,6 +75,7 @@ import {
   PeriodMenu,
   type PeriodRange,
 } from "@/index"
+import { TimelineReleaseHistory } from "./timeline-release-demo"
 
 type Product = {
   id: string
@@ -1410,6 +1411,7 @@ export function TimelineDemo() {
           </Timeline>
         </CardContent>
       </Card>
+      <TimelineReleaseHistory />
     </div>
   )
 }

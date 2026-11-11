@@ -10,6 +10,8 @@ import {
   TimelineTitle,
 } from "@/index"
 
+import { applyTailwind } from "./tailwind"
+
 const slot = (element: Element | null) => element?.getAttribute("data-slot")
 
 function renderSteps() {
@@ -272,5 +274,134 @@ describe("Timeline", () => {
     expect(markerOf("Note").matches(widened)).toBe(true)
     expect(markerOf("Picked up").matches(widened)).toBe(false)
     expect(markerOf("Dot only").matches(widened)).toBe(false)
+  })
+  describe("highlighted", () => {
+    const bodyOf = (title: string) =>
+      screen
+        .getByText(title)
+        .closest("li")
+        ?.querySelector(":scope > [data-slot=timeline-body]") as HTMLElement
+
+    it("tints the body, not the item, and marks the item", () => {
+      render(
+        <Timeline>
+          <TimelineItem>
+            <TimelineTitle>1.0.3</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted>
+            <TimelineTitle>1.0.2</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      const [plain, current] = screen.getAllByRole("listitem")
+      expect(plain.dataset.highlighted).toBeUndefined()
+      expect(current.dataset.highlighted).toBe("true")
+      expect(current.className).not.toMatch(/\bbg-/)
+      expect(bodyOf("1.0.2").className).toMatch(/\bbg-primary-subtle\b/)
+      expect(bodyOf("1.0.3").className).not.toMatch(/\bbg-primary-subtle\b/)
+    })
+
+    it("keeps an edge on the tint where forced colours drop backgrounds", () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted>
+            <TimelineTitle>1.0.2</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      expect(bodyOf("1.0.2").className).toMatch(/\bforced-colors:outline\b/)
+    })
+
+    it("reads its label before the item, Current unless given another", () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted>
+            <TimelineTitle>1.0.4</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted highlightedLabel="Your version">
+            <TimelineTitle>1.0.2</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      const [latest, yours] = screen.getAllByRole("listitem")
+      expect(latest.textContent).toBe("Current: 1.0.4")
+      expect(yours.textContent).toBe("Your version: 1.0.2")
+      const label = screen.getByText("Your version:", { exact: false })
+      expect(label.className).toContain("sr-only")
+      expect(label.parentElement).toBe(bodyOf("1.0.2"))
+    })
+
+    it("reads both labels on a highlighted step still to come", () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted upcoming>
+            <TimelineTitle>Delivery</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      const item = screen.getByRole("listitem")
+      expect(item.textContent).toBe("Current: Upcoming: Delivery")
+      expect(item.dataset.upcoming).toBe("true")
+      expect(screen.getByText("Delivery").className).toContain(
+        "text-foreground-secondary"
+      )
+    })
+
+    it("leaves the marker as it is, whatever the tone", () => {
+      const tones = [
+        "default",
+        "primary",
+        "success",
+        "warning",
+        "destructive",
+      ] as const
+      render(
+        <Timeline>
+          {tones.flatMap((tone) => [
+            <TimelineItem key={tone} tone={tone}>
+              <TimelineTitle>{`${tone} plain`}</TimelineTitle>
+            </TimelineItem>,
+            <TimelineItem key={`${tone}-on`} tone={tone} highlighted>
+              <TimelineTitle>{`${tone} highlighted`}</TimelineTitle>
+            </TimelineItem>,
+          ])}
+        </Timeline>
+      )
+      const markerOf = (title: string) =>
+        screen
+          .getByText(title)
+          .closest("li")
+          ?.querySelector(":scope > [data-slot=timeline-marker]")?.outerHTML
+      for (const tone of tones) {
+        expect(markerOf(`${tone} highlighted`)).toBe(markerOf(`${tone} plain`))
+        expect(
+          screen.getByText(`${tone} highlighted`).closest("li")?.dataset.tone
+        ).toBe(tone)
+      }
+    })
+
+    it("drops its overhang at the ends of the list, where there's no gap to overhang into", async () => {
+      render(
+        <Timeline>
+          <TimelineItem highlighted>
+            <TimelineTitle>First</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted>
+            <TimelineTitle>Middle</TimelineTitle>
+          </TimelineItem>
+          <TimelineItem highlighted>
+            <TimelineTitle>Last</TimelineTitle>
+          </TimelineItem>
+        </Timeline>
+      )
+      await applyTailwind()
+      const margins = (title: string) => {
+        const { marginTop, marginBottom } = getComputedStyle(bodyOf(title))
+        return [marginTop === "0px", marginBottom === "0px"]
+      }
+      expect(margins("First")).toEqual([true, false])
+      expect(margins("Middle")).toEqual([false, false])
+      expect(margins("Last")).toEqual([false, true])
+    })
   })
 })
