@@ -288,6 +288,7 @@ export function DataTableDemo() {
             columns={productColumns}
             data={pageRows}
             getRowId={(row) => row.id}
+            getRowLabel={(row) => row.name}
             loading={loading}
             refreshing={refreshing}
             error={
