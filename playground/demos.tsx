@@ -79,6 +79,7 @@ import {
   RichSelectDemo,
   TreeSelectDemo,
 } from "./product-demos"
+import { PreviewFrameDemo } from "./preview-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import {
@@ -357,7 +358,7 @@ const KEYWORDS: Record<string, string> = {
   checkbox: "radio switch toggle tick indeterminate",
   "input-otp": "otp pin verification code",
   calendar: "date",
-  badge: "pill tag chip label status",
+  badge: "pill tag chip label status dot pulse live",
   avatar: "user profile photo initials person colour customer",
   card: "panel box container tile",
   table: "grid rows columns list density compact roomy",
@@ -403,7 +404,8 @@ const KEYWORDS: Record<string, string> = {
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
   "status-badge": "status pill order state",
-  timeline: "timeline activity history events log steps feed",
+  timeline:
+    "timeline activity history events log steps feed release changelog version current highlighted",
   "activity-feed": "activity log history notes order timeline comments",
   "stat-card":
     "kpi metric statistic number dashboard figure label first band group joined",
@@ -429,6 +431,8 @@ const KEYWORDS: Record<string, string> = {
   "media-parts": "tile thumbnail upload progress queue file",
   "preview-stage":
     "file detail preview dot grid image video play document glyph theme",
+  "preview-frame":
+    "browser window theme screenshot store domain address bar mockup preview",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
@@ -519,6 +523,7 @@ const SOURCES: Record<string, Source> = {
   "media-page": "composite",
   "media-parts": "figma",
   "preview-stage": "prototype",
+  "preview-frame": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
   "option-list-editor": "figma",
@@ -1137,6 +1142,12 @@ export const demos: Demo[] = [
     title: "Preview stage",
     group: "Patterns",
     render: () => <PreviewStageDemo />,
+  },
+  {
+    id: "preview-frame",
+    title: "Preview frame",
+    group: "Patterns",
+    render: () => <PreviewFrameDemo />,
   },
   {
     id: "media-page",
@@ -1879,6 +1890,11 @@ export const demos: Demo[] = [
           <Badge dot>Processing</Badge>
           <Badge dot variant="secondary">
             Unfulfilled
+          </Badge>
+        </Row>
+        <Row label="Pulsing dot">
+          <Badge dot="pulse" variant="success">
+            Live on maisonoriel.com
           </Badge>
         </Row>
       </Stack>
