@@ -67,4 +67,17 @@ describe("StatusBadge", () => {
     expect(badge("Unknown").variant).toBe("secondary")
     expect(badge("Forced").variant).toBe("success")
   })
+
+  it('forwards dot="pulse" and its default dot does not pulse', () => {
+    const { container } = render(
+      <>
+        <StatusBadge status="live" dot="pulse" />
+        <StatusBadge status="paid" />
+      </>
+    )
+    const [live, paid] = container.querySelectorAll("[data-slot=badge]")
+    expect(live.querySelector("[data-slot=badge-dot-ping]")).not.toBeNull()
+    expect(paid.querySelector("[data-slot=badge-dot-ping]")).toBeNull()
+    expect(paid.querySelector("[data-slot=badge-dot]")).not.toBeNull()
+  })
 })
