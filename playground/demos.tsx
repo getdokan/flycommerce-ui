@@ -349,7 +349,7 @@ const KEYWORDS: Record<string, string> = {
   "preview-tile":
     "theme template picture thumbnail card tile grid look inside highlighted live install",
   "facet-filter":
-    "filter dropdown checkbox multi select facet counts toolbar status payment vendor category tree depth indent",
+    "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable category tree depth indent",
   "period-menu":
     "date filter period range preset today this month all time custom range calendar toolbar report",
   input:
