@@ -50,6 +50,7 @@ import {
   FacetFilterDemo,
   PeriodMenuDemo,
   RowActionsMenuDemo,
+  BulkBarDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -353,6 +354,8 @@ const KEYWORDS: Record<string, string> = {
     "theme template picture thumbnail card tile grid look inside highlighted live install",
   "row-actions-menu":
     "more ellipsis kebab dots row actions menu dropdown open copy download delete tile list file",
+  "bulk-bar":
+    "bulk actions selection selected select all page checkbox toolbar clear delete download grid table",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable category tree depth indent",
   "period-menu":
@@ -488,6 +491,7 @@ const SOURCES: Record<string, Source> = {
   "preview-tile": "prototype",
   "facet-filter": "prototype",
   "row-actions-menu": "prototype",
+  "bulk-bar": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
@@ -1990,6 +1994,12 @@ export const demos: Demo[] = [
     title: "Row actions menu",
     group: "Data display",
     render: () => <RowActionsMenuDemo />,
+  },
+  {
+    id: "bulk-bar",
+    title: "Bulk bar",
+    group: "Data display",
+    render: () => <BulkBarDemo />,
   },
   {
     id: "avatar",
