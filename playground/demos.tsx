@@ -80,6 +80,7 @@ import {
   TreeSelectDemo,
 } from "./product-demos"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
+import { PreviewTileDemo } from "./preview-tile-demo"
 import {
   ColorInputDemo,
   CopyFieldDemo,
@@ -343,6 +344,8 @@ const KEYWORDS: Record<string, string> = {
     "no data blank zero state emptystate nothing yet failed load error retry",
   "person-cell":
     "customer vendor staff user avatar initials name guest table row cell",
+  "preview-tile":
+    "theme template picture thumbnail card tile grid look inside highlighted live install",
   "facet-filter":
     "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
   "period-menu":
@@ -468,6 +471,7 @@ const SOURCES: Record<string, Source> = {
   table: "prototype",
   "description-list": "prototype",
   "person-cell": "prototype",
+  "preview-tile": "prototype",
   "facet-filter": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
@@ -1931,6 +1935,12 @@ export const demos: Demo[] = [
     title: "Facet filter",
     group: "Data display",
     render: () => <FacetFilterDemo />,
+  },
+  {
+    id: "preview-tile",
+    title: "Preview tile",
+    group: "Data display",
+    render: () => <PreviewTileDemo />,
   },
   {
     id: "avatar",
