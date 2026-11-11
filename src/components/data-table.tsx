@@ -16,6 +16,7 @@ import {
   type RowData,
   type RowSelectionState,
   type SortingState,
+  type Table as TableInstance,
 } from "@tanstack/react-table"
 import {
   FiArrowDown as ArrowDownIcon,
@@ -124,6 +125,10 @@ type OffsetPagination = {
   siblingCount?: number
   /** Renders page controls as links: a plain click calls `onPageChange`, a modified click opens the URL. */
   getPageHref?: (page: number) => string
+  /** With one page (and on page 1), hides Previous, Next and the page numbers, and the count reads `labels.total`. */
+  hideSinglePageControls?: boolean
+  /** Previous and Next as icon-only arrows, named by `labels.previous` and `labels.next`. */
+  iconArrows?: boolean
 }
 
 type CursorPagination = {
@@ -166,6 +171,8 @@ type DataTableLabels = {
   reorderCancelled?: (label: string, position: number) => string
   selected?: (count: number) => React.ReactNode
   showing?: (from: number, to: number, total: number) => React.ReactNode
+  /** The count on a single page with `hideSinglePageControls`, e.g. "42 files". */
+  total?: (total: number) => React.ReactNode
   emptyTitle?: React.ReactNode
   emptyDescription?: React.ReactNode
   errorTitle?: React.ReactNode
@@ -202,6 +209,7 @@ const DEFAULT_LABELS: Required<DataTableLabels> = {
     `Reordering cancelled. ${label} returned to position ${position}.`,
   selected: (count) => `${count} selected`,
   showing: (from, to, total) => `Showing ${from} to ${to} of ${total}`,
+  total: (total) => `${total} ${total === 1 ? "result" : "results"}`,
   emptyTitle: "Nothing here yet",
   emptyDescription: "Items you add will show up here.",
   errorTitle: "Couldn't load this list",
@@ -233,8 +241,14 @@ type DataTableProps<TData> = {
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean)
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
-  /** Shown above the table while rows are selected. */
-  bulkActions?: (selected: TData[], clear: () => void) => React.ReactNode
+  /** Keeps ticks on rows that leave `data`, e.g. on other server pages: the bulk bar counts every selected id, so a parent ticked with its two children counts 3 (without it, 1). Needs `getRowId`, `bulkActions` and a controlled `rowSelection`: the app clears it when filters change and removes deleted ids. With an app's own bar, such as `BulkBar`, it does nothing: `rowSelection` already holds every page. */
+  crossPageSelection?: boolean
+  /** Shown above the table while rows are selected. `selected` holds this page's selected rows (with `crossPageSelection`, also the last loaded copy of those on other pages), `ids` every selected row id (from `getRowId`; row indexes without it). */
+  bulkActions?: (
+    selected: TData[],
+    clear: () => void,
+    ids: string[]
+  ) => React.ReactNode
   /** Enables header sorting. Client-side unless `manualSorting` is set. */
   sortable?: boolean
   sorting?: SortingState
@@ -256,6 +270,28 @@ type DataTableProps<TData> = {
   className?: string
 }
 
+/** The last loaded copy of each selected row, so bulk actions still get the ones now on other pages. */
+function useKeptRows<TData>(
+  table: TableInstance<TData>,
+  rowSelection: RowSelectionState,
+  enabled: boolean
+) {
+  const [lastKept, setLastKept] = React.useState<ReadonlyMap<string, TData>>(
+    () => new Map()
+  )
+  const kept = new Map<string, TData>()
+  if (enabled) {
+    for (const [id, row] of lastKept) if (rowSelection[id]) kept.set(id, row)
+    for (const row of table.getCoreRowModel().flatRows)
+      if (rowSelection[row.id]) kept.set(row.id, row.original)
+  }
+  // Only on a real change, so a new `data` array with the same rows doesn't render twice.
+  let changed = kept.size !== lastKept.size
+  for (const [id, row] of kept) if (lastKept.get(id) !== row) changed = true
+  if (changed) setLastKept(kept)
+  return kept
+}
+
 function DataTable<TData>({
   columns,
   data,
@@ -273,6 +309,7 @@ function DataTable<TData>({
   enableRowSelection = false,
   rowSelection: rowSelectionProp,
   onRowSelectionChange,
+  crossPageSelection = false,
   bulkActions,
   sortable = false,
   sorting: sortingProp,
@@ -296,6 +333,18 @@ function DataTable<TData>({
 
   const rowSelection = rowSelectionProp ?? rowSelectionState
   const sorting = sortingProp ?? sortingState
+
+  // Index ids repeat on every page, and only the app can reset an uncontrolled selection when its filters change.
+  const crossPage =
+    crossPageSelection &&
+    getRowId !== undefined &&
+    rowSelectionProp !== undefined
+  React.useEffect(() => {
+    if (crossPageSelection && !crossPage)
+      console.warn(
+        "DataTable: crossPageSelection needs getRowId and a controlled rowSelection, so it is ignored."
+      )
+  }, [crossPageSelection, crossPage])
 
   const reorderable = Boolean(onReorder) && !getSubRows
   const reorderEnabled = reorderable && sorting.length === 0
@@ -403,9 +452,21 @@ function DataTable<TData>({
 
   const rows = table.getRowModel().rows
   const columnCount = table.getVisibleLeafColumns().length
-  const selectedRows = table
-    .getSelectedRowModel()
-    .rows.map((row) => row.original)
+  const pageSelectedRows = table.getSelectedRowModel().rows
+  const keptRows = useKeptRows(
+    table,
+    rowSelection,
+    crossPage && Boolean(bulkActions)
+  )
+  const selectedIds = crossPage
+    ? Object.keys(rowSelection).filter((id) => rowSelection[id])
+    : pageSelectedRows.map((row) => row.id)
+  const selectedRows = crossPage
+    ? selectedIds.flatMap((id) => {
+        const row = keptRows.get(id)
+        return row === undefined ? [] : [row]
+      })
+    : pageSelectedRows.map((row) => row.original)
   const clearSelection = () => table.resetRowSelection()
   const showProgress = refreshing && !loading
   const busy = loading && !error
@@ -551,19 +612,19 @@ function DataTable<TData>({
         className
       )}
     >
-      {selectedRows.length > 0 && bulkActions ? (
+      {selectedIds.length > 0 && bulkActions ? (
         <div
           data-slot="data-table-bulk-bar"
           className="flex flex-wrap items-center gap-3 border-b border-border-subtle bg-primary-subtle-2 px-5 py-3"
         >
           <span className="text-sm font-[560]">
-            {labels.selected(selectedRows.length)}
+            {labels.selected(selectedIds.length)}
           </span>
           <Button variant="link" size="sm" onClick={clearSelection}>
             {labels.clearSelection}
           </Button>
           <div className="ms-auto flex flex-wrap items-center gap-2">
-            {bulkActions(selectedRows, clearSelection)}
+            {bulkActions(selectedRows, clearSelection, selectedIds)}
           </div>
         </div>
       ) : (
@@ -872,38 +933,80 @@ function DataTablePagination(
     )
   }
 
+  return <OffsetPager {...props} labels={labels} />
+}
+
+function OffsetPager(
+  props: OffsetPagination & {
+    labels: Required<DataTableLabels>
+    className?: string
+  }
+) {
+  const countRef = React.useRef<HTMLSpanElement>(null)
+  const controlsHadFocus = React.useRef(false)
+  // React runs a ref's cleanup before it removes the node, so focus is still inside.
+  const trackControls = React.useCallback((node: HTMLDivElement | null) => {
+    if (!node) return
+    return () => {
+      controlsHadFocus.current = node.contains(document.activeElement)
+    }
+  }, [])
+  React.useLayoutEffect(() => {
+    if (!controlsHadFocus.current) return
+    controlsHadFocus.current = false
+    countRef.current?.focus()
+  })
+
   const {
     page,
     pageSize,
     total,
+    labels,
     onPageChange,
     onPageSizeChange,
     showPageNumbers = false,
     siblingCount = 1,
     getPageHref,
+    hideSinglePageControls = false,
+    iconArrows = false,
   } = props
   const pageSizeOptions = props.pageSizeOptions ?? [10, 15, 25, 50, 100]
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
-  const from = total === 0 ? 0 : (page - 1) * pageSize + 1
-  const to = Math.min(page * pageSize, total)
+  // A page past the last one keeps Previous, so it isn't a dead end.
+  const controls = !hideSinglePageControls || pageCount > 1 || page > 1
+  // Only the count is left, so it isn't a landmark; the role changes, not the element, so nothing inside remounts.
+  const landmark = controls || Boolean(onPageSizeChange)
+  const current = Math.min(page, pageCount)
+  const from = total === 0 ? 0 : (current - 1) * pageSize + 1
+  const to = Math.min(current * pageSize, total)
   const linkTo = (target: number, disabled = false) => ({
     disabled,
     href: disabled ? undefined : getPageHref?.(target),
     onNavigate: target === page ? undefined : () => onPageChange(target),
   })
 
+  // Nothing to count: a first load's total is still 0, and an empty list has its own empty state.
+  if (!controls && total === 0 && !onPageSizeChange) return null
+
   return (
     <nav
       data-slot="data-table-pagination"
-      aria-label={labels.pagination}
+      role={landmark ? undefined : "none"}
+      aria-label={landmark ? labels.pagination : undefined}
       className={cn(
         "flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border-subtle px-5 py-3",
         showPageNumbers && "@container/pagination",
         props.className
       )}
     >
-      <span className="text-[12.5px] text-muted-foreground tabular-nums">
-        {labels.showing(from, to, total)}
+      <span
+        ref={countRef}
+        tabIndex={controls ? undefined : -1}
+        className="text-[12.5px] text-muted-foreground tabular-nums outline-none"
+      >
+        {controls
+          ? labels.showing(from, to, total)
+          : total > 0 && labels.total(total)}
       </span>
       {onPageSizeChange && (
         <label className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
@@ -925,49 +1028,58 @@ function DataTablePagination(
           </Select>
         </label>
       )}
-      <div className="ms-auto flex flex-wrap items-center justify-end gap-2">
-        <PageControl
-          variant="outline"
-          size="sm"
-          {...linkTo(page - 1, page <= 1)}
+      {controls && (
+        <div
+          ref={trackControls}
+          className="ms-auto flex flex-wrap items-center justify-end gap-2"
         >
-          <ChevronLeftIcon className="rtl:rotate-180" /> {labels.previous}
-        </PageControl>
-        {showPageNumbers && (
-          <div className="hidden items-center gap-1 @md/pagination:flex">
-            {pageItems(page, pageCount, siblingCount).map((item, index) =>
-              item === "ellipsis" ? (
-                <span
-                  key={`ellipsis-${index}`}
-                  className="relative flex size-8 items-center justify-center text-muted-foreground"
-                >
-                  <MoreHorizontalIcon aria-hidden="true" className="size-4" />
-                  <span className="sr-only">{labels.morePages}</span>
-                </span>
-              ) : (
-                <PageControl
-                  key={item}
-                  variant={item === page ? "secondary" : "ghost"}
-                  size="sm"
-                  className="min-w-8 px-2 tabular-nums"
-                  aria-label={labels.page(item)}
-                  aria-current={item === page ? "page" : undefined}
-                  {...linkTo(item)}
-                >
-                  {item}
-                </PageControl>
-              )
-            )}
-          </div>
-        )}
-        <PageControl
-          variant="outline"
-          size="sm"
-          {...linkTo(page + 1, page >= pageCount)}
-        >
-          {labels.next} <ChevronRightIcon className="rtl:rotate-180" />
-        </PageControl>
-      </div>
+          <PageControl
+            variant="outline"
+            size={iconArrows ? "icon-sm" : "sm"}
+            aria-label={iconArrows ? labels.previous : undefined}
+            {...linkTo(Math.min(page - 1, pageCount), page <= 1)}
+          >
+            <ChevronLeftIcon className="rtl:rotate-180" />
+            {!iconArrows && <> {labels.previous}</>}
+          </PageControl>
+          {showPageNumbers && (
+            <div className="hidden items-center gap-1 @md/pagination:flex">
+              {pageItems(current, pageCount, siblingCount).map((item, index) =>
+                item === "ellipsis" ? (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="relative flex size-8 items-center justify-center text-muted-foreground"
+                  >
+                    <MoreHorizontalIcon aria-hidden="true" className="size-4" />
+                    <span className="sr-only">{labels.morePages}</span>
+                  </span>
+                ) : (
+                  <PageControl
+                    key={item}
+                    variant={item === current ? "secondary" : "ghost"}
+                    size="sm"
+                    className="min-w-8 px-2 tabular-nums"
+                    aria-label={labels.page(item)}
+                    aria-current={item === current ? "page" : undefined}
+                    {...linkTo(item)}
+                  >
+                    {item}
+                  </PageControl>
+                )
+              )}
+            </div>
+          )}
+          <PageControl
+            variant="outline"
+            size={iconArrows ? "icon-sm" : "sm"}
+            aria-label={iconArrows ? labels.next : undefined}
+            {...linkTo(page + 1, page >= pageCount)}
+          >
+            {!iconArrows && <>{labels.next} </>}
+            <ChevronRightIcon className="rtl:rotate-180" />
+          </PageControl>
+        </div>
+      )}
     </nav>
   )
 }
