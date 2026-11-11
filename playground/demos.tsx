@@ -45,6 +45,7 @@ import {
   CardBrandIconDemo,
   ConfirmDialogDemo,
   DataTableDemo,
+  DataTablePagerDemo,
   DataTableReorderDemo,
   DataTableSelectionDemo,
   DataTableTreeDemo,
@@ -411,6 +412,8 @@ const KEYWORDS: Record<string, string> = {
   "data-table-selection":
     "select selection checkbox bulk pages cross-page server pagination",
   "data-table-reorder": "drag drop reorder sort order position handle dnd",
+  "data-table-pager":
+    "pagination pager pages footer count compact arrows grid standalone",
   "confirm-dialog":
     "confirm delete remove modal are you sure acknowledge checkbox type to confirm",
   "save-bar": "unsaved changes discard sticky footer",
@@ -525,6 +528,7 @@ const SOURCES: Record<string, Source> = {
   "data-table-tree": "figma",
   "data-table-selection": "prototype",
   "data-table-reorder": "figma",
+  "data-table-pager": "prototype",
   "radio-card": "prototype",
   "switch-field": "prototype",
   "stat-card": "prototype",
@@ -1021,6 +1025,12 @@ export const demos: Demo[] = [
     title: "Data table: reorder rows",
     group: "Patterns",
     render: () => <DataTableReorderDemo />,
+  },
+  {
+    id: "data-table-pager",
+    title: "Data table: compact pager",
+    group: "Patterns",
+    render: () => <DataTablePagerDemo />,
   },
   {
     id: "data-table-tree",
