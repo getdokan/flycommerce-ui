@@ -50,6 +50,8 @@ import {
   DataTableTreeDemo,
   FacetFilterDemo,
   PeriodMenuDemo,
+  RowActionsMenuDemo,
+  BulkBarDemo,
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
@@ -82,6 +84,8 @@ import {
 } from "./product-demos"
 import { PreviewFrameDemo } from "./preview-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
+import { MediaLibraryGridDemo } from "./media-library-grid-demo"
+import { MediaCellDemo } from "./media-cell-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import { PreviewTileDemo } from "./preview-tile-demo"
 import {
@@ -349,8 +353,12 @@ const KEYWORDS: Record<string, string> = {
     "customer vendor staff user avatar initials name guest table row cell",
   "preview-tile":
     "theme template picture thumbnail card tile grid look inside highlighted live install",
+  "row-actions-menu":
+    "more ellipsis kebab dots row actions menu dropdown open copy download delete tile list file",
+  "bulk-bar":
+    "bulk actions selection selected select all page checkbox toolbar clear delete download grid table",
   "facet-filter":
-    "filter dropdown checkbox multi select facet counts toolbar status payment vendor",
+    "filter dropdown checkbox multi select facet counts toolbar status payment vendor search searchable category tree depth indent",
   "period-menu":
     "date filter period range preset today this month all time custom range calendar toolbar report",
   input:
@@ -434,11 +442,14 @@ const KEYWORDS: Record<string, string> = {
   "media-picker":
     "gallery image upload library choose existing video url attachment details",
   "media-page": "admin media library gallery bulk delete files",
+  "media-library-grid":
+    "media library grid tile checkbox select open caption menu square",
   "media-parts": "tile thumbnail upload progress queue file",
   "preview-stage":
     "file detail preview dot grid image video play document glyph theme",
   "preview-frame":
     "browser window theme screenshot store domain address bar mockup preview",
+  "media-cell": "table cell thumbnail file video play document glyph list",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
@@ -482,6 +493,8 @@ const SOURCES: Record<string, Source> = {
   "person-cell": "prototype",
   "preview-tile": "prototype",
   "facet-filter": "prototype",
+  "row-actions-menu": "prototype",
+  "bulk-bar": "prototype",
   "period-menu": "prototype",
   tabs: "prototype",
   dialog: "prototype",
@@ -529,9 +542,11 @@ const SOURCES: Record<string, Source> = {
   "code-editor": "prototype",
   "media-picker": "figma",
   "media-page": "composite",
+  "media-library-grid": "prototype",
   "media-parts": "figma",
   "preview-stage": "prototype",
   "preview-frame": "prototype",
+  "media-cell": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
   "option-list-editor": "figma",
@@ -1170,10 +1185,22 @@ export const demos: Demo[] = [
     render: () => <MediaPageDemo />,
   },
   {
+    id: "media-library-grid",
+    title: "Media library grid",
+    group: "Patterns",
+    render: () => <MediaLibraryGridDemo />,
+  },
+  {
     id: "media-parts",
     title: "Media tile & upload rows",
     group: "Patterns",
     render: () => <MediaPartsDemo />,
+  },
+  {
+    id: "media-cell",
+    title: "Media cell",
+    group: "Patterns",
+    render: () => <MediaCellDemo />,
   },
   {
     id: "dropzone",
@@ -1971,6 +1998,18 @@ export const demos: Demo[] = [
     title: "Preview tile",
     group: "Data display",
     render: () => <PreviewTileDemo />,
+  },
+  {
+    id: "row-actions-menu",
+    title: "Row actions menu",
+    group: "Data display",
+    render: () => <RowActionsMenuDemo />,
+  },
+  {
+    id: "bulk-bar",
+    title: "Bulk bar",
+    group: "Data display",
+    render: () => <BulkBarDemo />,
   },
   {
     id: "avatar",
