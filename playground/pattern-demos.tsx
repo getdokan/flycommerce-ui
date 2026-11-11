@@ -24,7 +24,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Field,
   FieldDescription,
@@ -46,6 +45,7 @@ import {
   PageHeaderTitle,
   P3_GLYPHS,
   P3IconProvider,
+  RowActionsMenu,
   SaveBar,
   SearchInput,
   SegmentedControl,
@@ -58,7 +58,13 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Table,
+  TableBody,
+  TableCell,
   TableFilters,
+  TableHead,
+  TableHeader,
+  TableRow,
   Timeline,
   TimelineDescription,
   TimelineHeader,
@@ -75,6 +81,7 @@ import {
   type StatusTone,
   PeriodMenu,
   type PeriodRange,
+  type RowActionsMenuItem,
   type BulkBarPageState,
 } from "@/index"
 import { TimelineReleaseHistory } from "./timeline-release-demo"
@@ -173,23 +180,14 @@ const productColumns: ColumnDef<Product, unknown>[] = [
     meta: { align: "end" },
     header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            aria-label={`Actions for ${row.original.name}`}
-          >
-            <EllipsisIcon />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Duplicate</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RowActionsMenu
+        label={`Actions for ${row.original.name}`}
+        items={[
+          { label: "Edit" },
+          { label: "Duplicate" },
+          { label: "Delete", destructive: true, separatorBefore: true },
+        ]}
+      />
     ),
   },
 ]
@@ -871,14 +869,146 @@ const VENDOR_OPTIONS = [
   ),
 }))
 
+// A marketplace's long vendor list, for the searchable filter.
+const MANY_VENDORS = [
+  "Atelier Noor",
+  "Bastide Homme",
+  "Café Noir",
+  "Dhaka Loom",
+  "Élan Studio",
+  "Fern & Fable",
+  "Gold Thread",
+  "Halden Studio",
+  "Indigo Row",
+  "Jute Works",
+  "Kantha House",
+  "Lumen Lab",
+  "Margaux Hale",
+  "Nakshi Craft",
+  "Opaline Parfums",
+  "Paper Moon",
+  "Quill & Ink",
+  "Rosewood Co.",
+  "Saffron Kitchen",
+  "Tide Pool",
+  "Umber Goods",
+  "Velvet Hour",
+  "Willow Bay",
+  "Xylo Toys",
+  "Yarrow Botanics",
+  "Zephyr Home",
+  "Amber Fields",
+  "Birch & Bone",
+  "Coral Reef",
+  "Dune Leather",
+  "Ember Candle",
+  "Fable Books",
+  "Grove Tea",
+  "Harbor Supply",
+  "Iris Ceramics",
+  "Juniper Skin",
+  "Kiln & Clay",
+  "Lark Audio",
+  "Moss Garden",
+  "Nimbus Bags",
+  "Olive Press",
+  "Pebble Kids",
+  "Quarry Stone",
+  "Raven Ink",
+  "Sage Apothecary",
+  "Thistle Linen",
+  "Upland Coffee",
+  "Vale Optics",
+  "Wren Jewelry",
+  "Yew Furniture",
+  "Zinnia Florals",
+  "Aster Knits",
+  "Bramble Bakery",
+  "Cinder Grill",
+  "Delta Bikes",
+  "Echo Vinyl",
+  "Flint Tools",
+  "Garnet Wine",
+  "Heron Outdoor",
+  "Ivy Prints",
+]
+  .sort((a, b) => a.localeCompare(b))
+  .map((label, index) => ({
+    value: String(index + 1),
+    label,
+    count: ((index * 7) % 23) + 1,
+  }))
+
 export function FacetFilterDemo() {
+  const [seller, setSeller] = React.useState<string | null>(null)
   const [payment, setPayment] = React.useState<string[]>(["paid"])
   const [vendor, setVendor] = React.useState<string[]>([])
   const [status, setStatus] = React.useState<string[]>([])
+  const [type, setType] = React.useState<string | null>(null)
+  const [month, setMonth] = React.useState<string | null>("2026-10")
+  const [category, setCategory] = React.useState<string | null>(null)
   // Counts are fetched only while the menu is open; here they appear once it opens.
   const [counting, setCounting] = React.useState(false)
   return (
     <div className="flex flex-wrap gap-2">
+      <FacetFilter
+        mode="single"
+        searchable
+        label="Vendor"
+        heading="Sold by"
+        icon={<Icon name="vendors" />}
+        allLabel="All vendors"
+        allCount={MANY_VENDORS.reduce((sum, vendor) => sum + vendor.count, 0)}
+        options={MANY_VENDORS}
+        value={seller}
+        onValueChange={setSeller}
+        labels={{ search: "Search vendors", noResults: "No vendors found" }}
+      />
+      <FacetFilter
+        mode="single"
+        label="Category"
+        icon={<Icon name="categories" />}
+        allLabel="All categories"
+        allCount={23}
+        options={[
+          { value: "shoes", label: "Shoes", count: 14 },
+          { value: "sneakers", label: "Sneakers", count: 2, depth: 1 },
+          { value: "high-tops", label: "High-tops", count: 1, depth: 2 },
+          { value: "boots", label: "Boots", count: 5, depth: 1 },
+          { value: "home", label: "Home", count: 9 },
+          { value: "vases", label: "Vases", count: 4, depth: 1 },
+        ]}
+        value={category}
+        onValueChange={setCategory}
+      />
+      <FacetFilter
+        mode="single"
+        label="Type"
+        icon={<Icon name="media" />}
+        allLabel="All types"
+        allCount={1214}
+        options={[
+          { value: "images", label: "Images", count: 1180 },
+          { value: "videos", label: "Videos", count: 22 },
+          { value: "documents", label: "Documents", count: 12 },
+        ]}
+        value={type}
+        onValueChange={setType}
+      />
+      <FacetFilter
+        mode="single"
+        label="Date"
+        heading="Uploaded"
+        icon={<Icon name="period" />}
+        allLabel="All dates"
+        options={[
+          { value: "2026-10", label: "October 2026", count: 48 },
+          { value: "2026-09", label: "September 2026", count: 131 },
+          { value: "2026-07", label: "July 2026", count: 6 },
+        ]}
+        value={month}
+        onValueChange={setMonth}
+      />
       <FacetFilter
         label="Payment"
         icon={<Icon name="cash" />}
@@ -921,6 +1051,134 @@ export function FacetFilterDemo() {
         onValueChange={setStatus}
         onOpenChange={setCounting}
       />
+    </div>
+  )
+}
+
+type DemoFile = { id: string; name: string; type: string; url: string }
+
+const DEMO_FILES: DemoFile[] = [
+  {
+    id: "1",
+    name: "boutique-tote.jpg",
+    type: "JPG image",
+    url: "https://picsum.photos/seed/fc-tote/800/800",
+  },
+  {
+    id: "2",
+    name: "Autumn winter 2026 campaign",
+    type: "YouTube video",
+    url: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+  },
+]
+
+function fileActions(file: DemoFile, canDelete: boolean): RowActionsMenuItem[] {
+  const video = file.type === "YouTube video"
+  return [
+    {
+      label: "Open",
+      icon: <Icon name="external" />,
+      href: file.url,
+      target: "_blank",
+    },
+    {
+      label: "Copy URL",
+      icon: <Icon name="duplicate" />,
+      onSelect: async () => {
+        try {
+          await navigator.clipboard.writeText(file.url)
+          toast.success("Link copied.")
+        } catch {
+          toast.error("Couldn't copy the link. Your browser blocked it.")
+        }
+      },
+    },
+    {
+      label: "Download",
+      icon: <Icon name="export" />,
+      hidden: video,
+      onSelect: () => toast(`Downloading ${file.name}.`),
+    },
+    {
+      label: "Delete",
+      icon: <Icon name="delete" />,
+      destructive: true,
+      separatorBefore: true,
+      hidden: !canDelete,
+      onSelect: () => toast(`Delete ${file.name}?`),
+    },
+  ]
+}
+
+export function RowActionsMenuDemo() {
+  const [canDelete, setCanDelete] = React.useState(true)
+  const open = (file: DemoFile) => toast(`Opened the details of ${file.name}.`)
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <SwitchField
+        title="Can delete media"
+        checked={canDelete}
+        onCheckedChange={setCanDelete}
+      />
+      <Card className="w-full">
+        <CardContent flush>
+          <Table variant="list">
+            <TableHeader>
+              <TableRow>
+                <TableHead>File</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {DEMO_FILES.map((file) => (
+                <TableRow
+                  key={file.id}
+                  tabIndex={0}
+                  onClick={() => open(file)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") open(file)
+                  }}
+                >
+                  <TableCell className="font-medium">{file.name}</TableCell>
+                  <TableCell>{file.type}</TableCell>
+                  <TableCell className="text-end">
+                    <RowActionsMenu
+                      label={`Actions for ${file.name}`}
+                      items={fileActions(file, canDelete)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {DEMO_FILES.map((file) => (
+          <div
+            key={file.id}
+            className="relative aspect-square overflow-hidden rounded-xl bg-muted"
+          >
+            <button
+              type="button"
+              aria-label={`Open details for ${file.name}`}
+              onClick={() => open(file)}
+              className="absolute inset-0 flex items-end rounded-xl p-3 text-start text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
+            >
+              <span className="truncate">{file.name}</span>
+            </button>
+            <div className="absolute end-2 top-2 rounded-md bg-card shadow-1">
+              <RowActionsMenu
+                label={`Actions for ${file.name}`}
+                items={fileActions(file, canDelete)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

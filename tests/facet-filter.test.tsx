@@ -238,3 +238,342 @@ describe("FacetFilter", () => {
     expect(onValueChange).toHaveBeenLastCalledWith(["locked"])
   })
 })
+
+const TYPES = [
+  { value: "images", label: "Images", count: 1204 },
+  { value: "videos", label: "Videos", count: 3 },
+  { value: "documents", label: "Documents" },
+]
+
+describe("FacetFilter mode=single", () => {
+  it("reads the all label, then the pick, and names the filter", () => {
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value={null}
+        onValueChange={() => {}}
+      />
+    )
+    const trigger = () => screen.getByRole("button", { name: /^Type/ })
+    expect(trigger().textContent).toBe("All types")
+    expect(trigger().getAttribute("aria-label")).toBe("Type: All types")
+    expect(trigger().getAttribute("data-picked")).toBeNull()
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="videos"
+        onValueChange={() => {}}
+      />
+    )
+    expect(trigger().textContent).toBe("Videos")
+    expect(trigger().getAttribute("aria-label")).toBe("Type: Videos")
+    expect(trigger().getAttribute("data-picked")).toBe("1")
+  })
+
+  it("lists the all row first, then the options as radio items with their counts, under the heading", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Date"
+        heading="Uploaded"
+        allLabel="All dates"
+        allCount={1207}
+        options={TYPES}
+        value="images"
+        onValueChange={() => {}}
+        locale="en-US"
+        open
+      />
+    )
+    expect(screen.getByText("Uploaded")).toBeTruthy()
+    expect(screen.queryByText("Date")).toBeNull()
+    const items = screen.getAllByRole("menuitemradio")
+    expect(items.map((item) => item.textContent)).toEqual([
+      "All dates1,207",
+      "Images1,204",
+      "Videos3",
+      "Documents—",
+    ])
+    expect(items[1]!.getAttribute("aria-checked")).toBe("true")
+    expect(items[0]!.getAttribute("aria-checked")).toBe("false")
+    expect(screen.queryByRole("menuitemcheckbox")).toBeNull()
+    expect(screen.queryByRole("menuitem", { name: "Clear" })).toBeNull()
+  })
+
+  it("shows no count on the all row without allCount", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value={null}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const all = screen.getByRole("menuitemradio", { name: "All types" })
+    expect(all.textContent).toBe("All types")
+    expect(all.getAttribute("aria-checked")).toBe("true")
+  })
+
+  it("applies a pick at once, closes the menu and returns focus to the trigger", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value={null}
+        onValueChange={onValueChange}
+      />
+    )
+    const trigger = screen.getByRole("button", { name: "Type: All types" })
+    await user.click(trigger)
+    await user.click(screen.getByRole("menuitemradio", { name: /^Videos/ }))
+    expect(onValueChange).toHaveBeenCalledWith("videos")
+    expect(screen.queryByRole("menu")).toBeNull()
+    expect(document.activeElement).toBe(trigger)
+
+    await user.keyboard("{Enter}")
+    screen.getByRole("menuitemradio", { name: /^Documents/ }).focus()
+    await user.keyboard("{Enter}")
+    expect(onValueChange).toHaveBeenLastCalledWith("documents")
+    expect(screen.queryByRole("menu")).toBeNull()
+  })
+
+  it("empties the pick from the all row, and ignores the row already picked", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="images"
+        onValueChange={onValueChange}
+        open
+      />
+    )
+    await user.click(screen.getByRole("menuitemradio", { name: /^Images/ }))
+    expect(onValueChange).not.toHaveBeenCalled()
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="images"
+        onValueChange={onValueChange}
+        open
+      />
+    )
+    await user.click(screen.getByRole("menuitemradio", { name: "All types" }))
+    expect(onValueChange).toHaveBeenCalledWith(null)
+  })
+
+  it('reads "{label}, 1" for a value with no option, and the all row clears it', async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <FacetFilter
+        mode="single"
+        label="Date"
+        allLabel="All dates"
+        options={TYPES}
+        value="2026-05"
+        onValueChange={onValueChange}
+      />
+    )
+    const trigger = screen.getByRole("button", { name: "Date, 1" })
+    expect(trigger.textContent).toBe("Date, 1")
+    expect(trigger.getAttribute("data-picked")).toBe("1")
+
+    await user.click(trigger)
+    const all = screen.getByRole("menuitemradio", { name: "All dates" })
+    expect(all.getAttribute("aria-checked")).toBe("false")
+    await user.click(all)
+    expect(onValueChange).toHaveBeenCalledWith(null)
+  })
+
+  it("reads the option's label once the picked value's option arrives", () => {
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={[]}
+        value="videos"
+        onValueChange={() => {}}
+      />
+    )
+    const trigger = () => screen.getByRole("button", { name: /^Type/ })
+    expect(trigger().textContent).toBe("Type, 1")
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Type"
+        allLabel="All types"
+        options={TYPES}
+        value="videos"
+        onValueChange={() => {}}
+      />
+    )
+    expect(trigger().textContent).toBe("Videos")
+    expect(trigger().getAttribute("aria-label")).toBe("Type: Videos")
+  })
+
+  it("heads the menu with heading in the default mode too", () => {
+    render(
+      <FacetFilter
+        label="Payment"
+        heading="Payment status"
+        options={OPTIONS}
+        value={[]}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    expect(screen.getByText("Payment status")).toBeTruthy()
+  })
+})
+
+const CATEGORIES = [
+  { value: "shoes", label: "Shoes", count: 14 },
+  { value: "sneakers", label: "Sneakers", count: 2, depth: 1 },
+  { value: "high-tops", label: "High-tops", count: 1, depth: 2 },
+  { value: "home", label: "Home", count: 9 },
+]
+
+const row = (item: HTMLElement) =>
+  item.querySelector<HTMLElement>("[data-slot=facet-filter-row]")!
+
+describe("FacetFilter option depth", () => {
+  it("indents each level by one step and leaves top-level options flush", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value={null}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const item = (name: RegExp) => screen.getByRole("menuitemradio", { name })
+    expect(row(item(/^Shoes/)).style.paddingInlineStart).toBe("")
+    expect(row(item(/^Sneakers/)).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 3)"
+    )
+    expect(row(item(/^High-tops/)).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 6)"
+    )
+    expect(row(item(/^All categories/)).style.paddingInlineStart).toBe("")
+  })
+
+  it("keeps the count inside the indented row, and the item's name as its label and count", () => {
+    render(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value={null}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const sneakers = screen.getByRole("menuitemradio", { name: "Sneakers2" })
+    expect(row(sneakers).textContent).toBe("Sneakers2")
+  })
+
+  it("picks an indented option and reads its label in the trigger", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const { rerender } = render(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value={null}
+        onValueChange={onValueChange}
+      />
+    )
+    await user.click(
+      screen.getByRole("button", { name: "Category: All categories" })
+    )
+    await user.click(screen.getByRole("menuitemradio", { name: /^Sneakers/ }))
+    expect(onValueChange).toHaveBeenCalledWith("sneakers")
+
+    rerender(
+      <FacetFilter
+        mode="single"
+        label="Category"
+        allLabel="All categories"
+        options={CATEGORIES}
+        value="sneakers"
+        onValueChange={onValueChange}
+      />
+    )
+    const trigger = screen.getByRole("button", { name: "Category: Sneakers" })
+    expect(trigger.textContent).toBe("Sneakers")
+  })
+
+  it("indents checkbox options in the default mode too", () => {
+    render(
+      <FacetFilter
+        label="Category"
+        options={CATEGORIES}
+        value={["high-tops"]}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const highTops = screen.getByRole("menuitemcheckbox", {
+      name: /^High-tops/,
+    })
+    expect(highTops.getAttribute("aria-checked")).toBe("true")
+    expect(row(highTops).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 6)"
+    )
+  })
+
+  it("reads a negative, fractional, missing or non-finite depth as whole levels from 0", () => {
+    render(
+      <FacetFilter
+        label="Category"
+        options={[
+          { value: "a", label: "Minus", depth: -2 },
+          { value: "b", label: "Fraction", depth: 1.8 },
+          { value: "c", label: "Nan", depth: Number.NaN },
+          { value: "d", label: "Infinite", depth: Number.POSITIVE_INFINITY },
+        ]}
+        value={[]}
+        onValueChange={() => {}}
+        open
+      />
+    )
+    const item = (name: RegExp) =>
+      screen.getByRole("menuitemcheckbox", { name })
+    expect(row(item(/^Minus/)).style.paddingInlineStart).toBe("")
+    expect(row(item(/^Fraction/)).style.paddingInlineStart).toBe(
+      "calc(var(--spacing) * 3)"
+    )
+    expect(row(item(/^Nan/)).style.paddingInlineStart).toBe("")
+    expect(row(item(/^Infinite/)).style.paddingInlineStart).toBe("")
+  })
+})
