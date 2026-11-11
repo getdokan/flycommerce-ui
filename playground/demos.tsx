@@ -81,6 +81,7 @@ import {
 } from "./product-demos"
 import { PreviewFrameDemo } from "./preview-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
+import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import { PreviewTileDemo } from "./preview-tile-demo"
 import {
@@ -431,6 +432,8 @@ const KEYWORDS: Record<string, string> = {
   "media-picker":
     "gallery image upload library choose existing video url attachment details",
   "media-page": "admin media library gallery bulk delete files",
+  "media-library-grid":
+    "media library grid tile checkbox select open caption menu square",
   "media-parts": "tile thumbnail upload progress queue file",
   "preview-stage":
     "file detail preview dot grid image video play document glyph theme",
@@ -525,6 +528,7 @@ const SOURCES: Record<string, Source> = {
   "code-editor": "prototype",
   "media-picker": "figma",
   "media-page": "composite",
+  "media-library-grid": "prototype",
   "media-parts": "figma",
   "preview-stage": "prototype",
   "preview-frame": "prototype",
@@ -1158,6 +1162,12 @@ export const demos: Demo[] = [
     title: "Media library page",
     group: "Patterns",
     render: () => <MediaPageDemo />,
+  },
+  {
+    id: "media-library-grid",
+    title: "Media library grid",
+    group: "Patterns",
+    render: () => <MediaLibraryGridDemo />,
   },
   {
     id: "media-parts",
