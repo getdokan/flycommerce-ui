@@ -35,8 +35,8 @@ function Badge({
 }: React.ComponentProps<"span"> &
   VariantProps<typeof badgeVariants> & {
     asChild?: boolean
-    /** Leading status dot in the badge's own colour. */
-    dot?: boolean
+    /** Leading status dot in the badge's own colour; `"pulse"` adds a ring that pings outwards (not under reduced motion). */
+    dot?: boolean | "pulse"
   }) {
   const Comp = asChild ? Slot.Root : "span"
 
@@ -49,9 +49,17 @@ function Badge({
     >
       {dot && !asChild && (
         <span
+          data-slot="badge-dot"
           aria-hidden="true"
-          className="size-1.5 shrink-0 rounded-full bg-current"
-        />
+          className="relative size-1.5 shrink-0 rounded-full bg-current"
+        >
+          {dot === "pulse" && (
+            <span
+              data-slot="badge-dot-ping"
+              className="absolute inset-0 animate-ping rounded-full bg-current opacity-75 motion-reduce:hidden"
+            />
+          )}
+        </span>
       )}
       {children}
     </Comp>
