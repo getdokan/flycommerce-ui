@@ -495,6 +495,9 @@ export function NavTabsDemo() {
     ["general", "General"],
     ["shipping", "Shipping"],
     ["tax", "Tax"],
+    ["payments", "Payments"],
+    ["notifications", "Notifications"],
+    ["domains", "Domains"],
     ["seo", "SEO"],
   ] as const
   return (

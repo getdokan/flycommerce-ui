@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- `NavTabsLink`: when a link becomes active, its row scrolls to show it, smoothly (at once on the first render or with reduced motion), and the page doesn't move. Apps that did this with `scrollIntoView` can drop that call: it also scrolled the page and cancelled a smooth scroll already running, so on a phone a tab that jumps to a section needed two taps. `ref` still reaches the link, with or without `asChild`.
+
 ## [0.7.0] - 2026-11-11
 
 New: `MediaGrid` (a managed media library grid), `RowActionsMenu`, `BulkBar`, `PreviewTile`, `PreviewStage`, `PreviewFrame` and `StepMeter`; `FacetFilter` single-choice mode, nested options and search; `DataTable` selection across server pages, a compact pager and row checkboxes named after their row; `MediaCell` media and title links; `Badge dot="pulse"`, `TimelineItem highlighted` and new `Icon` names. Fixed: `RichSelect` search with accents and disabled options, `DataTable` on a page past the last one, and `MediaCell` titles that aren't text.
