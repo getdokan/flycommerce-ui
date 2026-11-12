@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
@@ -30,18 +32,65 @@ function NavTabs({
   )
 }
 
-/** Pass `asChild` to render your router's Link; set `active` for the current route. */
+/**
+ * Scrolls only the tab row so the link is fully visible. `scrollIntoView` would also scroll the
+ * page, which cancels a smooth page scroll already running, e.g. to the section the tab names.
+ */
+function keepInRow(link: HTMLElement, smooth: boolean) {
+  const row = link.closest<HTMLElement>('[data-slot="nav-tabs"]')
+  if (!row) return
+  const bounds = row.getBoundingClientRect()
+  const style = getComputedStyle(row)
+  const start = bounds.left + (parseFloat(style.paddingLeft) || 0)
+  const end = bounds.right - (parseFloat(style.paddingRight) || 0)
+  const { left, right } = link.getBoundingClientRect()
+  const delta = left < start ? left - start : right > end ? right - end : 0
+  if (delta === 0) return
+  const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  row.scrollBy({ left: delta, behavior: smooth && !reduce ? "smooth" : "auto" })
+}
+
+/**
+ * Pass `asChild` to render your router's Link; set `active` for the current route.
+ * The active link scrolls into view within the row, never moving the page.
+ */
 function NavTabsLink({
   className,
   active = false,
   asChild = false,
+  ref,
   ...props
 }: React.ComponentProps<"a"> & { active?: boolean; asChild?: boolean }) {
   const variant = React.useContext(NavTabsContext)
   const Comp = asChild ? Slot.Root : "a"
+  const link = React.useRef<HTMLAnchorElement | null>(null)
+  const mounted = React.useRef(false)
+
+  const setRef = React.useCallback(
+    (node: HTMLAnchorElement | null) => {
+      link.current = node
+      const cleanup = typeof ref === "function" ? ref(node) : undefined
+      if (ref && typeof ref !== "function") ref.current = node
+      // A returned cleanup replaces React's call with null, so reset both refs here.
+      return () => {
+        link.current = null
+        if (typeof cleanup === "function") cleanup()
+        else if (typeof ref === "function") ref(null)
+        else if (ref) ref.current = null
+      }
+    },
+    [ref]
+  )
+
+  React.useLayoutEffect(() => {
+    const smooth = mounted.current
+    mounted.current = true
+    if (active && link.current) keepInRow(link.current, smooth)
+  }, [active])
 
   return (
     <Comp
+      ref={setRef}
       data-slot="nav-tabs-link"
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
