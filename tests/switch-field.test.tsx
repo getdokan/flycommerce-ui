@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import { Badge, SwitchField } from "@/index"
+import { Badge, SwitchField, TooltipProvider } from "@/index"
 
 const state = (container: HTMLElement) =>
   container.querySelector("[data-slot=switch-field-state]")
@@ -175,5 +175,46 @@ describe("SwitchField", () => {
     expect(toggle.getAttribute("aria-busy")).toBe("true")
     await user.click(screen.getByText("Report transactions"))
     expect(toggle.getAttribute("aria-checked")).toBe("false")
+  })
+
+  it("locks a row with a reason the title can't toggle past", async () => {
+    const user = userEvent.setup()
+    const onCheckedChange = vi.fn()
+    render(
+      <TooltipProvider>
+        <SwitchField
+          variant="row"
+          title="Order confirmed"
+          description="Sent when an order is placed."
+          checked
+          onCheckedChange={onCheckedChange}
+          disabledReason="Shoppers need this email, so it's always sent."
+        />
+      </TooltipProvider>
+    )
+    const toggle = screen.getByRole("switch", { name: "Order confirmed" })
+    const described = toggle
+      .getAttribute("aria-describedby")!
+      .split(" ")
+      .map((id) => document.getElementById(id)?.textContent)
+    expect(described).toEqual([
+      "Sent when an order is placed.",
+      "Shoppers need this email, so it's always sent.",
+    ])
+    expect(toggle.getAttribute("aria-disabled")).toBe("true")
+
+    await user.click(screen.getByText("Order confirmed"))
+    expect((await screen.findByRole("tooltip")).textContent).toBe(
+      "Shoppers need this email, so it's always sent."
+    )
+    await user.click(screen.getByText("Sent when an order is placed."))
+    expect(screen.getByRole("tooltip")).toBeTruthy()
+    await user.click(toggle)
+
+    expect(onCheckedChange).not.toHaveBeenCalled()
+    expect(toggle.getAttribute("aria-checked")).toBe("true")
+    expect(
+      document.querySelector("[data-slot=switch-field-state]")?.textContent
+    ).toBe("Enabled")
   })
 })

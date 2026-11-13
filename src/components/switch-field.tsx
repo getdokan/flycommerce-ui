@@ -75,7 +75,7 @@ function SwitchField({
           setUncontrolledOn(value)
           onCheckedChange?.(value)
         }}
-        disabled={disabled || loading}
+        disabled={loading || disabled}
         aria-busy={loading || undefined}
         aria-labelledby={row ? titleId : undefined}
         aria-describedby={description ? descriptionId : undefined}
@@ -98,7 +98,7 @@ function SwitchField({
       >
         <label
           htmlFor={switchId}
-          className="flex cursor-pointer items-start justify-between gap-4 has-disabled:cursor-not-allowed"
+          className="flex cursor-pointer items-start justify-between gap-4 has-disabled:cursor-not-allowed has-[[data-slot=switch][data-disabled]]:cursor-not-allowed"
         >
           <span className="min-w-0">
             <span className="flex flex-wrap items-center gap-2">

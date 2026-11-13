@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `Switch disabledReason` and `SwitchField disabledReason`: a switch that is locked for a reason the user should know, `<SwitchField variant="row" title="Order confirmed" checked disabledReason="Shoppers need this email, so it's always sent." />`. The switch keeps its value and look of a disabled switch, but stays in the tab order with `aria-disabled="true"`, so keyboard focus and hover open a tooltip with the reason, and a screen reader hears the name, the state, "dimmed" and the reason, which joins any `aria-describedby` already set. Clicks, Space, Enter and a click on a row's title change nothing and don't call `onCheckedChange` (`onClick` still runs), and pressing it keeps the reason showing. The reason shows on hover, focus and a press (a tap, or a click on the row's title), stays while the pointer moves onto it and after a press until a press elsewhere, shows when a focused switch gets locked, and Escape hides it. `disabled={false}` unlocks it, so `disabledReason` can stay set while a condition decides. It carries `data-disabled`, so disabled styles apply, and a `Label` right after it dims as it does beside a disabled switch, and, as a disabled switch, it leaves its `name` out of form data and skips `required`. Locking or unlocking it at run time keeps the same element, so focus, value and layout classes stay. A non-empty string, an element, or a list of them (a rich translation) locks it; `0` or `true` doesn't. Keep the reason plain text: a tooltip can't hold a link or button. It takes the place of `disabled`, and of an `InfoTooltip` placed next to a disabled switch. Like `InfoTooltip`, it needs `TooltipProvider` at the app root. Without `disabledReason`, or with an empty one, `disabled` works as before.
+
 ## [0.7.1] - 2026-11-12
 
 Fixed: the active `NavTabsLink` scrolls into view within its row without moving the page, so a tab that jumps to a section works on the first tap on a phone.

@@ -369,7 +369,7 @@ const KEYWORDS: Record<string, string> = {
   textarea: "multiline text area description character count limit",
   select: "dropdown picker options",
   combobox: "autocomplete searchable select typeahead multiple chips",
-  checkbox: "radio switch toggle tick indeterminate",
+  checkbox: "radio switch toggle tick indeterminate locked reason",
   "input-otp": "otp pin verification code",
   calendar: "date",
   badge: "pill tag chip label status dot pulse live",
@@ -433,7 +433,7 @@ const KEYWORDS: Record<string, string> = {
   "radio-card":
     "option card choice row rows checkbox multi select radio group settings details",
   "switch-field":
-    "toggle row setting enabled disabled state label badge nested settings",
+    "toggle row setting enabled disabled state label badge nested settings locked always on reason tooltip",
   "nav-tabs": "tabs links route navigation",
   "segmented-control":
     "radio toggle switch choice option unit metric imperial pill button group",
@@ -1876,6 +1876,14 @@ export const demos: Demo[] = [
           <div className="flex items-center gap-2">
             <Switch id="vacation" />
             <Label htmlFor="vacation">Vacation mode</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="order-confirmed"
+              checked
+              disabledReason="Shoppers need this email, so it's always sent."
+            />
+            <Label htmlFor="order-confirmed">Order confirmed email</Label>
           </div>
         </Row>
       </Stack>
