@@ -65,6 +65,7 @@ import {
 } from "./pattern-demos"
 import { StepMeterDemo } from "./step-meter-demo"
 import { CodeEditorDemo } from "./code-editor-demos"
+import { MergeTagListDemo } from "./merge-tag-list-demo"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import {
   BrandMarkDemo,
@@ -465,6 +466,8 @@ const KEYWORDS: Record<string, string> = {
     "wysiwyg tiptap description textarea formatting bold html heading h1 h4 ai assistant rewrite paraphrase simplify extend suggestion",
   "code-editor":
     "code snippet html css javascript json script codemirror monospace line numbers merge tags custom code",
+  "merge-tag-list":
+    "merge tags placeholders variables tokens chips insert email template sample handlebars mustache",
   "modal-figma": "dialog popup new category form",
   "modal-use-cases":
     "dialog popup import export csv bulk edit invite details terms reject success wizard",
@@ -548,6 +551,7 @@ const SOURCES: Record<string, Source> = {
   "image-upload-field": "prototype",
   "rich-text-editor": "figma",
   "code-editor": "prototype",
+  "merge-tag-list": "prototype",
   "media-picker": "figma",
   "media-page": "composite",
   "media-library-grid": "prototype",
@@ -1173,6 +1177,12 @@ export const demos: Demo[] = [
     title: "Code editor",
     group: "Forms",
     render: () => <CodeEditorDemo />,
+  },
+  {
+    id: "merge-tag-list",
+    title: "Merge tag list",
+    group: "Forms",
+    render: () => <MergeTagListDemo />,
   },
   {
     id: "media-picker",

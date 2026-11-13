@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `MergeTagList` and `MergeTagChip`: the merge tags a template can use, as chips that insert at the editor's cursor, `<MergeTagList tags={[{ tag: "order_number", description: "The order number", sample: "#1043" }]} onInsert={insert} disabled={!canEdit} />`, where `insert(tag, token)` puts the token, `{{order_number}}`, in with `CodeEditor`'s `insertText`, so the app never rebuilds the braces. Each chip shows `{{tag}}` in mono, left to right even on a right-to-left page, with `translate="no"`, and is named "Insert {{order_number}}". Hover or focus shows the description and "Example: #1043"; a tag with neither gets no tooltip. `disabled` stops inserting but keeps the chips focusable (`aria-disabled`), so a read-only user can still see what each tag means, and a click doesn't close the tooltip. A long tag is cut short to fit; a chip without a tooltip shows its full tag on hover (`title`). The list is a group named "Merge tags" (`labels.list`, or your own `aria-label`). `groups={[{ label: "Order", tags }]}` lists them under labelled headings. The words are in `labels.insert(token)`, `labels.example(sample)` and `labels.list`. It needs the app's `TooltipProvider`, and it imports no CodeMirror, so it's in the main entry.
+
 ## [0.7.1] - 2026-11-12
 
 Fixed: the active `NavTabsLink` scrolls into view within its row without moving the page, so a tab that jumps to a section works on the first tap on a phone.
