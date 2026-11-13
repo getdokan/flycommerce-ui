@@ -85,6 +85,7 @@ import {
   TreeSelectDemo,
 } from "./product-demos"
 import { PreviewFrameDemo } from "./preview-frame-demo"
+import { ScaledFrameDemo } from "./scaled-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaCellDemo } from "./media-cell-demo"
@@ -455,6 +456,8 @@ const KEYWORDS: Record<string, string> = {
     "file detail preview dot grid image video play document glyph theme",
   "preview-frame":
     "browser window theme screenshot store domain address bar mockup preview",
+  "scaled-frame":
+    "scale zoom fit email preview iframe srcdoc design width responsive shrink",
   "media-cell": "table cell thumbnail file video play document glyph list",
   "tree-select": "category picker hierarchy nested drill cascader parent",
   "rich-select":
@@ -554,6 +557,7 @@ const SOURCES: Record<string, Source> = {
   "media-parts": "figma",
   "preview-stage": "prototype",
   "preview-frame": "prototype",
+  "scaled-frame": "prototype",
   "media-cell": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
@@ -1191,6 +1195,12 @@ export const demos: Demo[] = [
     title: "Preview frame",
     group: "Patterns",
     render: () => <PreviewFrameDemo />,
+  },
+  {
+    id: "scaled-frame",
+    title: "Scaled frame",
+    group: "Patterns",
+    render: () => <ScaledFrameDemo />,
   },
   {
     id: "media-page",

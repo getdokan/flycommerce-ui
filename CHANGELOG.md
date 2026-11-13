@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `ScaledFrame`: content laid out at a design width and scaled to fit its box, `<ScaledFrame width={640} srcDoc={html} title="Order confirmed preview" />` for an email, or `<ScaledFrame width={1280}>…</ScaledFrame>` for a React tree. It scales down to the container's width as the container resizes (never up, unless `upscale`), centres content narrower than the box, and reserves the scaled height once it knows it (an iframe after it loads), so nothing is cut off and later resizes don't move what's below. With `srcDoc` or `src` it renders a sandboxed iframe on white, as a mail client or browser shows a page (`sandbox="allow-same-origin"` by default, no referrer; `title` is required), and measures the document's height when it loads and whenever it resizes; set `height` for a cross-origin `src`, which can't be measured. `maxHeight` caps the box on screen, and taller content scrolls inside it (while it does, the box is a focusable region a keyboard can scroll; name it with `aria-label`). It scales with `transform`, so it works in every browser.
+
 ## [0.7.1] - 2026-11-12
 
 Fixed: the active `NavTabsLink` scrolls into view within its row without moving the page, so a tab that jumps to a section works on the first tap on a phone.

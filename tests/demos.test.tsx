@@ -5,8 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@/index"
 import { demos } from "../playground/demos"
 
-// jsdom can't compute colour or layout, so those axe rules are checked in the browser instead.
+// jsdom can't compute colour or layout or reach into iframes, so those are checked in the browser instead.
 const AXE_OPTIONS: axe.RunOptions = {
+  iframes: false,
   rules: {
     "color-contrast": { enabled: false },
     region: { enabled: false },
