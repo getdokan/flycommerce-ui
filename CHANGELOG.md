@@ -2,7 +2,13 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [0.8.0] - 2026-11-13
+
+New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
+
+**Check when upgrading:**
+
+- `Dropzone` no longer tints its box when a drag carries no files, such as selected text. Nothing else changes unless you use the new props.
 
 ### Added
 
