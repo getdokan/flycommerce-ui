@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `DeviceFrame`: a phone around a live preview, such as an email or a storefront banner, `<DeviceFrame label="Phone preview" screen="white">…</DeviceFrame>`. A bezel in the new `--device-bezel` token with the new `--elevation-device` shadow (`shadow-device`), a screen clipped to its rounded corners in a phone's proportions, and a home bar below the content. The content scrolls inside the screen with no visible scrollbar; while it overflows it takes keyboard focus (a group named after the frame) so it can be scrolled from the keyboard, and fixed-position content such as a cookie banner stays inside the screen. It fills its container up to `--device-frame-width` (20rem by default; set it in `style` or a class), and the bezel and corners shrink with it through the new `device-frame` utility, so it never overflows a narrow column; it takes its width from its container, so a fit-content wrapper (`w-fit`, `inline-block`) needs a width of its own. `screen="card"` (default) follows the theme; `screen="white"` stays white in dark mode, for content that brings its own colours, such as an email (theme colours inside it still follow the app), with its home bar in the new `--device-home-bar` token. With `label` the frame is a `figure` named by it; the bezel and home bar are decorative. In forced colours the bezel keeps an outline. `device` is `"phone"`, the only device for now.
+
 ## [0.7.1] - 2026-11-12
 
 Fixed: the active `NavTabsLink` scrolls into view within its row without moving the page, so a tab that jumps to a section works on the first tap on a phone.

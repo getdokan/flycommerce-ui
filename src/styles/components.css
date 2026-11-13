@@ -102,6 +102,17 @@
   background-size: 14px 14px;
 }
 
+/* A device frame up to --device-frame-width wide; its bezel and corners follow its width. It takes its width from its container, so a fit-content wrapper needs a width. */
+@utility device-frame {
+  width: 100%;
+  max-width: var(--device-frame-width, 20rem);
+  margin-inline: auto;
+  container-type: inline-size;
+  --device-frame-bezel: 3.25cqi;
+  --device-frame-radius: 10.5cqi;
+  --device-frame-screen-radius: calc(var(--device-frame-radius) - var(--device-frame-bezel));
+}
+
 /* scroll-fade */
 @property --scroll-fade-t {
   syntax: "<length-percentage>";
@@ -664,6 +675,8 @@
     --color-sidebar-primary: var(--sidebar-primary);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-inverse: var(--inverse);
+    --color-device-bezel: var(--device-bezel);
+    --color-device-home-bar: var(--device-home-bar);
     --color-inverse-foreground: var(--inverse-foreground);
     --color-code-gutter: var(--code-gutter);
     --color-tooltip: var(--tooltip);
@@ -746,6 +759,7 @@
     --shadow-lead: var(--elevation-lead);
     --shadow-notice: var(--elevation-notice);
     --shadow-preview: var(--elevation-preview);
+    --shadow-device: var(--elevation-device);
     --ease-fluid: var(--motion-fluid);
 }
 

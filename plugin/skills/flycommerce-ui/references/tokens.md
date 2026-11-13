@@ -48,6 +48,8 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--border`                     | `#e2e2e7`                                                              | border/primary                                     |
 | `--border-subtle`              | `#f1f1f3`                                                              | border/secondary                                   |
 | `--dot-grid`                   | `#e2e2e7`                                                              | dots on the preview stage                          |
+| `--device-bezel`               | `#24242b`                                                              | a phone's bezel around a preview                   |
+| `--device-home-bar`            | `rgb(16 24 40 / 0.18)`                                                 | a phone's home bar on a white screen               |
 | `--input`                      | `#e2e2e7`                                                              |                                                    |
 | `--ring`                       | `rgb(21 93 252 / 0.32)`                                                |                                                    |
 | `--chart-1`                    | `#155dfc`                                                              |                                                    |
@@ -76,6 +78,7 @@ Values live only in `src/styles/theme.css`. In code, use the Tailwind utility (`
 | `--elevation-lead`             | `0 1px 1px rgb(0 0 0 / 0.04), 0 12px 32px -16px rgb(21 93 252 / 0.28)` | lead plate, blue glow                              |
 | `--elevation-notice`           | `0 1px 1px rgb(0 0 0 / 0.04), 0 10px 28px -18px rgb(16 24 40 / 0.25)`  | warning and danger plate                           |
 | `--elevation-preview`          | `0 18px 40px -24px rgb(16 24 40 / 0.45)`                               | a file or page on the preview stage                |
+| `--elevation-device`           | `0 18px 40px -20px rgb(16 24 40 / 0.5)`                                | a phone around a preview                           |
 | `--motion-fluid`               | `cubic-bezier(0.32, 0.72, 0, 1)`                                       | the prototype's motion curve                       |
 | `--inverse`                    | `#101828`                                                              | dashboard save bar (gray-900)                      |
 | `--inverse-foreground`         | `#ffffff`                                                              |                                                    |
