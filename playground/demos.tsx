@@ -64,6 +64,7 @@ import {
   ActivityFeedDemo,
 } from "./pattern-demos"
 import { StepMeterDemo } from "./step-meter-demo"
+import { CollapsibleCardDemo } from "./collapsible-card-demo"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import {
@@ -384,6 +385,8 @@ const KEYWORDS: Record<string, string> = {
   carousel: "slider gallery slideshow",
   tabs: "segmented control switcher",
   accordion: "collapse expand disclosure faq",
+  "collapsible-card":
+    "accordion collapse expand section group card header chevron settings disclosure",
   dialog: "modal popup overlay",
   "alert-dialog": "confirm delete modal",
   sheet: "drawer side panel offcanvas bottom sheet size wide form",
@@ -535,6 +538,7 @@ const SOURCES: Record<string, Source> = {
   "data-table-pager": "prototype",
   "radio-card": "prototype",
   "switch-field": "prototype",
+  "collapsible-card": "prototype",
   "stat-card": "prototype",
   "icon-chip": "figma",
   "nav-tabs": "prototype",
@@ -1095,6 +1099,12 @@ export const demos: Demo[] = [
     title: "Switch field",
     group: "Patterns",
     render: () => <SwitchFieldDemo />,
+  },
+  {
+    id: "collapsible-card",
+    title: "Collapsible card",
+    group: "Patterns",
+    render: () => <CollapsibleCardDemo />,
   },
   {
     id: "nav-tabs",

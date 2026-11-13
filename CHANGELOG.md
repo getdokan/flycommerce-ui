@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `CollapsibleCard`: a card whose header opens and closes its body, for long settings pages split into sections such as the email notifications list, `<CollapsibleCard icon={<IconChip>…</IconChip>} title description meta="4 of 6 on" actions open onOpenChange>…</CollapsibleCard>`. The header is one full-width button inside a heading (`headingLevel`, 3 by default), named by the title and described by `description` and `meta`; `actions` sit outside the button, so using them never toggles the card. `open`, `defaultOpen` and `onOpenChange` work controlled or not, so a search can force matching sections open. The chevron turns and the body slides open, with no motion when the user asks for reduced motion. The body is flush by default for a `divide-y` list of `SwitchField variant="row"` rows; `padding="default"` pads it. On a narrow card `meta` moves under the description and `actions` under the header. Empty `description` or `meta` (`false`, `""`) is left out.
+
 ## [0.7.1] - 2026-11-12
 
 Fixed: the active `NavTabsLink` scrolls into view within its row without moving the page, so a tab that jumps to a section works on the first tap on a phone.
