@@ -88,6 +88,7 @@ import { PreviewFrameDemo } from "./preview-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaCellDemo } from "./media-cell-demo"
+import { UploadFilesDemo } from "./upload-files-demo"
 import { MediaPageDemo, MediaPartsDemo, MediaPickerDemo } from "./media-demos"
 import { PreviewTileDemo } from "./preview-tile-demo"
 import {
@@ -1221,6 +1222,13 @@ export const demos: Demo[] = [
     title: "File drop zone",
     group: "Patterns",
     render: () => <DropzoneDemo />,
+  },
+  {
+    id: "upload-files",
+    title: "Upload files (compact queue)",
+    group: "Patterns",
+    keywords: "dropzone upload queue progress drag drop media modal",
+    render: () => <UploadFilesDemo />,
   },
   {
     id: "image-upload-field",
