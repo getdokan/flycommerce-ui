@@ -1,9 +1,12 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
+import { FiX as XIcon } from "react-icons/fi"
+
+import { Button } from "@/components/ui/button"
 
 const alertVariants = cva(
-  "group/alert relative grid w-full gap-0.5 rounded-lg border px-2.5 py-2 text-start text-sm has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
+  "group/alert relative grid w-full gap-0.5 rounded-lg border px-2.5 py-2 text-start text-sm has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 data-dismissible:pe-9 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -36,12 +39,22 @@ function isAlertPart(child: React.ReactNode) {
   )
 }
 
+type AlertProps = React.ComponentProps<"div"> &
+  VariantProps<typeof alertVariants> & {
+    /** Adds a close button at the end of the alert. The alert stays until the app stops rendering it; move focus somewhere sensible when it goes. */
+    onDismiss?: () => void
+    /** The close button's accessible name. */
+    dismissLabel?: string
+  }
+
 function Alert({
   className,
   variant,
   children,
+  onDismiss,
+  dismissLabel = "Dismiss",
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+}: AlertProps) {
   const items = React.Children.toArray(children)
   const actions = items.filter(isAlertAction)
   const icon =
@@ -55,6 +68,7 @@ function Alert({
     <div
       data-slot="alert"
       role="alert"
+      data-dismissible={onDismiss ? "" : undefined}
       className={cn(alertVariants({ variant }), className)}
       {...props}
     >
@@ -73,6 +87,19 @@ function Alert({
         </>
       ) : (
         children
+      )}
+      {onDismiss && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          data-slot="alert-dismiss"
+          aria-label={dismissLabel}
+          className="absolute end-1.5 top-1.5 text-current hover:bg-current/10"
+          onClick={() => onDismiss()}
+        >
+          <XIcon aria-hidden="true" className="size-3.5" />
+        </Button>
       )}
     </div>
   )
@@ -118,4 +145,4 @@ function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-export { Alert, AlertTitle, AlertDescription, AlertAction }
+export { Alert, AlertTitle, AlertDescription, AlertAction, type AlertProps }

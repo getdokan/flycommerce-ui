@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `Alert onDismiss`: a close button for a one-time notice, `<Alert variant="info" onDismiss={dismiss} dismissLabel="Dismiss notice">`. A ghost × button sits at the end of the alert, level with the first line, and the content keeps clear of it, with or without an icon and with an `AlertAction` (the start in RTL). `dismissLabel` names it ("Dismiss" by default). The alert doesn't hide itself: the app stops rendering it at once, saves the dismissal (and shows the alert again if the save fails), and moves focus to the next thing in reading order, since the button that had focus is gone. Without `onDismiss` nothing changes.
+
 ## [0.7.1] - 2026-11-12
 
 Fixed: the active `NavTabsLink` scrolls into view within its row without moving the page, so a tab that jumps to a section works on the first tap on a phone.
