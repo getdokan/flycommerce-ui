@@ -172,3 +172,30 @@ describe("NavTabsLink keeps the active link in view", () => {
     expect(callbackRef).toHaveBeenCalledOnce()
   })
 })
+
+describe("NavTabs line look", () => {
+  it("matches the line Tabs: padding, corners, resting colour and a full-width underline", () => {
+    render(
+      <NavTabs variant="line" aria-label="Products">
+        <NavTabsLink href="#all" active>
+          All
+        </NavTabsLink>
+        <NavTabsLink href="#draft">Draft</NavTabsLink>
+      </NavTabs>
+    )
+    const all = screen.getByRole("link", { name: "All" })
+    const draft = screen.getByRole("link", { name: "Draft" })
+
+    for (const cls of [
+      "px-4",
+      "py-2",
+      "rounded-md",
+      "text-foreground-secondary",
+    ]) {
+      expect(draft.classList.contains(cls)).toBe(true)
+    }
+    expect(draft.classList.contains("text-muted-foreground")).toBe(false)
+    expect(all.classList.contains("data-active:after:inset-x-0")).toBe(true)
+    expect(all.getAttribute("aria-current")).toBe("page")
+  })
+})

@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+**Check when upgrading:**
+
+- `NavTabs variant="line"` tabs are a little wider and darker at rest: see Changed.
+
+### Changed
+
+- `NavTabs variant="line"` matches `TabsList variant="line"`: each tab has 8px × 16px padding (was 10px × 12px) and 6px corners, a tab at rest is `text-foreground-secondary` (was the lighter `text-muted-foreground`), and the active underline runs the whole width of the tab. `variant="segmented"` is unchanged.
+
 ## [0.8.0] - 2026-11-13
 
 New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
