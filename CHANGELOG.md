@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `ImageUploadField variant="stacked"`, for a catalog image (category, brand, collection): `<ImageUploadField variant="stacked" label value onFiles onReject onRemove onChooseExisting actions={<Button variant="outline" size="sm">Generate with AI</Button>} />`. While empty, the drop zone keeps its 24px padding and stacks, centred, a round image icon on a primary tint, "Drop an image here" in 14px semibold, the file rules in 12px muted text, and then small buttons that wrap: Choose image first, an outline Choose existing (with `onChooseExisting`), then `actions`. Once filled, it shows a 112px square preview (`previewAspect="wide"` for 176×112) beside small buttons that wrap: an outline Replace, an outline Choose existing, `actions` and a red Remove (with `onRemove`); the name and size aren't shown. `labels` default to these words ("Drop an image here", "Choose image", "Choose existing", "Replace", "Remove") and still take any translation, and `label` still goes into each button's name ("Replace, Category image"). The tab order follows the buttons as drawn, and `preview`, `previewBackground`, `previewFit`, `loading`, `invalid` (a red ring on the preview) and `disabled` work as in the default variant. The root carries `data-variant="stacked"`, and the type `ImageUploadFieldVariant` is exported. Without `variant`, or with `variant="default"`, the field looks and behaves as before and ignores `actions` and `previewAspect`.
+
 ## [0.8.0] - 2026-11-13
 
 New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
