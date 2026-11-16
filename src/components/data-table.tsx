@@ -230,6 +230,8 @@ type DataTableProps<TData> = {
   getSubRows?: (row: TData, index: number) => TData[] | undefined
   /** `true` expands every level on first render. */
   defaultExpanded?: ExpandedState
+  /** With `getSubRows`: connector lines from each parent to its children, and the expand button after the cell's content instead of before it, so top-level rows line up without a spacer. */
+  treeLines?: boolean
   loading?: boolean
   /** Refetching after the first load: keeps the rows and toolbar, dims the rows and shows a progress bar. */
   refreshing?: boolean
@@ -267,6 +269,10 @@ type DataTableProps<TData> = {
   /** Row name for screen readers, e.g. the product name: it names the row's checkbox and the reorder announcements. */
   getRowLabel?: (row: TData) => string
   labels?: DataTableLabels
+  /** `list`: the light look for a page's main list: a sentence-case header without the grey band, hairline rows, a hover tint only on clickable rows, and no tint on an expanded row. Rows are 12px tighter than `default`. */
+  variant?: React.ComponentProps<typeof Table>["variant"]
+  /** Row padding, one 4px step tighter (`sm`) or roomier (`lg`) than `default`. */
+  size?: React.ComponentProps<typeof Table>["size"]
   className?: string
 }
 
@@ -323,6 +329,9 @@ function DataTable<TData>({
   onReorder,
   getRowLabel,
   labels: labelsProp,
+  treeLines = false,
+  variant,
+  size,
   className,
 }: DataTableProps<TData>) {
   const labels = { ...DEFAULT_LABELS, ...labelsProp }
@@ -506,6 +515,36 @@ function DataTable<TData>({
       },
     }
   }
+  // Sibling order as drawn: client-side sorting reorders children, and the elbows have to follow.
+  const lastShownByParent = new Map<string, string>()
+  if (treeLines)
+    for (const shown of table.getRowModel().flatRows)
+      if (shown.parentId !== undefined)
+        lastShownByParent.set(shown.parentId, shown.id)
+  const isLastShown = (row: Row<TData>) =>
+    row.parentId === undefined || lastShownByParent.get(row.parentId) === row.id
+
+  const expandToggle = (row: Row<TData>) => (
+    <button
+      type="button"
+      aria-expanded={row.getIsExpanded()}
+      aria-label={row.getIsExpanded() ? labels.collapseRow : labels.expandRow}
+      onClick={(event) => {
+        event.stopPropagation()
+        row.toggleExpanded()
+      }}
+      className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+    >
+      <ChevronDownIcon
+        aria-hidden="true"
+        className={cn(
+          "size-4 transition-transform",
+          !row.getIsExpanded() && "-rotate-90 rtl:rotate-90"
+        )}
+      />
+    </button>
+  )
+
   const renderRow = (row: Row<TData>, drag?: RowDrag) => (
     <DataTableRow
       key={row.id}
@@ -525,40 +564,31 @@ function DataTable<TData>({
         return (
           <TableCell
             key={cell.id}
-            className={cn(alignClass(meta?.align), meta?.cellClassName)}
+            className={cn(
+              alignClass(meta?.align),
+              // The tree rails are drawn against the cell, so they run its full height whatever the row padding.
+              isTreeCell && treeLines && "relative",
+              meta?.cellClassName
+            )}
           >
             {isTreeCell ? (
               <div
                 className="flex items-center gap-1.5"
-                style={{ paddingInlineStart: row.depth * 24 }}
+                style={
+                  treeLines ? undefined : { paddingInlineStart: row.depth * 24 }
+                }
               >
-                {row.getCanExpand() ? (
-                  <button
-                    type="button"
-                    aria-expanded={row.getIsExpanded()}
-                    aria-label={
-                      row.getIsExpanded()
-                        ? labels.collapseRow
-                        : labels.expandRow
-                    }
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      row.toggleExpanded()
-                    }}
-                    className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-page hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
-                  >
-                    <ChevronDownIcon
-                      aria-hidden="true"
-                      className={cn(
-                        "size-4 transition-transform",
-                        !row.getIsExpanded() && "-rotate-90 rtl:rotate-90"
-                      )}
-                    />
-                  </button>
-                ) : (
-                  <span aria-hidden="true" className="w-6 shrink-0" />
-                )}
+                {treeLines && row.depth > 0 ? (
+                  <TreeRails row={row} isLast={isLastShown} />
+                ) : null}
+                {!treeLines &&
+                  (row.getCanExpand() ? (
+                    expandToggle(row)
+                  ) : (
+                    <span aria-hidden="true" className="w-6 shrink-0" />
+                  ))}
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                {treeLines && row.getCanExpand() ? expandToggle(row) : null}
               </div>
             ) : (
               flexRender(cell.column.columnDef.cell, cell.getContext())
@@ -671,7 +701,11 @@ function DataTable<TData>({
           </div>
         </div>
       )}
-      <Table aria-busy={busy || showProgress || undefined}>
+      <Table
+        variant={variant}
+        size={size}
+        aria-busy={busy || showProgress || undefined}
+      >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -776,6 +810,58 @@ function DataTable<TData>({
 }
 
 const RowDragContext = React.createContext<RowDrag["handle"] | null>(null)
+
+/**
+ * One 24px column per level: a straight rail where an ancestor still has siblings below, then the row's own elbow.
+ * Each line is absolute against the cell but keeps its column's place, so it spans the row whatever its padding.
+ */
+function TreeRails<TData>({
+  row,
+  isLast,
+}: {
+  row: Row<TData>
+  /** Whether a row is the last of its siblings as they are drawn, after any sort. */
+  isLast: (row: Row<TData>) => boolean
+}) {
+  const chain: Row<TData>[] = []
+  for (
+    let level: Row<TData> | undefined = row;
+    level && level.depth > 0;
+    level = level.getParentRow()
+  )
+    chain.unshift(level)
+
+  // One gap-free group, so each level is exactly 24px; the cell's gap sits only between it and the content.
+  const columns = chain.map((level, index) => {
+    const own = index === chain.length - 1
+    const last = isLast(level)
+    return (
+      <span
+        key={level.id}
+        aria-hidden="true"
+        data-slot="data-table-tree-rail"
+        className="w-6 shrink-0"
+      >
+        {own ? (
+          <>
+            <span
+              className={cn(
+                "absolute top-0 ms-3 w-px bg-border",
+                last ? "h-1/2" : "bottom-0"
+              )}
+            />
+            {/* Reaches across the rest of the column and the cell's 6px gap to the content. */}
+            <span className="absolute top-1/2 ms-3 h-px w-4.5 bg-border" />
+          </>
+        ) : last ? null : (
+          <span className="absolute inset-y-0 ms-3 w-px bg-border" />
+        )}
+      </span>
+    )
+  })
+
+  return <span className="flex shrink-0 self-stretch">{columns}</span>
+}
 
 function DataTableRow({
   drag,
