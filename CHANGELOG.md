@@ -9,6 +9,10 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - `DataTable` `variant` and `size`, passed to its `Table`: `<DataTable variant="list" …>` draws a page's main list the light way, as `Table variant="list"` already does for small tables in a card: a sentence-case header without the grey band, hairline rows, a hover tint only on clickable rows (`onRowClick` or `getRowHref`), no tint on an expanded tree row, and rows 12px tighter (40px thumbnail rows go from 81px to 65px). `size` (`sm`, `default`, `lg`) moves the row padding one 4px step either way. Without them the table looks as before.
 - `DataTable` `treeLines`, with `getSubRows`: each child row hangs from a connector line (a rail per level, an elbow for the row, the line stopping halfway at a last child), and the expand button follows the cell's content instead of leading it, so top-level rows line up without a spacer. The lines run the row's full height at any `size`. Without it, trees keep the leading toggle and plain indentation.
 
+### Changed
+
+- `Table variant="list"` (and so `DataTable variant="list"`): the header row is 41px tall (was 37px), 12px above and below its label, as in the prototype's lists. It stays 41px at every `size`; only the body rows move.
+
 ## [0.8.0] - 2026-11-13
 
 New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
