@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+**Check when upgrading:**
+
+- Every `Button shape="pill"`, small notice-row pills included, is now semibold. Drop any page-level override that set it, and pass `className="font-[560]"` where a pill should stay lighter.
+
+### Changed
+
+- `Button shape="pill"` is semibold (600) instead of the base 560, so a pill reads the same on every page, as in the prototype, without a page-level override; small pills (`size="sm"`) and pill links (`asChild`) too. A `className` weight still wins, and the default shape stays 560.
+
 ## [0.8.0] - 2026-11-13
 
 New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
