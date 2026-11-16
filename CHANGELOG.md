@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+**Check when upgrading:**
+
+- `MediaCell` thumbnails look a little different: see Changed.
+
+### Changed
+
+- `MediaCell`: the thumbnail has 8px corners and a hairline ring instead of 6px corners and a solid border, also around `media`; the no-image glyph is still a third of the box but never smaller than 16px (it was 13px in a 40px cell, too small to read as a picture) or larger than 32px; the title is weight 500 instead of 560, and the second line uses the 12px caption style (`type-caption-m`, 16px line height) instead of a one-off 12.5px. Rows keep their height.
+
 ## [0.8.0] - 2026-11-13
 
 New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
