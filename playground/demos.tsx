@@ -56,6 +56,7 @@ import {
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
+  SaveBarPillDemo,
   SearchInputDemo,
   SegmentedControlDemo,
   SettingsNavDemo,
@@ -419,6 +420,8 @@ const KEYWORDS: Record<string, string> = {
   "confirm-dialog":
     "confirm delete remove modal are you sure acknowledge checkbox type to confirm",
   "save-bar": "unsaved changes discard sticky footer",
+  "save-bar-pill":
+    "unsaved changes discard sticky footer pill rounded editor product shape",
   "search-input": "search filter query",
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
@@ -522,6 +525,7 @@ const SOURCES: Record<string, Source> = {
   colors: "prototype",
   "page-header": "prototype",
   "save-bar": "prototype",
+  "save-bar-pill": "prototype",
   "settings-nav": "composite",
   "confirm-dialog": "prototype",
   "search-input": "prototype",
@@ -1060,6 +1064,12 @@ export const demos: Demo[] = [
     title: "Save bar",
     group: "Patterns",
     render: () => <SaveBarDemo />,
+  },
+  {
+    id: "save-bar-pill",
+    title: "Save bar: pill actions",
+    group: "Patterns",
+    render: () => <SaveBarPillDemo />,
   },
   {
     id: "settings-nav",

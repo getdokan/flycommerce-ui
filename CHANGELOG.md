@@ -2,6 +2,12 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `SaveBar shape="pill"`: `<SaveBar shape="pill" open onSave onDiscard />`, for an editor whose design shows pill actions. Discard and Save become 36px fully rounded pills (`Button shape="pill"`, `data-shape="pill"`) with semibold labels; Discard turns quiet, a transparent pill with a faint `inverse-foreground` hairline border, its text slightly dimmed and a faint fill on hover, in place of the solid outline that fills on hover; a `saveMenu` chevron becomes the matching 36px half of the Save pill. The bar is `rounded-xl` with `px-5 py-3.5` (`sm:px-6`) and stops widening at `lg` (768px, no `xl:max-w-4xl` step), and carries `data-shape="pill"`. Labels, `loading` (Save's spinner, Discard disabled), `disabled` and the keyboard behave as before. Without `shape` the bar looks and behaves as before.
+
 ## [0.8.0] - 2026-11-13
 
 New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
