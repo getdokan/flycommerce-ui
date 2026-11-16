@@ -5,7 +5,6 @@ import {
   FiChevronDown as ChevronDownIcon,
   FiCircle as CircleIcon,
   FiHash as HashIcon,
-  FiPlus as PlusIcon,
   FiType as TypeIcon,
 } from "react-icons/fi"
 import { toast } from "sonner"
@@ -66,44 +65,19 @@ const CATEGORIES: TreeSelectOption[] = [
   { value: "watch", label: "Watch", count: 23 },
 ]
 
-function LabelWithAction({
-  htmlFor,
-  label,
-  action,
-}: {
-  htmlFor: string
-  label: string
-  action: string
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <FieldLabel htmlFor={htmlFor} required>
-        {label}
-      </FieldLabel>
-      <Button
-        type="button"
-        variant="link"
-        size="xs"
-        className="h-auto p-0"
-        onClick={() => toast("Opens the create form")}
-      >
-        <PlusIcon /> {action}
-      </Button>
-    </div>
-  )
-}
-
 export function TreeSelectDemo() {
   const [value, setValue] = React.useState<string | null>("bf-winter")
   const [instant, setInstant] = React.useState<string | null>(null)
+  const addCategory = {
+    label: "Add category",
+    onSelect: () => toast("Opens the create form"),
+  }
   return (
     <div className="grid w-full gap-5 md:grid-cols-2">
       <Field>
-        <LabelWithAction
-          htmlFor="tree-category"
-          label="Category"
-          action="Add Category"
-        />
+        <FieldLabel htmlFor="tree-category" required>
+          Category
+        </FieldLabel>
         <TreeSelect
           id="tree-category"
           options={CATEGORIES}
@@ -111,9 +85,11 @@ export function TreeSelectDemo() {
           onValueChange={setValue}
           placeholder="Search or select a category"
           labels={{ search: "Search category" }}
+          footerAction={addCategory}
         />
         <FieldDescription>
           Arrow on a row opens its children; Cancel / Confirm applies.
+          footerAction adds the last row.
         </FieldDescription>
       </Field>
       <Field>
@@ -129,11 +105,9 @@ export function TreeSelectDemo() {
         <FieldDescription>confirm=false, for filters.</FieldDescription>
       </Field>
       <Field>
-        <LabelWithAction
-          htmlFor="tree-empty"
-          label="Category"
-          action="Add Category"
-        />
+        <FieldLabel htmlFor="tree-empty" required>
+          Category
+        </FieldLabel>
         <TreeSelect
           id="tree-empty"
           options={[]}
@@ -154,7 +128,24 @@ export function TreeSelectDemo() {
             </Empty>
           }
         />
-        <FieldDescription>Empty state.</FieldDescription>
+        <FieldDescription>
+          Empty state, its own call to action.
+        </FieldDescription>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="tree-empty-action" required>
+          Category
+        </FieldLabel>
+        <TreeSelect
+          id="tree-empty-action"
+          options={[]}
+          value={null}
+          onValueChange={() => {}}
+          placeholder="Search or select a category"
+          empty="You don't have a category yet."
+          footerAction={addCategory}
+        />
+        <FieldDescription>Empty, with footerAction under it.</FieldDescription>
       </Field>
     </div>
   )

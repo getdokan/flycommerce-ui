@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `TreeSelect footerAction`: a last row for an action such as "Add category", `<TreeSelect options value onValueChange footerAction={{ label: "Add category", onSelect }} />`. It sits after a separator at the foot of the list, with the "add" icon in primary (`icon` swaps it, `null` drops it) and the label in primary ink. The arrows reach it after the last option and Enter or a click runs it: the list closes first, then `onSelect` runs, and neither the value nor `onValueChange` is touched, with or without Confirm. It's an option in the listbox with no `aria-selected`, so it isn't read as a value. It stays when the search matches nothing, under "No results". When `options` is empty, `empty` (or "No results") shows as before and the action sits under it as a button that takes focus on open; `empty` is the message for no data, `footerAction` the action in every state, so drop a second button from `empty` when you pass both. Without the prop the list is unchanged. The type is exported as `TreeSelectFooterAction`.
+
+### Changed
+
+- `TreeSelect`'s trigger shows the chevron-down that `Select` uses, turning over while open, in place of the up/down chevrons.
+
 ## [0.8.0] - 2026-11-13
 
 New: `UploadQueue variant="compact"`, `Dropzone dragTitle` and a per-file `maxSize`, for an upload modal; `DialogContent size="3xl"` and `padding="none"`, for two-column dialogs.
