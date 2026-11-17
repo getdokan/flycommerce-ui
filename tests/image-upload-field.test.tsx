@@ -489,3 +489,267 @@ describe("ImageUploadField", () => {
     expect(document.getElementById("logo")?.getAttribute("type")).toBe("file")
   })
 })
+
+describe("ImageUploadField variant=stacked", () => {
+  const buttonNames = () =>
+    Array.from(
+      root().querySelectorAll("button, label[data-slot=button]"),
+      (el) => el.getAttribute("aria-label") ?? el.textContent
+    )
+
+  it("puts an icon chip, the title and description above the buttons", () => {
+    render(
+      <ImageUploadField
+        variant="stacked"
+        maxSize={5 * 1024 * 1024}
+        onFiles={() => {}}
+      />
+    )
+    expect(root().dataset.variant).toBe("stacked")
+    const chip = document.querySelector("[data-slot=image-upload-field-icon]")!
+    expect(chip.classList.contains("rounded-full")).toBe(true)
+    expect(chip.classList.contains("bg-primary-subtle")).toBe(true)
+    expect(chip.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true")
+    const title = screen.getByText("Drop an image here")
+    expect(title.classList.contains("font-semibold")).toBe(true)
+    expect(title.classList.contains("text-foreground")).toBe(true)
+    const hint = screen.getByText("PNG, JPG, SVG or WebP. Max file size: 5 MB")
+    expect(hint.classList.contains("text-muted-foreground")).toBe(true)
+  })
+
+  it("puts Choose image first, then an outline Choose existing, then actions", () => {
+    render(
+      <ImageUploadField
+        variant="stacked"
+        onFiles={() => {}}
+        onChooseExisting={() => {}}
+        actions={
+          <button type="button" data-variant="outline">
+            Generate with AI
+          </button>
+        }
+      />
+    )
+    expect(buttonNames()).toEqual([
+      "Choose image",
+      "Choose existing",
+      "Generate with AI",
+    ])
+    const browse = screen.getByRole("button", { name: "Choose image" })
+    expect(browse.dataset.variant).toBe("default")
+    expect(browse.dataset.size).toBe("sm")
+    const library = screen.getByRole("button", { name: "Choose existing" })
+    expect(library.dataset.variant).toBe("outline")
+    expect(library.dataset.size).toBe("sm")
+  })
+
+  it("opens the file picker from Choose image and passes the file on", async () => {
+    const user = userEvent.setup({ applyAccept: false })
+    const onFiles = vi.fn()
+    render(<ImageUploadField variant="stacked" onFiles={onFiles} />)
+    const input = screen.getByLabelText<HTMLInputElement>("Upload image")
+    const click = vi.spyOn(input, "click")
+    await user.click(screen.getByRole("button", { name: "Choose image" }))
+    expect(click).toHaveBeenCalledTimes(1)
+
+    await user.upload(input, png())
+    expect(onFiles).toHaveBeenCalledWith([
+      expect.objectContaining({ name: "logo.png" }),
+    ])
+  })
+
+  it("tabs through the buttons in the order they're drawn", async () => {
+    const user = userEvent.setup()
+    render(
+      <ImageUploadField
+        variant="stacked"
+        onFiles={() => {}}
+        onChooseExisting={() => {}}
+        actions={<button type="button">Generate with AI</button>}
+      />
+    )
+    await user.tab()
+    expect(document.activeElement?.textContent).toBe("Choose image")
+    await user.tab()
+    expect(document.activeElement?.textContent).toBe("Choose existing")
+    await user.tab()
+    expect(document.activeElement?.textContent).toBe("Generate with AI")
+  })
+
+  it("shows a large preview beside Replace, Choose existing, actions and Remove once filled", () => {
+    render(
+      <ImageUploadField
+        variant="stacked"
+        value={LOGO}
+        onFiles={() => {}}
+        onRemove={() => {}}
+        onChooseExisting={() => {}}
+        actions={<button type="button">Generate with AI</button>}
+      />
+    )
+    expect(root().dataset.state).toBe("filled")
+    const tile = document.querySelector(
+      "[data-slot=image-upload-field-preview]"
+    )!
+    expect(tile.classList.contains("size-28")).toBe(true)
+    expect(tile.classList.contains("rounded-xl")).toBe(true)
+    expect(tile.querySelector("img")?.getAttribute("src")).toBe(LOGO.src)
+    expect(screen.queryByText("maison-oriel-wordmark.svg")).toBeNull()
+
+    expect(buttonNames()).toEqual([
+      "Replace",
+      "Choose existing",
+      "Generate with AI",
+      "Remove",
+    ])
+    const replace = screen.getByLabelText("Replace")
+    expect(replace.getAttribute("type")).toBe("file")
+    const replaceButton = replace.closest("label")!
+    expect(replaceButton.dataset.variant).toBe("outline")
+    expect(replaceButton.dataset.size).toBe("sm")
+    expect(
+      screen.getByRole("button", { name: "Choose existing" }).dataset.variant
+    ).toBe("outline")
+    const remove = screen.getByRole("button", { name: "Remove" })
+    expect(remove.dataset.variant).toBe("destructive")
+    expect(remove.dataset.size).toBe("sm")
+  })
+
+  it("draws a wide preview with previewAspect=wide", () => {
+    render(
+      <ImageUploadField
+        variant="stacked"
+        previewAspect="wide"
+        value={LOGO}
+        onFiles={() => {}}
+      />
+    )
+    const tile = document.querySelector(
+      "[data-slot=image-upload-field-preview]"
+    )!
+    expect(tile.classList.contains("h-28")).toBe(true)
+    expect(tile.classList.contains("w-44")).toBe(true)
+    expect(tile.classList.contains("size-28")).toBe(false)
+  })
+
+  it("replaces and removes the image and keeps focus in the field", async () => {
+    const user = userEvent.setup()
+    render(<Logo variant="stacked" labels={{}} />)
+
+    await user.upload(screen.getByLabelText("Upload image"), png())
+    expect(root().dataset.state).toBe("filled")
+    expect(document.activeElement).toBe(screen.getByLabelText("Replace"))
+
+    await user.upload(screen.getByLabelText("Replace"), png("new-logo.png"))
+    expect(
+      document
+        .querySelector("[data-slot=image-upload-field-preview] img")
+        ?.getAttribute("src")
+    ).toBe("blob:logo")
+
+    await user.click(screen.getByRole("button", { name: "Remove" }))
+    expect(root().dataset.state).toBe("empty")
+    expect(document.activeElement).toBe(screen.getByLabelText("Upload image"))
+  })
+
+  it("adds its label to the button names and takes translated labels", () => {
+    const { rerender } = render(
+      <ImageUploadField
+        variant="stacked"
+        label="Category image"
+        onFiles={() => {}}
+        onChooseExisting={() => {}}
+        labels={{ dropTitle: "Bir görsel bırakın", upload: "Görsel seç" }}
+      />
+    )
+    expect(screen.getByText("Bir görsel bırakın")).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: "Görsel seç, Category image" })
+    ).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: "Choose existing, Category image" })
+    ).toBeTruthy()
+
+    rerender(
+      <ImageUploadField
+        variant="stacked"
+        label="Category image"
+        value={LOGO}
+        onFiles={() => {}}
+        onRemove={() => {}}
+        labels={{ change: "Değiştir" }}
+      />
+    )
+    expect(
+      screen.getByLabelText("Değiştir, Category image").getAttribute("type")
+    ).toBe("file")
+    expect(
+      screen.getByRole("button", { name: "Remove, Category image" }).textContent
+    ).toBe("Remove")
+  })
+
+  it("disables every button and marks the preview invalid", () => {
+    render(
+      <ImageUploadField
+        variant="stacked"
+        value={LOGO}
+        invalid
+        disabled
+        onFiles={() => {}}
+        onRemove={() => {}}
+        onChooseExisting={() => {}}
+      />
+    )
+    expect(screen.getByLabelText("Replace")).toHaveProperty("disabled", true)
+    expect(screen.getByLabelText("Replace").getAttribute("aria-invalid")).toBe(
+      "true"
+    )
+    for (const name of ["Choose existing", "Remove"])
+      expect(
+        screen.getByRole("button", { name }).hasAttribute("disabled")
+      ).toBe(true)
+    expect(
+      document
+        .querySelector("[data-slot=image-upload-field-preview]")
+        ?.classList.contains("ring-destructive")
+    ).toBe(true)
+  })
+
+  it("leaves the default layout as it was", () => {
+    const { rerender } = render(
+      <ImageUploadField
+        onFiles={() => {}}
+        onChooseExisting={() => {}}
+        actions={<button type="button">Generate with AI</button>}
+      />
+    )
+    expect(root().hasAttribute("data-variant")).toBe(false)
+    expect(document.querySelector("[data-slot=image-upload-field-icon]")).toBe(
+      null
+    )
+    expect(screen.queryByText("Generate with AI")).toBeNull()
+    expect(buttonNames()).toEqual(["Media library", "Upload image"])
+    expect(
+      screen.getByRole("button", { name: "Media library" }).dataset.variant
+    ).toBe("ghost")
+    expect(
+      screen.getByRole("button", { name: "Upload image" }).dataset.size
+    ).toBe("default")
+
+    rerender(
+      <ImageUploadField
+        value={LOGO}
+        onFiles={() => {}}
+        onRemove={() => {}}
+        previewAspect="wide"
+      />
+    )
+    const tile = document.querySelector(
+      "[data-slot=image-upload-field-preview]"
+    )!
+    expect(tile.classList.contains("h-16")).toBe(true)
+    expect(tile.classList.contains("w-24")).toBe(true)
+    expect(screen.getByText("maison-oriel-wordmark.svg")).toBeTruthy()
+    expect(screen.getByLabelText("Change image")).toBeTruthy()
+  })
+})

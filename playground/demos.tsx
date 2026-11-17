@@ -98,6 +98,7 @@ import {
   ColorInputDemo,
   CopyFieldDemo,
   ImageUploadFieldDemo,
+  ImageUploadFieldStackedDemo,
 } from "./input-demos"
 import {
   AsyncComboboxDemo,
@@ -455,6 +456,8 @@ const KEYWORDS: Record<string, string> = {
   dropzone: "upload file drag drop",
   "image-upload-field":
     "image upload logo icon favicon preview replace remove media library drag drop",
+  "image-upload-field-stacked":
+    "image upload category collection brand choose existing generate ai replace remove drag drop stacked",
   "media-picker":
     "gallery image upload library choose existing video url attachment details",
   "media-page": "admin media library gallery bulk delete files",
@@ -560,6 +563,7 @@ const SOURCES: Record<string, Source> = {
   "date-picker": "composite",
   dropzone: "composite",
   "image-upload-field": "prototype",
+  "image-upload-field-stacked": "prototype",
   "rich-text-editor": "figma",
   "code-editor": "prototype",
   "media-picker": "figma",
@@ -1266,6 +1270,12 @@ export const demos: Demo[] = [
     title: "Image upload field",
     group: "Patterns",
     render: () => <ImageUploadFieldDemo />,
+  },
+  {
+    id: "image-upload-field-stacked",
+    title: "Image upload field (stacked)",
+    group: "Patterns",
+    render: () => <ImageUploadFieldStackedDemo />,
   },
   {
     id: "copy-button",
