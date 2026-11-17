@@ -115,7 +115,7 @@ const tableHeadVariants = cva("", {
     variant: {
       default:
         "px-4 text-start align-middle text-xs font-semibold whitespace-nowrap text-muted-foreground uppercase [&:has([role=checkbox])]:pe-0",
-      list: "px-3 py-2.5 text-start align-middle text-xs font-medium whitespace-nowrap text-muted-foreground first:ps-5 last:pe-5 sm:first:ps-6 sm:last:pe-6 [&:has([role=checkbox])]:pe-0",
+      list: "px-3 py-3 text-start align-middle text-xs font-medium whitespace-nowrap text-muted-foreground first:ps-5 last:pe-5 sm:first:ps-6 sm:last:pe-6 [&:has([role=checkbox])]:pe-0",
     },
     size: {
       sm: "",
