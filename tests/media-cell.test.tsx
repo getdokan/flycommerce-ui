@@ -196,3 +196,53 @@ describe("MediaCell title link", () => {
     expect(fireEvent.click(link)).toBe(true)
   })
 })
+
+describe("MediaCell thumbnail", () => {
+  it("frames the thumbnail with 8px corners and a hairline ring, not a border", () => {
+    const { container } = render(
+      <MediaCell src="/scarf.jpg" title="Silk twill scarf, ivory" />
+    )
+    const frame = container.querySelector('[data-slot="image"]') as HTMLElement
+
+    expect(frame.classList.contains("rounded-lg")).toBe(true)
+    expect(frame.classList.contains("ring-1")).toBe(true)
+    expect(frame.classList.contains("border")).toBe(false)
+  })
+
+  it("draws the no-image glyph at a third of the box, never under 16px", () => {
+    const { container } = render(<MediaCell size={40} title="Glass bud vase" />)
+    const frame = container.querySelector('[data-slot="image"]') as HTMLElement
+    const glyph = frame.querySelector("svg") as SVGElement
+
+    expect(frame.hasAttribute("data-failed")).toBe(true)
+    for (const cls of ["size-1/3", "min-h-4", "min-w-4", "max-h-8", "max-w-8"])
+      expect(glyph.getAttribute("class")).toContain(cls)
+  })
+
+  it("sets the title at weight 500 and the second line in the 12px caption style", () => {
+    render(
+      <MediaCell title="Silk twill scarf, ivory" description="MO-AC-SCRF-IVR" />
+    )
+
+    expect(
+      screen
+        .getByText("Silk twill scarf, ivory")
+        .classList.contains("font-medium")
+    ).toBe(true)
+    const caption = screen.getByText("MO-AC-SCRF-IVR")
+    expect(caption.classList.contains("type-caption-m")).toBe(true)
+    expect(caption.className).not.toContain("12.5px")
+  })
+
+  it("frames media the same way", () => {
+    const { container } = render(
+      <MediaCell media={<span>MO</span>} title="Maison Oriel" />
+    )
+    const media = container.querySelector(
+      '[data-slot="media-cell-media"]'
+    ) as HTMLElement
+
+    expect(media.classList.contains("rounded-lg")).toBe(true)
+    expect(media.classList.contains("ring-1")).toBe(true)
+  })
+})

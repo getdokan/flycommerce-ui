@@ -4,6 +4,10 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+**Check when upgrading:**
+
+- `MediaCell` thumbnails look a little different: see Changed.
+
 ### Added
 
 - `DataTable` `variant` and `size`, passed to its `Table`: `<DataTable variant="list" …>` draws a page's main list the light way, as `Table variant="list"` already does for small tables in a card: a sentence-case header without the grey band, hairline rows, a hover tint only on clickable rows (`onRowClick` or `getRowHref`), no tint on an expanded tree row, and rows 12px tighter (40px thumbnail rows go from 81px to 65px). `size` (`sm`, `default`, `lg`) moves the row padding one 4px step either way. Without them the table looks as before.
@@ -12,6 +16,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 ### Changed
 
 - `Table variant="list"` (and so `DataTable variant="list"`): the header row is 41px tall (was 37px), 12px above and below its label, as in the prototype's lists. It stays 41px at every `size`; only the body rows move.
+- `MediaCell`: the thumbnail has 8px corners and a hairline ring instead of 6px corners and a solid border, also around `media`; the no-image glyph is still a third of the box but never smaller than 16px (it was 13px in a 40px cell, too small to read as a picture) or larger than 32px; the title is weight 500 instead of 560, and the second line uses the 12px caption style (`type-caption-m`, 16px line height) instead of a one-off 12.5px. Rows keep their height.
 
 ## [0.8.0] - 2026-11-13
 
