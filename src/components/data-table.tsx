@@ -515,10 +515,10 @@ function DataTable<TData>({
       },
     }
   }
-  // Sibling order as drawn: client-side sorting reorders children, and the elbows have to follow.
+  // From the rows drawn, in their order: client-side sorting reorders children, and the elbows have to follow.
   const lastShownByParent = new Map<string, string>()
   if (treeLines)
-    for (const shown of table.getRowModel().flatRows)
+    for (const shown of rows)
       if (shown.parentId !== undefined)
         lastShownByParent.set(shown.parentId, shown.id)
   const isLastShown = (row: Row<TData>) =>
