@@ -120,12 +120,6 @@ function TreeSelect({
 
   const listRef = React.useRef<HTMLDivElement>(null)
 
-  React.useEffect(() => {
-    listRef.current
-      ?.querySelector("[data-active]")
-      ?.scrollIntoView({ block: "nearest" })
-  }, [active])
-
   const level = trail.at(-1)
   const q = query.trim().toLowerCase()
   const rows: Entry[] = q
@@ -168,6 +162,12 @@ function TreeSelect({
   // With no rows to show, the action is the only thing Enter can run.
   const onAction = Boolean(footerAction) && (actionPicked || rows.length === 0)
 
+  React.useEffect(() => {
+    listRef.current
+      ?.querySelector("[data-active]")
+      ?.scrollIntoView({ block: "nearest" })
+  }, [active, onAction])
+
   const highlight = (index: number) => {
     setActionPicked(false)
     setActive(index)
@@ -194,7 +194,7 @@ function TreeSelect({
       event.preventDefault()
       if (onAction) highlight(Math.max(rows.length - 1, 0))
       else setActive((i) => Math.max(i - 1, 0))
-    } else if (event.key === "ArrowRight" && entry && !q) {
+    } else if (event.key === "ArrowRight" && entry && !q && !onAction) {
       if (entry.option.children?.length) {
         event.preventDefault()
         drill(entry)
@@ -371,7 +371,7 @@ function TreeSelect({
                       role="option"
                       aria-selected={selected}
                       aria-disabled={option.disabled || undefined}
-                      data-active={index === active || undefined}
+                      data-active={(index === active && !onAction) || undefined}
                       onClick={() => choose(entry)}
                       className={cn(
                         "flex min-h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-foreground-secondary aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-active:bg-page",

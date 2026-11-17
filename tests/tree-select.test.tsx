@@ -213,4 +213,62 @@ describe("TreeSelect", () => {
     expect(onAdd).toHaveBeenCalledTimes(1)
     expect(onValueChange).not.toHaveBeenCalled()
   })
+
+  it("keeps ArrowRight on the action instead of opening the last row's subcategories", async () => {
+    const user = userEvent.setup()
+    const options: TreeSelectOption[] = [
+      { value: "bags", label: "Bags" },
+      {
+        value: "shoes",
+        label: "Shoes",
+        children: [{ value: "sneakers", label: "Sneakers" }],
+      },
+    ]
+    render(<Picker options={options} onAdd={() => {}} />)
+    const search = await open(user)
+    await user.keyboard("{ArrowDown}{ArrowDown}{ArrowRight}")
+
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
+      "Bags",
+      "Shoes",
+      "Add category",
+    ])
+    expect(search.getAttribute("aria-activedescendant")).toBe(action()!.id)
+  })
+
+  it("highlights only the action, and scrolls it into view, once the arrows reach it", async () => {
+    const user = userEvent.setup()
+    const scrolled: Element[] = []
+    const spy = vi
+      .spyOn(Element.prototype, "scrollIntoView")
+      .mockImplementation(function (this: Element) {
+        scrolled.push(this)
+      })
+    render(<Picker onAdd={() => {}} />)
+    await open(user)
+    await user.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}")
+
+    const highlighted = screen
+      .getByRole("listbox")
+      .querySelectorAll("[data-active]")
+    expect(Array.from(highlighted)).toEqual([action()])
+    expect(scrolled.at(-1)).toBe(action())
+    spy.mockRestore()
+  })
+
+  it("scrolls the action into view when a search leaves it the only entry", async () => {
+    const user = userEvent.setup()
+    const scrolled: Element[] = []
+    const spy = vi
+      .spyOn(Element.prototype, "scrollIntoView")
+      .mockImplementation(function (this: Element) {
+        scrolled.push(this)
+      })
+    render(<Picker onAdd={() => {}} />)
+    const search = await open(user)
+    await user.type(search, "zzz")
+
+    expect(scrolled.at(-1)).toBe(action())
+    spy.mockRestore()
+  })
 })
