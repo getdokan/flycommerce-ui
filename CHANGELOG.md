@@ -7,6 +7,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 **Check when upgrading:**
 
 - `MediaCell` thumbnails look a little different: see Changed.
+- `NavTabs variant="line"` tabs are 4px shorter (36px, was 40px), a little wider and darker at rest, on every page that uses them: see Changed.
 
 ### Added
 
@@ -17,6 +18,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 - `Table variant="list"` (and so `DataTable variant="list"`): the header row is 41px tall (was 37px), 12px above and below its label, as in the prototype's lists. It stays 41px at every `size`; only the body rows move.
 - `MediaCell`: the thumbnail has 8px corners and a hairline ring instead of 6px corners and a solid border, also around `media`; the no-image glyph is still a third of the box but never smaller than 16px (it was 13px in a 40px cell, too small to read as a picture) or larger than 32px; the title is weight 500 instead of 560, and the second line uses the 12px caption style (`type-caption-m`, 16px line height) instead of a one-off 12.5px. Rows keep their height.
+- `NavTabs variant="line"` matches `TabsList variant="line"`: each tab has 8px × 16px padding (was 10px × 12px, so a tab is now 36px tall instead of 40px) and 6px corners, a tab at rest is `text-foreground-secondary` (was the lighter `text-muted-foreground`), and the active underline runs the whole width of the tab. `variant="segmented"` is unchanged.
 
 ## [0.8.0] - 2026-11-13
 
