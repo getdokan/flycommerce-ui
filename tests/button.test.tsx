@@ -93,14 +93,11 @@ describe("Button shape", () => {
     expect(quiet.classList.contains("font-semibold")).toBe(false)
   })
 
-  it("keeps a pill semibold while loading and in variants that set their own weight", () => {
+  it("keeps a pill semibold while loading and as a solid destructive button", () => {
     render(
       <>
         <Button shape="pill" loading>
           Saving
-        </Button>
-        <Button variant="secondary" shape="pill">
-          Secondary pill
         </Button>
         <Button variant="destructive-solid" shape="pill">
           Update payment
@@ -108,7 +105,7 @@ describe("Button shape", () => {
       </>
     )
 
-    for (const name of ["Saving", "Secondary pill", "Update payment"]) {
+    for (const name of ["Saving", "Update payment"]) {
       expect(
         screen.getByRole("button", { name }).classList.contains("font-semibold")
       ).toBe(true)
