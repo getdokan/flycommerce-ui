@@ -466,7 +466,8 @@ const KEYWORDS: Record<string, string> = {
   "preview-frame":
     "browser window theme screenshot store domain address bar mockup preview",
   "media-cell": "table cell thumbnail file video play document glyph list",
-  "tree-select": "category picker hierarchy nested drill cascader parent",
+  "tree-select":
+    "category picker hierarchy nested drill cascader parent add category footer action",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
   "option-list-editor":
