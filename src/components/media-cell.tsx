@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
+import { FiImage as ImageIcon } from "react-icons/fi"
 
 import { CellLink } from "@/components/cell-link"
 import { ImageWithFallback } from "@/components/image-with-fallback"
@@ -35,6 +36,9 @@ function hasContent(node: React.ReactNode): boolean {
   return true
 }
 
+// The thumbnail's frame: 8px corners and a hairline ring that holds on light and dark rows.
+const FRAME = "rounded-lg ring-1 ring-foreground/6"
+
 /** Table cell with a thumbnail, a title and an optional second line (Figma product rows). */
 function MediaCell({
   src,
@@ -63,7 +67,7 @@ function MediaCell({
         {media ? (
           <MediaThumb
             data-slot="media-cell-media"
-            className="size-full border border-border-subtle"
+            className={cn("size-full", FRAME)}
           >
             {media}
             {alt && <span className="sr-only">{alt}</span>}
@@ -72,24 +76,31 @@ function MediaCell({
           <ImageWithFallback
             src={src}
             alt={alt ?? ""}
-            containerClassName="size-full rounded-md border border-border-subtle"
+            containerClassName={cn("size-full", FRAME)}
+            // A third of the box, but never under 16px (a 40px cell drew it at 13px, too small to read) or over 32px.
+            fallback={
+              <ImageIcon
+                aria-hidden="true"
+                className="size-1/3 max-h-8 min-h-4 max-w-8 min-w-4"
+              />
+            }
           />
         )}
       </span>
       <div className="min-w-0">
         {href && hasContent(title) ? (
-          <div className="flex min-w-0 font-[560] text-foreground">
+          <div className="flex min-w-0 font-medium text-foreground">
             <CellLink href={href} title={hover} onNavigate={onNavigate}>
               {title}
             </CellLink>
           </div>
         ) : (
-          <div className="truncate font-[560] text-foreground" title={hover}>
+          <div className="truncate font-medium text-foreground" title={hover}>
             {title}
           </div>
         )}
         {description && (
-          <div className="truncate text-[12.5px] text-muted-foreground">
+          <div className="truncate type-caption-m text-muted-foreground">
             {description}
           </div>
         )}

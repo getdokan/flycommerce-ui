@@ -4,12 +4,13 @@ import * as React from "react"
 import { cn } from "cn"
 import {
   FiCheck as CheckIcon,
+  FiChevronDown as ChevronDownIcon,
   FiChevronLeft as ChevronLeftIcon,
   FiChevronRight as ChevronRightIcon,
   FiSearch as SearchIcon,
 } from "react-icons/fi"
-import { LuChevronsUpDown as ChevronsUpDownIcon } from "react-icons/lu"
 
+import { Icon } from "@/components/icon"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -35,6 +36,14 @@ type TreeSelectLabels = {
   noResults?: string
 }
 
+type TreeSelectFooterAction = {
+  label: React.ReactNode
+  /** Defaults to the "add" icon; `null` drops it. */
+  icon?: React.ReactNode
+  /** Runs after the list closes; never changes the value. */
+  onSelect: () => void
+}
+
 type TreeSelectProps = {
   options: TreeSelectOption[]
   value: string | null
@@ -42,6 +51,8 @@ type TreeSelectProps = {
   placeholder?: string
   /** Shown instead of the list when `options` is empty, e.g. an "Add Category" call to action. */
   empty?: React.ReactNode
+  /** The last row of the list, after a separator, e.g. "Add category". Reached with the arrows like a row, shown with no search match and under `empty`. */
+  footerAction?: TreeSelectFooterAction
   /** Apply on click instead of waiting for Confirm. */
   confirm?: boolean
   id?: string
@@ -79,6 +90,7 @@ function TreeSelect({
   onValueChange,
   placeholder = "Select",
   empty,
+  footerAction,
   confirm = true,
   id,
   invalid,
@@ -99,15 +111,14 @@ function TreeSelect({
   const [trail, setTrail] = React.useState<TreeSelectOption[]>([])
   const [query, setQuery] = React.useState("")
   const [active, setActive] = React.useState(0)
+  // The footer action has its own highlight, so rows arriving or leaving while the list is open can't move it.
+  const [actionPicked, setActionPicked] = React.useState(false)
+  // Set when the action is chosen; it runs once the list has closed and handed focus back.
+  const pendingAction = React.useRef(false)
   const listId = React.useId()
+  const actionId = React.useId()
 
   const listRef = React.useRef<HTMLDivElement>(null)
-
-  React.useEffect(() => {
-    listRef.current
-      ?.querySelector("[data-active]")
-      ?.scrollIntoView({ block: "nearest" })
-  }, [active])
 
   const level = trail.at(-1)
   const q = query.trim().toLowerCase()
@@ -125,7 +136,7 @@ function TreeSelect({
       // Open on the level that holds the current value.
       setTrail(path.slice(0, -1))
       setQuery("")
-      setActive(0)
+      highlight(0)
     }
     setOpen(next)
   }
@@ -145,23 +156,45 @@ function TreeSelect({
     if (!entry.option.children?.length) return
     setTrail(entry.path)
     setQuery("")
-    setActive(0)
+    highlight(0)
+  }
+
+  // With no rows to show, the action is the only thing Enter can run.
+  const onAction = Boolean(footerAction) && (actionPicked || rows.length === 0)
+
+  React.useEffect(() => {
+    listRef.current
+      ?.querySelector("[data-active]")
+      ?.scrollIntoView({ block: "nearest" })
+  }, [active, onAction])
+
+  const highlight = (index: number) => {
+    setActionPicked(false)
+    setActive(index)
+  }
+
+  const runAction = () => {
+    pendingAction.current = true
+    setOpen(false)
   }
 
   const back = () => {
     setTrail((current) => current.slice(0, -1))
-    setActive(0)
+    highlight(0)
   }
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     const entry = rows[active]
     if (event.key === "ArrowDown") {
       event.preventDefault()
-      setActive((i) => Math.min(i + 1, rows.length - 1))
+      if (onAction) return
+      if (active < rows.length - 1) setActive(active + 1)
+      else if (footerAction) setActionPicked(true)
     } else if (event.key === "ArrowUp") {
       event.preventDefault()
-      setActive((i) => Math.max(i - 1, 0))
-    } else if (event.key === "ArrowRight" && entry && !q) {
+      if (onAction) highlight(Math.max(rows.length - 1, 0))
+      else setActive((i) => Math.max(i - 1, 0))
+    } else if (event.key === "ArrowRight" && entry && !q && !onAction) {
       if (entry.option.children?.length) {
         event.preventDefault()
         drill(entry)
@@ -169,7 +202,10 @@ function TreeSelect({
     } else if (event.key === "ArrowLeft" && trail.length > 0 && !query) {
       event.preventDefault()
       back()
-    } else if (event.key === "Enter" && entry) {
+    } else if (event.key === "Enter" && onAction) {
+      event.preventDefault()
+      runAction()
+    } else if (event.key === "Enter" && entry && !onAction) {
       event.preventDefault()
       if (confirm && draft === entry.option.value) commit(draft)
       else choose(entry)
@@ -190,7 +226,7 @@ function TreeSelect({
           disabled={disabled}
           data-placeholder={selectedPath.length === 0 || undefined}
           className={cn(
-            "flex h-10 w-full items-center gap-1.5 rounded-control border border-input bg-background ps-3 pe-2.5 text-start text-sm transition-colors outline-none hover:border-placeholder focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:border-primary aria-invalid:border-destructive data-placeholder:text-placeholder",
+            "group/tree-select-trigger flex h-10 w-full items-center gap-1.5 rounded-control border border-input bg-background ps-3 pe-2.5 text-start text-sm transition-colors outline-none hover:border-placeholder focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:border-primary aria-invalid:border-destructive data-placeholder:text-placeholder",
             className
           )}
         >
@@ -214,7 +250,10 @@ function TreeSelect({
                   </React.Fragment>
                 ))}
           </span>
-          <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
+          <ChevronDownIcon
+            data-slot="tree-select-icon"
+            className="pointer-events-none size-4 shrink-0 text-muted-foreground transition-transform duration-150 ease-[ease] group-data-[state=open]/tree-select-trigger:rotate-180"
+          />
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -222,11 +261,35 @@ function TreeSelect({
         collisionPadding={16}
         className="max-h-(--radix-popover-content-available-height) w-(--radix-popover-trigger-width) max-w-[calc(100vw-2rem)] min-w-72 gap-0 p-0"
         onOpenAutoFocus={(event) => {
-          if (options.length === 0) event.preventDefault()
+          if (options.length === 0 && !footerAction) event.preventDefault()
+        }}
+        // The action runs once the list has closed and Radix has settled focus, so a dialog it opens keeps its own.
+        onCloseAutoFocus={(event) => {
+          if (!pendingAction.current) return
+          pendingAction.current = false
+          event.preventDefault()
+          footerAction?.onSelect()
         }}
       >
         {options.length === 0 ? (
-          <div className="p-4">{empty ?? labels.noResults}</div>
+          <>
+            <div className="p-4">{empty ?? labels.noResults}</div>
+            {footerAction && (
+              <div className="border-t border-border-subtle p-1.5">
+                <button
+                  type="button"
+                  data-slot="tree-select-footer-action"
+                  onClick={runAction}
+                  className={cn(
+                    FOOTER_ACTION_CLASS,
+                    "w-full outline-none hover:bg-page focus-visible:ring-2 focus-visible:ring-ring"
+                  )}
+                >
+                  <FooterActionContent action={footerAction} />
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <>
             <div className="flex flex-col gap-2 p-2">
@@ -237,16 +300,18 @@ function TreeSelect({
                   aria-expanded
                   aria-controls={listId}
                   aria-activedescendant={
-                    rows[active]
-                      ? `${listId}-${rows[active].option.value}`
-                      : undefined
+                    onAction
+                      ? actionId
+                      : rows[active]
+                        ? `${listId}-${rows[active].option.value}`
+                        : undefined
                   }
                   aria-label={labels.search}
                   placeholder={labels.search}
                   value={query}
                   onChange={(event) => {
                     setQuery(event.target.value)
-                    setActive(0)
+                    highlight(0)
                   }}
                   onKeyDown={onKeyDown}
                   className="h-9 w-full rounded-control bg-page ps-8 pe-3 text-sm outline-none placeholder:text-placeholder focus-visible:ring-2 focus-visible:ring-ring"
@@ -299,14 +364,14 @@ function TreeSelect({
                   <div
                     key={option.value}
                     className="flex items-center gap-1"
-                    onMouseEnter={() => setActive(index)}
+                    onMouseEnter={() => highlight(index)}
                   >
                     <div
                       id={`${listId}-${option.value}`}
                       role="option"
                       aria-selected={selected}
                       aria-disabled={option.disabled || undefined}
-                      data-active={index === active || undefined}
+                      data-active={(index === active && !onAction) || undefined}
                       onClick={() => choose(entry)}
                       className={cn(
                         "flex min-h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-foreground-secondary aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-active:bg-page",
@@ -356,6 +421,25 @@ function TreeSelect({
                   </div>
                 )
               })}
+              {footerAction && (
+                <>
+                  <div
+                    aria-hidden="true"
+                    className="-mx-1.5 my-1.5 h-px bg-border-subtle"
+                  />
+                  <div
+                    id={actionId}
+                    role="option"
+                    data-slot="tree-select-footer-action"
+                    data-active={onAction || undefined}
+                    onMouseEnter={() => setActionPicked(true)}
+                    onClick={runAction}
+                    className={cn(FOOTER_ACTION_CLASS, "data-active:bg-page")}
+                  >
+                    <FooterActionContent action={footerAction} />
+                  </div>
+                </>
+              )}
             </div>
             {confirm && (
               <div className="flex justify-end gap-2 border-t border-border-subtle p-3">
@@ -384,8 +468,26 @@ function TreeSelect({
   )
 }
 
+const FOOTER_ACTION_CLASS =
+  "flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-start text-sm text-primary-ink"
+
+function FooterActionContent({ action }: { action: TreeSelectFooterAction }) {
+  const icon = action.icon === undefined ? <Icon name="add" /> : action.icon
+  return (
+    <>
+      {icon && (
+        <span className="flex shrink-0 items-center text-primary [&_svg:not([class*='size-'])]:size-4">
+          {icon}
+        </span>
+      )}
+      <span className="min-w-0 flex-1 truncate">{action.label}</span>
+    </>
+  )
+}
+
 export {
   TreeSelect,
+  type TreeSelectFooterAction,
   type TreeSelectLabels,
   type TreeSelectOption,
   type TreeSelectProps,

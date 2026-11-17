@@ -48,7 +48,9 @@ import {
   DataTablePagerDemo,
   DataTableReorderDemo,
   DataTableSelectionDemo,
+  DataTableListDemo,
   DataTableTreeDemo,
+  DataTableTreeLinesDemo,
   FacetFilterDemo,
   PeriodMenuDemo,
   RowActionsMenuDemo,
@@ -56,6 +58,7 @@ import {
   IconsDemo,
   PageHeaderDemo,
   SaveBarDemo,
+  SaveBarPillDemo,
   SearchInputDemo,
   SegmentedControlDemo,
   SettingsNavDemo,
@@ -411,7 +414,11 @@ const KEYWORDS: Record<string, string> = {
   "page-header": "title heading back link actions",
   "data-table":
     "table grid tanstack sort select bulk pagination filter sidebar thumbnail image",
+  "data-table-list":
+    "list light header sentence case no band hairline compact rows page list",
   "data-table-tree": "tree nested category expand hierarchy",
+  "data-table-tree-lines":
+    "tree connector lines rails nested category expand after name aligned",
   "data-table-selection":
     "select selection checkbox bulk pages cross-page server pagination",
   "data-table-reorder": "drag drop reorder sort order position handle dnd",
@@ -420,6 +427,8 @@ const KEYWORDS: Record<string, string> = {
   "confirm-dialog":
     "confirm delete remove modal are you sure acknowledge checkbox type to confirm",
   "save-bar": "unsaved changes discard sticky footer",
+  "save-bar-pill":
+    "unsaved changes discard sticky footer pill rounded editor product shape",
   "search-input": "search filter query",
   "settings-nav":
     "settings sidebar side nav rail menu two pane layout groups filter jump to section shortcut",
@@ -460,7 +469,8 @@ const KEYWORDS: Record<string, string> = {
   "preview-frame":
     "browser window theme screenshot store domain address bar mockup preview",
   "media-cell": "table cell thumbnail file video play document glyph list",
-  "tree-select": "category picker hierarchy nested drill cascader parent",
+  "tree-select":
+    "category picker hierarchy nested drill cascader parent add category footer action",
   "rich-select":
     "attribute type picker icon description create add new multi select settings",
   "option-list-editor":
@@ -525,6 +535,7 @@ const SOURCES: Record<string, Source> = {
   colors: "prototype",
   "page-header": "prototype",
   "save-bar": "prototype",
+  "save-bar-pill": "prototype",
   "settings-nav": "composite",
   "confirm-dialog": "prototype",
   "search-input": "prototype",
@@ -533,7 +544,9 @@ const SOURCES: Record<string, Source> = {
   "step-meter": "prototype",
   "activity-feed": "prototype",
   "data-table": "prototype",
+  "data-table-list": "prototype",
   "data-table-tree": "figma",
+  "data-table-tree-lines": "prototype",
   "data-table-selection": "prototype",
   "data-table-reorder": "figma",
   "data-table-pager": "prototype",
@@ -1030,6 +1043,12 @@ export const demos: Demo[] = [
     render: () => <DataTableDemo />,
   },
   {
+    id: "data-table-list",
+    title: "Data table: list look",
+    group: "Patterns",
+    render: () => <DataTableListDemo />,
+  },
+  {
     id: "data-table-reorder",
     title: "Data table: reorder rows",
     group: "Patterns",
@@ -1048,6 +1067,12 @@ export const demos: Demo[] = [
     render: () => <DataTableTreeDemo />,
   },
   {
+    id: "data-table-tree-lines",
+    title: "Data table: tree with lines",
+    group: "Patterns",
+    render: () => <DataTableTreeLinesDemo />,
+  },
+  {
     id: "data-table-selection",
     title: "Data table: selection across pages",
     group: "Patterns",
@@ -1064,6 +1089,12 @@ export const demos: Demo[] = [
     title: "Save bar",
     group: "Patterns",
     render: () => <SaveBarDemo />,
+  },
+  {
+    id: "save-bar-pill",
+    title: "Save bar: pill actions",
+    group: "Patterns",
+    render: () => <SaveBarPillDemo />,
   },
   {
     id: "settings-nav",
