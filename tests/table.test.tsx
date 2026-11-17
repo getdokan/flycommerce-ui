@@ -1,7 +1,14 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { Table, TableBody, TableCell, TableRow } from "@/index"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/index"
 
 const row = (text: string) => screen.getByText(text).closest("tr")!
 
@@ -65,4 +72,22 @@ describe("Table", () => {
     )
     expect(row("Order #1042").hasAttribute("data-clickable")).toBe(false)
   })
+
+  it.each(["sm", "default", "lg"] as const)(
+    "pads a list header 12px top and bottom, 41px with its border, at size %s",
+    (size) => {
+      render(
+        <Table variant="list" size={size}>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Product</TableHead>
+            </TableRow>
+          </TableHeader>
+        </Table>
+      )
+      const head = screen.getByRole("columnheader", { name: "Product" })
+      expect(head.classList.contains("py-3")).toBe(true)
+      expect(head.classList.contains("py-2.5")).toBe(false)
+    }
+  )
 })
