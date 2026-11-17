@@ -4,12 +4,23 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ## [Unreleased]
 
+**Check when upgrading:**
+
+- `MediaCell` thumbnails look a little different: see Changed.
+- `NavTabs variant="line"` tabs are 4px shorter (36px, was 40px), a little wider and darker at rest, on every page that uses them: see Changed.
+
 ### Added
 
+- `DataTable` `variant` and `size`, passed to its `Table`: `<DataTable variant="list" …>` draws a page's main list the light way, as `Table variant="list"` already does for small tables in a card: a sentence-case header without the grey band, hairline rows, a hover tint only on clickable rows (`onRowClick` or `getRowHref`), no tint on an expanded tree row, and rows 12px tighter (40px thumbnail rows go from 81px to 65px). `size` (`sm`, `default`, `lg`) moves the row padding one 4px step either way. Without them the table looks as before.
+- `DataTable` `treeLines`, with `getSubRows`: each child row hangs from a connector line (a rail per level, an elbow for the row, the line stopping halfway at a last child), and the expand button follows the cell's content instead of leading it, so top-level rows line up without a spacer. The lines run the row's full height at any `size`. Without it, trees keep the leading toggle and plain indentation.
+- `SaveBar shape="pill"`: `<SaveBar shape="pill" open onSave onDiscard />`, for an editor whose design shows pill actions. Discard and Save become 36px fully rounded pills (`Button shape="pill"`, `data-shape="pill"`) with semibold labels; Discard turns quiet, a transparent pill with a faint `inverse-foreground` hairline border, its text slightly dimmed and a faint fill on hover, in place of the solid outline that fills on hover; a `saveMenu` chevron becomes the matching 36px half of the Save pill. The bar is `rounded-xl` with `px-5 py-3.5` (`sm:px-6`) and stops widening at `lg` (768px, no `xl:max-w-4xl` step), and carries `data-shape="pill"`. Labels, `loading` (Save's spinner, Discard disabled), `disabled` and the keyboard behave as before. Without `shape` the bar looks and behaves as before.
 - `TreeSelect footerAction`: a last row for an action such as "Add category", `<TreeSelect options value onValueChange footerAction={{ label: "Add category", onSelect }} />`. It sits after a separator at the foot of the list, with the "add" icon in primary (`icon` swaps it, `null` drops it) and the label in primary ink. The arrows reach it after the last option and Enter or a click runs it: the list closes first, then `onSelect` runs, and neither the value nor `onValueChange` is touched, with or without Confirm. It's an option in the listbox with no `aria-selected`, so it isn't read as a value. It stays when the search matches nothing, under "No results". When `options` is empty, `empty` (or "No results") shows as before and the action sits under it as a button that takes focus on open; `empty` is the message for no data, `footerAction` the action in every state, so drop a second button from `empty` when you pass both. Without the prop the list is unchanged. The type is exported as `TreeSelectFooterAction`.
 
 ### Changed
 
+- `Table variant="list"` (and so `DataTable variant="list"`): the header row is 41px tall (was 37px), 12px above and below its label, as in the prototype's lists. It stays 41px at every `size`; only the body rows move.
+- `MediaCell`: the thumbnail has 8px corners and a hairline ring instead of 6px corners and a solid border, also around `media`; the no-image glyph is still a third of the box but never smaller than 16px (it was 13px in a 40px cell, too small to read as a picture) or larger than 32px; the title is weight 500 instead of 560, and the second line uses the 12px caption style (`type-caption-m`, 16px line height) instead of a one-off 12.5px. Rows keep their height.
+- `NavTabs variant="line"` matches `TabsList variant="line"`: each tab has 8px × 16px padding (was 10px × 12px, so a tab is now 36px tall instead of 40px) and 6px corners, a tab at rest is `text-foreground-secondary` (was the lighter `text-muted-foreground`), and the active underline runs the whole width of the tab. `variant="segmented"` is unchanged.
 - `TreeSelect`'s trigger shows the chevron-down that `Select` uses, turning over while open, in place of the up/down chevrons.
 
 ## [0.8.0] - 2026-11-13
