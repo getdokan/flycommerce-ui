@@ -626,6 +626,32 @@ export function SaveBarDemo() {
   )
 }
 
+export function SaveBarPillDemo() {
+  const [dirty, setDirty] = React.useState(false)
+  const [saving, setSaving] = React.useState(false)
+
+  return (
+    <div className="flex items-center gap-2">
+      <Switch id="dirty-pill" checked={dirty} onCheckedChange={setDirty} />
+      <Label htmlFor="dirty-pill">Simulate unsaved changes</Label>
+      <SaveBar
+        shape="pill"
+        open={dirty}
+        loading={saving}
+        saveLabel="Save product"
+        onDiscard={() => setDirty(false)}
+        onSave={async () => {
+          setSaving(true)
+          await new Promise((resolve) => setTimeout(resolve, 900))
+          setSaving(false)
+          setDirty(false)
+          toast.success("Product saved")
+        }}
+      />
+    </div>
+  )
+}
+
 const SETTINGS_GROUPS: SettingsNavGroup[] = [
   {
     id: "store",
