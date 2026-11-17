@@ -2,10 +2,13 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [0.9.0] - 2026-11-17
+
+New: a light list look for `DataTable` (`variant`, `size`) with `treeLines` for category trees, `SaveBar shape="pill"`, `TreeSelect footerAction` and `ImageUploadField variant="stacked"`, for the store admin's prototype pages.
 
 **Check when upgrading:**
 
+- `Table variant="list"` headers are 4px taller (41px, was 37px), in small card tables too: see Changed.
 - `MediaCell` thumbnails look a little different: see Changed.
 - `NavTabs variant="line"` tabs are 4px shorter (36px, was 40px), a little wider and darker at rest, on every page that uses them: see Changed.
 - Every `Button shape="pill"`, small notice-row pills included, is now semibold. Drop any page-level override that set it, and pass `className="font-[560]"` where a pill should stay lighter.
