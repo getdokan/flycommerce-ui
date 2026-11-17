@@ -456,6 +456,24 @@ const categoryColumns: ColumnDef<Category, unknown>[] = [
   },
 ]
 
+export function DataTableListDemo() {
+  return (
+    <DataTable
+      variant="list"
+      columns={productColumns}
+      data={PRODUCTS.slice(0, 6)}
+      getRowId={(row) => row.id}
+      onRowClick={() => {}}
+      toolbar={
+        <SearchInput
+          containerClassName="w-full sm:w-72"
+          placeholder="Search products"
+        />
+      }
+    />
+  )
+}
+
 export function DataTableTreeDemo() {
   return (
     <DataTable
@@ -470,6 +488,20 @@ export function DataTableTreeDemo() {
           placeholder="Search categories"
         />
       }
+    />
+  )
+}
+
+export function DataTableTreeLinesDemo() {
+  return (
+    <DataTable
+      variant="list"
+      treeLines
+      columns={categoryColumns}
+      data={CATEGORIES}
+      getRowId={(row) => row.id}
+      getSubRows={(row) => row.children}
+      defaultExpanded={true}
     />
   )
 }
