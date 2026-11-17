@@ -8,6 +8,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 - `MediaCell` thumbnails look a little different: see Changed.
 - `NavTabs variant="line"` tabs are 4px shorter (36px, was 40px), a little wider and darker at rest, on every page that uses them: see Changed.
+- Every `Button shape="pill"`, small notice-row pills included, is now semibold. Drop any page-level override that set it, and pass `className="font-[560]"` where a pill should stay lighter.
 
 ### Added
 
@@ -23,6 +24,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 - `MediaCell`: the thumbnail has 8px corners and a hairline ring instead of 6px corners and a solid border, also around `media`; the no-image glyph is still a third of the box but never smaller than 16px (it was 13px in a 40px cell, too small to read as a picture) or larger than 32px; the title is weight 500 instead of 560, and the second line uses the 12px caption style (`type-caption-m`, 16px line height) instead of a one-off 12.5px. Rows keep their height.
 - `NavTabs variant="line"` matches `TabsList variant="line"`: each tab has 8px × 16px padding (was 10px × 12px, so a tab is now 36px tall instead of 40px) and 6px corners, a tab at rest is `text-foreground-secondary` (was the lighter `text-muted-foreground`), and the active underline runs the whole width of the tab. `variant="segmented"` is unchanged.
 - `TreeSelect`'s trigger shows the chevron-down that `Select` uses, turning over while open, in place of the up/down chevrons.
+- `Button shape="pill"` is semibold (600) instead of the base 560, so a pill reads the same on every page, as in the prototype, without a page-level override; small pills (`size="sm"`) and pill links (`asChild`) too. A `className` weight still wins, and the default shape stays 560.
 
 ## [0.8.0] - 2026-11-13
 
