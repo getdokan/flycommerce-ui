@@ -6,11 +6,11 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 **Check when upgrading:**
 
-- `NavTabs variant="line"` tabs are a little wider and darker at rest: see Changed.
+- `NavTabs variant="line"` tabs are 4px shorter (36px, was 40px), a little wider and darker at rest, on every page that uses them: see Changed.
 
 ### Changed
 
-- `NavTabs variant="line"` matches `TabsList variant="line"`: each tab has 8px × 16px padding (was 10px × 12px) and 6px corners, a tab at rest is `text-foreground-secondary` (was the lighter `text-muted-foreground`), and the active underline runs the whole width of the tab. `variant="segmented"` is unchanged.
+- `NavTabs variant="line"` matches `TabsList variant="line"`: each tab has 8px × 16px padding (was 10px × 12px, so a tab is now 36px tall instead of 40px) and 6px corners, a tab at rest is `text-foreground-secondary` (was the lighter `text-muted-foreground`), and the active underline runs the whole width of the tab. `variant="segmented"` is unchanged.
 
 ## [0.8.0] - 2026-11-13
 
