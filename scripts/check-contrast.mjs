@@ -62,9 +62,12 @@ let failures = 0
 try {
   const page = await browser.newPage()
   await page.setViewport({ width: 1280, height: 900 })
-  await page.goto(`http://127.0.0.1:${port}/#welcome`, {
-    waitUntil: "networkidle0",
-  })
+  // Demo embeds (video, analytics) can keep the network busy, so idle is best-effort.
+  await page.goto(`http://127.0.0.1:${port}/#welcome`, { waitUntil: "load" })
+  await page
+    .waitForNetworkIdle({ idleTime: 500, timeout: 20_000 })
+    .catch(() => {})
+  await page.waitForSelector("section[id]")
   await page.addStyleTag({
     content:
       "*,*::before,*::after{transition:none!important;animation:none!important}",
