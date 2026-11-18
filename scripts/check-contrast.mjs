@@ -45,7 +45,11 @@ const server = createServer((req, res) => {
     url = decodeURIComponent((req.url ?? "/").split("?")[0])
   } catch {}
   let file = path.join(root, url)
-  if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile())
+  if (
+    !file.startsWith(root + path.sep) ||
+    !existsSync(file) ||
+    !statSync(file).isFile()
+  )
     file = path.join(root, "index.html")
   res.setHeader(
     "content-type",
