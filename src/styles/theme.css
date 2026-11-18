@@ -129,7 +129,7 @@
     --destructive-subtle: #2a1917;
     --destructive-strong: #f09a8f;
     --destructive-solid: #c43c35; /* darker than --destructive so white text keeps 4.5:1 */
-    --destructive-solid-hover: #b83530;
+    --destructive-solid-hover: #a62e29;
     --destructive-solid-foreground: #ffffff;
     --success: #2bb37f;
     --success-subtle: #10281f;

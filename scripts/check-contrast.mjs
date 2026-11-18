@@ -1,5 +1,5 @@
 // jsdom can't compute colours, so contrast is checked here in a real browser, light and dark.
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, statSync } from "node:fs"
 import { createServer } from "node:http"
 import { createRequire } from "node:module"
 import path from "node:path"
@@ -40,9 +40,12 @@ const types = {
   ".json": "application/json",
 }
 const server = createServer((req, res) => {
-  const url = decodeURIComponent((req.url ?? "/").split("?")[0])
+  let url = "/"
+  try {
+    url = decodeURIComponent((req.url ?? "/").split("?")[0])
+  } catch {}
   let file = path.join(root, url)
-  if (!file.startsWith(root) || !existsSync(file) || url.endsWith("/"))
+  if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile())
     file = path.join(root, "index.html")
   res.setHeader(
     "content-type",
@@ -88,7 +91,10 @@ try {
       const result = await window.axe.run(
         {
           include: [document],
-          exclude: [["[data-disabled]"], ['[aria-disabled="true"]']],
+          exclude: [
+            ['[data-disabled]:not([data-disabled="false"])'],
+            ['[aria-disabled="true"]'],
+          ],
         },
         { runOnly: ["color-contrast"] }
       )

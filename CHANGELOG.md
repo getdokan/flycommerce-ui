@@ -10,7 +10,7 @@ All notable changes to `@flycommerce/ui` are listed here. The format follows [Ke
 
 ### Fixed
 
-- `Button variant="destructive-solid"` in dark mode: white text on the light dark-mode red (`#e5776a`) was 2.9:1, below WCAG AA. The button now fills with `--destructive-solid` (`#c43c35` in dark, 5.2:1) and darkens on hover instead of lightening. Light mode looks the same as before.
+- `Button variant="destructive-solid"` in dark mode: white text on the light dark-mode red (`#e5776a`) was 2.9:1, below WCAG AA. The button now fills with `--destructive-solid` (`#c43c35` in dark, 5.2:1) and darkens on hover instead of lightening. Light mode looks the same as before. An app that re-colours `--destructive` to rebrand should now set `--destructive-solid` and `--destructive-solid-hover` too, or the filled button keeps the library red.
 
 ## [0.9.0] - 2026-11-17
 
