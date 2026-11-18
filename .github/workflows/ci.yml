@@ -23,5 +23,9 @@ jobs:
       - name: Package is valid for every bundler and TypeScript resolution mode
         run: pnpm check:package
       - run: pnpm build:site
+      - name: WCAG AA colour contrast in light and dark mode
+        run: pnpm check:contrast
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
       - name: Claude skill references are up to date
         run: pnpm skill:refs && git diff --exit-code plugin/

@@ -21,7 +21,7 @@ const buttonVariants = cva(
         destructive:
           "bg-transparent text-destructive hover:bg-destructive-subtle focus-visible:ring-destructive/30",
         "destructive-solid":
-          "border-destructive bg-destructive text-white hover:border-destructive-strong hover:bg-destructive-strong focus-visible:ring-destructive/30",
+          "border-destructive-solid bg-destructive-solid text-destructive-solid-foreground hover:border-destructive-solid-hover hover:bg-destructive-solid-hover focus-visible:ring-destructive/30",
         link: "h-auto border-0 bg-transparent p-0 font-semibold text-primary-ink hover:underline [&>svg[data-icon=inline-start]:first-child]:-ms-0.75",
       },
       size: {

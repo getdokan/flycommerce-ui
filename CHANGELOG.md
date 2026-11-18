@@ -2,6 +2,16 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- `--destructive-solid`, `--destructive-solid-hover` and `--destructive-solid-foreground` tokens (`bg-destructive-solid`, `text-destructive-solid-foreground`): the fill and text of a filled danger button, kept at 4.5:1 in both themes.
+
+### Fixed
+
+- `Button variant="destructive-solid"` in dark mode: white text on the light dark-mode red (`#e5776a`) was 2.9:1, below WCAG AA. The button now fills with `--destructive-solid` (`#c43c35` in dark, 5.2:1) and darkens on hover instead of lightening. Light mode looks the same as before.
+
 ## [0.9.0] - 2026-11-17
 
 New: a light list look for `DataTable` (`variant`, `size`) with `treeLines` for category trees, `SaveBar shape="pill"`, `TreeSelect footerAction` and `ImageUploadField variant="stacked"`, for the store admin's prototype pages.

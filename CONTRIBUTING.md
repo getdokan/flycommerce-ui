@@ -13,6 +13,7 @@ pnpm test         # renders every gallery demo and runs axe accessibility checks
 pnpm build        # library: dist/ (ESM per component, .d.ts, CSS entries)
 pnpm build:site   # gallery: site-dist/ (static site, deployed to ui.flycommerce.com)
 pnpm check:package # after build: publint + "Are the types wrong?" on the packed package
+pnpm check:contrast # after build:site: WCAG AA colour contrast of the whole gallery in Chrome, light and dark
 ```
 
 CI runs all of these, plus the plugin reference check, on every push and pull request. A new component needs a gallery demo, and that demo is then covered by the tests automatically.
@@ -64,17 +65,17 @@ Commit messages and pull request titles follow [Conventional Commits](https://ww
 <type>(<scope>): <summary>
 ```
 
-| Type | For |
-|---|---|
-| `feat` | something new people can use |
-| `fix` | a bug fix |
-| `perf` | faster or smaller, same behaviour |
-| `refactor` | a code change that doesn't change behaviour |
-| `docs` | documentation only |
-| `test` | tests only |
-| `build` | the build, dependencies or release configuration |
-| `ci` | GitHub Actions |
-| `chore` | anything else, such as a release |
+| Type       | For                                              |
+| ---------- | ------------------------------------------------ |
+| `feat`     | something new people can use                     |
+| `fix`      | a bug fix                                        |
+| `perf`     | faster or smaller, same behaviour                |
+| `refactor` | a code change that doesn't change behaviour      |
+| `docs`     | documentation only                               |
+| `test`     | tests only                                       |
+| `build`    | the build, dependencies or release configuration |
+| `ci`       | GitHub Actions                                   |
+| `chore`    | anything else, such as a release                 |
 
 - The scope is optional: the component in kebab-case, such as `data-table` or `rich-text-editor`, or an area: `gallery`, `plugin`, `styles`.
 - Write the summary in the imperative, in lower case, with no full stop: `fix(data-table): keep the toolbar on one row`.
