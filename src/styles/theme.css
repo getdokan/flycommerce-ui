@@ -29,6 +29,9 @@
     --destructive: #cc2d36; /* danger, darkened for 4.5:1 on grey surfaces */
     --destructive-subtle: #fcecec;
     --destructive-strong: #b4272f;
+    --destructive-solid: #cc2d36; /* filled danger button; white text at 4.5:1 */
+    --destructive-solid-hover: #b4272f;
+    --destructive-solid-foreground: #ffffff;
     --success: #0e9e6e; /* ok */
     --success-subtle: #e6f6ef;
     --success-strong: #0a7d57;
@@ -125,6 +128,9 @@
     --destructive: #e5776a;
     --destructive-subtle: #2a1917;
     --destructive-strong: #f09a8f;
+    --destructive-solid: #c43c35; /* darker than --destructive so white text keeps 4.5:1 */
+    --destructive-solid-hover: #b83530;
+    --destructive-solid-foreground: #ffffff;
     --success: #2bb37f;
     --success-subtle: #10281f;
     --success-strong: #4fd0a0;
