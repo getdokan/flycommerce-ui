@@ -37,7 +37,7 @@ const buttonVariants = cva(
       },
       shape: {
         default: "rounded-control",
-        pill: "relative rounded-full transition-[color,background-color,border-color,box-shadow,scale] duration-200 ease-fluid active:scale-98",
+        pill: "relative rounded-full font-semibold transition-[color,background-color,border-color,box-shadow,scale] duration-200 ease-fluid active:scale-98",
       },
     },
     compoundVariants: [

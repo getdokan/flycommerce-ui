@@ -18,7 +18,7 @@ Still legacy: themes, integrations, email templates, settings for payment, billi
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
 | Canvas      | `#f1f1f3`                                                                                                          | `bg-page`                                                  |
 | Page title  | `text-2xl font-bold`, subtitle `text-sm` grey                                                                      | `PageHeader` > `PageHeaderTitle` + `PageHeaderDescription` |
-| Primary CTA | brand blue, 40px, 8px corners, semibold                                                                            | `Button` (default)                                         |
+| Primary CTA | brand blue pill, 44px, fully rounded, semibold, the arrow in its own circle                                        | `Button shape="pill"` + `ButtonArrow`                      |
 | Secondary   | white, `#e2e2e7` border, 8px corners, no shadow                                                                    | `Button variant="outline"`                                 |
 | Save bar    | `gray-900` bar, 8px corners, wide (`max-w-4xl`), white text, outlined Discard + Save Changes (split menu optional) | `SaveBar`                                                  |
 
