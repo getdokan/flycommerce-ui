@@ -36,6 +36,82 @@ describe("Button shape", () => {
     expect(arrow?.querySelector("svg")).not.toBeNull()
   })
 
+  it("sets a pill semibold, as a call to action, and leaves the default shape at 560", () => {
+    render(
+      <>
+        <Button shape="pill">
+          Add product
+          <ButtonArrow />
+        </Button>
+        <Button variant="outline" shape="pill">
+          Share your store
+          <ButtonArrow />
+        </Button>
+        <Button>Save</Button>
+      </>
+    )
+    for (const name of ["Add product", "Share your store"]) {
+      const pill = screen.getByRole("button", { name })
+      expect(pill.classList.contains("font-semibold")).toBe(true)
+      expect(pill.classList.contains("font-[560]")).toBe(false)
+    }
+    const plain = screen.getByRole("button", { name: "Save" })
+    expect(plain.classList.contains("font-[560]")).toBe(true)
+    expect(plain.classList.contains("font-semibold")).toBe(false)
+  })
+
+  it("keeps a small pill, a pill link and a consumer's own weight as asked", () => {
+    render(
+      <>
+        <Button size="sm" shape="pill">
+          Renew plan
+        </Button>
+        <Button asChild shape="pill">
+          <a href="/admin/products/create">
+            Add product
+            <ButtonArrow />
+          </a>
+        </Button>
+        <Button shape="pill" className="font-medium">
+          Quiet pill
+        </Button>
+      </>
+    )
+
+    expect(
+      screen
+        .getByRole("button", { name: "Renew plan" })
+        .classList.contains("font-semibold")
+    ).toBe(true)
+    expect(
+      screen
+        .getByRole("link", { name: "Add product" })
+        .classList.contains("font-semibold")
+    ).toBe(true)
+    const quiet = screen.getByRole("button", { name: "Quiet pill" })
+    expect(quiet.classList.contains("font-medium")).toBe(true)
+    expect(quiet.classList.contains("font-semibold")).toBe(false)
+  })
+
+  it("keeps a pill semibold while loading and as a solid destructive button", () => {
+    render(
+      <>
+        <Button shape="pill" loading>
+          Saving
+        </Button>
+        <Button variant="destructive-solid" shape="pill">
+          Update payment
+        </Button>
+      </>
+    )
+
+    for (const name of ["Saving", "Update payment"]) {
+      expect(
+        screen.getByRole("button", { name }).classList.contains("font-semibold")
+      ).toBe(true)
+    }
+  })
+
   it("pins the arrow of a full-width pill", () => {
     render(
       <Button shape="pill">

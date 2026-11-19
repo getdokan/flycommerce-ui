@@ -1,12 +1,14 @@
 import * as React from "react"
 
 import {
+  Button,
   ColorInput,
   CopyField,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
+  Icon,
   ImageUploadField,
   MediaPickerDialog,
   type FileRejection,
@@ -369,6 +371,139 @@ export function ImageUploadFieldDemo() {
           Set by your email theme.
         </FieldDescription>
       </Field>
+    </div>
+  )
+}
+
+function CatalogImageField({
+  id,
+  label,
+  hint,
+  initial = null,
+  previewAspect,
+  generate,
+}: {
+  id: string
+  label: string
+  hint: string
+  initial?: ImageUploadFieldValue | null
+  previewAspect?: "square" | "wide"
+  generate?: boolean
+}) {
+  const [image, setImage] = React.useState(initial)
+  const [error, setError] = React.useState<string>()
+  const [picking, setPicking] = React.useState(false)
+  const [generating, setGenerating] = React.useState(false)
+  const src = image?.src
+
+  React.useEffect(() => {
+    if (!generating) return
+    const timer = setTimeout(() => {
+      const item = LIBRARY[3]
+      setImage({ src: item.url, name: item.name, size: item.size })
+      setGenerating(false)
+    }, 1200)
+    return () => clearTimeout(timer)
+  }, [generating])
+
+  React.useEffect(() => {
+    if (!src?.startsWith("blob:")) return
+    return () => URL.revokeObjectURL(src)
+  }, [src])
+
+  const use = (next: ImageUploadFieldValue | null) => {
+    setImage(next)
+    setError(undefined)
+  }
+
+  return (
+    <>
+      <Field data-invalid={error ? true : undefined}>
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <ImageUploadField
+          id={id}
+          variant="stacked"
+          previewAspect={previewAspect}
+          aria-describedby={error ? `${id}-error` : `${id}-hint`}
+          label={label}
+          value={image}
+          accept="image/png,image/jpeg,image/webp"
+          maxSize={MAX_SIZE}
+          invalid={Boolean(error)}
+          labels={{
+            description: "JPG, PNG or WebP, up to 25 MB. Square works best.",
+          }}
+          onFiles={([file]) =>
+            use({ src: URL.createObjectURL(file), name: file.name })
+          }
+          onReject={([rejection]) =>
+            setError(
+              rejection.reason === "size"
+                ? `${rejection.file.name} is over 25 MB.`
+                : `${rejection.file.name} isn't a JPG, PNG or WebP image.`
+            )
+          }
+          onRemove={() => use(null)}
+          onChooseExisting={() => setPicking(true)}
+          actions={
+            generate && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                loading={generating}
+                onClick={() => setGenerating(true)}
+              >
+                {!generating && <Icon name="ai" data-icon="inline-start" />}
+                {generating ? "Generating" : "Generate with AI"}
+              </Button>
+            )
+          }
+        />
+        {error ? (
+          <FieldError id={`${id}-error`}>{error}</FieldError>
+        ) : (
+          <FieldDescription id={`${id}-hint`}>{hint}</FieldDescription>
+        )}
+      </Field>
+      <MediaPickerDialog
+        open={picking}
+        onOpenChange={setPicking}
+        defaultTab="library"
+        accept="image/*"
+        maxSize={MAX_SIZE}
+        items={LIBRARY}
+        labels={{ title: `Choose ${label.toLowerCase()}`, select: "Use image" }}
+        onConfirm={([item]) => {
+          if (item) use({ src: item.url, name: item.name, size: item.size })
+          setPicking(false)
+        }}
+      />
+    </>
+  )
+}
+
+export function ImageUploadFieldStackedDemo() {
+  return (
+    <div className="grid w-full gap-6 sm:grid-cols-2">
+      <CatalogImageField
+        id="category-image"
+        label="Category image"
+        hint="Shown on the category page and in menus."
+        generate
+      />
+      <CatalogImageField
+        id="collection-image"
+        label="Collection image"
+        hint="Shown at the top of the collection page."
+        previewAspect="wide"
+        generate
+        initial={{
+          src: LIBRARY[1].url,
+          name: LIBRARY[1].name,
+          size: LIBRARY[1].size,
+        }}
+      />
     </div>
   )
 }
