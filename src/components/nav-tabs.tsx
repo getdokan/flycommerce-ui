@@ -98,7 +98,8 @@ function NavTabsLink({
         "relative inline-flex shrink-0 items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring [&_svg]:size-4",
         variant === "segmented"
           ? "rounded-md px-4 py-2 text-foreground-secondary hover:text-foreground data-active:bg-background data-active:text-foreground data-active:shadow-1"
-          : "px-3 py-2.5 text-muted-foreground hover:text-foreground focus-visible:ring-inset data-active:text-primary-ink data-active:after:absolute data-active:after:inset-x-2 data-active:after:bottom-0 data-active:after:h-0.5 data-active:after:rounded-sm data-active:after:bg-primary",
+          : // As the line Tabs: the same padding, corners and resting colour, the underline across the whole tab.
+            "rounded-md px-4 py-2 text-foreground-secondary hover:text-foreground focus-visible:ring-inset data-active:text-primary-ink data-active:after:absolute data-active:after:inset-x-0 data-active:after:bottom-0 data-active:after:h-0.5 data-active:after:rounded-sm data-active:after:bg-primary",
         className
       )}
       {...props}

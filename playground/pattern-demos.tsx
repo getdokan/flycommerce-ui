@@ -456,6 +456,24 @@ const categoryColumns: ColumnDef<Category, unknown>[] = [
   },
 ]
 
+export function DataTableListDemo() {
+  return (
+    <DataTable
+      variant="list"
+      columns={productColumns}
+      data={PRODUCTS.slice(0, 6)}
+      getRowId={(row) => row.id}
+      onRowClick={() => {}}
+      toolbar={
+        <SearchInput
+          containerClassName="w-full sm:w-72"
+          placeholder="Search products"
+        />
+      }
+    />
+  )
+}
+
 export function DataTableTreeDemo() {
   return (
     <DataTable
@@ -470,6 +488,20 @@ export function DataTableTreeDemo() {
           placeholder="Search categories"
         />
       }
+    />
+  )
+}
+
+export function DataTableTreeLinesDemo() {
+  return (
+    <DataTable
+      variant="list"
+      treeLines
+      columns={categoryColumns}
+      data={CATEGORIES}
+      getRowId={(row) => row.id}
+      getSubRows={(row) => row.children}
+      defaultExpanded={true}
     />
   )
 }
@@ -589,6 +621,32 @@ export function SaveBarDemo() {
             Save and publish
           </DropdownMenuItem>
         }
+      />
+    </div>
+  )
+}
+
+export function SaveBarPillDemo() {
+  const [dirty, setDirty] = React.useState(false)
+  const [saving, setSaving] = React.useState(false)
+
+  return (
+    <div className="flex items-center gap-2">
+      <Switch id="dirty-pill" checked={dirty} onCheckedChange={setDirty} />
+      <Label htmlFor="dirty-pill">Simulate unsaved changes</Label>
+      <SaveBar
+        shape="pill"
+        open={dirty}
+        loading={saving}
+        saveLabel="Save product"
+        onDiscard={() => setDirty(false)}
+        onSave={async () => {
+          setSaving(true)
+          await new Promise((resolve) => setTimeout(resolve, 900))
+          setSaving(false)
+          setDirty(false)
+          toast.success("Product saved")
+        }}
       />
     </div>
   )
