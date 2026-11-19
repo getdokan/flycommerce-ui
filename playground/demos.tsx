@@ -67,6 +67,7 @@ import {
   ActivityFeedDemo,
 } from "./pattern-demos"
 import { StepMeterDemo } from "./step-meter-demo"
+import { AlertDismissDemo } from "./alert-dismiss-demo"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import {
@@ -350,7 +351,7 @@ const KEYWORDS: Record<string, string> = {
     "i18n l10n translate translation localize locale language labels aria-label screen reader turkish arabic rtl intl date number bytes",
   button: "cta action submit link back arrow loading",
   toggle: "pressed bold formatting",
-  alert: "notice banner warning info error callout message",
+  alert: "notice banner warning info error callout message dismiss close",
   toast: "snackbar notification sonner flash",
   progress:
     "loader loading bar skeleton spinner placeholder usage meter limit seats tone",
@@ -1547,6 +1548,7 @@ export const demos: Demo[] = [
             </AlertAction>
           </Alert>
         </div>
+        <AlertDismissDemo />
       </div>
     ),
   },

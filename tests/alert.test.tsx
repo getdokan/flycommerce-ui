@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import userEvent from "@testing-library/user-event"
+import { describe, expect, it, vi } from "vitest"
 
 import {
   Alert,
@@ -70,5 +71,69 @@ describe("Alert", () => {
         (child) => slot(child) ?? slot(child.firstElementChild)
       )
     ).toEqual(["alert-title", "alert-action"])
+  })
+
+  it("draws no close button without onDismiss", () => {
+    render(
+      <Alert>
+        <AlertTitle>Title</AlertTitle>
+      </Alert>
+    )
+    const alert = screen.getByRole("alert")
+    expect(screen.queryByRole("button")).toBeNull()
+    expect(alert.hasAttribute("data-dismissible")).toBe(false)
+  })
+
+  it("calls onDismiss from a named close button, by click and keyboard", async () => {
+    const user = userEvent.setup()
+    const onDismiss = vi.fn()
+    render(
+      <Alert onDismiss={onDismiss}>
+        <svg />
+        <AlertTitle>Essential emails now always send</AlertTitle>
+      </Alert>
+    )
+    const close = screen.getByRole("button", { name: "Dismiss" })
+    expect(slot(close)).toBe("alert-dismiss")
+    expect(close.getAttribute("type")).toBe("button")
+    await user.tab()
+    expect(document.activeElement).toBe(close)
+    await user.keyboard("{Enter}")
+    await user.click(close)
+    expect(onDismiss).toHaveBeenCalledTimes(2)
+    expect(onDismiss.mock.calls).toEqual([[], []])
+    expect(screen.getByRole("alert").isConnected).toBe(true)
+  })
+
+  it("keeps the content clear of the close button when the caller sets padding", () => {
+    render(
+      <Alert onDismiss={() => {}} className="px-4">
+        <AlertTitle>Title</AlertTitle>
+      </Alert>
+    )
+    const alert = screen.getByRole("alert")
+    expect(alert.hasAttribute("data-dismissible")).toBe(true)
+    expect(alert.className).toContain("px-4")
+    expect(alert.className).toContain("data-dismissible:pe-9")
+  })
+
+  it("takes its name from dismissLabel and sits after the content with an action", () => {
+    render(
+      <Alert onDismiss={() => {}} dismissLabel="Close notice">
+        <svg data-testid="icon" />
+        <AlertTitle>Title</AlertTitle>
+        <AlertAction>
+          <Button size="sm">Act</Button>
+        </AlertAction>
+      </Alert>
+    )
+    const alert = screen.getByRole("alert")
+    expect(alert.hasAttribute("data-dismissible")).toBe(true)
+    expect(
+      [...alert.children].map((child) => slot(child) ?? child.tagName)
+    ).toEqual(["svg", "alert-content", "alert-dismiss"])
+    expect(screen.getByRole("button", { name: "Close notice" })).toBe(
+      alert.lastElementChild
+    )
   })
 })
