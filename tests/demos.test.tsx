@@ -5,9 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@/index"
 import { demos } from "../playground/demos"
 
-// jsdom can't compute colour or layout or reach into iframes, so those are checked in the browser instead.
+// jsdom can't compute colour or layout, so those axe rules are checked in the browser instead.
 const AXE_OPTIONS: axe.RunOptions = {
-  iframes: false,
   rules: {
     "color-contrast": { enabled: false },
     region: { enabled: false },
@@ -15,6 +14,9 @@ const AXE_OPTIONS: axe.RunOptions = {
     "page-has-heading-one": { enabled: false },
   },
 }
+
+// jsdom can't reach into these demos' iframes either.
+const IFRAME_DEMOS = new Set(["scaled-frame"])
 
 let errors: unknown[][]
 beforeEach(() => {
@@ -34,7 +36,12 @@ describe("every gallery demo", () => {
       )
       expect(container.childElementCount).toBeGreaterThan(0)
 
-      const results = await axe.run(container, AXE_OPTIONS)
+      const results = await axe.run(
+        container,
+        IFRAME_DEMOS.has(demo.id)
+          ? { ...AXE_OPTIONS, iframes: false }
+          : AXE_OPTIONS
+      )
       const violations = results.violations.map(
         (v) =>
           `${v.id}: ${v.help} (${v.nodes

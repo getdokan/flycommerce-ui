@@ -13,7 +13,7 @@ type ScaledFrameBaseProps = Omit<
   height?: number
   /** Scale up past the design width when the box is wider; by default it only scales down. */
   upscale?: boolean
-  /** Caps the box's height on screen; taller content scrolls inside it. */
+  /** Caps the box's height on screen; taller content scrolls inside it, in a region named by `title`. With children there is no `title`, so name it with `aria-label`. */
   maxHeight?: React.CSSProperties["maxHeight"]
 }
 
@@ -30,7 +30,7 @@ type ScaledFrameDocumentProps = ScaledFrameBaseProps & {
   srcDoc?: string
   /** A page to render in a sandboxed iframe. */
   src?: string
-  /** Names the iframe for screen readers, e.g. "Order confirmed preview". */
+  /** Names the iframe for screen readers, e.g. "Order confirmed preview", and the scroll region when `maxHeight` is set, unless `aria-label` names it. */
   title: string
   /** The iframe's sandbox; `allow-same-origin` lets the frame measure the document's height. Never add `allow-scripts` to it for HTML you don't trust: together they let the document lift its own sandbox. */
   sandbox?: string
@@ -177,6 +177,7 @@ function ScaledFrame({
         ...style,
       }}
       {...props}
+      aria-label={props["aria-label"] ?? (scrolls ? title : undefined)}
     >
       <div
         ref={box}

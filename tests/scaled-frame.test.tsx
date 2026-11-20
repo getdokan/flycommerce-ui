@@ -254,6 +254,55 @@ describe("ScaledFrame", () => {
     expect(root.className).toContain("overflow-y-auto")
   })
 
+  it("names the scroll region after the title, unless an aria-label is given", () => {
+    const { container, rerender } = render(
+      <ScaledFrame
+        width={375}
+        height={2000}
+        maxHeight="16rem"
+        srcDoc=""
+        title="Order confirmed preview"
+      />
+    )
+    const root = slot(container, "scaled-frame")
+    expect(root.getAttribute("role")).toBe("region")
+    expect(root.getAttribute("aria-label")).toBe("Order confirmed preview")
+
+    rerender(
+      <ScaledFrame
+        width={375}
+        height={2000}
+        maxHeight="16rem"
+        srcDoc=""
+        title="Order confirmed preview"
+        aria-label="Email preview, scrollable"
+      />
+    )
+    expect(root.getAttribute("aria-label")).toBe("Email preview, scrollable")
+
+    rerender(
+      <ScaledFrame
+        width={375}
+        height={2000}
+        maxHeight="16rem"
+        srcDoc=""
+        title="Order confirmed preview"
+        aria-label={undefined}
+      />
+    )
+    expect(root.getAttribute("aria-label")).toBe("Order confirmed preview")
+
+    rerender(
+      <ScaledFrame
+        width={375}
+        height={2000}
+        srcDoc=""
+        title="Order confirmed preview"
+      />
+    )
+    expect(root.hasAttribute("aria-label")).toBe(false)
+  })
+
   it("doesn't take focus while capped content still fits", () => {
     const { container } = render(
       <ScaledFrame
