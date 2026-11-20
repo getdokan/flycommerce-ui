@@ -1,5 +1,5 @@
 import * as React from "react"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import axe from "axe-core"
 import { describe, expect, it, vi } from "vitest"
@@ -195,17 +195,41 @@ describe("Switch", () => {
     expect(onCheckedChange).toHaveBeenCalledWith(true)
   })
 
-  it("keeps the reason after a tap until a press elsewhere or Escape", async () => {
+  it("keeps the reason after a tap that doesn't focus the switch, until a press elsewhere or Escape", async () => {
     const user = userEvent.setup()
     const { toggle } = renderLocked()
 
-    await user.click(toggle)
-    await user.unhover(toggle)
-    ;(document.activeElement as HTMLElement | null)?.blur()
+    fireEvent.click(toggle)
+    expect(document.activeElement).not.toBe(toggle)
     await new Promise((resolve) => setTimeout(resolve, 150))
     expect(screen.getByRole("tooltip").textContent).toBe(REASON)
 
     await user.keyboard("{Escape}")
+    expect(screen.queryByRole("tooltip")).toBeNull()
+  })
+
+  it("hides the reason of a pressed switch once keyboard focus leaves it", async () => {
+    const user = userEvent.setup()
+    render(
+      <TooltipProvider>
+        <Switch aria-label="Order confirmed" checked disabledReason={REASON} />
+        <Switch aria-label="Order shipped" checked disabledReason="Always on" />
+        <button type="button">Save</button>
+      </TooltipProvider>
+    )
+
+    await user.tab()
+    await user.keyboard(" ")
+    await user.tab()
+    expect(
+      (await screen.findAllByRole("tooltip")).map((tip) => tip.textContent)
+    ).toEqual(["Always on"])
+
+    await user.keyboard(" ")
+    await user.tab()
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Save" })
+    )
     expect(screen.queryByRole("tooltip")).toBeNull()
   })
 

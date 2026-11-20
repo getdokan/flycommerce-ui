@@ -12,7 +12,7 @@ import {
 
 type SwitchProps = React.ComponentProps<typeof SwitchPrimitive.Root> & {
   size?: "sm" | "default"
-  /** Locks the switch and says why in a tooltip on hover and keyboard focus, e.g. "Shoppers need this email, so it's always sent." Plain text: a tooltip can't hold a link or button. `disabled={false}` unlocks it, so it can follow a condition. */
+  /** Locks the switch and says why in a tooltip on hover and keyboard focus, e.g. "Shoppers need this email, so it's always sent." Plain text: a tooltip can't hold a link or button. `disabled={false}` unlocks it, so it can follow a condition. Needs a `TooltipProvider` above it, which a plain `disabled` switch doesn't; without one it throws. */
   disabledReason?: React.ReactNode
 }
 
@@ -83,7 +83,9 @@ function Switch({
       }}
       onBlur={(event) => {
         onBlur?.(event)
-        if (locked) setFocused(false)
+        if (!locked) return
+        setFocused(false)
+        setPressed(false)
       }}
       onPointerEnter={(event) => {
         onPointerEnter?.(event)
