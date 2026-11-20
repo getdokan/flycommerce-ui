@@ -6,11 +6,12 @@ import {
   type CodeEditorProblem,
 } from "@/components/ui/code-editor"
 import {
-  Button,
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
+  MergeTagList,
+  type MergeTag,
 } from "@/index"
 
 const GOOGLE_TAG = `<!-- Google tag (gtag.js) -->
@@ -25,7 +26,15 @@ const CART_EMAIL = `<p>Hi {{customer_name}},</p>
 <p>You left something in your cart at {{site_name}}.</p>
 <p><a href="{{cart_url}}">Finish checking out</a></p>`
 
-const MERGE_TAGS = ["customer_name", "site_name", "cart_url"]
+const MERGE_TAGS: MergeTag[] = [
+  { tag: "customer_name", description: "The shopper's name", sample: "Amara" },
+  {
+    tag: "site_name",
+    description: "Your store's name",
+    sample: "Maison Oriel",
+  },
+  { tag: "cart_url", description: "A link back to the cart" },
+]
 
 const PRODUCT_JSON = `{
   "@context": "https://schema.org",
@@ -87,18 +96,10 @@ export function CodeEditorDemo() {
 
       <Field>
         <FieldLabel htmlFor="cart-email">Email body</FieldLabel>
-        <div className="flex flex-wrap gap-2">
-          {MERGE_TAGS.map((tag) => (
-            <Button
-              key={tag}
-              variant="outline"
-              size="xs"
-              onClick={() => emailRef.current?.insertText(`{{${tag}}}`)}
-            >
-              {`{{${tag}}}`}
-            </Button>
-          ))}
-        </div>
+        <MergeTagList
+          tags={MERGE_TAGS}
+          onInsert={(_, token) => emailRef.current?.insertText(token)}
+        />
         <CodeEditor
           ref={emailRef}
           id="cart-email"
