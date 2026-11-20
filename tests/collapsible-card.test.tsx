@@ -161,4 +161,44 @@ describe("CollapsibleCard", () => {
         .hasAttribute("aria-describedby")
     ).toBe(false)
   })
+
+  it("keeps the closed body mounted with keepMounted, so an uncontrolled field keeps its value and stays in the form", async () => {
+    const user = userEvent.setup()
+    render(
+      <form aria-label="Settings">
+        <CollapsibleCard title="Sender" defaultOpen keepMounted>
+          <input aria-label="Reply-to" name="replyTo" required />
+        </CollapsibleCard>
+      </form>
+    )
+    const trigger = screen.getByRole("button", { name: "Sender" })
+
+    await user.type(screen.getByLabelText("Reply-to"), "shop@example.com")
+    await user.click(trigger)
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("false")
+    expect(
+      document
+        .querySelector('[data-slot="collapsible-card-content"]')!
+        .getAttribute("data-state")
+    ).toBe("closed")
+    expect(
+      new FormData(screen.getByRole("form") as HTMLFormElement).get("replyTo")
+    ).toBe("shop@example.com")
+
+    await user.click(trigger)
+    expect((screen.getByLabelText("Reply-to") as HTMLInputElement).value).toBe(
+      "shop@example.com"
+    )
+  })
+
+  it("unmounts the closed body by default", async () => {
+    const user = userEvent.setup()
+    render(<Section defaultOpen />)
+
+    expect(screen.getByText("Order shipped")).toBeTruthy()
+
+    await user.click(header())
+    expect(screen.queryByText("Order shipped")).toBeNull()
+  })
 })

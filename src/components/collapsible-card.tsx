@@ -28,6 +28,8 @@ type CollapsibleCardProps = Omit<
   onOpenChange?: (open: boolean) => void
   /** Stops the card opening or closing; `actions` and an open body stay usable. */
   disabled?: boolean
+  /** Keeps the closed body in the DOM, hidden from sight, the keyboard and screen readers, so uncontrolled fields keep their values and still submit. A `required` field inside a closed card then blocks the form's submit without showing why, so validate it yourself or keep that card open. Off by default: the closed body unmounts. */
+  keepMounted?: boolean
   /** The title's heading level, to fit the page's outline. */
   headingLevel?: 1 | 2 | 3 | 4 | 5 | 6
   /** `none` (default) runs a `divide-y` list of `SwitchField variant="row"` rows or a table edge to edge; `default` pads the body like `CardContent`. */
@@ -49,6 +51,7 @@ function CollapsibleCard({
   defaultOpen,
   onOpenChange,
   disabled,
+  keepMounted = false,
   headingLevel = 3,
   padding = "none",
   className,
@@ -67,6 +70,15 @@ function CollapsibleCard({
     [hasDescription && descriptionId, hasMeta && metaId]
       .filter(Boolean)
       .join(" ") || undefined
+
+  const body = (
+    <div
+      data-padding={padding}
+      className="border-t border-border-subtle data-[padding=default]:p-(--card-spacing)"
+    >
+      {children}
+    </div>
+  )
 
   return (
     <Collapsible
@@ -147,17 +159,24 @@ function CollapsibleCard({
             )}
           </div>
         </div>
-        <CollapsibleContent
-          data-slot="collapsible-card-content"
-          className="overflow-hidden motion-safe:data-open:animate-collapsible-down motion-safe:data-closed:animate-collapsible-up"
-        >
-          <div
-            data-padding={padding}
-            className="border-t border-border-subtle data-[padding=default]:p-(--card-spacing)"
+        {keepMounted ? (
+          <CollapsibleContent
+            forceMount
+            data-slot="collapsible-card-content"
+            className="group/collapsible-card-content"
           >
-            {children}
-          </div>
-        </CollapsibleContent>
+            <div className="grid grid-rows-[1fr] transition-[grid-template-rows,visibility] duration-200 group-data-closed/collapsible-card-content:invisible group-data-closed/collapsible-card-content:grid-rows-[0fr] motion-reduce:transition-none">
+              <div className="min-h-0 overflow-hidden">{body}</div>
+            </div>
+          </CollapsibleContent>
+        ) : (
+          <CollapsibleContent
+            data-slot="collapsible-card-content"
+            className="overflow-hidden motion-safe:data-open:animate-collapsible-down motion-safe:data-closed:animate-collapsible-up"
+          >
+            {body}
+          </CollapsibleContent>
+        )}
       </Card>
     </Collapsible>
   )
