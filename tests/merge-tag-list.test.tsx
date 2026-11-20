@@ -205,9 +205,102 @@ describe("MergeTagList", () => {
       "Beispiel: #1043"
     )
   })
+  it("shows and inserts a tag that already has its braces as written", async () => {
+    const user = userEvent.setup()
+    const onInsert = vi.fn()
+    const tag: MergeTag = { tag: "{{order_number}}" }
+    renderWithTips(<MergeTagList tags={[tag]} onInsert={onInsert} />)
+
+    const chip = screen.getByRole("button", { name: "Insert {{order_number}}" })
+    expect(chip.textContent).toBe("{{order_number}}")
+    expect(chip.getAttribute("title")).toBe("{{order_number}}")
+
+    await user.click(chip)
+    expect(onInsert).toHaveBeenCalledWith(tag, "{{order_number}}")
+  })
+
+  it("shows a block tag by its label and inserts its own text", async () => {
+    const user = userEvent.setup()
+    const onInsert = vi.fn()
+    const block: MergeTag = {
+      tag: "{{#products}}…{{/products}}",
+      insert: "{{#products}}\n{{name}}\n{{/products}}",
+    }
+    const named: MergeTag = {
+      tag: "refund_items",
+      label: "{{#refund_items}}…{{/refund_items}}",
+      insert: "{{#refund_items}}{{/refund_items}}",
+    }
+    renderWithTips(<MergeTagList tags={[block, named]} onInsert={onInsert} />)
+
+    const chip = screen.getByRole("button", {
+      name: "Insert {{#products}}…{{/products}}",
+    })
+    expect(chip.textContent).toBe("{{#products}}…{{/products}}")
+    await user.click(chip)
+    expect(onInsert).toHaveBeenLastCalledWith(
+      block,
+      "{{#products}}\n{{name}}\n{{/products}}"
+    )
+
+    const namedChip = screen.getByRole("button", {
+      name: "Insert {{#refund_items}}…{{/refund_items}}",
+    })
+    expect(namedChip.textContent).toBe("{{#refund_items}}…{{/refund_items}}")
+    await user.click(namedChip)
+    expect(onInsert).toHaveBeenLastCalledWith(
+      named,
+      "{{#refund_items}}{{/refund_items}}"
+    )
+  })
 })
 
 describe("MergeTagChip", () => {
+  it("keys chips that share a tag by their label or insert", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {})
+    renderWithTips(
+      <MergeTagList
+        tags={[
+          { tag: "items", label: "{{#items}}…{{/items}}", insert: "a" },
+          { tag: "items", label: "{{^items}}…{{/items}}", insert: "b" },
+        ]}
+        onInsert={() => {}}
+      />
+    )
+
+    expect(screen.getAllByRole("button")).toHaveLength(2)
+    expect(
+      error.mock.calls.some((args) => String(args[0]).includes("same key"))
+    ).toBe(false)
+    error.mockRestore()
+  })
+
+  it("runs a callback ref's cleanup on unmount", () => {
+    const cleanup = vi.fn()
+    const ref = vi.fn(() => cleanup)
+    const { unmount } = renderWithTips(
+      <MergeTagChip ref={ref} tag={{ tag: "store_name" }} />
+    )
+
+    expect(ref).toHaveBeenCalledWith(screen.getByRole("button"))
+    unmount()
+    expect(cleanup).toHaveBeenCalledTimes(1)
+    expect(ref).not.toHaveBeenCalledWith(null)
+  })
+
+  it.each([
+    [
+      "with a tooltip",
+      { tag: "order_number", description: "The order number" },
+    ],
+    ["without a tooltip", { tag: "store_name" }],
+  ])("passes a consumer's ref to the button, %s", (_case, tag) => {
+    const ref = { current: null as HTMLButtonElement | null }
+    renderWithTips(<MergeTagChip ref={ref} tag={tag} />)
+
+    expect(ref.current).toBe(screen.getByRole("button"))
+  })
+
   it("works on its own", async () => {
     const user = userEvent.setup()
     const onInsert = vi.fn()

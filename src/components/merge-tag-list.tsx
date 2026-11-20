@@ -11,9 +11,13 @@ import {
 } from "@/components/ui/tooltip"
 
 type MergeTag = {
-  /** The tag's name without braces, e.g. "order_number". */
+  /** The tag's name without braces, e.g. "order_number", shown and inserted as `{{order_number}}`. A tag that already has braces, e.g. "{{order_number}}" or "{{#products}}…{{/products}}", is used as written. */
   tag: string
-  /** What the tag stands for, shown on hover and focus. */
+  /** What the chip shows and is named by, as written, when it isn't the tag: e.g. "{{#products}}…{{/products}}" for a block. */
+  label?: string
+  /** What the chip inserts, as written, when it isn't the tag: e.g. "{{#products}}\n{{/products}}" for a block. */
+  insert?: string
+  /** What the tag stands for, shown on hover and focus. A chip with a description or sample renders a tooltip, which throws without a `TooltipProvider` above it. */
   description?: React.ReactNode
   /** What the tag turns into for a sample order, e.g. "#1043". */
   sample?: React.ReactNode
@@ -25,7 +29,7 @@ type MergeTagGroup = {
 }
 
 type MergeTagLabels = {
-  /** The chip's accessible name; gets the tag as written, e.g. "{{order_number}}". */
+  /** The chip's accessible name; gets the tag as the chip shows it, e.g. "{{order_number}}". */
   insert?: (token: string) => string
   /** The tooltip's sample line. */
   example?: (sample: React.ReactNode) => React.ReactNode
@@ -39,7 +43,7 @@ const DEFAULT_LABELS: Required<MergeTagLabels> = {
   list: "Merge tags",
 }
 
-const tokenOf = (tag: string) => `{{${tag}}}`
+const tokenOf = (tag: string) => (tag.includes("{{") ? tag : `{{${tag}}}`)
 
 function shown(node: React.ReactNode): boolean {
   if (node == null || typeof node === "boolean") return false
@@ -54,7 +58,7 @@ type MergeTagListProps = Omit<React.ComponentProps<"div">, "children"> & {
   tags?: readonly MergeTag[]
   /** Tags under labelled headings, e.g. Order, Customer, Store. */
   groups?: readonly MergeTagGroup[]
-  /** Called with the tag and its token on click, Enter or Space; insert the token at the editor's cursor. */
+  /** Called with the tag and its token (the tag's `insert`, or the tag in braces) on click, Enter or Space; insert the token at the editor's cursor. */
   onInsert: InsertHandler
   disabled?: boolean
   labels?: MergeTagLabels
@@ -76,7 +80,7 @@ function MergeTagList({
   const chips = (list: readonly MergeTag[]) =>
     list.map((tag) => (
       <MergeTagChip
-        key={tag.tag}
+        key={tag.label ?? tag.insert ?? tag.tag}
         tag={tag}
         onInsert={onInsert}
         disabled={disabled}
@@ -127,12 +131,12 @@ type MergeTagChipProps = Omit<
   "children" | "variant" | "size" | "asChild" | "loading"
 > & {
   tag: MergeTag
-  /** Gets the tag and its token as shown, e.g. "{{order_number}}", to insert at the cursor. */
+  /** Gets the tag and its token, e.g. "{{order_number}}" or the tag's `insert`, to insert at the cursor. */
   onInsert?: InsertHandler
   labels?: MergeTagLabels
 }
 
-/** One merge tag as a chip: shows `{{tag}}`, explains it on hover or focus, and inserts it on click. A disabled chip still explains itself. */
+/** One merge tag as a chip: shows `{{tag}}`, explains it on hover or focus, and inserts it on click. A disabled chip still explains itself. A tag with a description or sample needs a `TooltipProvider` above it. */
 function MergeTagChip({
   tag,
   onInsert,
@@ -141,27 +145,44 @@ function MergeTagChip({
   className,
   onClick,
   onPointerDown,
+  ref,
   ...props
 }: MergeTagChipProps) {
   const insertLabel = labelsProp?.insert ?? DEFAULT_LABELS.insert
   const exampleLabel = labelsProp?.example ?? DEFAULT_LABELS.example
-  const token = tokenOf(tag.tag)
+  const token = tag.insert ?? tokenOf(tag.tag)
+  const label = tag.label ?? tokenOf(tag.tag)
   const hasDescription = shown(tag.description)
   const hasSample = shown(tag.sample)
   const chipRef = React.useRef<HTMLButtonElement>(null)
+  const setChipRef = React.useCallback(
+    (node: HTMLButtonElement | null) => {
+      chipRef.current = node
+      if (typeof ref === "function") {
+        const cleanup = ref(node)
+        if (typeof cleanup !== "function") return
+        return () => {
+          chipRef.current = null
+          cleanup()
+        }
+      }
+      if (ref) ref.current = node
+    },
+    [ref]
+  )
 
   const chip = (
     <Button
       {...props}
-      ref={chipRef}
+      ref={setChipRef}
       type="button"
       variant="outline"
       size="xs"
       data-slot="merge-tag-chip"
       dir="ltr"
       translate="no"
-      title={hasDescription || hasSample ? undefined : token}
-      aria-label={insertLabel(token)}
+      title={hasDescription || hasSample ? undefined : label}
+      aria-label={insertLabel(label)}
       aria-disabled={disabled || undefined}
       className={cn(
         "max-w-full font-mono aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:border-border aria-disabled:hover:shadow-none",
@@ -177,7 +198,7 @@ function MergeTagChip({
         else if (!event.defaultPrevented) onInsert?.(tag, token)
       }}
     >
-      <span className="truncate">{token}</span>
+      <span className="truncate">{label}</span>
     </Button>
   )
 
