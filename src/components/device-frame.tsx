@@ -3,6 +3,10 @@
 import * as React from "react"
 import { cn } from "cn"
 
+/**
+ * Needs a parent with a width of its own: the frame is `width: 100%` and a size container, so it can't size its parent.
+ * In a shrink-to-fit parent (`w-fit`, `inline-flex`, `inline-block`, an unsized flex-row child) it collapses to nothing; give that parent a width, or `flex-1` / `w-full`.
+ */
 type DeviceFrameProps = React.ComponentProps<"figure"> & {
   /** The device drawn around the preview; only `phone` for now. */
   device?: "phone"
