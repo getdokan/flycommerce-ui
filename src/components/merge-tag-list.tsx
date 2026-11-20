@@ -13,10 +13,10 @@ import {
 type MergeTag = {
   /** The tag's name without braces, e.g. "order_number", shown and inserted as `{{order_number}}`. A tag that already has braces, e.g. "{{order_number}}" or "{{#products}}…{{/products}}", is used as written. */
   tag: string
-  /** What the chip shows and is named by, as written, when it isn't the tag: e.g. "{{#products}}…{{/products}}" for a block. */
+  /** What the chip shows and is named by, as written, when it isn't the tag: e.g. "{{#products}}…{{/products}}" for a block. An empty string counts as unset. */
   label?: string
-  /** What the chip inserts, as written, when it isn't the tag: e.g. "{{#products}}\n{{/products}}" for a block. */
-  insert?: string
+  /** What the chip inserts, as written, when it isn't the tag: e.g. "{{#products}}\n{{/products}}" for a block. A function gets the list's `locale` and returns the text, for a block whose words depend on the language being edited. An empty string counts as unset. */
+  insert?: string | ((locale: string) => string)
   /** What the tag stands for, shown on hover and focus. A chip with a description or sample renders a tooltip, which throws without a `TooltipProvider` above it. */
   description?: React.ReactNode
   /** What the tag turns into for a sample order, e.g. "#1043". */
@@ -45,6 +45,14 @@ const DEFAULT_LABELS: Required<MergeTagLabels> = {
 
 const tokenOf = (tag: string) => (tag.includes("{{") ? tag : `{{${tag}}}`)
 
+const DEFAULT_LOCALE = "en"
+
+const insertOf = (tag: MergeTag, locale: string) => {
+  const insert =
+    typeof tag.insert === "function" ? tag.insert(locale) : tag.insert
+  return insert || tokenOf(tag.tag)
+}
+
 function shown(node: React.ReactNode): boolean {
   if (node == null || typeof node === "boolean") return false
   if (typeof node === "string") return node.trim() !== ""
@@ -62,6 +70,8 @@ type MergeTagListProps = Omit<React.ComponentProps<"div">, "children"> & {
   onInsert: InsertHandler
   disabled?: boolean
   labels?: MergeTagLabels
+  /** The language being edited, passed to an `insert` function. Defaults to "en". */
+  locale?: string
 }
 
 /** The merge tags an email or message can use, as chips that insert at the editor's cursor. */
@@ -71,6 +81,7 @@ function MergeTagList({
   onInsert,
   disabled,
   labels,
+  locale,
   className,
   ...props
 }: MergeTagListProps) {
@@ -78,13 +89,14 @@ function MergeTagList({
   const grouped = groups != null && groups.length > 0
 
   const chips = (list: readonly MergeTag[]) =>
-    list.map((tag) => (
+    list.map((tag, index) => (
       <MergeTagChip
-        key={tag.label ?? tag.insert ?? tag.tag}
+        key={`${index}:${tag.tag}`}
         tag={tag}
         onInsert={onInsert}
         disabled={disabled}
         labels={labels}
+        locale={locale}
       />
     ))
 
@@ -134,6 +146,8 @@ type MergeTagChipProps = Omit<
   /** Gets the tag and its token, e.g. "{{order_number}}" or the tag's `insert`, to insert at the cursor. */
   onInsert?: InsertHandler
   labels?: MergeTagLabels
+  /** The language being edited, passed to the tag's `insert` function. Defaults to "en". */
+  locale?: string
 }
 
 /** One merge tag as a chip: shows `{{tag}}`, explains it on hover or focus, and inserts it on click. A disabled chip still explains itself. A tag with a description or sample needs a `TooltipProvider` above it. */
@@ -141,6 +155,7 @@ function MergeTagChip({
   tag,
   onInsert,
   labels: labelsProp,
+  locale = DEFAULT_LOCALE,
   disabled,
   className,
   onClick,
@@ -150,8 +165,7 @@ function MergeTagChip({
 }: MergeTagChipProps) {
   const insertLabel = labelsProp?.insert ?? DEFAULT_LABELS.insert
   const exampleLabel = labelsProp?.example ?? DEFAULT_LABELS.example
-  const token = tag.insert ?? tokenOf(tag.tag)
-  const label = tag.label ?? tokenOf(tag.tag)
+  const label = tag.label || tokenOf(tag.tag)
   const hasDescription = shown(tag.description)
   const hasSample = shown(tag.sample)
   const chipRef = React.useRef<HTMLButtonElement>(null)
@@ -195,7 +209,7 @@ function MergeTagChip({
       onClick={(event) => {
         onClick?.(event)
         if (disabled) event.preventDefault()
-        else if (!event.defaultPrevented) onInsert?.(tag, token)
+        else if (!event.defaultPrevented) onInsert?.(tag, insertOf(tag, locale))
       }}
     >
       <span className="truncate">{label}</span>

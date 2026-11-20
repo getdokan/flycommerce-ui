@@ -253,9 +253,73 @@ describe("MergeTagList", () => {
       "{{#refund_items}}{{/refund_items}}"
     )
   })
+
+  it("works out an insert function for the list's locale, English by default", async () => {
+    const user = userEvent.setup()
+    const onInsert = vi.fn()
+    const offer = vi.fn((locale: string) => `{{#offer}}${locale}{{/offer}}`)
+    const tag: MergeTag = { tag: "offer", insert: offer }
+    const { rerender } = renderWithTips(
+      <MergeTagList tags={[tag]} onInsert={onInsert} />
+    )
+
+    const chip = screen.getByRole("button", { name: "Insert {{offer}}" })
+    expect(chip.textContent).toBe("{{offer}}")
+    await user.click(chip)
+    expect(onInsert).toHaveBeenLastCalledWith(tag, "{{#offer}}en{{/offer}}")
+
+    rerender(
+      <TooltipProvider>
+        <MergeTagList tags={[tag]} onInsert={onInsert} locale="de" />
+      </TooltipProvider>
+    )
+    await user.click(screen.getByRole("button", { name: "Insert {{offer}}" }))
+    expect(onInsert).toHaveBeenLastCalledWith(tag, "{{#offer}}de{{/offer}}")
+    expect(offer).toHaveBeenLastCalledWith("de")
+  })
+
+  it("treats an empty label or insert as unset", async () => {
+    const user = userEvent.setup()
+    const onInsert = vi.fn()
+    const tag: MergeTag = { tag: "order_number", label: "", insert: "" }
+    const blank: MergeTag = { tag: "store_name", insert: () => "" }
+    renderWithTips(<MergeTagList tags={[tag, blank]} onInsert={onInsert} />)
+
+    const chip = screen.getByRole("button", { name: "Insert {{order_number}}" })
+    expect(chip.textContent).toBe("{{order_number}}")
+    await user.click(chip)
+    expect(onInsert).toHaveBeenLastCalledWith(tag, "{{order_number}}")
+
+    await user.click(
+      screen.getByRole("button", { name: "Insert {{store_name}}" })
+    )
+    expect(onInsert).toHaveBeenLastCalledWith(blank, "{{store_name}}")
+  })
 })
 
 describe("MergeTagChip", () => {
+  it("keys chips apart when labels, inserts or tags repeat", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {})
+    renderWithTips(
+      <MergeTagList
+        tags={[
+          { tag: "first_name", label: "Name" },
+          { tag: "last_name", label: "Name" },
+          { tag: "total", insert: "{{order_total}}" },
+          { tag: "order_total", label: "{{order_total}}" },
+          { tag: "total" },
+        ]}
+        onInsert={() => {}}
+      />
+    )
+
+    expect(screen.getAllByRole("button")).toHaveLength(5)
+    expect(
+      error.mock.calls.some((args) => String(args[0]).includes("same key"))
+    ).toBe(false)
+    error.mockRestore()
+  })
+
   it("keys chips that share a tag by their label or insert", () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {})
     renderWithTips(
