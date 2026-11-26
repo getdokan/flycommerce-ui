@@ -90,6 +90,7 @@ import {
 } from "./product-demos"
 import { PreviewFrameDemo } from "./preview-frame-demo"
 import { ScaledFrameDemo } from "./scaled-frame-demo"
+import { DeviceFrameDemo } from "./device-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaCellDemo } from "./media-cell-demo"
@@ -474,6 +475,8 @@ const KEYWORDS: Record<string, string> = {
     "browser window theme screenshot store domain address bar mockup preview",
   "scaled-frame":
     "scale zoom fit email preview iframe srcdoc design width responsive shrink",
+  "device-frame":
+    "phone mobile device bezel mockup preview email storefront screen",
   "media-cell": "table cell thumbnail file video play document glyph list",
   "tree-select":
     "category picker hierarchy nested drill cascader parent add category footer action",
@@ -580,6 +583,7 @@ const SOURCES: Record<string, Source> = {
   "preview-stage": "prototype",
   "preview-frame": "prototype",
   "scaled-frame": "prototype",
+  "device-frame": "prototype",
   "media-cell": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
@@ -1247,6 +1251,12 @@ export const demos: Demo[] = [
     title: "Scaled frame",
     group: "Patterns",
     render: () => <ScaledFrameDemo />,
+  },
+  {
+    id: "device-frame",
+    title: "Device frame",
+    group: "Patterns",
+    render: () => <DeviceFrameDemo />,
   },
   {
     id: "media-page",
