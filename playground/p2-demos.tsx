@@ -483,6 +483,13 @@ export function SwitchFieldDemo() {
             description="Only for storefronts that show prices with tax included."
             disabled
           />
+          <SwitchField
+            variant="row"
+            title="Calculate tax at checkout"
+            description="Get a live rate from Avalara for every cart."
+            checked
+            disabledReason="Checkout needs a tax rate, so this stays on while AvaTax is connected."
+          />
         </CardContent>
       </Card>
     </div>
