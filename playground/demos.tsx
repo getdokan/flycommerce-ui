@@ -67,6 +67,7 @@ import {
   ActivityFeedDemo,
 } from "./pattern-demos"
 import { StepMeterDemo } from "./step-meter-demo"
+import { CollapsibleCardDemo } from "./collapsible-card-demo"
 import { CodeEditorDemo } from "./code-editor-demos"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import {
@@ -88,6 +89,8 @@ import {
   TreeSelectDemo,
 } from "./product-demos"
 import { PreviewFrameDemo } from "./preview-frame-demo"
+import { ScaledFrameDemo } from "./scaled-frame-demo"
+import { DeviceFrameDemo } from "./device-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaCellDemo } from "./media-cell-demo"
@@ -389,6 +392,8 @@ const KEYWORDS: Record<string, string> = {
   carousel: "slider gallery slideshow",
   tabs: "segmented control switcher",
   accordion: "collapse expand disclosure faq",
+  "collapsible-card":
+    "accordion collapse expand section group card header chevron settings disclosure",
   dialog: "modal popup overlay",
   "alert-dialog": "confirm delete modal",
   sheet: "drawer side panel offcanvas bottom sheet size wide form",
@@ -468,6 +473,10 @@ const KEYWORDS: Record<string, string> = {
     "file detail preview dot grid image video play document glyph theme",
   "preview-frame":
     "browser window theme screenshot store domain address bar mockup preview",
+  "scaled-frame":
+    "scale zoom fit email preview iframe srcdoc design width responsive shrink",
+  "device-frame":
+    "phone mobile device bezel mockup preview email storefront screen",
   "media-cell": "table cell thumbnail file video play document glyph list",
   "tree-select":
     "category picker hierarchy nested drill cascader parent add category footer action",
@@ -552,6 +561,7 @@ const SOURCES: Record<string, Source> = {
   "data-table-pager": "prototype",
   "radio-card": "prototype",
   "switch-field": "prototype",
+  "collapsible-card": "prototype",
   "stat-card": "prototype",
   "icon-chip": "figma",
   "nav-tabs": "prototype",
@@ -572,6 +582,8 @@ const SOURCES: Record<string, Source> = {
   "media-parts": "figma",
   "preview-stage": "prototype",
   "preview-frame": "prototype",
+  "scaled-frame": "prototype",
+  "device-frame": "prototype",
   "media-cell": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
@@ -1133,6 +1145,12 @@ export const demos: Demo[] = [
     render: () => <SwitchFieldDemo />,
   },
   {
+    id: "collapsible-card",
+    title: "Collapsible card",
+    group: "Patterns",
+    render: () => <CollapsibleCardDemo />,
+  },
+  {
     id: "nav-tabs",
     title: "Navigation tabs",
     group: "Patterns",
@@ -1227,6 +1245,18 @@ export const demos: Demo[] = [
     title: "Preview frame",
     group: "Patterns",
     render: () => <PreviewFrameDemo />,
+  },
+  {
+    id: "scaled-frame",
+    title: "Scaled frame",
+    group: "Patterns",
+    render: () => <ScaledFrameDemo />,
+  },
+  {
+    id: "device-frame",
+    title: "Device frame",
+    group: "Patterns",
+    render: () => <DeviceFrameDemo />,
   },
   {
     id: "media-page",
