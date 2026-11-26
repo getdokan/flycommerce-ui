@@ -2,7 +2,11 @@
 
 All notable changes to `@flycommerce/ui` are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [0.10.0] - 2026-11-26
+
+New: `CollapsibleCard`, `ScaledFrame`, `DeviceFrame`, `MergeTagList`, `Switch disabledReason` and `Alert onDismiss`, for the store admin's email settings and template editor.
+
+Nothing changes for existing uses of `Switch`, `SwitchField` or `Alert` unless you pass the new props.
 
 ### Added
 
