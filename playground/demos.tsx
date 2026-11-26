@@ -67,8 +67,10 @@ import {
   ActivityFeedDemo,
 } from "./pattern-demos"
 import { StepMeterDemo } from "./step-meter-demo"
+import { CollapsibleCardDemo } from "./collapsible-card-demo"
 import { AlertDismissDemo } from "./alert-dismiss-demo"
 import { CodeEditorDemo } from "./code-editor-demos"
+import { MergeTagListDemo } from "./merge-tag-list-demo"
 import { ClaudeCodeDoc, InstallationDoc, WelcomeDoc } from "./docs"
 import {
   BrandMarkDemo,
@@ -89,6 +91,8 @@ import {
   TreeSelectDemo,
 } from "./product-demos"
 import { PreviewFrameDemo } from "./preview-frame-demo"
+import { ScaledFrameDemo } from "./scaled-frame-demo"
+import { DeviceFrameDemo } from "./device-frame-demo"
 import { PreviewStageDemo } from "./preview-stage-demo"
 import { MediaLibraryGridDemo } from "./media-library-grid-demo"
 import { MediaCellDemo } from "./media-cell-demo"
@@ -375,7 +379,7 @@ const KEYWORDS: Record<string, string> = {
   textarea: "multiline text area description character count limit",
   select: "dropdown picker options",
   combobox: "autocomplete searchable select typeahead multiple chips",
-  checkbox: "radio switch toggle tick indeterminate",
+  checkbox: "radio switch toggle tick indeterminate locked reason",
   "input-otp": "otp pin verification code",
   calendar: "date",
   badge: "pill tag chip label status dot pulse live",
@@ -390,6 +394,8 @@ const KEYWORDS: Record<string, string> = {
   carousel: "slider gallery slideshow",
   tabs: "segmented control switcher",
   accordion: "collapse expand disclosure faq",
+  "collapsible-card":
+    "accordion collapse expand section group card header chevron settings disclosure",
   dialog: "modal popup overlay",
   "alert-dialog": "confirm delete modal",
   sheet: "drawer side panel offcanvas bottom sheet size wide form",
@@ -445,7 +451,7 @@ const KEYWORDS: Record<string, string> = {
   "radio-card":
     "option card choice row rows checkbox multi select radio group settings details",
   "switch-field":
-    "toggle row setting enabled disabled state label badge nested settings",
+    "toggle row setting enabled disabled state label badge nested settings locked always on reason tooltip",
   "nav-tabs": "tabs links route navigation",
   "segmented-control":
     "radio toggle switch choice option unit metric imperial pill button group",
@@ -469,6 +475,10 @@ const KEYWORDS: Record<string, string> = {
     "file detail preview dot grid image video play document glyph theme",
   "preview-frame":
     "browser window theme screenshot store domain address bar mockup preview",
+  "scaled-frame":
+    "scale zoom fit email preview iframe srcdoc design width responsive shrink",
+  "device-frame":
+    "phone mobile device bezel mockup preview email storefront screen",
   "media-cell": "table cell thumbnail file video play document glyph list",
   "tree-select":
     "category picker hierarchy nested drill cascader parent add category footer action",
@@ -480,6 +490,8 @@ const KEYWORDS: Record<string, string> = {
     "wysiwyg tiptap description textarea formatting bold html heading h1 h4 ai assistant rewrite paraphrase simplify extend suggestion",
   "code-editor":
     "code snippet html css javascript json script codemirror monospace line numbers merge tags custom code",
+  "merge-tag-list":
+    "merge tags placeholders variables tokens chips insert email template sample handlebars mustache",
   "modal-figma": "dialog popup new category form",
   "modal-use-cases":
     "dialog popup import export csv bulk edit invite details terms reject success wizard wide two columns 960 file detail preview",
@@ -553,6 +565,7 @@ const SOURCES: Record<string, Source> = {
   "data-table-pager": "prototype",
   "radio-card": "prototype",
   "switch-field": "prototype",
+  "collapsible-card": "prototype",
   "stat-card": "prototype",
   "icon-chip": "figma",
   "nav-tabs": "prototype",
@@ -567,12 +580,15 @@ const SOURCES: Record<string, Source> = {
   "image-upload-field-stacked": "prototype",
   "rich-text-editor": "figma",
   "code-editor": "prototype",
+  "merge-tag-list": "prototype",
   "media-picker": "figma",
   "media-page": "composite",
   "media-library-grid": "prototype",
   "media-parts": "figma",
   "preview-stage": "prototype",
   "preview-frame": "prototype",
+  "scaled-frame": "prototype",
+  "device-frame": "prototype",
   "media-cell": "prototype",
   "tree-select": "figma",
   "rich-select": "figma",
@@ -1134,6 +1150,12 @@ export const demos: Demo[] = [
     render: () => <SwitchFieldDemo />,
   },
   {
+    id: "collapsible-card",
+    title: "Collapsible card",
+    group: "Patterns",
+    render: () => <CollapsibleCardDemo />,
+  },
+  {
     id: "nav-tabs",
     title: "Navigation tabs",
     group: "Patterns",
@@ -1212,6 +1234,12 @@ export const demos: Demo[] = [
     render: () => <CodeEditorDemo />,
   },
   {
+    id: "merge-tag-list",
+    title: "Merge tag list",
+    group: "Forms",
+    render: () => <MergeTagListDemo />,
+  },
+  {
     id: "media-picker",
     title: "Media picker (Add Media)",
     group: "Patterns",
@@ -1228,6 +1256,18 @@ export const demos: Demo[] = [
     title: "Preview frame",
     group: "Patterns",
     render: () => <PreviewFrameDemo />,
+  },
+  {
+    id: "scaled-frame",
+    title: "Scaled frame",
+    group: "Patterns",
+    render: () => <ScaledFrameDemo />,
+  },
+  {
+    id: "device-frame",
+    title: "Device frame",
+    group: "Patterns",
+    render: () => <DeviceFrameDemo />,
   },
   {
     id: "media-page",
@@ -1927,6 +1967,14 @@ export const demos: Demo[] = [
           <div className="flex items-center gap-2">
             <Switch id="vacation" />
             <Label htmlFor="vacation">Vacation mode</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="order-confirmed"
+              checked
+              disabledReason="Shoppers need this email, so it's always sent."
+            />
+            <Label htmlFor="order-confirmed">Order confirmed email</Label>
           </div>
         </Row>
       </Stack>
