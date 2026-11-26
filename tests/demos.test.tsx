@@ -15,6 +15,9 @@ const AXE_OPTIONS: axe.RunOptions = {
   },
 }
 
+// jsdom can't reach into these demos' iframes either.
+const IFRAME_DEMOS = new Set(["scaled-frame"])
+
 let errors: unknown[][]
 beforeEach(() => {
   errors = []
@@ -33,7 +36,12 @@ describe("every gallery demo", () => {
       )
       expect(container.childElementCount).toBeGreaterThan(0)
 
-      const results = await axe.run(container, AXE_OPTIONS)
+      const results = await axe.run(
+        container,
+        IFRAME_DEMOS.has(demo.id)
+          ? { ...AXE_OPTIONS, iframes: false }
+          : AXE_OPTIONS
+      )
       const violations = results.violations.map(
         (v) =>
           `${v.id}: ${v.help} (${v.nodes
